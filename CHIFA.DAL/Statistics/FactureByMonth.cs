@@ -1,0 +1,8 @@
+﻿namespace CHIFA.DAL.Statistics;
+
+public class FactureByMonth
+{
+    public int Count { get; set; }
+    public string Date { get; set; }
+    public decimal? Montant { get; set; }
+}

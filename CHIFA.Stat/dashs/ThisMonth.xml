@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dashboard CurrencyCulture="en-US">
+	<Title Visible="false" Text="This Month Dashboard" IncludeMasterFilterState="false" />
+	<DataSources>
+		<ObjectDataSource Name="Medicaments" ComponentName="dashboardObjectDataSource1">
+			<DataSource Type="CHIFA.Pro.View.ViewModels.MonthDashVM, CHIFA.Pro, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null" />
+			<DataMember>Medicaments</DataMember>
+			<Constructor />
+		</ObjectDataSource>
+		<ObjectDataSource Name="Factures" ComponentName="dashboardObjectDataSource2">
+			<DataSource Type="CHIFA.Pro.View.ViewModels.MonthDashVM, CHIFA.Pro, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null" />
+			<DataMember>Factures</DataMember>
+			<Constructor />
+		</ObjectDataSource>
+		<ObjectDataSource Name="Bordereaux" ComponentName="dashboardObjectDataSource3">
+			<DataSource Type="CHIFA.Pro.View.ViewModels.MonthDashVM, CHIFA.Pro, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null" />
+			<DataMember>Bordereaux</DataMember>
+			<Constructor />
+		</ObjectDataSource>
+	</DataSources>
+	<Items>
+		<Chart ComponentName="chartDashboardItem1" Name="Global Sales" DataSource="dashboardObjectDataSource2">
+			<InteractivityOptions IsDrillDownEnabled="true" />
+			<DataItems>
+				<Measure DataMember="Montant" Name="Montant" DefaultId="DataItem0">
+					<NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+				</Measure>
+				<Dimension DataMember="Date" SortOrder="Descending" DefaultId="DataItem1" />
+				<Dimension DataMember="Center" SortOrder="Descending" DefaultId="DataItem3" />
+				<Measure DataMember="NumFact" Name="Nombre" SummaryType="Count" DefaultId="DataItem2" />
+				<Measure DataMember="Boites" Name="Boites" DefaultId="DataItem4">
+					<NumericFormat FormatType="Number" Precision="0" Unit="Ones" CustomFormatString="" />
+				</Measure>
+			</DataItems>
+			<SeriesDimensions>
+				<SeriesDimension DefaultId="DataItem3" />
+			</SeriesDimensions>
+			<Arguments>
+				<Argument DefaultId="DataItem1" />
+			</Arguments>
+			<Panes>
+				<Pane Name="Pane 1">
+					<Series>
+						<Simple>
+							<Value DefaultId="DataItem0" />
+							<PointLabelOptions ShowForZeroValues="true" />
+						</Simple>
+					</Series>
+				</Pane>
+				<Pane Name="Pane 2">
+					<Series>
+						<Simple>
+							<Value DefaultId="DataItem2" />
+						</Simple>
+					</Series>
+				</Pane>
+				<Pane Name="Pane 3">
+					<Series>
+						<Simple>
+							<Value DefaultId="DataItem4" />
+						</Simple>
+					</Series>
+				</Pane>
+			</Panes>
+		</Chart>
+		<Card ComponentName="cardDashboardItem1" Name="Week Stat" DataSource="dashboardObjectDataSource1" ContentArrangementMode="FixedRowCount" ContentLineCount="1">
+			<DataItems>
+				<Measure DataMember="Ppa" DefaultId="DataItem0">
+					<NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" CustomFormatString="" />
+				</Measure>
+				<Measure DataMember="Ppa" DefaultId="DataItem2" />
+				<Dimension DataMember="CodeDci" DefaultId="DataItem1" />
+			</DataItems>
+			<HiddenMeasures>
+				<Measure DefaultId="DataItem2" />
+			</HiddenMeasures>
+			<FormatRules>
+				<CardItemFormatRule Name="FormatRule 1" DataItem="DataItem2">
+					<FormatConditionTopBottom RankType="Number" Rank="10">
+						<AppearanceSettings AppearanceType="PalePurple" />
+					</FormatConditionTopBottom>
+					<CardFormatRuleLayoutElement />
+				</CardItemFormatRule>
+			</FormatRules>
+			<SeriesDimensions>
+				<SeriesDimension DefaultId="DataItem1" />
+			</SeriesDimensions>
+			<Card>
+				<ActualValue DefaultId="DataItem0" />
+				<AbsoluteVariationNumericFormat />
+				<PercentVariationNumericFormat />
+				<PercentOfTargetNumericFormat />
+				<LayoutTemplate Type="Stretched">
+					<TopValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+					<MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+					<SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+					<BottomValue1 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+					<BottomValue2 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+					<DeltaIndicator Visible="true" />
+					<Sparkline Visible="true" />
+				</LayoutTemplate>
+			</Card>
+		</Card>
+		<Card ComponentName="cardDashboardItem2" Name="Montant" DataSource="dashboardObjectDataSource2" ContentArrangementMode="FixedRowCount" ContentLineCount="1">
+			<InteractivityOptions IsDrillDownEnabled="true" />
+			<DataItems>
+				<Dimension DataMember="Center" DefaultId="DataItem0" />
+				<Measure DataMember="Montant" DefaultId="DataItem1">
+					<NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+				</Measure>
+				<Dimension DataMember="Date" SortOrder="Descending" DefaultId="DataItem2" />
+				<Dimension DataMember="DateFact" SortOrder="Descending" DateTimeGroupInterval="DateHourMinute" DefaultId="DataItem3">
+					<DateTimeFormat DateHourMinuteFormat="TimeOnly" />
+				</Dimension>
+				<Measure DataMember="Beneficiaire" SummaryType="Count" DefaultId="DataItem4" />
+				<Dimension DataMember="Beneficiaire" DefaultId="DataItem5" />
+				<Dimension DataMember="Lines" DefaultId="DataItem7" />
+			</DataItems>
+			<SeriesDimensions>
+				<SeriesDimension DefaultId="DataItem0" />
+				<SeriesDimension DefaultId="DataItem2" />
+				<SeriesDimension DefaultId="DataItem3" />
+				<SeriesDimension DefaultId="DataItem5" />
+				<SeriesDimension DefaultId="DataItem7" />
+			</SeriesDimensions>
+			<Card Name="Montant">
+				<ActualValue DefaultId="DataItem1" />
+				<AbsoluteVariationNumericFormat />
+				<PercentVariationNumericFormat />
+				<PercentOfTargetNumericFormat />
+				<LayoutTemplate MinWidth="125" MaxWidth="150" Type="Compact">
+					<MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+					<SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+					<BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+					<BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+					<BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+					<DeltaIndicator Visible="true" />
+					<Sparkline Visible="true" />
+				</LayoutTemplate>
+			</Card>
+			<Card>
+				<ActualValue DefaultId="DataItem4" />
+				<ActualValue DefaultId="DataItem2" />
+				<ActualValue DefaultId="DataItem1" />
+				<AbsoluteVariationNumericFormat />
+				<PercentVariationNumericFormat />
+				<PercentOfTargetNumericFormat />
+				<LayoutTemplate Type="Stretched">
+					<TopValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+					<MainValue Visible="true" ValueType="Title" DimensionIndex="1" />
+					<SubValue Visible="true" ValueType="Subtitle" DimensionIndex="2" />
+					<BottomValue1 Visible="true" ValueType="PercentVariation" DimensionIndex="3" />
+					<BottomValue2 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+					<DeltaIndicator Visible="true" />
+					<Sparkline Visible="true" />
+				</LayoutTemplate>
+			</Card>
+		</Card>
+		<Card ComponentName="cardDashboardItem3" Name="Cards 3" DataSource="dashboardObjectDataSource3" ContentArrangementMode="FixedRowCount" ContentLineCount="1">
+			<DataItems>
+				<Dimension DataMember="Center" DefaultId="DataItem0" />
+				<Measure DataMember="NmbrOrd" DefaultId="DataItem1" />
+			</DataItems>
+			<SeriesDimensions>
+				<SeriesDimension DefaultId="DataItem0" />
+			</SeriesDimensions>
+			<Card>
+				<ActualValue DefaultId="DataItem1" />
+				<AbsoluteVariationNumericFormat />
+				<PercentVariationNumericFormat />
+				<PercentOfTargetNumericFormat />
+				<LayoutTemplate MinWidth="125" MaxWidth="150" Type="Compact">
+					<MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+					<SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+					<BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+					<BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+					<BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+					<DeltaIndicator Visible="true" />
+					<Sparkline Visible="true" />
+				</LayoutTemplate>
+			</Card>
+		</Card>
+		<Card ComponentName="cardDashboardItem4" Name="Last 7 Days" DataSource="dashboardObjectDataSource2" ContentArrangementMode="FixedRowCount" ContentLineCount="1">
+			<InteractivityOptions IsDrillDownEnabled="true" />
+			<DataItems>
+				<Dimension DataMember="DayName" DefaultId="DataItem0" />
+				<Measure DataMember="Montant" DefaultId="DataItem1">
+					<NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+				</Measure>
+				<Dimension DataMember="Center" DefaultId="DataItem2" />
+				<Measure DataMember="Malad" SummaryType="Count" DefaultId="DataItem3" />
+			</DataItems>
+			<SeriesDimensions>
+				<SeriesDimension DefaultId="DataItem0" />
+				<SeriesDimension DefaultId="DataItem2" />
+			</SeriesDimensions>
+			<Card Name="Montant">
+				<ActualValue DefaultId="DataItem1" />
+				<AbsoluteVariationNumericFormat />
+				<PercentVariationNumericFormat />
+				<PercentOfTargetNumericFormat />
+				<LayoutTemplate MinWidth="125" MaxWidth="150" Type="Compact">
+					<MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+					<SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+					<BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+					<BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+					<BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+					<DeltaIndicator Visible="true" />
+					<Sparkline Visible="true" />
+				</LayoutTemplate>
+			</Card>
+			<Card Name="Malades">
+				<ActualValue DefaultId="DataItem3" />
+				<AbsoluteVariationNumericFormat />
+				<PercentVariationNumericFormat />
+				<PercentOfTargetNumericFormat />
+				<LayoutTemplate MinWidth="125" MaxWidth="150" Type="Compact">
+					<MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+					<SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+					<BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+					<BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+					<BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+					<DeltaIndicator Visible="true" />
+					<Sparkline Visible="true" />
+				</LayoutTemplate>
+			</Card>
+		</Card>
+		<Chart ComponentName="chartDashboardItem2" Name="Chart 1" DataSource="dashboardObjectDataSource1">
+			<DataItems>
+				<Dimension DataMember="Medicament" DefaultId="DataItem0" />
+				<Measure DataMember="Qte" DefaultId="DataItem1" />
+				<Dimension DataMember="Ppa" DefaultId="DataItem2" />
+				<Measure DataMember="Ppa" DefaultId="DataItem3" />
+				<Measure DataMember="Ppa" DefaultId="DataItem4" />
+			</DataItems>
+			<HiddenDimensions>
+				<Dimension DefaultId="DataItem2" />
+			</HiddenDimensions>
+			<HiddenMeasures>
+				<Measure DefaultId="DataItem3" />
+			</HiddenMeasures>
+			<FormatRules>
+				<ChartItemFormatRule Name="FormatRule 1" DataItem="DataItem1" SeriesId="DataItem1">
+					<FormatConditionTopBottom RankType="Number" Rank="10">
+						<ColorStyleSettings PredefinedColor="Blue" />
+					</FormatConditionTopBottom>
+				</ChartItemFormatRule>
+				<ChartItemFormatRule Name="FormatRule 2" DataItem="DataItem3" SeriesId="DataItem1">
+					<FormatConditionTopBottom RankType="Number" Rank="10">
+						<ColorStyleSettings PredefinedColor="Red" />
+					</FormatConditionTopBottom>
+				</ChartItemFormatRule>
+			</FormatRules>
+			<Arguments>
+				<Argument DefaultId="DataItem0" />
+			</Arguments>
+			<Panes>
+				<Pane Name="Pane 1">
+					<Series>
+						<Simple>
+							<Value DefaultId="DataItem1" />
+						</Simple>
+					</Series>
+				</Pane>
+				<Pane Name="Pane 2">
+					<Series>
+						<Simple>
+							<Value DefaultId="DataItem4" />
+							<PointLabelOptions ShowForZeroValues="true" />
+						</Simple>
+					</Series>
+				</Pane>
+			</Panes>
+		</Chart>
+	</Items>
+	<LayoutTree>
+		<LayoutGroup Weight="100">
+			<LayoutGroup Orientation="Vertical" Weight="50.303030303030305">
+				<LayoutItem DashboardItem="cardDashboardItem2" Weight="22.78481012658228" />
+				<LayoutItem DashboardItem="cardDashboardItem1" Weight="25.82278481012658" />
+				<LayoutItem DashboardItem="cardDashboardItem3" Weight="18.860759493670887" />
+				<LayoutItem DashboardItem="cardDashboardItem4" Weight="32.53164556962025" />
+			</LayoutGroup>
+			<LayoutGroup Orientation="Vertical" Weight="49.696969696969695">
+				<LayoutItem DashboardItem="chartDashboardItem1" Weight="48.607594936708864" />
+				<LayoutItem DashboardItem="chartDashboardItem2" Weight="51.392405063291136" />
+			</LayoutGroup>
+		</LayoutGroup>
+	</LayoutTree>
+</Dashboard>

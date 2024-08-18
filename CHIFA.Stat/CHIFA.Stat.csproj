@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="CHIFA2.Data" Version="1.0.*" />
+	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
+	  <PackageReference Include="DevExpress.Win" Version="24.1.*">
+		  <TreatAsUsed>true</TreatAsUsed>
+	  </PackageReference>
+    <PackageReference Include="DevExpress.Win.Dashboard.Design" Version="24.1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Dashbords\DayView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Dashbords\frmDesigner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+
+</Project>

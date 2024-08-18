@@ -1,0 +1,850 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dashboard CurrencyCulture="en-US">
+  <Title Visible="false" Text="This Year Dashboard" IncludeMasterFilterState="false" />
+  <DataSources>
+    <ObjectDataSource Name="Medicaments" ComponentName="dashboardObjectDataSource1">
+      <DataSource Type="CHIFA.Pro.View.ViewModels.GlobalDashVM, CHIFA.Pro, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null" />
+      <DataMember>Medicaments</DataMember>
+      <Constructor />
+    </ObjectDataSource>
+    <ObjectDataSource Name="Factures" ComponentName="dashboardObjectDataSource2">
+      <DataSource Type="CHIFA.Pro.View.ViewModels.GlobalDashVM, CHIFA.Pro, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null" />
+      <DataMember>Factures</DataMember>
+      <Constructor />
+      <CalculatedFields>
+        <CalculatedField Name="FullNameWithNumAs" Expression="[Beneficiaire]+ ' - ' + [NumAssure]" DataType="Auto" />
+        <CalculatedField Name="Marge20%" Expression="[Montant]/6" DataType="Auto" />
+      </CalculatedFields>
+    </ObjectDataSource>
+    <ObjectDataSource Name="Bordereaux" ComponentName="dashboardObjectDataSource3">
+      <DataSource Type="CHIFA.Pro.View.ViewModels.GlobalDashVM, CHIFA.Pro, Version=1.0.7.0, Culture=neutral, PublicKeyToken=null" />
+      <DataMember>Bordereaux</DataMember>
+      <Constructor />
+    </ObjectDataSource>
+  </DataSources>
+  <Items>
+    <Chart ComponentName="chartDashboardItem1" Name="Global Sales" ShowCaption="false" ParentContainer="dashboardTabPage1" DataSource="dashboardObjectDataSource2">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions TargetDimensions="Series" />
+      <DataItems>
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="DateFact" DateTimeGroupInterval="MonthYear" ColoringMode="Hue" DefaultId="DataItem1" />
+        <Measure DataMember="NumFact" Name="Factures" SummaryType="Count" DefaultId="DataItem2" />
+        <Measure DataMember="Boites" Name="Boites" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="DateFact" SummaryType="Min" DefaultId="DataItem3" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem3" />
+      </HiddenMeasures>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple ShowPointMarkers="true" SeriesType="Line">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions ShowForZeroValues="true" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 2">
+          <Series>
+            <Simple SeriesType="SplineArea">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 3">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem4" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <AxisX EnableZooming="true" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem9" Name="Montant" ParentContainer="dashboardTabPage3" DataSource="dashboardObjectDataSource2">
+      <InteractivityOptions IsDrillDownEnabled="true" />
+      <DataItems>
+        <Dimension DataMember="Center" ColoringMode="Hue" DefaultId="DataItem0" />
+        <Measure DataMember="Month" SummaryType="Min" DefaultId="DataItem1" />
+        <Dimension DataMember="DateFact" SortOrder="Descending" DateTimeGroupInterval="Day" DefaultId="DataItem2">
+          <DateTimeFormat DateHourMinuteFormat="TimeOnly" />
+        </Dimension>
+        <Dimension DataMember="Beneficiaire" DefaultId="DataItem3" />
+        <Dimension DataMember="Lines" DefaultId="DataItem4" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="MonthName" ColoringMode="Hue" SortByMeasure="DataItem1" DefaultId="DataItem6" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem1" />
+      </HiddenMeasures>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+        <Argument DefaultId="DataItem6" />
+        <Argument DefaultId="DataItem2" />
+        <Argument DefaultId="DataItem3" />
+        <Argument DefaultId="DataItem4" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem5" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Chart ComponentName="chartDashboardItem8" Name="Factures" ParentContainer="dashboardTabPage3" DataSource="dashboardObjectDataSource3">
+      <InteractivityOptions IsDrillDownEnabled="true" />
+      <DataItems>
+        <Measure DataMember="NmbrOrd" Name="Factures" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Dimension DataMember="Center" ColoringMode="Hue" DefaultId="DataItem2" />
+        <Measure DataMember="Month" SummaryType="Min" DefaultId="DataItem4" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem4" />
+      </HiddenMeasures>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem1" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Chart ComponentName="chartDashboardItem7" Name="Montant / Jour" ParentContainer="dashboardTabPage3" DataSource="dashboardObjectDataSource2">
+      <InteractivityOptions IsDrillDownEnabled="true" />
+      <DataItems>
+        <Measure DataMember="Month" SummaryType="Min" DefaultId="DataItem0" />
+        <Dimension DataMember="MonthName" ColoringMode="Hue" SortByMeasure="DataItem0" DefaultId="DataItem3" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="DayName" ColoringMode="Hue" SortByMeasure="DataItem4" DefaultId="DataItem2" />
+        <Measure DataMember="Day" SummaryType="Min" DefaultId="DataItem4" />
+        <Dimension DataMember="Date" ColoringMode="Hue" SortByMeasure="DataItem4" DefaultId="DataItem5" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem4" />
+        <Measure DefaultId="DataItem0" />
+      </HiddenMeasures>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+        <Argument DefaultId="DataItem3" />
+        <Argument DefaultId="DataItem5" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem1" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Grid ComponentName="gridDashboardItem1" Name="Global Movement" ShowCaption="false" ParentContainer="dashboardTabPage2" DataSource="dashboardObjectDataSource1">
+      <DataItems>
+        <Dimension DataMember="Medicament" DefaultId="DataItem2" />
+        <Measure DataMember="Qte" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="Ppa" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="CodeDci" DefaultId="DataItem5" />
+        <Measure DataMember="Ppa" Name="% of Ppa Total" DefaultId="DataItem6">
+          <Calculation>
+            <PercentOfTotal />
+          </Calculation>
+          <WindowDefinition>
+            <GridWindowDefinition />
+          </WindowDefinition>
+        </Measure>
+        <Measure DataMember="Qte" Name="% of Qte Total" DefaultId="DataItem7">
+          <Calculation>
+            <PercentOfTotal />
+          </Calculation>
+          <WindowDefinition>
+            <GridWindowDefinition />
+          </WindowDefinition>
+        </Measure>
+        <Dimension DataMember="DateFact" DefaultId="DataItem0" />
+        <Measure DataMember="DateFact" SummaryType="Count" DefaultId="DataItem1" />
+      </DataItems>
+      <HiddenDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </HiddenDimensions>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem1" />
+      </HiddenMeasures>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1" DataItem="DataItem3" DataItemApplyTo="DataItem3">
+          <FormatConditionTopBottom RankType="Number" Rank="10">
+            <ColorStyleSettings PredefinedColor="Blue" />
+          </FormatConditionTopBottom>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 2" Enabled="false" DataItemApplyTo="DataItem3">
+          <FormatConditionTopBottom RankType="Number" Rank="10">
+            <ColorStyleSettings PredefinedColor="Red" />
+          </FormatConditionTopBottom>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Weight="37.59398496240601">
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="220.6766917293233">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Weight="43.984962406015036">
+          <Measure DefaultId="DataItem3" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Weight="43.984962406015036">
+          <Measure DefaultId="DataItem4" />
+        </GridMeasureColumn>
+        <GridDeltaColumn Weight="51.8796992481203">
+          <ActualValue DefaultId="DataItem6" />
+        </GridDeltaColumn>
+        <GridDeltaColumn Weight="51.8796992481203" AlwaysShowZeroLevel="true">
+          <ActualValue DefaultId="DataItem7" />
+          <DeltaOptions ValueType="ActualValue" />
+        </GridDeltaColumn>
+      </GridColumns>
+      <GridOptions AllowGridCellMerge="true" />
+      <ColumnFilterOptions ShowFilterRow="true" UpdateTotals="true" />
+    </Grid>
+    <TabContainer ComponentName="tabContainerDashboardItem1" Name="Tab Container 1">
+      <Pages>
+        <Page ComponentName="dashboardTabPage1" Name="Ventes" ShowItemAsTabPage="false">
+          <InteractivityOptions IsMasterFilter="false" />
+        </Page>
+        <Page ComponentName="dashboardTabPage2" Name="Movement" ShowItemAsTabPage="false">
+          <InteractivityOptions IsMasterFilter="false" />
+        </Page>
+        <Page ComponentName="dashboardTabPage5" Name="Top 20 Client" />
+        <Page ComponentName="dashboardTabPage4" Name="Top 20 Medicaments" ShowItemAsTabPage="false">
+          <InteractivityOptions IsMasterFilter="false" />
+        </Page>
+        <Page ComponentName="dashboardTabPage7" Name="Tp 20 DCI" />
+        <Page ComponentName="dashboardTabPage6" Name="Bordereaux">
+          <InteractivityOptions IsMasterFilter="false" />
+        </Page>
+        <Page ComponentName="dashboardTabPage3" Name="Cards" />
+        <Page ComponentName="dashboardTabPage8" Name="Sales" ShowItemAsTabPage="false" />
+      </Pages>
+    </TabContainer>
+    <Chart ComponentName="chartDashboardItem4" Name="Medicament / Montant" ParentContainer="dashboardTabPage4" DataSource="dashboardObjectDataSource1">
+      <InteractivityOptions TargetDimensions="Series" />
+      <DataItems>
+        <Dimension DataMember="Medicament" ColoringMode="Hue" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem1" DefaultId="DataItem0" />
+        <Measure DataMember="Ppa" Name="Montant" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Qte" Name="Qte" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="NumFact" Name="Factures" SummaryType="Count" DefaultId="DataItem3" />
+        <Dimension DataMember="DateFact" DefaultId="DataItem4" />
+        <Measure DataMember="DateFact" SummaryType="Min" DefaultId="DataItem5" />
+      </DataItems>
+      <HiddenDimensions>
+        <Dimension DefaultId="DataItem4" />
+      </HiddenDimensions>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem5" />
+      </HiddenMeasures>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Montant" />
+          <Series>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+            <Simple>
+              <Value DefaultId="DataItem3" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" InsidePosition="TopCenterVertical" />
+      <AxisX Visible="false" EnableZooming="true" VisiblePointsCount="5" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem3" Name="Medicament / Qte Vendu" ParentContainer="dashboardTabPage4" DataSource="dashboardObjectDataSource1">
+      <InteractivityOptions TargetDimensions="Series" />
+      <DataItems>
+        <Dimension DataMember="Medicament" ColoringMode="Hue" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem1" DefaultId="DataItem0" />
+        <Measure DataMember="Qte" Name="Qte" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Ppa" Name="Montant" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="NumFact" Name="Factures" SummaryType="Count" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="Qte" DefaultId="DataItem4" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem4" />
+      </HiddenMeasures>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Qte" />
+          <Series>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem3" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" OutsidePosition="TopLeftHorizontal" />
+      <AxisX Visible="false" EnableZooming="true" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem2" Name="Montant" ParentContainer="dashboardTabPage5" DataSource="dashboardObjectDataSource2">
+      <DataItems>
+        <Dimension DataMember="FullNameWithNumAs" ColoringMode="Hue" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem1" DefaultId="DataItem0" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Boites" Name="Boites" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="NumFact" SummaryType="CountDistinct" DefaultId="DataItem3" />
+        <Measure DataMember="Lines" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="Maj" Name="Maj" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Marge20%" DefaultId="DataItem6" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Montant" />
+          <Series>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem5" />
+            </Simple>
+            <Simple Name="Marge" SeriesType="StackedBar">
+              <Value DefaultId="DataItem6" />
+            </Simple>
+            <Simple Name="Factures" SeriesType="StackedBar">
+              <Value DefaultId="DataItem3" />
+            </Simple>
+            <Simple Name="Medicaments">
+              <Value DefaultId="DataItem4" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX Visible="false" EnableZooming="true" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem5" Name="Factures" ParentContainer="dashboardTabPage5" DataSource="dashboardObjectDataSource2">
+      <DataItems>
+        <Dimension DataMember="Beneficiaire" ColoringMode="Hue" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem1" DefaultId="DataItem0" />
+        <Measure DataMember="NumFact" SummaryType="Count" DefaultId="DataItem1" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple Name="Factures">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX Visible="false" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem6" Name="Boites" ParentContainer="dashboardTabPage5" DataSource="dashboardObjectDataSource2">
+      <DataItems>
+        <Measure DataMember="Boites" Name="Boites" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Dimension DataMember="Beneficiaire" ColoringMode="Hue" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem0" DefaultId="DataItem1" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem0" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX Visible="false" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem10" Name="CNAS" ParentContainer="dashboardTabPage6" DataSource="dashboardObjectDataSource3" FilterString="StartsWith([DataItem0], 'CNAS')">
+      <DataItems>
+        <Dimension DataMember="MaxDate" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem1">
+          <DateTimeFormat DateFormat="Short" />
+        </Dimension>
+        <Dimension DataMember="Center" DefaultId="DataItem0" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="NumBord" ColoringMode="Hue" DefaultId="DataItem2" />
+        <Dimension DataMember="MinDate" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem3" />
+      </DataItems>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem0" />
+      </SeriesDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+        <Argument DefaultId="DataItem1" />
+        <Argument DefaultId="DataItem3" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem5" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" OutsidePosition="TopLeftHorizontal" />
+      <AxisX Title="Num Bord" EnableZooming="true" LimitVisiblePoints="true" VisiblePointsCount="16" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem11" Name="HORS CHIFA" ParentContainer="dashboardTabPage6" DataSource="dashboardObjectDataSource3" FilterString="StartsWith([DataItem0], 'Hors Chifa')">
+      <InteractivityOptions TargetDimensions="Series" />
+      <DataItems>
+        <Dimension DataMember="Center" DefaultId="DataItem0" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="NumBord" ColoringMode="Hue" DefaultId="DataItem2" />
+        <Dimension DataMember="MaxDate" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem1" />
+        <Dimension DataMember="MinDate" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem3" />
+      </DataItems>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem0" />
+      </SeriesDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+        <Argument DefaultId="DataItem1" />
+        <Argument DefaultId="DataItem3" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem5" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" OutsidePosition="TopLeftHorizontal" />
+      <AxisX Title="Num Bord" EnableZooming="true" LimitVisiblePoints="true" VisiblePointsCount="16" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem12" Name="CASNOS" ParentContainer="dashboardTabPage6" DataSource="dashboardObjectDataSource3" FilterString="StartsWith([DataItem0], 'CASNOS')">
+      <InteractivityOptions TargetDimensions="Series" />
+      <DataItems>
+        <Dimension DataMember="Center" DefaultId="DataItem0" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="NumBord" ColoringMode="Hue" DefaultId="DataItem2" />
+        <Dimension DataMember="MaxDate" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem1" />
+        <Dimension DataMember="MinDate" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem3" />
+      </DataItems>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem0" />
+      </SeriesDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+        <Argument DefaultId="DataItem1" />
+        <Argument DefaultId="DataItem3" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem5" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" OutsidePosition="TopLeftHorizontal" />
+      <AxisX Title="Num Bord" EnableZooming="true" LimitVisiblePoints="true" VisiblePointsCount="16" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem13" Name="Nmbr Bords" ParentContainer="dashboardTabPage6" DataSource="dashboardObjectDataSource3">
+      <DataItems>
+        <Dimension DataMember="Center" ColoringMode="Hue" DefaultId="DataItem0" />
+        <Measure DataMember="NumBord" Name="Nmbr Bords" SummaryType="CountDistinct" DefaultId="DataItem1" />
+        <Dimension DataMember="Year" DefaultId="DataItem2" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+        <Argument DefaultId="DataItem2" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem1" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem14" Name="DCI / Montant" ParentContainer="dashboardTabPage7" DataSource="dashboardObjectDataSource1">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions TargetDimensions="Series" />
+      <DataItems>
+        <Dimension DataMember="NomDci" ColoringMode="Hue" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem1" DefaultId="DataItem0" />
+        <Measure DataMember="Ppa" Name="Montant" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Qte" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="NumFact" Name="Factures" SummaryType="CountDistinct" DefaultId="DataItem3" />
+        <Measure DataMember="Medicament" Name="Nom Com" SummaryType="CountDistinct" DefaultId="DataItem4" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Montant" />
+          <Series>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+            <Simple Name="Qte" SeriesType="StackedBar">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem3" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem4" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" OutsidePosition="TopLeftHorizontal" />
+      <AxisX Visible="false" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem15" Name="DCI / Qte Vendu" ParentContainer="dashboardTabPage7" DataSource="dashboardObjectDataSource1">
+      <InteractivityOptions TargetDimensions="Series" />
+      <DataItems>
+        <Dimension DataMember="NomDci" ColoringMode="Hue" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem1" DefaultId="DataItem0" />
+        <Measure DataMember="Qte" Name="Qte" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem1" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" OutsidePosition="TopLeftHorizontal" />
+      <AxisX Visible="false" />
+    </Chart>
+    <Pie ComponentName="pieDashboardItem1" Name="Princeps vs Générique" ParentContainer="dashboardTabPage3" DataSource="dashboardObjectDataSource1">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions IsDrillDownEnabled="true" TargetDimensions="Points" />
+      <DataItems>
+        <Measure DataMember="Ppa" Name="Ppa" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="Generic" DefaultId="DataItem1" />
+        <Measure DataMember="Qte" Name="Qte" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Dimension DataMember="Labo" DefaultId="DataItem3" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+        <Argument DefaultId="DataItem3" />
+      </Arguments>
+      <Values>
+        <Value DefaultId="DataItem0" />
+        <Value DefaultId="DataItem2" />
+      </Values>
+    </Pie>
+    <Chart ComponentName="chartDashboardItem16" Name="Maj" ParentContainer="dashboardTabPage5" DataSource="dashboardObjectDataSource2">
+      <DataItems>
+        <Dimension DataMember="FullNameWithNumAs" ColoringMode="Hue" SortByMeasure="DataItem5" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem5" DefaultId="DataItem0" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Boites" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="NumFact" SummaryType="CountDistinct" DefaultId="DataItem3" />
+        <Measure DataMember="Lines" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="Maj" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Marge20%" DefaultId="DataItem6">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Montant" />
+          <Series>
+            <Simple Name="Maj" SeriesType="StackedBar">
+              <Value DefaultId="DataItem5" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+            <Simple Name="Marge">
+              <Value DefaultId="DataItem6" />
+            </Simple>
+            <Simple Name="Factures" SeriesType="StackedBar">
+              <Value DefaultId="DataItem3" />
+            </Simple>
+            <Simple Name="Medicaments" SeriesType="StackedBar">
+              <Value DefaultId="DataItem4" />
+            </Simple>
+            <Simple Name="Boites" SeriesType="StackedBar">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX Visible="false" EnableZooming="true" />
+    </Chart>
+    <Chart ComponentName="chartDashboardItem17" Name="Marge 20 %" ParentContainer="dashboardTabPage5" DataSource="dashboardObjectDataSource2">
+      <DataItems>
+        <Dimension DataMember="FullNameWithNumAs" ColoringMode="Hue" SortByMeasure="DataItem5" TopNEnabled="true" TopNCount="20" TopNMeasure="DataItem6" DefaultId="DataItem0" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Boites" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="NumFact" SummaryType="CountDistinct" DefaultId="DataItem3" />
+        <Measure DataMember="Lines" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Measure>
+        <Measure DataMember="Maj" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Marge20%" Name="Marge" DefaultId="DataItem6">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Montant" />
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem6" />
+            </Simple>
+            <Simple Name="Maj" SeriesType="StackedBar">
+              <Value DefaultId="DataItem5" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+            <Simple Name="Factures" SeriesType="StackedBar">
+              <Value DefaultId="DataItem3" />
+            </Simple>
+            <Simple Name="Medicaments" SeriesType="StackedBar">
+              <Value DefaultId="DataItem4" />
+            </Simple>
+            <Simple Name="Boites" SeriesType="StackedBar">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX Visible="false" EnableZooming="true" />
+    </Chart>
+    <Pie ComponentName="pieDashboardItem2" Name="Repartition" ParentContainer="dashboardTabPage8" DataSource="dashboardObjectDataSource2" ShowPieCaptions="false">
+      <DataItems>
+        <Dimension DataMember="Center" ColoringMode="Hue" DefaultId="DataItem0" />
+        <Measure DataMember="Montant" Name="Montant" DefaultId="DataItem1" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Values>
+        <Value DefaultId="DataItem1" />
+      </Values>
+    </Pie>
+    <Chart ComponentName="chartDashboardItem18" Name="Evolution" ParentContainer="dashboardTabPage8" DataSource="dashboardObjectDataSource2">
+      <DataItems>
+        <Dimension DataMember="DateFact" DefaultId="DataItem2" />
+        <Measure DataMember="Montant" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" CustomFormatString="" />
+        </Measure>
+        <Dimension DataMember="DateFact" DateTimeGroupInterval="MonthYear" ColoringMode="Hue" DefaultId="DataItem0" />
+      </DataItems>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem2" />
+      </SeriesDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple SeriesType="Line">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Years" ParentContainer="dashboardItemGroup1" DataSource="dashboardObjectDataSource2" IsMasterFilterCrossDataSource="true" ShowAllValue="false" ComboBoxType="Checked">
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="Year" SortOrder="Descending" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Months" ParentContainer="dashboardItemGroup1" DataSource="dashboardObjectDataSource2" IsMasterFilterCrossDataSource="true" ComboBoxType="Checked">
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="DateFact" DateTimeGroupInterval="Month" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <Groups>
+    <Group ComponentName="dashboardItemGroup1" Name="Filters" ShowCaption="false">
+      <InteractivityOptions IgnoreMasterFilters="false" IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup DashboardItem="dashboardItemGroup1" Weight="8.860759493670885">
+        <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="33.333333333333336" />
+        <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="66.66666666666667" />
+      </LayoutGroup>
+      <LayoutTabContainer DashboardItem="tabContainerDashboardItem1" Weight="91.13924050632912">
+        <LayoutTabPage Orientation="Vertical" DashboardItem="dashboardTabPage1" Weight="100">
+          <LayoutItem DashboardItem="chartDashboardItem1" Weight="100" />
+        </LayoutTabPage>
+        <LayoutTabPage Orientation="Vertical" DashboardItem="dashboardTabPage2" Weight="100">
+          <LayoutItem DashboardItem="gridDashboardItem1" Weight="100" />
+        </LayoutTabPage>
+        <LayoutTabPage Orientation="Vertical" DashboardItem="dashboardTabPage5" Weight="100">
+          <LayoutItem DashboardItem="chartDashboardItem2" Weight="31.490015360983104" />
+          <LayoutGroup Weight="68.50998463901689">
+            <LayoutGroup Orientation="Vertical" Weight="47.6780185758514">
+              <LayoutItem DashboardItem="chartDashboardItem16" Weight="50.89686098654708" />
+              <LayoutItem DashboardItem="chartDashboardItem6" Weight="49.10313901345292" />
+            </LayoutGroup>
+            <LayoutGroup Orientation="Vertical" Weight="52.3219814241486">
+              <LayoutItem DashboardItem="chartDashboardItem17" Weight="50.89686098654708" />
+              <LayoutItem DashboardItem="chartDashboardItem5" Weight="49.10313901345292" />
+            </LayoutGroup>
+          </LayoutGroup>
+        </LayoutTabPage>
+        <LayoutTabPage Orientation="Vertical" DashboardItem="dashboardTabPage4" Weight="100">
+          <LayoutItem DashboardItem="chartDashboardItem4" Weight="47.77265745007681" />
+          <LayoutItem DashboardItem="chartDashboardItem3" Weight="52.22734254992319" />
+        </LayoutTabPage>
+        <LayoutTabPage Orientation="Vertical" DashboardItem="dashboardTabPage7" Weight="100">
+          <LayoutItem DashboardItem="chartDashboardItem14" Weight="49.615975422427034" />
+          <LayoutItem DashboardItem="chartDashboardItem15" Weight="50.384024577572966" />
+        </LayoutTabPage>
+        <LayoutTabPage DashboardItem="dashboardTabPage6" Weight="100">
+          <LayoutGroup Orientation="Vertical" Weight="66.0216718266254">
+            <LayoutItem DashboardItem="chartDashboardItem10" Weight="37.48079877112135" />
+            <LayoutItem DashboardItem="chartDashboardItem12" Weight="31.182795698924732" />
+            <LayoutItem DashboardItem="chartDashboardItem11" Weight="31.336405529953918" />
+          </LayoutGroup>
+          <LayoutItem DashboardItem="chartDashboardItem13" Weight="33.978328173374614" />
+        </LayoutTabPage>
+        <LayoutTabPage DashboardItem="dashboardTabPage3" Weight="100">
+          <LayoutGroup Orientation="Vertical" Weight="47.29102167182663">
+            <LayoutItem DashboardItem="chartDashboardItem9" Weight="47.31182795698925" />
+            <LayoutItem DashboardItem="chartDashboardItem8" Weight="52.68817204301075" />
+          </LayoutGroup>
+          <LayoutGroup Orientation="Vertical" Weight="52.70897832817337">
+            <LayoutItem DashboardItem="chartDashboardItem7" Weight="47.77265745007681" />
+            <LayoutItem DashboardItem="pieDashboardItem1" Weight="52.22734254992319" />
+          </LayoutGroup>
+        </LayoutTabPage>
+        <LayoutTabPage DashboardItem="dashboardTabPage8" Weight="100">
+          <LayoutItem DashboardItem="pieDashboardItem2" Weight="37.61609907120743" />
+          <LayoutItem DashboardItem="chartDashboardItem18" Weight="62.38390092879257" />
+        </LayoutTabPage>
+      </LayoutTabContainer>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>
