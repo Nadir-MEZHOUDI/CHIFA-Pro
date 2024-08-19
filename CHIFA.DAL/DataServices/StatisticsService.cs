@@ -63,7 +63,7 @@ public static class StatisticsService
             .Where(predicate)
             .Select(x => new MouvementDto
             {
-                Produit = x.Medicament.FullName.TrimAll(),
+                Produit = x.Medicament.FullName(),
                 Qt = x.Qte,
                 Date = x.Facture.DateFact,
                 Code = x.NumEnr,
@@ -89,7 +89,7 @@ public static class StatisticsService
             .Select(x => new FacturesByClient
             {
                 NumAssure = x.Key.NumAssure,
-                Malade = db.Beneficiaires.FirstOrDefault(a => a.NumAssure == x.Key.NumAssure && a.RangAd == x.Key.RangAd)!.FullName.TrimAll(),
+                Malade = db.Beneficiaires.FirstOrDefault(a => a.NumAssure == x.Key.NumAssure && a.RangAd == x.Key.RangAd)!.FullName,
                 Maj = x.Sum(f => f.MontMaj),
                 Factures = x.Count(),
                 TR = x.Sum(f => f.MontAs),
@@ -183,7 +183,7 @@ public static class StatisticsService
             .Select(x => new MouvementDto
             {
                 Code = x.Key,
-                Produit = x.FirstOrDefault()!.Medicament.FullName,
+                Produit = x.FirstOrDefault()!.Medicament.FullName(),
                 Qt = x.Sum(m => m.Qte),
                 Prix = x.Select(m => m.Ppa).FirstOrDefault()
             })
@@ -209,7 +209,7 @@ public static class StatisticsService
                 x.Qte,
                 x.NumEnr,
                 x.Ppa,
-                x.Medicament.FullName,
+                FullName=x.Medicament.FullName(),
                 x.Medicament.NomCom,
                 x.Medicament.Dosage,
                 x.Medicament.Conditionnement,
@@ -224,7 +224,7 @@ public static class StatisticsService
             .Select(x => new MouvementDto
             {
                 Code = x.Key,
-                Produit = x.FirstOrDefault()!.FullName.TrimAll(),
+                Produit = x.FirstOrDefault()!.FullName,
                 Qt = x.Sum(m => m.Qte),
                 Prix = x.FirstOrDefault()?.Ppa,
                 Generic = x.FirstOrDefault()!.Generic,

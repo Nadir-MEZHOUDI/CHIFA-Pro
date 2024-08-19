@@ -132,7 +132,7 @@ public static class DataService
             .Select(x => new FactureDetailDto
             {
                 Code = x.NumEnr,
-                Medicament = x.Medicament.FullName.TrimAll(),
+                Medicament = x.Medicament.FullName(),
                 Qt = x.Qte,
                 TR = x.TarifRef,
                 DureeTrait = x.DureeTrait,
@@ -224,7 +224,7 @@ public static class DataService
                               NumAssure = a.Facture.NumAssure,
                               Assure = a.Facture.Assure.FullName,
                               Rang = a.Facture.RangAd,
-                              Malade = a.Facture.Beneficiaire.FullName.TrimAll(),
+                              Malade = a.Facture.Beneficiaire.FullName,
                               TS = a.Ts,
                               LongDuree = a.DureeTrait >= 60
                           }
@@ -252,7 +252,7 @@ public static class DataService
             .SelectMany(a => db.Beneficiaires.Where(b => b.NumAssure == noAssure && b.RangAd == rang),
                 (x, a) => new
                 {
-                    Medicament = x!.Medicament.FullName.TrimAll(),
+                    Medicament = x!.Medicament.FullName(),
                     NEnrg = x.NumEnr,
                     x.Medicament.CodeDci,
                     Duree = x.DureeTrait,
@@ -275,14 +275,14 @@ public static class DataService
                 Duree = x.FirstOrDefault()?.Duree,
                 DateSoin = x.FirstOrDefault()?.DateSoin,
                 Qt = x.FirstOrDefault()?.Qt,
-                Medicament = x.FirstOrDefault()!.Medicament.TrimAll(),
+                Medicament = x.FirstOrDefault()!.Medicament,
                 Prix = x.FirstOrDefault()!.Prix,
                 NEnrg = x.FirstOrDefault()!.NEnrg,
                 TS = x.FirstOrDefault()?.TS,
                 CodeDci = x.Key.CodeDci,
-                Historic = x.Count() <= 1 ? Enumerable.Empty<MedicHistory>().ToList() : x.Select(m => new MedicHistory
+                Historic = x.Count() <= 1 ? [] : x.Select(m => new MedicHistory
                 {
-                    Medicament = m.Medicament.TrimAll(),
+                    Medicament = m.Medicament,
                     Duree = m.Duree,
                     DateFact = m.DateFact,
                     Qt = m.Qt,
@@ -316,7 +316,7 @@ public static class DataService
             .Where(x => x.NumAssure == noAssure && x.RangAd == rang)
             .SelectMany(x => x.DetailFacts, (f, d) => new ConsumptionDto
             {
-                Medicament = d.Medicament.FullName.TrimAll(),
+                Medicament = d.Medicament.FullName(),
                 Duree = d.DureeTrait,
                 TS = d.Ts,
                 Date = f.DateFact,
@@ -343,7 +343,7 @@ public static class DataService
                 Date = x.FirstOrDefault()?.Date,
                 Duree = x.FirstOrDefault()?.Duree,
                 Qt = x.FirstOrDefault()?.Qt,
-                Medicament = x.FirstOrDefault()!.Medicament.TrimAll(),
+                Medicament = x.FirstOrDefault()!.Medicament,
                 Prix = x.FirstOrDefault()?.Prix,
                 NEnrg = x.FirstOrDefault()?.NEnrg,
                 TS = x.FirstOrDefault()?.TS,
@@ -353,7 +353,7 @@ public static class DataService
                 {
                     Facture = m.Facture,
                     Bord = m.Bord,
-                    Medicament = m.Medicament.TrimAll(),
+                    Medicament = m.Medicament,
                     Duree = m.Duree,
                     DateFact = m.Date,
                     Qt = m.Qt,
@@ -412,7 +412,7 @@ public static class DataService
                 d.NumFact,
                 d.Facture.NumBord,
                 d.Medicament.CodeDci,
-                Medicament = d.Medicament.FullName.TrimAll(),
+                Medicament = d.Medicament.FullName(),
                 d.Facture.DateFact,
                 Duree = (d.DureeTrait == 1 && d.Qte >= 3) ? 80 : d.DureeTrait,
                 NEnrg = d.NumEnr,
@@ -432,7 +432,7 @@ public static class DataService
            {
                NumFact = x.FirstOrDefault()?.NumFact,
                Bord = x.FirstOrDefault()?.NumBord,
-               Assure = x.FirstOrDefault()?.Assure.TrimAll()!,
+               Assure = x.FirstOrDefault()?.Assure!,
                DateFact = x.FirstOrDefault()?.DateFact,
                Duree = x.FirstOrDefault()?.Duree,
                Qt = x.FirstOrDefault()?.Qt,
@@ -449,7 +449,7 @@ public static class DataService
                {
                    Facture = m.NumFact,
                    Bord = m.NumBord,
-                   Medicament = m.Medicament.TrimAll(),
+                   Medicament = m.Medicament,
                    Duree = m.Duree,
                    DateFact = m.DateFact,
                    Prix = m.Prix,
@@ -463,7 +463,7 @@ public static class DataService
 
     public static async Task<IEnumerable<PatientWithTraitSpec>> PatientsWithTraitSpecAsync(Expression<Func<DetailFact, bool>>? predicate = default)
     {
-        predicate ??= facture => true;
+        predicate ??= _ => true;
         predicate = predicate.And(x => x.Facture.DateFact > YearAgo && x.Ppa >= 1000 && x.Qte >= 3 || x.Ts == true || x.DureeTrait >= 60);
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
@@ -474,7 +474,7 @@ public static class DataService
                 Rang = a.Facture.RangAd,
                 Assure = a.Facture.Assure.FullName,
                 Malade = a.Facture.Beneficiaire.FullName,
-                Medicament = a.Medicament.FullName.TrimAll(),
+                Medicament = a.Medicament.FullName(),
                 a.Facture.DateFact,
                 Duree = a.DureeTrait == 1 && a.Qte >= 3 ? 80 : a.DureeTrait,
                 NEnrg = a.NumEnr,
@@ -491,8 +491,8 @@ public static class DataService
             {
                 NumAssure = a.Key.NumAssure,
                 Rang = a.Key.Rang,
-                Assure = a.FirstOrDefault()!.Assure.TrimAll(),
-                Malade = a.FirstOrDefault()!.Malade.TrimAll(),
+                Assure = a.FirstOrDefault()!.Assure,
+                Malade = a.FirstOrDefault()!.Malade,
                 DetailsDtos = a.Select(m => new TraitDetailsDto
                 {
                     Medicament = m.Medicament,
@@ -519,4 +519,9 @@ public static class DataService
         await using var db = new ChifaDb();
         await db.UpdateAsync(center);
     }
+}
+
+public static class DataServiceExtensions
+{
+    public static string FullName(this Medicament m) => $"{m.NomCom} {m.Dosage} {m.Conditionnement}";
 }
