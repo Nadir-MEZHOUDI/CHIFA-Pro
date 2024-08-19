@@ -4,7 +4,7 @@ public partial class FrmHistory : XtraForm
 {
     private readonly string? noAssure;
     private readonly string? rang;
-    private bool isStrict = true;
+    private bool isStrict = false;
 
     public FrmHistory()
     {
