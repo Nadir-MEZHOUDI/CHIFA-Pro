@@ -1,5 +1,5 @@
 ﻿using CHIFA.DAL.Statistics;
-
+using LinqToDB;
 using DataModel;
 
 
@@ -7,17 +7,17 @@ namespace CHIFA.DAL.DataServices;
 
 public static class WeekStatService
 {
-    public static List<WeekStat> GetWeekStats()
+    public static   List<WeekStat> GetWeekStats()
     {
 
         var db = new ChifaDb();
 
-        var first = DateTime.Today.AddDays(-6);
+        var first = DateTime.Today.AddDays(-7);
 
-        var range = Enumerable.Range(0, 6).Select(x => DateTime.Today.AddDays(-x)).ToList();
+        var range = Enumerable.Range(0, 7).Select(x => DateTime.Today.AddDays(-x)).ToList();
 
 
-        var list = range
+        var list =   range
                    .GroupJoin(
                        db.Factures
                        .Where(f => f.DateFact.Value.Date >= first)
@@ -36,6 +36,7 @@ public static class WeekStatService
                        Maj = x.Factures.Where(f => f != null).Sum(f => f.MontMaj),
                    })
                    .OrderByDescending(x => x.Date)
+                   
                    .ToList();
 
         return list;

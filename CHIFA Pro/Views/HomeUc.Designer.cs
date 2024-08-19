@@ -108,7 +108,7 @@
             tileControl1.Name = "tileControl1";
             tileControl1.Orientation = Orientation.Vertical;
             tileControl1.Padding = new Padding(12, 10, 12, 10);
-            tileControl1.Size = new Size(395, 552);
+            tileControl1.Size = new Size(395, 658);
             tileControl1.TabIndex = 1;
             // 
             // tileGroup1
@@ -351,7 +351,7 @@
     series2,
     series3
     };
-            chartControl1.Size = new Size(822, 552);
+            chartControl1.Size = new Size(822, 658);
             chartControl1.TabIndex = 2;
             // 
             // HomeUc
@@ -362,7 +362,8 @@
             Controls.Add(tileControl1);
             Margin = new Padding(4, 3, 4, 3);
             Name = "HomeUc";
-            Size = new Size(1217, 552);
+            Size = new Size(1217, 658);
+            Enter += HomeUc_Enter;
             ((System.ComponentModel.ISupportInitialize)weekStatBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)xyDiagramPane1).EndInit();
             ((System.ComponentModel.ISupportInitialize)xyDiagramPane2).EndInit();
