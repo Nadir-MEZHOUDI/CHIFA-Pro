@@ -163,7 +163,7 @@
             colNumFact.Name = "colNumFact";
             colNumFact.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Count, "NumFact", "{0}") });
             colNumFact.Visible = true;
-            colNumFact.VisibleIndex = 1;
+            colNumFact.VisibleIndex = 2;
             colNumFact.Width = 103;
             // 
             // colCentre
@@ -171,6 +171,8 @@
             colCentre.FieldName = "Centre";
             colCentre.MinWidth = 19;
             colCentre.Name = "colCentre";
+            colCentre.Visible = true;
+            colCentre.VisibleIndex = 0;
             colCentre.Width = 72;
             // 
             // colDateFact
@@ -184,7 +186,7 @@
             colDateFact.MinWidth = 19;
             colDateFact.Name = "colDateFact";
             colDateFact.Visible = true;
-            colDateFact.VisibleIndex = 5;
+            colDateFact.VisibleIndex = 6;
             colDateFact.Width = 102;
             // 
             // repositoryItemDateEdit1
@@ -204,7 +206,7 @@
             colDateSoin.MinWidth = 19;
             colDateSoin.Name = "colDateSoin";
             colDateSoin.Visible = true;
-            colDateSoin.VisibleIndex = 7;
+            colDateSoin.VisibleIndex = 8;
             colDateSoin.Width = 102;
             // 
             // colMontFact
@@ -215,7 +217,7 @@
             colMontFact.MinWidth = 19;
             colMontFact.Name = "colMontFact";
             colMontFact.Visible = true;
-            colMontFact.VisibleIndex = 8;
+            colMontFact.VisibleIndex = 9;
             colMontFact.Width = 102;
             // 
             // colMontAss1
@@ -240,7 +242,7 @@
             colAssure.MinWidth = 19;
             colAssure.Name = "colAssure";
             colAssure.Visible = true;
-            colAssure.VisibleIndex = 10;
+            colAssure.VisibleIndex = 11;
             colAssure.Width = 102;
             // 
             // colMajoration
@@ -251,7 +253,7 @@
             colMajoration.MinWidth = 19;
             colMajoration.Name = "colMajoration";
             colMajoration.Visible = true;
-            colMajoration.VisibleIndex = 9;
+            colMajoration.VisibleIndex = 10;
             colMajoration.Width = 102;
             // 
             // colSpecialite
@@ -260,7 +262,7 @@
             colSpecialite.MinWidth = 19;
             colSpecialite.Name = "colSpecialite";
             colSpecialite.Visible = true;
-            colSpecialite.VisibleIndex = 11;
+            colSpecialite.VisibleIndex = 12;
             colSpecialite.Width = 109;
             // 
             // colBordereau
@@ -269,7 +271,7 @@
             colBordereau.MinWidth = 19;
             colBordereau.Name = "colBordereau";
             colBordereau.Visible = true;
-            colBordereau.VisibleIndex = 0;
+            colBordereau.VisibleIndex = 1;
             colBordereau.Width = 58;
             // 
             // colMalade
@@ -281,7 +283,7 @@
             colMalade.MinWidth = 19;
             colMalade.Name = "colMalade";
             colMalade.Visible = true;
-            colMalade.VisibleIndex = 3;
+            colMalade.VisibleIndex = 4;
             colMalade.Width = 148;
             // 
             // colNumAssure
@@ -292,7 +294,7 @@
             colNumAssure.MinWidth = 19;
             colNumAssure.Name = "colNumAssure";
             colNumAssure.Visible = true;
-            colNumAssure.VisibleIndex = 2;
+            colNumAssure.VisibleIndex = 3;
             colNumAssure.Width = 118;
             // 
             // gridColumn3
@@ -300,7 +302,7 @@
             gridColumn3.FieldName = "Time";
             gridColumn3.Name = "gridColumn3";
             gridColumn3.Visible = true;
-            gridColumn3.VisibleIndex = 6;
+            gridColumn3.VisibleIndex = 7;
             // 
             // gridColumn4
             // 
@@ -308,7 +310,7 @@
             gridColumn4.FieldName = "JourSemaine";
             gridColumn4.Name = "gridColumn4";
             gridColumn4.Visible = true;
-            gridColumn4.VisibleIndex = 4;
+            gridColumn4.VisibleIndex = 5;
             // 
             // dockManager1
             // 
