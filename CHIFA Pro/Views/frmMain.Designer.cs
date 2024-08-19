@@ -95,7 +95,7 @@
             // accordionControl1
             // 
             accordionControl1.Dock = DockStyle.Left;
-            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accStatistics, accAssures, accordionControlSeparator5, accMedicaments, accFormes, accActes, accordionControlSeparator2, accLN, accCM, accUsers, accordionControlSeparator4, accCenters, accOfficine, accParametres });
+            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accStatistics, accAssures, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres });
             accordionControl1.Location = new Point(0, 0);
             accordionControl1.Margin = new Padding(5, 6, 5, 6);
             accordionControl1.Name = "accordionControl1";
