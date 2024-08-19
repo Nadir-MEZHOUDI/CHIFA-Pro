@@ -41,7 +41,7 @@ public partial class frmMain : XtraForm
 
     private void accUsers_Click(object sender, EventArgs e) => sender.NavigateTo<UsersUc>();
 
-    private void acMain_Click(object sender, EventArgs e) => sender.NavigateTo<HomeUc>();
+    private void acHome_Click(object sender, EventArgs e) => sender.NavigateTo<HomeUc>();
 
     private void ChangeNameBasedOnDotNetVersion() => Text = $"CHIFA PRO [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )";
 

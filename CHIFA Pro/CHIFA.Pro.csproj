@@ -17,7 +17,7 @@
 		<Nullable>enable</Nullable>
 		<Version>1.0.91</Version>
 		<AssemblyInformationalVersion>1.0.91</AssemblyInformationalVersion>
-
+		<SatelliteResourceLanguages>ar</SatelliteResourceLanguages>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="FodyWeavers.xml" />

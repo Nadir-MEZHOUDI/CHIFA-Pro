@@ -5,17 +5,19 @@ namespace CHIFA.Pro.Helpers;
 internal static class NavigationService
 {
     private static frmMain? frmMain;
-    private static frmMain Main => frmMain ??= Application.OpenForms.OfType<frmMain>().First();
+    private static frmMain? Main => frmMain ??= Application.OpenForms.OfType<frmMain>().FirstOrDefault();
 
     public static void NavigateTo<T>(this object sender) where T : UserControl, INavigable, new()
     {
-        var tab = Main?.tabContainer?.TabPages?.FirstOrDefault(x => x.Controls.Cast<UserControl>().Any(c => c.GetType() == typeof(T)));
+        if (Main?.tabContainer == null) return;
+
+        var tab = Main.tabContainer.TabPages.FirstOrDefault(x => x.Controls.Cast<UserControl>().Any(c => c.GetType() == typeof(T)));
         if (tab == null)
         {
             var uc = new T { Dock = DockStyle.Fill };
             tab = new XtraTabPage { Text = uc.Caption, Image = uc.Image };
             tab.Controls.Add(uc);
-            if (tab.Text.Contains("Main"))
+            if (tab.Text.Contains("HOME"))
                 tab.ShowCloseButton = DefaultBoolean.False;
             Main.tabContainer.TabPages.Add(tab);
         }

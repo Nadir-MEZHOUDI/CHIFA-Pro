@@ -115,7 +115,7 @@
             acHome.Name = "acHome";
             acHome.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             acHome.Text = "HOME";
-            acHome.Click += acMain_Click;
+            acHome.Click += acHome_Click;
             // 
             // accordionControlSeparator1
             // 
