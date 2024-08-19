@@ -2,7 +2,6 @@
 
 public class Period
 {
-    public DateTime? From { get; set; } = DateTime.MinValue;
-    public bool IsNull => From == null && To == null;
-    public DateTime? To { get; set; } = DateTime.MaxValue;
+    public DateTime? From { get; set; } = DateTime.Today.AddYears(-1);
+    public DateTime? To { get; set; } = DateTime.Today;
 }

@@ -4,12 +4,12 @@ using DevExpress.XtraCharts;
 using DevExpress.XtraTab;
 
 namespace CHIFA.Pro.Others;
-public partial class StatisticsUc : XtraUserControl,INavigable
+public partial class StatisticsUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "STATISTICS";
     public Image Image => frmMain.Image(4);
 
-    public Func<Period> Period;
+    public Func<Period> Period = () => new();
     private IEnumerable<FactureByMonth>? FacturesDaily;
     private IEnumerable<FactureByMonth>? FacturesMonthly;
     private IEnumerable<FactureByMonth>? facturesWeekly;
@@ -18,7 +18,6 @@ public partial class StatisticsUc : XtraUserControl,INavigable
     public StatisticsUc()
     {
         InitializeComponent();
-        Period = () => new Period { From = (DateTime?)FromDate.EditValue, To = (DateTime?)ToDate.EditValue };
     }
 
     private async void BtnBordereaux_Click(object sender, EventArgs e)
@@ -213,7 +212,7 @@ public partial class StatisticsUc : XtraUserControl,INavigable
         {
             ClearCharts();
             chrtCntrl.Titles.Add(new ChartTitle { Text = "Amount of Products Monthly" });
-            var data = await StatisticsService.ProductsMonthlyAsync(Period?.Invoke());
+            IEnumerable<ProductsDaily> data = await StatisticsService.ProductsMonthlyAsync(Period?.Invoke());
 
             var serie1 = new Series("Products Monthly", ViewType.Bar)
             {
@@ -313,7 +312,7 @@ public partial class StatisticsUc : XtraUserControl,INavigable
     {
         try
         {
-            var (min, max) = await DataService.GetMinAndMaxDatesAsync();
+            (DateTime min, DateTime max) = await DataService.GetMinAndMaxDatesAsync();
 
             fromDateRepo.MaxValue = max;
             fromDateRepo.MinValue = min;
@@ -334,7 +333,7 @@ public partial class StatisticsUc : XtraUserControl,INavigable
 
     private Task LoadMovements()
     {
-        return gridViewMovements.LoadDataAsync(() => StatisticsService.DetailedMouvementsAsync(Period?.Invoke()));
+        return gridViewMovements.LoadDataAsync(() => StatisticsService.DetailedMovementsAsync(Period?.Invoke()));
     }
 
     private Task LoadStatistics()

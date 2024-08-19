@@ -2,8 +2,10 @@
 
 public class BordMonthlyStatDto
 {
-    public int Borderaux { get; set; }
-    public string Date { get; set; }
-    public int Factures { get; set; }
-    public decimal? Montant { get; set; }
+    public int? Year { get; set; }=0;
+    public int? Month { get; set; } = 0;
+    public string Date => $"{Month} - {Year}";
+    public int Borderaux { get; set; } = 0;
+    public int Factures { get; set; } =0;
+    public decimal? Montant { get; set; } = 0;
 }
