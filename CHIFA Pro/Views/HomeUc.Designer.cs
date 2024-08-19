@@ -274,6 +274,7 @@
             // 
             // chartControl1
             // 
+            chartControl1.AnimationStartMode = DevExpress.XtraCharts.ChartAnimationMode.OnDataChanged;
             chartControl1.DataSource = weekStatBindingSource;
             xyDiagram1.AxisX.Label.TextPattern = "{A:dd/MM/yyyy}";
             xyDiagram1.AxisX.VisibleInPanesSerializable = "-1;0;1";
