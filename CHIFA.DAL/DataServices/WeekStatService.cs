@@ -1,47 +1,38 @@
 ﻿using CHIFA.DAL.Statistics;
-using LinqToDB;
+
 using DataModel;
 
+using LinqToDB;
 
 namespace CHIFA.DAL.DataServices;
 
 public static class WeekStatService
 {
-    public static   List<WeekStat> GetWeekStats()
+    public static async Task<List<WeekStat>> GetWeekStatsAsync()
     {
 
-        var db = new ChifaDb();
+        await using var db = new ChifaDb();
+        DateTime firstDate = DateTime.Today.AddYears(-1).AddDays(-8);
+        var weekStats = await db.Factures
+                                  .Where(f => f.DateFact.Value.Date >= firstDate)
+                                  .GroupBy(f => f.DateFact.Value.Date)
+                                  .Select(g => new WeekStat
+                                  {
+                                      Date = g.Key,
+                                      Count = g.Count(),
+                                      Montant = g.Sum(f => f.MontFact),
+                                      MontantAs = g.Sum(f => f.MontAs),
+                                      MontantOff = g.Sum(f => f.MontOff),
+                                      Maj = g.Sum(f => f.MontMaj),
+                                  })
+                                  .ToListAsync();
 
-        var first = DateTime.Today.AddDays(-7);
-
-        var range = Enumerable.Range(0, 7).Select(x => DateTime.Today.AddDays(-x)).ToList();
-
-
-        var list =   range
-                   .GroupJoin(
-                       db.Factures
-                       .Where(f => f.DateFact.Value.Date >= first)
-                       .Where(f => range.Contains(f.DateFact.Value.Date)),
-                       date => date,
-                       facture => facture.DateFact.Value.Date,
-                       (date, factures) => new { Date = date, Factures = factures.DefaultIfEmpty() }
-                   )
-                   .Select(x => new WeekStat
-                   {
-                       Date = x.Date,
-                       Count = x.Factures.Count(f => f != null),
-                       Montant = x.Factures.Where(f => f != null).Sum(f => f.MontFact),
-                       MontantAs = x.Factures.Where(f => f != null).Sum(f => f.MontAs),
-                       MontantOff = x.Factures.Where(f => f != null).Sum(f => f.MontOff),
-                       Maj = x.Factures.Where(f => f != null).Sum(f => f.MontMaj),
-                   })
-                   .OrderByDescending(x => x.Date)
-                   
-                   .ToList();
-
-        return list;
+        return Enumerable.Range(0, 8)
+                               .Select(x => DateTime.Today.AddYears(-1).AddDays(-x))
+                               .Select(date => weekStats.FirstOrDefault(ws => ws.Date == date) ?? new WeekStat(date))
+                               .OrderByDescending(ws => ws.Date)
+                               .ToList();
+         
     }
-
 }
-
 

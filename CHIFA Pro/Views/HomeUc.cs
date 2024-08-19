@@ -9,14 +9,15 @@ public partial class HomeUc : XtraUserControl, INavigable
     public HomeUc()
     {
         InitializeComponent();
-        ReLoadDataAsync();
     }
 
-    private void ReLoadDataAsync()
+    private async Task ReLoadDataAsync()
     {
-        var weekStatService = WeekStatService.GetWeekStats();
+        Cursor = Cursors.WaitCursor;
+        var weekStatService = await WeekStatService.GetWeekStatsAsync();
         chartControl1.DataSource = weekStatBindingSource;
         weekStatBindingSource.DataSource = weekStatService;
+        Cursor = Cursors.Default;
     }
 
     private void itmBordereaux_ItemClick(object sender, TileItemEventArgs e)
@@ -83,11 +84,16 @@ public partial class HomeUc : XtraUserControl, INavigable
     private void itemOfficine_ItemClick(object sender, TileItemEventArgs e)
     {
         this.NavigateTo<OfficineUc>();
-    }  
+    }
 
-    private void HomeUc_Enter(object sender, EventArgs e)
+    private async void HomeUc_Enter(object sender, EventArgs e)
     {
-        ReLoadDataAsync();
+      await  ReLoadDataAsync();
+    }
+
+    private async void HomeUc_Paint(object sender, PaintEventArgs e)
+    {
+        await ReLoadDataAsync();
     }
 }
 

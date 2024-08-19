@@ -363,6 +363,7 @@
             Margin = new Padding(4, 3, 4, 3);
             Name = "HomeUc";
             Size = new Size(1217, 658);
+            Paint += HomeUc_Paint;
             Enter += HomeUc_Enter;
             ((System.ComponentModel.ISupportInitialize)weekStatBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)xyDiagramPane1).EndInit();
