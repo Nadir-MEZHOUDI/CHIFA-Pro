@@ -255,7 +255,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             {
                 ArgumentDataMember = nameof(TopSeal.Produit),
                 ValueDataMembersSerializable = nameof(TopSeal.Prix),
-                DataSource = await Task.Run(() => StatisticsService.Top10MontantAsync(Period?.Invoke())).ConfigureAwait(true)
+                DataSource = await Task.Run(() => StatisticsService.Top10ProuctsByMontantAsync(Period?.Invoke())).ConfigureAwait(true)
             };
             chrtCntrl.Series.Add(serie);
         }
@@ -277,7 +277,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             {
                 ArgumentDataMember = nameof(TopSeal.Produit),
                 ValueDataMembersSerializable = nameof(TopSeal.Qt),
-                DataSource = await Task.Run(() => StatisticsService.Top10QuantityAsync(Period?.Invoke())).ConfigureAwait(true)
+                DataSource = await Task.Run(() => StatisticsService.Top10ProuctsByQuantityAsync(Period?.Invoke())).ConfigureAwait(true)
             };
             chrtCntrl.Series.Add(serie);
         }
@@ -343,12 +343,12 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private Task LoadTop10Montant()
     {
-        return gridViewStatistics.LoadDataAsync(() => StatisticsService.Top10MontantAsync(Period?.Invoke()));
+        return gridViewStatistics.LoadDataAsync(() => StatisticsService.Top10ProuctsByMontantAsync(Period?.Invoke()));
     }
 
     private Task LoadTop10Quantity()
     {
-        return gridViewStatistics.LoadDataAsync(() => StatisticsService.Top10QuantityAsync(Period?.Invoke()));
+        return gridViewStatistics.LoadDataAsync(() => StatisticsService.Top10ProuctsByQuantityAsync(Period?.Invoke()));
     }
 
     private async void MovementsUc_Load(object sender, EventArgs e)

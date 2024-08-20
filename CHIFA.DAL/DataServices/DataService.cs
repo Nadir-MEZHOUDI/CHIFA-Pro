@@ -15,17 +15,11 @@ public static class DataService
     private static DateTime? maxDate;
     private static DateTime? minDate;
 
-
-
-    public static async Task<IEnumerable<BordereauDto>> GetAllBordereauxAsync(Period? period = null, Expression<Func<Bordereau, bool>>? predicate = default)
-    {
-        predicate ??= PredicateBuilder.True<Bordereau>();
-        if (period != null)
-            predicate = predicate.And(x => x.DateExtract > period.From && x.DateExtract < period.To);
-
+    public static async Task<IEnumerable<BordereauDto>> GetAllBordereauxAsync(Period? period = default, Expression<Func<Bordereau, bool>>? predicate = default)
+    {        
         await using var db = new ChifaDb();
         var list = await db.Bordereaus
-            .Where(predicate)
+            .Where(predicate.SetPeriod(period))
             .Select(x => new BordereauDto
             {
                 Num = x.NumBord,
@@ -50,16 +44,13 @@ public static class DataService
 
     public static async Task<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period = null, Expression<Func<Facture, bool>>? predicate = default)
     {
-        predicate ??= PredicateBuilder.True<Facture>();
+        predicate = predicate.SetPeriod(period);
 
         if (ts == true)
             predicate = predicate.And(x => x.DetailFacts.Any(d => d.Ts == true || d.DureeTrait >= 30 || (d.Ppa >= 1000 && d.Qte >= 3)));
 
         if (last == true)
             predicate = predicate.And(x => x.DateFact > YearAgo);
-
-        if (period != null)
-            predicate = predicate.And(x => x.DateFact > period.From && x.DateFact < period.To);
 
         await using var db = new ChifaDb();
         var list = await db.Factures.Where(predicate)
@@ -210,12 +201,8 @@ public static class DataService
 
     public static async Task<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = default)
     {
-        predicate ??= PredicateBuilder.True<DetailFact>();
-
-        if (period != null)
-            predicate = predicate.And(x => x.Facture.DateFact > period.From && x.Facture.DateFact < period.To);
-
-        predicate = predicate.And(x => (x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60);
+        
+        predicate = predicate.SetPeriod(period).And(x => (x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60);
 
         await using var db = new ChifaDb();
         var list = await db.DetailFacts.Where(predicate).
@@ -240,13 +227,10 @@ public static class DataService
     public static async Task<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang, bool proche,
         Period? period = null, Expression<Func<DetailFact?, bool>>? predicate = default)
     {
-        predicate ??= facture => true;
-        if (period != null)
-            predicate = predicate.And(x => x!.Facture.DateFact > period.From && x.Facture.DateFact < period.To);
-
+    
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
-            .Where(predicate)
+            .Where(predicate.SetPeriod(period))
             .Where(x => x!.Facture.NumAssure == noAssure && x.Facture.RangAd == rang)
             .Where(x => x!.Ppa >= 1000 && x.Qte >= 3 || x.Ts == true || x.DureeTrait >= 60)
             .SelectMany(a => db.Beneficiaires.Where(b => b.NumAssure == noAssure && b.RangAd == rang),
@@ -424,6 +408,7 @@ public static class DataService
             })
             .ToListAsync()
             .ConfigureAwait(false);
+
         var list = query
            .OrderByDescending(x => x.DateFact)
            .GroupBy(x => new { x.NumAssure, x.RangAd, x.CodeDci })
@@ -480,6 +465,10 @@ public static class DataService
                 NEnrg = a.NumEnr,
                 Qt = a.Qte,
                 a.Ts,
+                a.Ppa,
+                Specialite=    a.Facture.Specialite.Libelle,
+                a.Facture.DateSoin,
+                a.Medicament.CodeDci
             })
             .ToListAsync()
             .ConfigureAwait(false);
@@ -501,6 +490,10 @@ public static class DataService
                     NEnrg = m.NEnrg,
                     Qt = m.Qt,
                     TS = m.Ts,
+                    Prix=m.Ppa,
+                    Specialite = m.Specialite,
+                    CodeDci = m.CodeDci,
+                    DateSoin = m.DateSoin,
                 })
                     //.DistinctBy(x => x.NEnrg)
                     .ToList()
@@ -508,7 +501,7 @@ public static class DataService
         return list;
     }
 
-    public static async Task<IEnumerable<Specialite>> SpecialistesAsync()
+    public static async Task<IEnumerable<Specialite>> SpecialitesAsync()
     {
         await using var db = new ChifaDb();
         return await db.Specialites.ToListAsync().ConfigureAwait(false);
@@ -520,8 +513,4 @@ public static class DataService
         await db.UpdateAsync(center);
     }
 }
-
-public static class DataServiceExtensions
-{
-    public static string FullName(this Medicament m) => $"{m.NomCom} {m.Dosage} {m.Conditionnement}";
-}
+ 

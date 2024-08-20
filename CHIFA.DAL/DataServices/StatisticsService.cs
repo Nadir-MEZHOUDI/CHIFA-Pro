@@ -13,35 +13,26 @@ namespace CHIFA.DAL.DataServices;
 
 public static class StatisticsService
 {
-    public static async Task<IEnumerable<BordMonthlyStatDto>> BordereauxMonthlyAsync(Period? period = default, Expression<Func<Bordereau, bool>>? predicate = null)
+    public static async Task<IEnumerable<BordMonthlyStatDto>> BordereauxMonthlyAsync(Period? period = null, Expression<Func<Bordereau, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
         var query = await db.Bordereaus
             .Where(x => x.Etat == 'C')
             .Where(predicate.SetPeriod(period))
-            .Select(x => new
+            .GroupBy(x => new { x.DateExtract!.Value.Year, x.DateExtract.Value.Month })
+            .Select(g => new BordMonthlyStatDto
             {
-                x.DateExtract,
-                Montant = x.Factures.Sum(f => f.MontFact),
-                Count = x.Factures.Count(),
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Montant = g.Sum(x => x.Factures.Sum(f => f.MontFact)),
+                Factures = g.Sum(x => x.Factures.Count()),
+                Borderaux = g.Count()
             })
+            .OrderByDescending(x => x.Year)
+            .ThenByDescending(x => x.Month)
             .ToListAsync()
             .ConfigureAwait(false);
-
-        var list = query
-            .GroupBy(x => new { x.DateExtract?.Year, x.DateExtract?.Month })
-            .Select(x => new BordMonthlyStatDto
-            {
-                Year = x.Key.Year,
-                Month = x.Key.Month,
-                Montant = x.Sum(m => m.Montant),
-                Factures = x.Sum(m => m.Count),
-                Borderaux = x.Count()
-            })
-            .OrderBy(x => x.Year)
-            .ThenBy(x => x.Month)
-            .ToList();
-        return list;
+        return query;
     }
 
     public static async Task<IEnumerable<MouvementDto>> DetailedMovementsAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
@@ -84,45 +75,42 @@ public static class StatisticsService
         return list;
     }
 
-    public static async Task<IEnumerable<FactureByMonth>> FacturesDailyAsync(Period? period = default, Expression<Func<Facture, bool>>? predicate = null)
+    public static async Task<IEnumerable<FactureByMonth>> FacturesDailyAsync(Period? period = null, Expression<Func<Facture, bool>>? predicate = null)
     {
-
         await using var db = new ChifaDb();
+
         var query = await db.Factures
             .Where(predicate.SetPeriod(period))
-            .Select(x => new { x.DateFact, x.MontFact })
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        var list = query.GroupBy(x => new { x.DateFact?.Year, x.DateFact?.Month, x.DateFact?.Day })
-            .Select(x => new FactureByMonth
+            .GroupBy(x => new { x.DateFact.Value.Year, x.DateFact.Value.Month, x.DateFact.Value.Day })
+            .Select(g => new FactureByMonth
             {
-                Year = x.Key.Year,
-                Month = x.Key.Month,
-                Day = x.Key.Day,
-
-                Date = $"{x.Key.Day}-{x.Key.Month}-{x.Key.Year}",
-                Montant = x.Sum(f => f.MontFact),
-                Count = x.Count()
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Day = g.Key.Day,
+                Date = $"{g.Key.Day:D2} - {g.Key.Month:D2} - {g.Key.Year:D4}",
+                Montant = g.Sum(f => f.MontFact),
+                Count = g.Count()
             })
             .OrderBy(x => x.Year)
             .ThenBy(x => x.Month)
             .ThenBy(x => x.Day)
-            .ToList();
-        return list;
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return query;
     }
 
     public static async Task<IEnumerable<FactureByMonth>> FacturesMonthlyAsync(Period? period = null, Expression<Func<Facture, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
-        List<FactureByMonth> list = await db.Factures
+        var list = await db.Factures
             .Where(predicate.SetPeriod(period))
             .GroupBy(x => new { x.DateFact!.Value.Year, x.DateFact.Value.Month })
             .Select(x => new FactureByMonth
             {
                 Year = x.Key.Year,
                 Month = x.Key.Month,
-                Date = $"{x.Key.Month} - {x.Key.Year}",
+                Date = $"{x.Key.Month:D2}-{x.Key.Year:D4}",
                 Montant = x.Sum(f => f.MontFact),
                 Count = x.Count()
             })
@@ -134,28 +122,26 @@ public static class StatisticsService
     }
 
     private readonly static CultureInfo culture = new("ar");
+
     public static async Task<IEnumerable<FactureByMonth>> FacturesWeeklyAsync(Period? period = null, Expression<Func<Facture, bool>>? predicate = null)
     {
-
         await using var db = new ChifaDb();
         var query = await db.Factures
             .Where(predicate.SetPeriod(period))
-            .Select(x => new { x.DateFact, x.MontFact })
+            .GroupBy(x => x.DateFact.Value.DayOfWeek)
+            .Select(g => new FactureByMonth
+            {
+                Date = g.Key.ToString(),
+                Montant = g.Sum(f => f.MontFact),
+                Count = g.Count()
+            })
+            .OrderBy(x => x.Date)
             .ToListAsync()
             .ConfigureAwait(false);
 
-        var list = query.GroupBy(x => new { DayOfWeek = x.DateFact?.ToString("dddd", culture) })
-            .Select(x => new FactureByMonth
-            {
-                DayOfWeek = x.Key.DayOfWeek,
-                Date = $"{x.Key}",
-                Montant = x.Sum(f => f.MontFact),
-                Count = x.Count()
-            })
-            .OrderBy(x => x.DayOfWeek)
-            .ToList();
-        return list;
+        return query;
     }
+
 
     public static async Task<IEnumerable<MouvementDto>> GetStatisticsAllProductsByMonthAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
     {
@@ -178,42 +164,38 @@ public static class StatisticsService
 
     public static async Task<IEnumerable<MouvementDto>> GlobalMovementsAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
     {
-
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
-            .Where(predicate.SetPeriod(period))
+             .Where(predicate.SetPeriod(period))
             .Select(x => new
             {
-                x.Qte,
                 x.NumEnr,
+                FullName = $"{x.Medicament.NomCom} {x.Medicament.Dosage} {x.Medicament.Conditionnement}",
+                x.Qte,
                 x.Ppa,
-                FullName = x.Medicament.FullName(),
-                x.Medicament.NomCom,
-                x.Medicament.Dosage,
-                x.Medicament.Conditionnement,
                 x.Medicament.Generic,
                 x.Medicament.CodeDci,
-                x.Medicament.NomDci,
                 x.Medicament.CodeMedic,
-            })
+            })            
             .ToListAsync()
             .ConfigureAwait(false);
-
-        var list = query.GroupBy(x => x.NumEnr)
-            .Select(x => new MouvementDto
+        var list = query
+            .GroupBy(p => p.NumEnr)
+            .Select(g => new MouvementDto
             {
-                Code = x.Key,
-                Produit = x.FirstOrDefault()!.FullName,
-                Qt = x.Sum(m => m.Qte),
-                Prix = x.FirstOrDefault()?.Ppa,
-                Generic = x.FirstOrDefault()!.Generic,
-                CodeDci = x.FirstOrDefault()!.CodeDci,
-                CodeMedic = x.FirstOrDefault()!.CodeMedic,
+                Code = g.Key,
+                Produit = g.First().FullName!,
+                Qt = g.Sum(s => s.Qte),
+                Prix = g.First().Ppa,
+                Generic = g.First().Generic,
+                CodeDci = g.First().CodeDci,
+                CodeMedic = g.First().CodeMedic,
             })
             .OrderByDescending(x => x.Qt)
             .ToList();
         return list;
     }
+
 
     public static async Task<IEnumerable<Gp>> PrincepsVsGenericAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
     {
@@ -235,8 +217,8 @@ public static class StatisticsService
             .GroupBy(x => x.Facture.DateFact!.Value)
             .Select(x => new ProductsDaily
             {
-                //Date = $"{x.Key.Date.Month} - {x.Key.Date.Year} - {x.Key.Date.Day}",
-                Date = x.Key.Date.ToString("d"),
+                Date = x.Key.ToString("dd/MM/yyyy"),
+
                 PrincepsCount = x.Count(m => m.Medicament.Generic == 'P'),
                 PrincepsMontant = x.Where(m => m.Medicament.Generic == 'P').Sum(m => m.Mont),
 
@@ -251,81 +233,70 @@ public static class StatisticsService
     public static async Task<IEnumerable<ProductsDaily>> ProductsMonthlyAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
+
         var query = await db.DetailFacts
+            //.Where(x=>x.Facture.DateFact.HasValue)
             .Where(predicate.SetPeriod(period))
-            .Select(x => new { x.Facture.DateFact, x.Medicament.Generic, x.Mont })
+            .GroupBy(x => $"{x.Facture.DateFact.Value.Month:D2} - {x.Facture.DateFact.Value.Year:D4}") //x.Facture.DateFact.Value.Date.Year + " - " + x.Facture.DateFact.Value.Date.Month )
+            .Select(g => new ProductsDaily
+            {
+                Date =g.Key, // $"{g.Key.Month:D2} - {g.Key.Year:D4}",
+
+                PrincepsCount = g.Count(m => m.Medicament.Generic == 'P'),
+                PrincepsMontant = g.Where(m => m.Medicament.Generic == 'P').Sum(m => m.Mont),
+
+                GenericCount = g.Count(m => m.Medicament.Generic == 'G'),
+                GenericMontant = g.Where(m => m.Medicament.Generic == 'G').Sum(m => m.Mont),
+            })
             .ToListAsync()
             .ConfigureAwait(false);
 
-        var list = query
-            .GroupBy(x => new { x.DateFact?.Year, x.DateFact?.Month })
-            .Select(x => new ProductsDaily
-            {
-                Date = $"{x.Key.Year} - {x.Key.Month}",
-
-                PrincepsCount = x.Count(m => m.Generic == 'P'),
-                PrincepsMontant = x.Where(m => m.Generic == 'P').Sum(m => m.Mont),
-
-                GenericCount = x.Count(m => m.Generic == 'G'),
-                GenericMontant = x.Where(m => m.Generic == 'G').Sum(m => m.Mont),
-            })
-            .ToList();
-        return list;
+        return query;
     }
 
-    public static async Task<IEnumerable<TopSeal>> Top10MontantAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
+    public static async Task<IEnumerable<TopSeal>> Top10ProuctsByMontantAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
+
         var query = await db.DetailFacts
             .Where(predicate.SetPeriod(period))
-            .Select(x => new
+            .GroupBy(x => new { x.Medicament.CodeDci, x.Medicament.NomDci })
+            .Select(g => new TopSeal
             {
-                x.Qte,
-                x.Ppa,
-                CodeDCI = x.Medicament.CodeDci,
-                x.Medicament.NomDci,
-            })
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        var list = query.GroupBy(x => x.CodeDCI)
-            .Select(x => new TopSeal
-            {
-                Code = x.Key,
-                Produit = x.FirstOrDefault()?.NomDci,
-                Qt = x.Sum(m => m.Qte),
+                Code = g.Key.CodeDci,
+                Produit = g.Key.NomDci,
+                Qt = g.Sum(x => x.Qte),
             })
             .OrderByDescending(x => x.Qt)
-            .ToList();
-        return list;
+            .Take(10)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return query;
     }
 
-    public static async Task<IEnumerable<TopSeal>> Top10QuantityAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
-    {
 
+
+    public static async Task<IEnumerable<TopSeal>> Top10ProuctsByQuantityAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
+    {
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
             .Where(predicate.SetPeriod(period))
-            .Select(x => new
+            .GroupBy(x => new { x.Medicament.CodeDci, x.Medicament.NomDci, x.Ppa })
+            .Select(g => new TopSeal
             {
-                x.Qte,
-                x.Ppa,
-                CodeDCI = x.Medicament.CodeDci,
-                x.Medicament.NomDci,
+                Code = g.Key.CodeDci,
+                Produit = g.Key.NomDci,
+                Qt = g.Sum(x => x.Qte),
+                Prix = g.Key.Ppa,
             })
-            .ToListAsync().ConfigureAwait(false);
-
-        var list = query.GroupBy(x => x.CodeDCI)
-            .Select(x => new TopSeal
-            {
-                Code = x.Key,
-                Produit = x.FirstOrDefault()?.NomDci,
-                Qt = x.Sum(m => m.Qte),
-                Prix = x.FirstOrDefault()?.Ppa,
-            })
-            .OrderByDescending(x => x.Qt).ToList();
-        return list;
+            .OrderByDescending(x => x.Qt)
+            .Take(10)
+            .ToListAsync()
+            .ConfigureAwait(false);
+        return query;
     }
+
 }
 public static class StatisticsExtensions
 {
@@ -335,12 +306,17 @@ public static class StatisticsExtensions
     public static Expression<Func<Facture, bool>> SetPeriod(this Expression<Func<Facture, bool>>? predicate, Period? period = default)
     {
         period ??= defaultPeriod;
+
         predicate ??= _ => true;
+
+        predicate = predicate.And(x => x.DateFact != null);
 
         if (period?.From.HasValue == true)
             predicate = predicate.And(x => x.DateFact > period.From);
+
         if (period?.To.HasValue == true)
             predicate = predicate.And(x => x.DateFact < period.To);
+
         return predicate;
 
     }
@@ -349,22 +325,32 @@ public static class StatisticsExtensions
         period ??= defaultPeriod;
         predicate ??= _ => true;
 
+        predicate = predicate.And(x => x.Facture.DateFact.HasValue);
+
         if (period?.From.HasValue == true)
             predicate = predicate.And(x => x.Facture.DateFact > period.From);
+
         if (period?.To.HasValue == true)
             predicate = predicate.And(x => x.Facture.DateFact < period.To);
+
         return predicate;
     }
     public static Expression<Func<Bordereau, bool>> SetPeriod(this Expression<Func<Bordereau, bool>>? predicate, Period? period = default)
     {
         period ??= defaultPeriod;
+
         predicate ??= _ => true;
+
+        predicate = predicate.And(x => x.DateExtract !=null);
 
         if (period?.From.HasValue == true)
             predicate = predicate.And(x => x.DateExtract > period.From);
+
         if (period?.To.HasValue == true)
             predicate = predicate.And(x => x.DateExtract < period.To);
+
         return predicate;
     }
+    public static string FullName(this Medicament? m) => $"{m?.NomCom} {m?.Dosage} {m?.Conditionnement}";
 
 }
