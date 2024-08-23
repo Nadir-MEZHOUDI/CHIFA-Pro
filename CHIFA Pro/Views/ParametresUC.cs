@@ -1,10 +1,6 @@
-﻿
-using DevExpress.CodeParser;
+﻿using Npgsql;
 
-using Npgsql;
-
-using AppSettings = Helpers.Settings.AppSettings;
-
+ 
 namespace CHIFA.Pro.Others;
 
 public partial class ParametersUc : XtraUserControl,INavigable

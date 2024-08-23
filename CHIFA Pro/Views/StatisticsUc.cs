@@ -255,7 +255,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             {
                 ArgumentDataMember = nameof(TopSeal.Produit),
                 ValueDataMembersSerializable = nameof(TopSeal.Prix),
-                DataSource = await Task.Run(() => StatisticsService.Top10ProuctsByMontantAsync(Period?.Invoke())).ConfigureAwait(true)
+                DataSource = await Task.Run(() => StatisticsService.Top10ProductsByMontantAsync(Period?.Invoke())).ConfigureAwait(true)
             };
             chrtCntrl.Series.Add(serie);
         }
@@ -343,7 +343,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private Task LoadTop10Montant()
     {
-        return gridViewStatistics.LoadDataAsync(() => StatisticsService.Top10ProuctsByMontantAsync(Period?.Invoke()));
+        return gridViewStatistics.LoadDataAsync(() => StatisticsService.Top10ProductsByMontantAsync(Period?.Invoke()));
     }
 
     private Task LoadTop10Quantity()

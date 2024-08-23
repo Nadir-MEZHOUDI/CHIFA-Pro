@@ -1,5 +1,4 @@
 ﻿using CHIFA.DAL.DTOs;
-using CHIFA.DAL.Helpers;
 using CHIFA.DAL.Statistics;
 
 using DataModel;
@@ -138,7 +137,6 @@ public static class StatisticsService
             .OrderBy(x => x.Date)
             .ToListAsync()
             .ConfigureAwait(false);
-
         return query;
     }
 
@@ -179,6 +177,7 @@ public static class StatisticsService
             })            
             .ToListAsync()
             .ConfigureAwait(false);
+
         var list = query
             .GroupBy(p => p.NumEnr)
             .Select(g => new MouvementDto
@@ -235,12 +234,11 @@ public static class StatisticsService
         await using var db = new ChifaDb();
 
         var query = await db.DetailFacts
-            //.Where(x=>x.Facture.DateFact.HasValue)
             .Where(predicate.SetPeriod(period))
-            .GroupBy(x => $"{x.Facture.DateFact.Value.Month:D2} - {x.Facture.DateFact.Value.Year:D4}") //x.Facture.DateFact.Value.Date.Year + " - " + x.Facture.DateFact.Value.Date.Month )
+            .GroupBy(x => $"{x.Facture.DateFact!.Value.Month:D2} - {x.Facture.DateFact.Value.Year:D4}")
             .Select(g => new ProductsDaily
             {
-                Date =g.Key, // $"{g.Key.Month:D2} - {g.Key.Year:D4}",
+                Date =g.Key,
 
                 PrincepsCount = g.Count(m => m.Medicament.Generic == 'P'),
                 PrincepsMontant = g.Where(m => m.Medicament.Generic == 'P').Sum(m => m.Mont),
@@ -254,10 +252,9 @@ public static class StatisticsService
         return query;
     }
 
-    public static async Task<IEnumerable<TopSeal>> Top10ProuctsByMontantAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
+    public static async Task<IEnumerable<TopSeal>> Top10ProductsByMontantAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
-
         var query = await db.DetailFacts
             .Where(predicate.SetPeriod(period))
             .GroupBy(x => new { x.Medicament.CodeDci, x.Medicament.NomDci })
@@ -271,7 +268,6 @@ public static class StatisticsService
             .Take(10)
             .ToListAsync()
             .ConfigureAwait(false);
-
         return query;
     }
 
@@ -296,61 +292,4 @@ public static class StatisticsService
             .ConfigureAwait(false);
         return query;
     }
-
-}
-public static class StatisticsExtensions
-{
-
-    private static readonly Period defaultPeriod = new();
-
-    public static Expression<Func<Facture, bool>> SetPeriod(this Expression<Func<Facture, bool>>? predicate, Period? period = default)
-    {
-        period ??= defaultPeriod;
-
-        predicate ??= _ => true;
-
-        predicate = predicate.And(x => x.DateFact != null);
-
-        if (period?.From.HasValue == true)
-            predicate = predicate.And(x => x.DateFact > period.From);
-
-        if (period?.To.HasValue == true)
-            predicate = predicate.And(x => x.DateFact < period.To);
-
-        return predicate;
-
-    }
-    public static Expression<Func<DetailFact, bool>> SetPeriod(this Expression<Func<DetailFact, bool>>? predicate, Period? period = default)
-    {
-        period ??= defaultPeriod;
-        predicate ??= _ => true;
-
-        predicate = predicate.And(x => x.Facture.DateFact.HasValue);
-
-        if (period?.From.HasValue == true)
-            predicate = predicate.And(x => x.Facture.DateFact > period.From);
-
-        if (period?.To.HasValue == true)
-            predicate = predicate.And(x => x.Facture.DateFact < period.To);
-
-        return predicate;
-    }
-    public static Expression<Func<Bordereau, bool>> SetPeriod(this Expression<Func<Bordereau, bool>>? predicate, Period? period = default)
-    {
-        period ??= defaultPeriod;
-
-        predicate ??= _ => true;
-
-        predicate = predicate.And(x => x.DateExtract !=null);
-
-        if (period?.From.HasValue == true)
-            predicate = predicate.And(x => x.DateExtract > period.From);
-
-        if (period?.To.HasValue == true)
-            predicate = predicate.And(x => x.DateExtract < period.To);
-
-        return predicate;
-    }
-    public static string FullName(this Medicament? m) => $"{m?.NomCom} {m?.Dosage} {m?.Conditionnement}";
-
 }

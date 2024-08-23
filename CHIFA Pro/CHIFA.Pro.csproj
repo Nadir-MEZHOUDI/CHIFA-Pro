@@ -10,31 +10,30 @@
 		<Product>CHIFA Pro</Product>
 		<PackageId>CHIFA Pro</PackageId>
 		<PackageIcon>Icon.ico</PackageIcon>
-		<StartupObject>CHIFA.Pro.Program</StartupObject>
+ 		<StartupObject>CHIFA.Pro.Program</StartupObject>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
 		<ImplicitUsings>true</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>1.0.91</Version>
-		<AssemblyInformationalVersion>1.0.91</AssemblyInformationalVersion>
+		<Version>1.1.0</Version>
 		<SatelliteResourceLanguages>ar</SatelliteResourceLanguages>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="FodyWeavers.xml" />
 		<None Remove="FodyWeavers.xsd" />
 	</ItemGroup>
-
-
+	 
 	<ItemGroup>
 		<Content Include="Assets\Icon.ico" />
 	</ItemGroup>
-
+	 
 	<ItemGroup>
-		<PackageReference Include="DevExpress.Win.Design" Version="24.1.*" />
+	  <PackageReference Include="DevExpress.Win.Design" Version="24.1.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\CHIFA.DAL\CHIFA.DAL.csproj" />
-	</ItemGroup>
+ 	</ItemGroup>
 
 </Project>
