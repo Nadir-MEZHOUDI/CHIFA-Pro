@@ -20,7 +20,7 @@ steps:
   displayName: dotnet restor
   inputs:
     command: 'restore'
-    projects: '**/*.csproj'
+    projects: '**/CHIFA.Stat.csproj'
     feedsToUse: 'select'
     vstsFeed: '1ed0d063-2001-4386-82a2-66c01ee046b2'
       
@@ -28,11 +28,11 @@ steps:
   displayName: dotnet build
   inputs:
     command: 'build'
-    projects: '**/*.csproj'
+    projects: '**/CHIFA.Stat.csproj'
     arguments: '--configuration Release  --no-restore --output $(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'CHIFA.Pro'
+    ArtifactName: 'CHIFA.Stat'
     publishLocation: 'Container'
