@@ -4,19 +4,17 @@
 		<OutputType>WinExe</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<RootNamespace>CHIFA.Pro</RootNamespace>
+  		<StartupObject>CHIFA.Pro.Program</StartupObject>
 		<LangVersion>preview</LangVersion>
 		<Authors>MEZHOUDI Hadj Nadir</Authors>
 		<Company>SmartApps</Company>
 		<Product>CHIFA Pro</Product>
-		<PackageId>CHIFA Pro</PackageId>
-		<PackageIcon>Icon.ico</PackageIcon>
- 		<StartupObject>CHIFA.Pro.Program</StartupObject>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
 		<ImplicitUsings>true</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<Version>1.1.0</Version>
-		<SatelliteResourceLanguages>ar</SatelliteResourceLanguages>
+		<SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
 	<ItemGroup>

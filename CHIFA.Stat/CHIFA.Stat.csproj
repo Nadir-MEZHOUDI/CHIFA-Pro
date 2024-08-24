@@ -4,6 +4,16 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+	  <LangVersion>preview</LangVersion>
+	  <Authors>MEZHOUDI Hadj Nadir</Authors>
+	  <Company>SmartApps</Company>
+	  <Product>CHIFA Stat</Product>
+	  <EnableNETAnalyzers>true</EnableNETAnalyzers>
+ 	  <ImplicitUsings>true</ImplicitUsings>
+	  <Nullable>enable</Nullable>
+	  <Version>1.1.0</Version>
+	  <SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>
