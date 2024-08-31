@@ -19,7 +19,7 @@ steps:
     vstsFeed: '1ed0d063-2001-4386-82a2-66c01ee046b2'
 
 - task: DotNetCoreCLI@2
-  displayName:  publish App
+  displayName:  Publish App
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -60,7 +60,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $url = "https://nadirsmartapp.blob.core.windows.net/chifa-Pro"
+      $url = "https://nadirsmartapp.blob.core.windows.net/chifa-pro"
       vpk download http --url $url -o $(Build.ArtifactStagingDirectory)/Releases
 
 - task: PowerShell@2
@@ -71,6 +71,7 @@ steps:
 
 
 - task: PublishBuildArtifacts@1
+  displayName: Publish Build Artifacts
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/Releases'
     ArtifactName: 'CHIFA.Pro'
