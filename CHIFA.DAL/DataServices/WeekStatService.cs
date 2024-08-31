@@ -12,7 +12,7 @@ public static class WeekStatService
     {
 
         await using var db = new ChifaDb();
-        DateTime firstDate = DateTime.Today.AddYears(-1).AddDays(-8);
+        DateTime firstDate = DateTime.Today.AddDays(-8);
         var weekStats = await db.Factures
                                   .Where(f => f.DateFact.Value.Date >= firstDate)
                                   .GroupBy(f => f.DateFact.Value.Date)
@@ -28,7 +28,7 @@ public static class WeekStatService
                                   .ToListAsync();
 
         return Enumerable.Range(0, 8)
-                               .Select(x => DateTime.Today.AddYears(-1).AddDays(-x))
+                               .Select(x => DateTime.Today.AddDays(-x))
                                .Select(date => weekStats.FirstOrDefault(ws => ws.Date == date) ?? new WeekStat(date))
                                .OrderByDescending(ws => ws.Date)
                                .ToList();
