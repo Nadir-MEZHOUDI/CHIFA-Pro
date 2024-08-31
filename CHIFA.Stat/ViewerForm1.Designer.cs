@@ -38,20 +38,21 @@
             dashboardViewer.AsyncMode = true;
             dashboardViewer.DashboardSource = new Uri("D:\\Projects\\2023\\CHIFA Pro\\CHIFA.Stat\\dashs\\Global.xml", UriKind.Absolute);
             dashboardViewer.Dock = DockStyle.Fill;
-            dashboardViewer.Location = new System.Drawing.Point(0, 0);
+            dashboardViewer.Location = new Point(0, 0);
             dashboardViewer.Name = "dashboardViewer";
-            dashboardViewer.Size = new System.Drawing.Size(986, 628);
+            dashboardViewer.Size = new Size(986, 628);
             dashboardViewer.TabIndex = 0;
             dashboardViewer.UseNeutralFilterMode = true;
             // 
             // ViewerForm1
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size(986, 628);
+            ClientSize = new Size(986, 628);
             Controls.Add(dashboardViewer);
             Name = "ViewerForm1";
             Text = "Dashboard Viewer";
+            Load += ViewerForm1_Load;
             ((System.ComponentModel.ISupportInitialize)dashboardViewer).EndInit();
             ResumeLayout(false);
         }

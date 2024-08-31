@@ -3,6 +3,8 @@
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
 
+using Velopack;
+
 namespace CHIFA.Pro;
 
 public partial class frmMain : XtraForm
@@ -59,11 +61,32 @@ public partial class frmMain : XtraForm
 
             await Task.WhenAll(check, load);
 
+            await UpdateAppAsync();
+
+
+
         }
         catch (Exception ex)
         {
             ex.Log();
         }
+    }
+
+    private async Task UpdateAppAsync()
+    {
+        var mgr = new UpdateManager("https://nadirsmartapp.blob.core.windows.net/chifa-pro");
+
+        // check for new version
+        var newVersion = await mgr.CheckForUpdatesAsync();
+        if (newVersion == null)
+            return; // no update available
+
+        // download new version
+        await mgr.DownloadUpdatesAsync(newVersion);
+
+        // install new version and restart app
+        mgr.ApplyUpdatesAndRestart(newVersion);
+
     }
 
     private async Task LoadServerInfo()

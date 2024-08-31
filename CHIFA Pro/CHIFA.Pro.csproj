@@ -20,14 +20,19 @@
 	<ItemGroup>
 		<None Remove="FodyWeavers.xml" />
 		<None Remove="FodyWeavers.xsd" />
+		<None Remove="Icon.ico" />
 	</ItemGroup>
 	 
 	<ItemGroup>
 		<Content Include="Assets\Icon.ico" />
+		<Content Include="Icon.ico">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 	 
 	<ItemGroup>
-	  <PackageReference Include="DevExpress.Win.Design" Version="24.1.3" />
+	  <PackageReference Include="DevExpress.Win.Design" Version="24.1.*" />
+	  <PackageReference Include="Velopack" Version="0.*" />
 	</ItemGroup>
 
 	<ItemGroup>

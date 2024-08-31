@@ -24,6 +24,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
+        Velopack.VelopackApp.Build().Run(); 
         SetDbSettings();
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);

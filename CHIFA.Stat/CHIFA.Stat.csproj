@@ -1,37 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-	  <LangVersion>preview</LangVersion>
-	  <Authors>MEZHOUDI Hadj Nadir</Authors>
-	  <Company>SmartApps</Company>
-	  <Product>CHIFA Stat</Product>
-	  <EnableNETAnalyzers>true</EnableNETAnalyzers>
- 	  <ImplicitUsings>true</ImplicitUsings>
-	  <Nullable>enable</Nullable>
-	  <Version>1.1.0</Version>
-	  <SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
-	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<LangVersion>preview</LangVersion>
+		<Authors>MEZHOUDI Hadj Nadir</Authors>
+		<Company>SmartApps</Company>
+		<Product>CHIFA Stat</Product>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<ImplicitUsings>true</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Version>1.1.0</Version>
+		<SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	</PropertyGroup>
 
-  <ItemGroup>
-	  <PackageReference Include="CHIFA2.Data" Version="1.0.*" />
-	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
-	  <PackageReference Include="DevExpress.Win" Version="24.1.*">
-		  <TreatAsUsed>true</TreatAsUsed>
-	  </PackageReference>
-    <PackageReference Include="DevExpress.Win.Dashboard.Design" Version="24.1.*" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CHIFA2.Data" Version="1.0.*" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
+		<PackageReference Include="DevExpress.Win" Version="24.1.*">
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="DevExpress.Win.Dashboard.Design" Version="24.1.*" />
+		<PackageReference Include="Velopack" Version="0.*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Dashbords\DayView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Dashbords\frmDesigner.cs">
-      <SubType>Form</SubType>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Dashbords\DayView.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="Dashbords\frmDesigner.cs">
+			<SubType>Form</SubType>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="icon.ico">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 
 </Project>
