@@ -13,15 +13,21 @@ namespace CHIFA.Stat
 
         private async void ViewerForm1_Load(object sender, EventArgs e)
         {
-            await  UpdateAppAsync();
-
+            try
+            {
+                await UpdateAppAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
         private async Task UpdateAppAsync()
         {
             var mgr = new UpdateManager("https://nadirsmartapp.blob.core.windows.net/chifa-stat");
 
             // check for new version
-            var newVersion = await mgr.CheckForUpdatesAsync();
+            UpdateInfo? newVersion = await mgr.CheckForUpdatesAsync();
             if (newVersion == null)
                 return; // no update available
 

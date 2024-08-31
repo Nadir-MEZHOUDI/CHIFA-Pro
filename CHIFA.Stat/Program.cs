@@ -14,6 +14,7 @@ namespace CHIFA.Stat
         [STAThread]
         static void Main()
         {
+
             Velopack.VelopackApp.Build().Run();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
