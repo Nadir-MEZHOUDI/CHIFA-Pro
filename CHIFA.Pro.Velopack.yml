@@ -33,7 +33,7 @@ steps:
     publishWebProjects: false
     zipAfterPublish: false
     modifyOutputPath: false
-    projects: '**/*.csproj'
+    projects: '**/CHIFA.Pro.csproj'
     arguments: '-c Release --no-self-contained -r win-x64 -o $(Build.ArtifactStagingDirectory)/publish  --no-restore'
 
 - task: DotNetCoreCLI@2
