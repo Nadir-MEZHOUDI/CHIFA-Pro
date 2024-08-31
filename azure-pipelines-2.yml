@@ -67,7 +67,7 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      $url = "https://nadirsmartapp.blob.core.windows.net/chifa-Stat"
+      $url = "https://nadirsmartapp.blob.core.windows.net/chifa-stat"
       vpk download http --url $url -o $(Build.ArtifactStagingDirectory)/Releases
 
 - task: PowerShell@2
