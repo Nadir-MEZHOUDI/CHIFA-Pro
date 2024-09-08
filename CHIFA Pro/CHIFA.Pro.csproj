@@ -13,7 +13,7 @@
 		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
 		<ImplicitUsings>true</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<Version>1.1.1</Version>
+		<Version>1.1.2</Version>
 		<SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
