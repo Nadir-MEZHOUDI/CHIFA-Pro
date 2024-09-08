@@ -13,27 +13,48 @@ global using System.Data;
 global using System.Diagnostics;
 global using System.IO;
 global using System.Reflection;
+
+using Serilog;
+
 using System.Globalization;
 
 namespace CHIFA.Pro;
 internal static class Program
 {
-    public static CultureInfo frCulture = new CultureInfo("fr-FR");
-
+    public static CultureInfo frCulture = new("fr-FR");
 
     [STAThread]
     private static void Main()
     {
-        Velopack.VelopackApp.Build().Run(); 
-        SetDbSettings();
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Debug()
+            .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        Application.ThreadException += ThreadException_Handler;
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
+        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        {
+            Log.Error(e.Exception, "Unobserved task exception");
+            e.SetObserved();
+        };
+
+
+        Velopack.VelopackApp.Build().Run();
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         SetCulture();
 
+     
         Application.Run(new frmMain());
+    }
 
+    private static void ThreadException_Handler(object sender, ThreadExceptionEventArgs e)
+    {
+        e.Exception.Log();        
     }
 
     private static void SetCulture()
@@ -42,18 +63,12 @@ internal static class Program
         Thread.CurrentThread.CurrentUICulture = frCulture;
     }
 
-    private static void SetDbSettings()
-    {
-        LinqToDB.Data.DataConnection.TurnTraceSwitchOn();
-        LinqToDB.Data.DataConnection.WriteTraceLine = (s1, s2, _) => Debug.WriteLine(s1, s2);
-        ChifaDb.ConString = DbChecker.ConnectionString;
-    }
-
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        if (e.ExceptionObject is Npgsql.NpgsqlException)
-            MessageBox.Show("Cannot connect to Database, Check Your Server");
-        else
-            MessageBox.Show(e.ExceptionObject.ToString());
+        Exception ex = (Exception)e.ExceptionObject;
+        ex.Log();
+        if (ex is Npgsql.NpgsqlException)
+            MessageBox.Show("Cannot connect to Database, Check Your Server");        
+        
     }
 }

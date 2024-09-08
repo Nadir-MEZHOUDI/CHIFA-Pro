@@ -43,6 +43,8 @@
             var tileItemElement11 = new TileItemElement();
             var tileItemElement12 = new TileItemElement();
             var tileItemElement13 = new TileItemElement();
+            var tileItemElement14 = new TileItemElement();
+            var tileItemElement15 = new TileItemElement();
             var xyDiagram1 = new DevExpress.XtraCharts.XYDiagram();
             var xyDiagramPane1 = new DevExpress.XtraCharts.XYDiagramPane();
             var xyDiagramPane2 = new DevExpress.XtraCharts.XYDiagramPane();
@@ -68,11 +70,13 @@
             itemSpecialetes = new TileItem();
             itmMedicaments = new TileItem();
             itemFormes = new TileItem();
-            itemCenters = new TileItem();
+            itemControlMedical = new TileItem();
             itemListNoir = new TileItem();
             itemUsers = new TileItem();
-            itemControlMedical = new TileItem();
+            itemCenters = new TileItem();
             itemOfficine = new TileItem();
+            itemUpdate = new TileItem();
+            itemRefresh = new TileItem();
             chartControl1 = new DevExpress.XtraCharts.ChartControl();
             ((System.ComponentModel.ISupportInitialize)weekStatBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)chartControl1).BeginInit();
@@ -98,13 +102,16 @@
             // 
             // tileControl1
             // 
+            tileControl1.AllowDrag = false;
+            tileControl1.AllowDragTilesBetweenGroups = false;
+            tileControl1.AllowDrop = true;
             tileControl1.AllowItemHover = true;
             tileControl1.ColumnCount = 3;
             tileControl1.Dock = DockStyle.Left;
             tileControl1.Groups.Add(tileGroup1);
             tileControl1.ItemContentAnimation = TileItemContentAnimationType.ScrollTop;
             tileControl1.Location = new Point(0, 0);
-            tileControl1.MaxId = 14;
+            tileControl1.MaxId = 16;
             tileControl1.Name = "tileControl1";
             tileControl1.Orientation = Orientation.Vertical;
             tileControl1.Padding = new Padding(12, 10, 12, 10);
@@ -121,11 +128,13 @@
             tileGroup1.Items.Add(itemSpecialetes);
             tileGroup1.Items.Add(itmMedicaments);
             tileGroup1.Items.Add(itemFormes);
-            tileGroup1.Items.Add(itemCenters);
+            tileGroup1.Items.Add(itemControlMedical);
             tileGroup1.Items.Add(itemListNoir);
             tileGroup1.Items.Add(itemUsers);
-            tileGroup1.Items.Add(itemControlMedical);
+            tileGroup1.Items.Add(itemCenters);
             tileGroup1.Items.Add(itemOfficine);
+            tileGroup1.Items.Add(itemUpdate);
+            tileGroup1.Items.Add(itemRefresh);
             tileGroup1.Name = "tileGroup1";
             tileGroup1.Text = "TABLEAUX";
             // 
@@ -222,15 +231,15 @@
             itemFormes.Name = "itemFormes";
             itemFormes.ItemClick += itemFormes_ItemClick;
             // 
-            // itemCenters
+            // itemControlMedical
             // 
             tileItemElement9.ImageOptions.Image = (Image)resources.GetObject("resource.Image8");
-            tileItemElement9.Text = "CENTERS";
-            itemCenters.Elements.Add(tileItemElement9);
-            itemCenters.Id = 12;
-            itemCenters.ItemSize = TileItemSize.Medium;
-            itemCenters.Name = "itemCenters";
-            itemCenters.ItemClick += itemCenters_ItemClick;
+            tileItemElement9.Text = "CONTROL MEDICAL";
+            itemControlMedical.Elements.Add(tileItemElement9);
+            itemControlMedical.Id = 10;
+            itemControlMedical.ItemSize = TileItemSize.Medium;
+            itemControlMedical.Name = "itemControlMedical";
+            itemControlMedical.ItemClick += itemControlMedical_ItemClick;
             // 
             // itemListNoir
             // 
@@ -252,15 +261,15 @@
             itemUsers.Name = "itemUsers";
             itemUsers.ItemClick += itemUsers_ItemClick;
             // 
-            // itemControlMedical
+            // itemCenters
             // 
             tileItemElement12.ImageOptions.Image = (Image)resources.GetObject("resource.Image11");
-            tileItemElement12.Text = "CONTROL MEDICAL";
-            itemControlMedical.Elements.Add(tileItemElement12);
-            itemControlMedical.Id = 10;
-            itemControlMedical.ItemSize = TileItemSize.Medium;
-            itemControlMedical.Name = "itemControlMedical";
-            itemControlMedical.ItemClick += itemControlMedical_ItemClick;
+            tileItemElement12.Text = "CENTERS";
+            itemCenters.Elements.Add(tileItemElement12);
+            itemCenters.Id = 12;
+            itemCenters.ItemSize = TileItemSize.Medium;
+            itemCenters.Name = "itemCenters";
+            itemCenters.ItemClick += itemCenters_ItemClick;
             // 
             // itemOfficine
             // 
@@ -271,6 +280,26 @@
             itemOfficine.ItemSize = TileItemSize.Medium;
             itemOfficine.Name = "itemOfficine";
             itemOfficine.ItemClick += itemOfficine_ItemClick;
+            // 
+            // itemUpdate
+            // 
+            tileItemElement14.ImageOptions.Image = (Image)resources.GetObject("resource.Image13");
+            tileItemElement14.Text = "MISE A JOUR";
+            itemUpdate.Elements.Add(tileItemElement14);
+            itemUpdate.Id = 14;
+            itemUpdate.ItemSize = TileItemSize.Medium;
+            itemUpdate.Name = "itemUpdate";
+            itemUpdate.ItemClick += itemUpdate_ItemClick;
+            // 
+            // itemRefresh
+            // 
+            tileItemElement15.ImageOptions.Image = (Image)resources.GetObject("resource.Image14");
+            tileItemElement15.Text = "RECHARGE";
+            itemRefresh.Elements.Add(tileItemElement15);
+            itemRefresh.Id = 15;
+            itemRefresh.ItemSize = TileItemSize.Medium;
+            itemRefresh.Name = "itemRefresh";
+            itemRefresh.ItemClick += itemRefresh_ItemClick;
             // 
             // chartControl1
             // 
@@ -403,5 +432,7 @@
         private TileItem itemOfficine;
         private DevExpress.XtraCharts.ChartControl chartControl1;
         private BindingSource weekStatBindingSource;
+        private TileItem itemUpdate;
+        private TileItem itemRefresh;
     }
 }

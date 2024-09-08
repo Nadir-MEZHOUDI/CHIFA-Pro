@@ -32,6 +32,8 @@
 	 
 	<ItemGroup>
 	  <PackageReference Include="DevExpress.Win.Design" Version="24.1.*" />
+	  <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+	  <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
 	  <PackageReference Include="Velopack" Version="0.*" />
 	</ItemGroup>
 

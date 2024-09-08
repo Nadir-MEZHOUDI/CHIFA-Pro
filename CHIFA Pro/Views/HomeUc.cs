@@ -14,9 +14,7 @@ public partial class HomeUc : XtraUserControl, INavigable
     private async Task ReLoadDataAsync()
     {
         Cursor = Cursors.WaitCursor;
-        var weekStatService = await WeekStatService.GetWeekStatsAsync();
-        chartControl1.DataSource = weekStatBindingSource;
-        weekStatBindingSource.DataSource = weekStatService;
+        weekStatBindingSource.DataSource = await WeekStatService.GetWeekStatsAsync();
         Cursor = Cursors.Default;
     }
 
@@ -88,12 +86,22 @@ public partial class HomeUc : XtraUserControl, INavigable
 
     private async void HomeUc_Enter(object sender, EventArgs e)
     {
-      await  ReLoadDataAsync();
+        await ReLoadDataAsync();
     }
 
     private async void HomeUc_Paint(object sender, PaintEventArgs e)
     {
         await ReLoadDataAsync();
+    }
+
+    private async void itemRefresh_ItemClick(object sender, TileItemEventArgs e)
+    {
+        await ReLoadDataAsync();
+    }
+
+    private async void itemUpdate_ItemClick(object sender, TileItemEventArgs e)
+    {
+       await frmMain.UpdateAppAsync(true);
     }
 }
 

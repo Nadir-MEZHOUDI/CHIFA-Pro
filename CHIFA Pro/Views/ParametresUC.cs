@@ -1,12 +1,8 @@
-﻿using Npgsql;
-
- 
-namespace CHIFA.Pro.Others;
+﻿namespace CHIFA.Pro.Others;
 
 public partial class ParametersUc : XtraUserControl,INavigable
 {
     public Action? Closer;
-
     public string Caption { get; } = "PARAMETERS";
     public Image Image => frmMain.Image(14);
 
@@ -27,18 +23,14 @@ public partial class ParametersUc : XtraUserControl,INavigable
         frm.ShowDialog();
     }
 
-
-
     private void btnSave_Click(object sender, EventArgs e)
     {
         try
         {
-            AppSettings.Default.Port = int.TryParse(txtPort.Text, out int port) ? port : 5432;
             AppSettings.Default.ChifaPath = txtChifaPath.Text;
-            AppSettings.Default.ServerName = txtServerName.Text;
             AppSettings.Default.Save();
-            ChifaDb.ConString = DbChecker.ConnectionString;
-            XtraMessageBox.Show("Configuration succesfully Saved", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            XtraHelper.SetServer(txtServerName.Text);
+            XtraMessageBox.Show("Configuration successfully Saved", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Closer?.Invoke();
         }
         catch (Exception ex)
@@ -51,16 +43,14 @@ public partial class ParametersUc : XtraUserControl,INavigable
     {
         try
         {
-            txtPort.Text = AppSettings.Default.Port.ToString();
             txtChifaPath.Text = AppSettings.Default.ChifaPath;
-            txtServerName.Text = AppSettings.Default.ServerName;
+            txtServerName.Text = ChifaDb.Server;
 
-            var items = await Task.Run(DbChecker.ListNetworkComputers);
+            var items = await Task.Run(XtraHelper.ListAllDevicesOnLocalNetwork);
 
-            if (items is { Count: > 0 })
+            if (items is { Length: > 0 })
             {
                 txtServerName.Properties.Items.Clear();
-                txtServerName.Properties.Items.Add("localhost");
                 txtServerName.Properties.Items.AddRange(items);
             }
         }
@@ -82,7 +72,7 @@ public partial class ParametersUc : XtraUserControl,INavigable
         }
     }
 
-    private async void btnRestor_Click(object sender, EventArgs e)
+    private async void btnRestore_Click(object sender, EventArgs e)
     {
         try
         {
@@ -105,10 +95,8 @@ public partial class ParametersUc : XtraUserControl,INavigable
         }
     }
 
-
     private void btnBrowse_Click(object sender, EventArgs e)
     {
-        //select folder
         var dialog = new FolderBrowserDialog();
         if (dialog.ShowDialog() == DialogResult.OK)
         {
@@ -118,16 +106,11 @@ public partial class ParametersUc : XtraUserControl,INavigable
 
     private async void btnTest_Click(object sender, EventArgs e)
     {
-        NpgsqlConnection? con = null;
         try
         {
             Cursor.Current = Cursors.WaitCursor;
-
-            string ConnectionString = $"Server={txtServerName.Text}; Port={txtPort.Text}; User Id={AppSettings.Default.DbUser}; Password={AppSettings.Default.DbPassword}; Database={AppSettings.Default.DbName};";
-            con = new NpgsqlConnection(ConnectionString);
-            con.Open();
-            XtraMessageBox.Show("Connected", "Sucess", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+            await DbChecker.CheckDbConnectionAsync(txtServerName.Text);
+            XtraMessageBox.Show("Connected", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
@@ -136,8 +119,8 @@ public partial class ParametersUc : XtraUserControl,INavigable
         }
         finally
         {
-            con?.Close();
             Cursor.Current = Cursors.Default;
         }
     }
+
 }

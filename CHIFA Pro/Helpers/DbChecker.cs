@@ -1,32 +1,42 @@
-﻿using System.DirectoryServices;
+﻿using Npgsql;
 
 namespace CHIFA.Pro.Helpers;
 
 public static class DbChecker
 {
-    public static string ConnectionString => $"Server={AppSettings.Default.ServerName}; Port={AppSettings.Default.Port}; User Id={AppSettings.Default.DbUser}; Password={AppSettings.Default.DbPassword}; Database={AppSettings.Default.DbName};";
 
     private static readonly Func<bool> ChangeSettingsMsg = () => XtraMessageBox.Show("Cannot connect to database \n Do you want to Change Settings?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes;
 
     private static bool isConnected;
 
-    private static async Task<bool> CheckDbConnection()
+    public static async Task<bool> CheckDbConnectionAsync(string? server = null)
     {
+        server ??= ChifaDb.Server;
+
+        NpgsqlConnection? con = null;
         try
         {
-            await using var db = new ChifaDb();
-            var _ = await db.Utilisateurs.CountAsync();
+            var ConnectionString = $"Server={server}; Port=5432; User Id=pharm; Password=REDACTED; Database=CHIFA_OFFICINE;";
+            con = new NpgsqlConnection(ConnectionString);
+            await con.OpenAsync();
             return true;
         }
-        catch
+        catch (Exception ex)
         {
+            ex.Log();
             return false;
+        }
+        finally
+        {
+            if (con != null)
+                await con.CloseAsync();
         }
     }
 
-    public static async Task<bool> CheckOrDownloadServer()
+    public static bool CheckOrDownloadServer()
     {
-        var isRunning = Process.GetProcessesByName("postgres").Length != 0;
+        var isRunning = Process.GetProcessesByName("postgres").Any();
+
         if (isRunning) return true;
 
         if (!File.Exists(AppSettings.Default.ChifaPostgres))
@@ -35,20 +45,24 @@ public static class DbChecker
             return false;
         }
 
-        for (int i = 0; i < 5; i++)
+        for (var i = 0; i < 5; i++)
         {
-            Process.Start(new ProcessStartInfo(AppSettings.Default.ChifaLancer_Serveur)
+            var process = new Process()
             {
-                UseShellExecute = false,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-            });
+                StartInfo= new ProcessStartInfo(AppSettings.Default.ChifaLancer_Serveur)
+                {
+                    UseShellExecute = false,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                }
+            };
 
-            isRunning = Process.GetProcessesByName("postgres").Length != 0;
-            if (isRunning) return true;
-            await Task.Delay(1000);
+            process.Start();
+            process.WaitForExit(1000);
+
+            isRunning = Process.GetProcessesByName("postgres").Any();
         }
-        return false;
+        return isRunning;
     }
 
     public static async Task RunServerAsync()
@@ -56,28 +70,17 @@ public static class DbChecker
         if (isConnected) return;
         try
         {
-            do
+            if (!CheckOrDownloadServer())
             {
-                var serverIsRunning = await CheckOrDownloadServer();
-
-                if (!serverIsRunning)
-                {
-                    MessageBox.Show("Postgres SQL Server Not working! and cannot run it!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-                }
-
-                isConnected = await CheckDbConnection();
-                if (isConnected) break;
-                if (ChangeSettingsMsg())
-                {
-                    ParametersUc.ShowAsForm();
-                }
-                else
-                {
-                    break;
-                }
+                MessageBox.Show("Postgres SQL Server Not working! and cannot run it!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            while (!isConnected);
+
+            isConnected = await CheckDbConnectionAsync();
+ 
+            if (!isConnected && ChangeSettingsMsg())
+            {
+                ParametersUc.ShowAsForm();
+            }
         }
         catch (Exception ex)
         {
@@ -85,8 +88,6 @@ public static class DbChecker
         }
     }
     public static string BackupFileName => $"CHIFA_OFFICINE_{DateTime.Now:dd-MM-yyyy_HH-mm-ss}.backup";
-
-
     public static async Task SaveBackup()
     {
         try
@@ -107,7 +108,7 @@ public static class DbChecker
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                Arguments = $"""-h "{AppSettings.Default.ServerName}" -p {AppSettings.Default.Port} -U "{AppSettings.Default.DbUser}" -c -Ft -d "{AppSettings.Default.DbName}" -f "{backupFile}" """
+                Arguments = $"""-h "{ChifaDb.Server}" -p 5432 -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """
             };
 
             Process process = new() { StartInfo = startInfo };
@@ -115,8 +116,8 @@ public static class DbChecker
             process.Start();
             await process.WaitForExitAsync();
 
-            string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync();
+            var output = await process.StandardOutput.ReadToEndAsync();
+            var error = await process.StandardError.ReadToEndAsync();
 
             if (process.ExitCode == 0)
             {
@@ -133,7 +134,6 @@ public static class DbChecker
         }
     }
 
-
     public static async Task Restor(string fileName)
     {
         Environment.SetEnvironmentVariable("PGPASSWORD", AppSettings.Default.DbPassword);
@@ -147,15 +147,15 @@ public static class DbChecker
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-                Arguments = $"""-h "{AppSettings.Default.ServerName}" -c  -p "{AppSettings.Default.Port}" -U "{AppSettings.Default.DbUser}" -d "{AppSettings.Default.DbName}" "{fileName}" """,
+                Arguments = $"""-h "{ChifaDb.Server}" -c  -p 5432 -U pharm -d CHIFA_OFFICINE "{fileName}" """,
             };
 
             using Process process = new() { StartInfo = processStartInfo };
             process.Start();
             await process.WaitForExitAsync();
 
-            string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync();
+            var output = await process.StandardOutput.ReadToEndAsync();
+            var error = await process.StandardError.ReadToEndAsync();
 
             if (process.ExitCode == 0)
             {
@@ -170,16 +170,5 @@ public static class DbChecker
         {
             ex.Log();
         }
-    }
-
-
-
-    public static List<string> ListNetworkComputers()
-    {
-        using var root = new DirectoryEntry("WinNT:");
-        return (from DirectoryEntry computer in root.Children
-                where computer.Name != "Schema"
-                select computer.Name)
-               .ToList();
     }
 }

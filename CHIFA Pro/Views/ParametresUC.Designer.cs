@@ -28,16 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ParametersUc));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(ParametersUc));
             groupControl1 = new GroupControl();
             layoutControl2 = new DevExpress.XtraLayout.LayoutControl();
             txtChifaPath = new TextEdit();
             btnSave = new SimpleButton();
             txtServerName = new ComboBoxEdit();
-            txtPort = new SpinEdit();
             btnBackup = new SimpleButton();
             btnRestor = new SimpleButton();
             simpleButton1 = new SimpleButton();
+            btnTest = new SimpleButton();
             layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             layoutControlGroup2 = new DevExpress.XtraLayout.LayoutControlGroup();
             layoutControlItem6 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -49,18 +49,17 @@
             btnBrowse = new DevExpress.XtraLayout.LayoutControlItem();
             emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
             layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             emptySpaceItem2 = new DevExpress.XtraLayout.EmptySpaceItem();
             layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
             Root = new DevExpress.XtraLayout.LayoutControlGroup();
-            btnTest = new SimpleButton();
-            layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
+            txtPort = new TextEdit();
             ((System.ComponentModel.ISupportInitialize)groupControl1).BeginInit();
             groupControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)layoutControl2).BeginInit();
             layoutControl2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)txtChifaPath.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)txtServerName.Properties).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)txtPort.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem6).BeginInit();
@@ -72,10 +71,11 @@
             ((System.ComponentModel.ISupportInitialize)btnBrowse).BeginInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControl1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Root).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem3).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)txtPort.Properties).BeginInit();
             SuspendLayout();
             // 
             // groupControl1
@@ -95,11 +95,11 @@
             layoutControl2.Controls.Add(txtChifaPath);
             layoutControl2.Controls.Add(btnSave);
             layoutControl2.Controls.Add(txtServerName);
-            layoutControl2.Controls.Add(txtPort);
             layoutControl2.Controls.Add(btnBackup);
             layoutControl2.Controls.Add(btnRestor);
             layoutControl2.Controls.Add(simpleButton1);
             layoutControl2.Controls.Add(btnTest);
+            layoutControl2.Controls.Add(txtPort);
             layoutControl2.Dock = DockStyle.Fill;
             layoutControl2.Location = new Point(2, 39);
             layoutControl2.Margin = new Padding(2);
@@ -143,20 +143,6 @@
             txtServerName.StyleController = layoutControl2;
             txtServerName.TabIndex = 4;
             // 
-            // txtPort
-            // 
-            txtPort.EditValue = new decimal(new int[] { 5432, 0, 0, 0 });
-            txtPort.Location = new Point(104, 70);
-            txtPort.Margin = new Padding(2);
-            txtPort.Name = "txtPort";
-            txtPort.Properties.Appearance.Options.UseTextOptions = true;
-            txtPort.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            txtPort.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
-            txtPort.Properties.EditValueChangedFiringMode = DevExpress.XtraEditors.Controls.EditValueChangedFiringMode.Default;
-            txtPort.Size = new Size(549, 24);
-            txtPort.StyleController = layoutControl2;
-            txtPort.TabIndex = 3;
-            // 
             // btnBackup
             // 
             btnBackup.ImageOptions.Image = (Image)resources.GetObject("btnBackup.ImageOptions.Image");
@@ -180,19 +166,31 @@
             btnRestor.StyleController = layoutControl2;
             btnRestor.TabIndex = 8;
             btnRestor.Text = "Restore";
-            btnRestor.Click += btnRestor_Click;
+            btnRestor.Click += btnRestore_Click;
             // 
             // simpleButton1
             // 
             simpleButton1.ImageOptions.Image = (Image)resources.GetObject("simpleButton1.ImageOptions.Image");
             simpleButton1.Location = new Point(600, 42);
-            simpleButton1.Margin = new Padding(2, 2, 2, 2);
+            simpleButton1.Margin = new Padding(2);
             simpleButton1.Name = "simpleButton1";
             simpleButton1.Size = new Size(53, 24);
             simpleButton1.StyleController = layoutControl2;
             simpleButton1.TabIndex = 2;
             simpleButton1.Text = "...";
             simpleButton1.Click += btnBrowse_Click;
+            // 
+            // btnTest
+            // 
+            btnTest.ImageOptions.Image = (Image)resources.GetObject("btnTest.ImageOptions.Image");
+            btnTest.Location = new Point(8, 136);
+            btnTest.Margin = new Padding(2, 2, 2, 2);
+            btnTest.Name = "btnTest";
+            btnTest.Size = new Size(203, 38);
+            btnTest.StyleController = layoutControl2;
+            btnTest.TabIndex = 5;
+            btnTest.Text = "Test";
+            btnTest.Click += btnTest_Click;
             // 
             // layoutControlGroup1
             // 
@@ -290,6 +288,15 @@
             layoutControlItem2.TextSize = new Size(0, 0);
             layoutControlItem2.TextVisible = false;
             // 
+            // layoutControlItem3
+            // 
+            layoutControlItem3.Control = btnTest;
+            layoutControlItem3.Location = new Point(0, 126);
+            layoutControlItem3.Name = "layoutControlItem3";
+            layoutControlItem3.Size = new Size(205, 42);
+            layoutControlItem3.TextSize = new Size(0, 0);
+            layoutControlItem3.TextVisible = false;
+            // 
             // emptySpaceItem2
             // 
             emptySpaceItem2.AllowHotTrack = false;
@@ -300,11 +307,11 @@
             // 
             // layoutControl1
             // 
-            layoutControl1.Location = new Point(158, 38);
+            layoutControl1.Location = new Point(118, 29);
             layoutControl1.Margin = new Padding(2);
             layoutControl1.Name = "layoutControl1";
             layoutControl1.Root = Root;
-            layoutControl1.Size = new Size(3, 3);
+            layoutControl1.Size = new Size(2, 2);
             layoutControl1.TabIndex = 0;
             layoutControl1.Text = "layoutControl1";
             // 
@@ -316,25 +323,19 @@
             Root.Size = new Size(14, 16);
             Root.TextVisible = false;
             // 
-            // btnTest
+            // txtPort
             // 
-            btnTest.ImageOptions.Image = (Image)resources.GetObject("simpleButton2.ImageOptions.Image");
-            btnTest.Location = new Point(8, 136);
-            btnTest.Name = "btnTest";
-            btnTest.Size = new Size(203, 38);
-            btnTest.StyleController = layoutControl2;
-            btnTest.TabIndex = 5;
-            btnTest.Text = "Test";
-            btnTest.Click += btnTest_Click;
-            // 
-            // layoutControlItem3
-            // 
-            layoutControlItem3.Control = btnTest;
-            layoutControlItem3.Location = new Point(0, 126);
-            layoutControlItem3.Name = "layoutControlItem3";
-            layoutControlItem3.Size = new Size(205, 42);
-            layoutControlItem3.TextSize = new Size(0, 0);
-            layoutControlItem3.TextVisible = false;
+            txtPort.EditValue = new decimal(new int[] { 5432, 0, 0, 0 });
+            txtPort.Location = new Point(104, 70);
+            txtPort.Margin = new Padding(2);
+            txtPort.Name = "txtPort";
+            txtPort.Properties.Appearance.Options.UseTextOptions = true;
+            txtPort.Properties.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            txtPort.Properties.Mask.MaskType = DevExpress.XtraEditors.Mask.MaskType.Numeric;
+            txtPort.Properties.ReadOnly = true;
+            txtPort.Size = new Size(549, 24);
+            txtPort.StyleController = layoutControl2;
+            txtPort.TabIndex = 3;
             // 
             // ParametersUc
             // 
@@ -350,7 +351,6 @@
             layoutControl2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)txtChifaPath.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)txtServerName.Properties).EndInit();
-            ((System.ComponentModel.ISupportInitialize)txtPort.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup1).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup2).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem6).EndInit();
@@ -362,10 +362,11 @@
             ((System.ComponentModel.ISupportInitialize)btnBrowse).EndInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem3).EndInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem2).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControl1).EndInit();
             ((System.ComponentModel.ISupportInitialize)Root).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)txtPort.Properties).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -383,7 +384,6 @@
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem4;
         private ComboBoxEdit txtServerName;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem5;
-        private SpinEdit txtPort;
         private SimpleButton btnBackup;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem6;
         private SimpleButton btnRestor;
@@ -396,5 +396,6 @@
         private DevExpress.XtraLayout.EmptySpaceItem emptySpaceItem1;
         private SimpleButton btnTest;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem3;
+        private TextEdit txtPort;
     }
 }

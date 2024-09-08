@@ -1,9 +1,11 @@
 ﻿using DevExpress.XtraGrid.Views.Grid;
 
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-
+using Serilog;
 namespace CHIFA.Pro.Helpers;
 
 public static class XtraHelper
@@ -86,38 +88,59 @@ public static class XtraHelper
 
     public static void Log(this Exception ex, [CallerMemberName] string methodName = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0)
     {
+        Serilog.Log.Error(ex, "An error occurred in method {MethodName}, file {FileName}, line {LineNumber}", methodName, fileName, lineNumber);
         var result = ex.Message;
         if (Debugger.IsAttached)
         {
             result = $"Method: {methodName}\nFile:{fileName}\nLine:{lineNumber}\n{ex}";
         }
-        XtraMessageBox.Show(result, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        XtraMessageBox.Show(result, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);    
     }
 
-    public static string ListLocalIPAddresses()
+    public static string GetThis_PC_IP_Address()
     {
-        foreach (NetworkInterface networkInterface in NetworkInterface.GetAllNetworkInterfaces())
+        IPAddress[] addresses = Dns.GetHostAddresses(Dns.GetHostName());
+        IPAddress? localIP = addresses.FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip));         
+        return localIP?.ToString()??"";        
+    }
+    public static async Task<string[]> ListAllDevicesOnLocalNetwork()
+    {
+        var activeIPs = new ConcurrentBag<string>();
+        var localIP = GetThis_PC_IP_Address();
+
+        if (!string.IsNullOrEmpty(localIP))
         {
-            if (networkInterface.OperationalStatus != OperationalStatus.Up ||
-                networkInterface.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+            var baseIP = localIP[..(localIP.LastIndexOf('.') + 1)];
+            Task[] tasks = Enumerable.Range(2, 254).AsParallel().Select(i =>
             {
-                continue;
-            }
-
-            IPInterfaceProperties ipProperties = networkInterface.GetIPProperties();
-
-            foreach (UnicastIPAddressInformation ip in ipProperties.UnicastAddresses)
-            {
-                if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork &&
-                    !IPAddress.IsLoopback(ip.Address) &&
-                    !ip.Address.ToString().StartsWith("169.254."))
+                var ip = baseIP + i;
+                return Task.Run(async () =>
                 {
-                    return ip.Address.ToString();
-                }
-            }
+                    var ping = new Ping();
+                    try
+                    {
+                        PingReply reply = await ping.SendPingAsync(ip, 500);
+                        if (reply.Status == IPStatus.Success)
+                        {
+                            activeIPs.Add(ip);
+                        }
+                    }
+                    catch
+                    {
+                        // Handle exceptions (e.g., network errors)
+                    }
+                });
+            }).ToArray();
+            await Task.WhenAll(tasks);
         }
-        return "";
+        activeIPs.Add("127.0.0.1");
+        activeIPs.Add("localhost");
+        return activeIPs.ToArray();
     }
 
+    public static void SetServer(string server)
+    {
+        Environment.SetEnvironmentVariable(ChifaDb.CHIFA_OFFICINE_SERVER, server, EnvironmentVariableTarget.User);
+    }
 
 }

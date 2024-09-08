@@ -15,7 +15,7 @@ public partial class frmMain : XtraForm
     }
     public static Image Image(int index) => (Application.OpenForms["frmMain"] as frmMain)!.AppImages.ImageSource.Images[index];
 
-    private void accActes_Click(object sender, EventArgs e) => sender.NavigateTo<SpecialitesUc>();
+    private void accSpecialists_Click(object sender, EventArgs e) => sender.NavigateTo<SpecialitesUc>();
 
     private void accAssures_Click(object sender, EventArgs e) => sender.NavigateTo<AssuresUc>();
 
@@ -51,19 +51,17 @@ public partial class frmMain : XtraForm
     {
         try
         {
-            this.NavigateTo<HomeUc>();
-
             ChangeNameBasedOnDotNetVersion();
 
-            var check = DbChecker.RunServerAsync();
+            this.NavigateTo<HomeUc>();
+
+            await DbChecker.RunServerAsync();
 
             var load = LoadServerInfo();
 
-            await Task.WhenAll(check, load);
+            var update =  UpdateAppAsync();
 
-            await UpdateAppAsync();
-
-
+            await Task.WhenAll(load,update);
 
         }
         catch (Exception ex)
@@ -72,14 +70,28 @@ public partial class frmMain : XtraForm
         }
     }
 
-    private async Task UpdateAppAsync()
+    public static async Task UpdateAppAsync(bool showMessage=false)
     {
         var mgr = new UpdateManager("https://nadirsmartapp.blob.core.windows.net/chifa-pro");
+
+        if (!mgr.IsInstalled)            return;
 
         // check for new version
         var newVersion = await mgr.CheckForUpdatesAsync();
         if (newVersion == null)
+        {
+            if(showMessage)
+            {
+                var result = XtraMessageBox.Show("No new version available,You are using the latest Version", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
             return; // no update available
+        }
+
+        if (showMessage)
+        {
+            var result = XtraMessageBox.Show("New version available. Updating now", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);            
+        }
 
         // download new version
         await mgr.DownloadUpdatesAsync(newVersion);
@@ -93,17 +105,15 @@ public partial class frmMain : XtraForm
     {
         try
         {
-            txtDatabase.Text = AppSettings.Default.DbName;
+            txtDatabase.Text = "CHIFA_OFFICINE";
+            txtIP.Text  = XtraHelper.GetThis_PC_IP_Address();
+            txtServer.Text = ChifaDb.Server;
 
             var db = new ChifaDb();
-            var server = await db.Parametres.FirstOrDefaultAsync();
-            if (server == null)
-                return;
+            var officine = await db.Parametres.FirstOrDefaultAsync();         
 
-            txtCodePs.Text = server.CodePs ?? "";
-            txtServer.Text = server.PosteTelech;
-            txtPharmacie.Text = server?.Nom + " " + server?.Prenom;
-            txtIP.Text = XtraHelper.ListLocalIPAddresses();
+            txtCodePs.Text = officine?.CodePs ?? "";
+            txtPharmacie.Text = officine?.Nom + " " + officine?.Prenom;
 
         }
         catch (Exception ex)

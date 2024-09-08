@@ -187,7 +187,7 @@
             accActes.Name = "accActes";
             accActes.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accActes.Text = "SPECIALETES";
-            accActes.Click += accActes_Click;
+            accActes.Click += accSpecialists_Click;
             // 
             // accordionControlSeparator2
             // 
