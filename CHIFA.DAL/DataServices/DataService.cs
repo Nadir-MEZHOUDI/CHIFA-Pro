@@ -11,11 +11,12 @@ namespace CHIFA.DAL.DataServices;
 
 public static class DataService
 {
+    public static Period period = new();
     private static readonly DateTime YearAgo = DateTime.Now.AddYears(-1);
     private static DateTime? maxDate;
     private static DateTime? minDate;
 
-    public static async Task<IEnumerable<BordereauDto>> GetAllBordereauxAsync(Period? period = default, Expression<Func<Bordereau, bool>>? predicate = default)
+    public static async Task<IEnumerable<BordereauDto>> GetAllBordereauxAsync(  Expression<Func<Bordereau, bool>>? predicate = default)
     {        
         await using var db = new ChifaDb();
         var list = await db.Bordereaus
@@ -42,7 +43,7 @@ public static class DataService
         return list;
     }
 
-    public static async Task<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period = null, Expression<Func<Facture, bool>>? predicate = default)
+    public static async Task<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period =null,  Expression<Func<Facture, bool>>? predicate = default)
     {
         predicate = predicate.SetPeriod(period);
 
@@ -137,11 +138,6 @@ public static class DataService
             .ConfigureAwait(false);
     }
 
-    public static async Task<Facture?> GetFactureByIdAsync(string id)
-    {
-        await using var db = new ChifaDb();
-        return await db.Factures.FirstOrDefaultAsync(x => x.NumFact == id);
-    }
 
     public static async Task<Parametre?> GetFirstOfficineAsync()
     {
@@ -225,7 +221,7 @@ public static class DataService
     }
 
     public static async Task<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang, bool proche,
-        Period? period = null, Expression<Func<DetailFact?, bool>>? predicate = default)
+          Expression<Func<DetailFact?, bool>>? predicate = default)
     {
     
         await using var db = new ChifaDb();

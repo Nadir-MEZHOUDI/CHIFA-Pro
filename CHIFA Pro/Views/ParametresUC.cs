@@ -86,7 +86,7 @@ public partial class ParametersUc : XtraUserControl,INavigable
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                await DbChecker.Restor(dialog.FileName);
+                await DbChecker.Restore(dialog.FileName);
             }
         }
         catch (Exception ex)

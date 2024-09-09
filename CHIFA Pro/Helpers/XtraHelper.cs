@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using Serilog;
 namespace CHIFA.Pro.Helpers;
 
 public static class XtraHelper
@@ -78,6 +77,7 @@ public static class XtraHelper
     }
     public static void SetOptions(this GridView grid)
     {
+        if(grid == null) return;
         grid.OptionsBehavior.ReadOnly = true;
         grid.OptionsBehavior.Editable = false;
         grid.OptionsFind.AlwaysVisible = true;

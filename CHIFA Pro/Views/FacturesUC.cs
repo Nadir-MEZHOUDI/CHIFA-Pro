@@ -120,7 +120,7 @@ public partial class FacturesUC : XtraUserControl, INavigable
                 }
             }
             viewFactures.FocusedRowHandle = 0;
-            await factureDtoBindingSource.LoadDataAsync(viewFactures, () => DataService.GetAllFacturesAsync(last, ts, period, predicate));
+            await factureDtoBindingSource.LoadDataAsync(viewFactures, () => DataService.GetAllFacturesAsync(last, ts,period, predicate));
         }
         catch (Exception ex)
         {

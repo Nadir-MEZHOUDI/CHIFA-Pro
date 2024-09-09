@@ -1,8 +1,8 @@
-﻿using CHIFA.DAL.Statistics;
-
-using DataModel;
+﻿using DataModel;
 
 using LinqToDB;
+
+using System.Globalization;
 
 namespace CHIFA.DAL.DataServices;
 
@@ -13,7 +13,7 @@ public static class WeekStatService
 
         await using var db = new ChifaDb();
         DateTime firstDate = DateTime.Today.AddDays(-8);
-        var weekStats = await db.Factures
+        List<WeekStat> weekStats = await db.Factures
                                   .Where(f => f.DateFact.Value.Date >= firstDate)
                                   .GroupBy(f => f.DateFact.Value.Date)
                                   .Select(g => new WeekStat
@@ -32,7 +32,29 @@ public static class WeekStatService
                                .Select(date => weekStats.FirstOrDefault(ws => ws.Date == date) ?? new WeekStat(date))
                                .OrderByDescending(ws => ws.Date)
                                .ToList();
-         
+
     }
+    public class WeekStat
+    {
+        public WeekStat(DateTime date)
+        {
+            Date = date;
+        }
+        public WeekStat()
+        {
+
+        }
+
+        private static readonly CultureInfo culture = new("ar");
+        public DateOnly DateFact => DateOnly.FromDateTime(Date);
+        public string Day => DateFact.ToString("dddd", culture).ToUpper();
+        public int Count { get; set; } = 0;
+        public DateTime Date { get; set; }
+        public decimal? Montant { get; set; } = 0;
+        public decimal? MontantAs { get; set; } = 0;
+        public decimal? MontantOff { get; set; } = 0;
+        public decimal? Maj { get; set; } = 0;
+    }
+
 }
 

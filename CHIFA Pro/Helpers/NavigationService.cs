@@ -6,7 +6,6 @@ internal static class NavigationService
 {
     private static frmMain? frmMain;
     private static frmMain? Main => frmMain ??= Application.OpenForms.OfType<frmMain>().FirstOrDefault();
-
     public static void NavigateTo<T>(this object sender) where T : UserControl, INavigable, new()
     {
         if (Main?.tabContainer == null) return;
