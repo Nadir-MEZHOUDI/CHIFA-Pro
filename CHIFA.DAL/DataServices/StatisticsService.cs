@@ -209,6 +209,7 @@ public static class StatisticsService
                 Local = x.FirstOrDefault()!.Local,
                 Generic = x.FirstOrDefault()!.Generic,
                 InfTr = x.FirstOrDefault()!.InfTr,
+                Maj = x.Sum(m => m.MajLocal),
             })
             .OrderByDescending(x => x.Qt)
             .ToList();

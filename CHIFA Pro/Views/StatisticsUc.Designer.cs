@@ -1835,7 +1835,7 @@ namespace CHIFA.Pro.Others
             tabYearly.Controls.Add(chartYearly);
             tabYearly.ImageOptions.Image = (Image)resources.GetObject("tabYearly.ImageOptions.Image");
             tabYearly.Name = "tabYearly";
-            tabYearly.Size = new Size(1214, 695);
+            tabYearly.Size = new Size(1241, 673);
             tabYearly.Text = "ANNUELLES";
             // 
             // chartYearly
@@ -1884,7 +1884,7 @@ namespace CHIFA.Pro.Others
     series16,
     series17
     };
-            chartYearly.Size = new Size(1214, 695);
+            chartYearly.Size = new Size(1241, 673);
             chartYearly.TabIndex = 0;
             // 
             // tabMonthly
@@ -2424,7 +2424,7 @@ namespace CHIFA.Pro.Others
             tabProducts2.Controls.Add(chartProducts);
             tabProducts2.ImageOptions.Image = (Image)resources.GetObject("tabProducts2.ImageOptions.Image");
             tabProducts2.Name = "tabProducts2";
-            tabProducts2.Size = new Size(1241, 673);
+            tabProducts2.Size = new Size(1214, 695);
             tabProducts2.Text = "PRODUITS";
             // 
             // chartProducts
@@ -2442,24 +2442,24 @@ namespace CHIFA.Pro.Others
             secondaryAxisx4.Alignment = AxisAlignment.Near;
             secondaryAxisx4.AxisID = 0;
             secondaryAxisx4.Name = "Secondary AxisX 1";
-            secondaryAxisx4.VisibleInPanesSerializable = "0";
+            secondaryAxisx4.VisibleInPanesSerializable = "1";
             secondaryAxisx5.Alignment = AxisAlignment.Near;
             secondaryAxisx5.AxisID = 1;
             secondaryAxisx5.Name = "Secondary AxisX 2";
-            secondaryAxisx5.VisibleInPanesSerializable = "1";
+            secondaryAxisx5.VisibleInPanesSerializable = "0";
             xyDiagram7.SecondaryAxesX.AddRange(new SecondaryAxisX[] { secondaryAxisx4, secondaryAxisx5 });
             secondaryAxisy15.Alignment = AxisAlignment.Near;
             secondaryAxisy15.AxisID = 0;
             secondaryAxisy15.Name = "Secondary AxisY 1";
             secondaryAxisy15.Title.Text = "Qt (Boites)";
             secondaryAxisy15.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
-            secondaryAxisy15.VisibleInPanesSerializable = "0";
+            secondaryAxisy15.VisibleInPanesSerializable = "1";
             secondaryAxisy16.Alignment = AxisAlignment.Near;
             secondaryAxisy16.AxisID = 1;
             secondaryAxisy16.Name = "Secondary AxisY 2";
             secondaryAxisy16.Title.Text = "Marge + Maj";
             secondaryAxisy16.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
-            secondaryAxisy16.VisibleInPanesSerializable = "1";
+            secondaryAxisy16.VisibleInPanesSerializable = "0";
             xyDiagram7.SecondaryAxesY.AddRange(new SecondaryAxisY[] { secondaryAxisy15, secondaryAxisy16 });
             chartProducts.Diagram = xyDiagram7;
             chartProducts.Dock = DockStyle.Fill;
@@ -2486,10 +2486,10 @@ namespace CHIFA.Pro.Others
             series30.TopNOptions.Count = 20;
             series30.TopNOptions.Enabled = true;
             series30.TopNOptions.ShowOthers = false;
-            series30.ValueDataMembersSerializable = "Prix";
+            series30.ValueDataMembersSerializable = "Qt";
             sideBySideBarSeriesView23.AxisXName = "Secondary AxisX 1";
             sideBySideBarSeriesView23.AxisYName = "Secondary AxisY 1";
-            sideBySideBarSeriesView23.PaneName = "Pane 1";
+            sideBySideBarSeriesView23.PaneName = "Pane 2";
             series30.View = sideBySideBarSeriesView23;
             series31.ArgumentDataMember = "NomCom";
             series31.ColorDataMember = "Local";
@@ -2501,10 +2501,10 @@ namespace CHIFA.Pro.Others
             series31.TopNOptions.Count = 20;
             series31.TopNOptions.Enabled = true;
             series31.TopNOptions.ShowOthers = false;
-            series31.ValueDataMembersSerializable = "Qt";
+            series31.ValueDataMembersSerializable = "Brut";
             sideBySideBarSeriesView24.AxisXName = "Secondary AxisX 2";
             sideBySideBarSeriesView24.AxisYName = "Secondary AxisY 2";
-            sideBySideBarSeriesView24.PaneName = "Pane 2";
+            sideBySideBarSeriesView24.PaneName = "Pane 1";
             series31.View = sideBySideBarSeriesView24;
             chartProducts.SeriesSerializable = new Series[]
     {
@@ -2512,7 +2512,7 @@ namespace CHIFA.Pro.Others
     series30,
     series31
     };
-            chartProducts.Size = new Size(1241, 673);
+            chartProducts.Size = new Size(1214, 695);
             chartProducts.TabIndex = 14;
             // 
             // repositoryItemRibbonSearchEdit1

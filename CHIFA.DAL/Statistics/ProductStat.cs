@@ -1,4 +1,4 @@
-﻿
+﻿using CHIFA.DAL.Helpers;
 namespace CHIFA.DAL.Statistics;
 
 public class ProductStat
@@ -17,4 +17,8 @@ public class ProductStat
     public string? Condition { get; init; }  
     public decimal Total => Qt * Prix;
     public string Produits => $"{NomCom} {Dosage} {Condition}";
+
+    public decimal? Maj { get;  set; }
+    public decimal? Marge => (Total / 6).ToDecimal();
+    public decimal? Brut => (Maj + Marge).ToDecimal();
 }
