@@ -5,6 +5,7 @@ using CHIFA.DAL.Statistics;
 using DataModel;
 
 using LinqToDB;
+using LinqToDB.Tools;
 
 using System.Linq.Expressions;
 
@@ -134,13 +135,14 @@ public static class StatisticsService
         var list = await db.DetailFacts
             .Where(predicate.SetPeriod(period))
             .Select(
-            x => new {x.NumEnr,x.Local,  x.Qte, x.Mont, x.Ppa ,x.Medicament.CodeDci,x.Medicament.NomDci,x.Medicament.FullName })
+            x => new {x.NumEnr,x.Local, x.InfTr,x.MajLocal,x.MajSub, x.Qte, x.Mont, x.Ppa ,x.Medicament.NomCom,x.Medicament.CodeDci,x.Medicament.NomDci,x.Medicament.FullName })
             .ToListAsync();
 
         var query = list            
             .GroupBy(x => x.NumEnr)
             .Select(x => new ProductStat
             {
+                NomCom= x.FirstOrDefault().NomCom,
                 CodeDci = x.FirstOrDefault().CodeDci,
                 Dci = x.FirstOrDefault().NomDci,
                 Produits =x.FirstOrDefault().FullName,
@@ -148,7 +150,7 @@ public static class StatisticsService
                 Prix = x.FirstOrDefault().Ppa,
                 Montant = x.Sum(m => m.Mont),
                 NumEnr = x.FirstOrDefault()!.NumEnr,
-                Local = x.FirstOrDefault()!.Local
+                Local = x.FirstOrDefault()!.Local,
             })
             .OrderByDescending(x => x.Qt)
             .ToList();

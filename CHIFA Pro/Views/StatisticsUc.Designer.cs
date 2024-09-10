@@ -111,6 +111,18 @@ namespace CHIFA.Pro.Others
             var sideBySideBarSeriesView19 = new SideBySideBarSeriesView();
             var series24 = new Series();
             var sideBySideBarSeriesView20 = new SideBySideBarSeriesView();
+            var xyDiagram6 = new XYDiagram();
+            var xyDiagramPane10 = new XYDiagramPane();
+            var xyDiagramPane11 = new XYDiagramPane();
+            var secondaryAxisx4 = new SecondaryAxisX();
+            var secondaryAxisx5 = new SecondaryAxisX();
+            var secondaryAxisy14 = new SecondaryAxisY();
+            var secondaryAxisy15 = new SecondaryAxisY();
+            var series25 = new Series();
+            var series26 = new Series();
+            var sideBySideBarSeriesView21 = new SideBySideBarSeriesView();
+            var series27 = new Series();
+            var sideBySideBarSeriesView22 = new SideBySideBarSeriesView();
             var editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
             var serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
             var serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
@@ -248,8 +260,8 @@ namespace CHIFA.Pro.Others
             colBrute3 = new DevExpress.XtraGrid.Columns.GridColumn();
             tabDaily = new DevExpress.XtraTab.XtraTabPage();
             chartDaily = new ChartControl();
-            tabProducts = new DevExpress.XtraTab.XtraTabPage();
-            chartProducts = new ChartControl();
+            tabProducts2 = new DevExpress.XtraTab.XtraTabPage();
+            chartControl1 = new ChartControl();
             repositoryItemRibbonSearchEdit1 = new DevExpress.XtraBars.Ribbon.Internal.RepositoryItemRibbonSearchEdit();
             colPA = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)weeklyStatBindingSource).BeginInit();
@@ -372,8 +384,20 @@ namespace CHIFA.Pro.Others
             ((System.ComponentModel.ISupportInitialize)sideBySideBarSeriesView19).BeginInit();
             ((System.ComponentModel.ISupportInitialize)series24).BeginInit();
             ((System.ComponentModel.ISupportInitialize)sideBySideBarSeriesView20).BeginInit();
-            tabProducts.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)chartProducts).BeginInit();
+            tabProducts2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)chartControl1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)xyDiagram6).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)xyDiagramPane10).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)xyDiagramPane11).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)secondaryAxisx4).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)secondaryAxisx5).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)secondaryAxisy14).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)secondaryAxisy15).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)series25).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)series26).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)sideBySideBarSeriesView21).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)series27).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)sideBySideBarSeriesView22).BeginInit();
             ((System.ComponentModel.ISupportInitialize)repositoryItemRibbonSearchEdit1).BeginInit();
             SuspendLayout();
             // 
@@ -799,7 +823,7 @@ namespace CHIFA.Pro.Others
             tabClientsTable.ImageOptions.Image = (Image)resources.GetObject("tabClientsTable.ImageOptions.Image");
             tabClientsTable.Margin = new Padding(4, 3, 4, 3);
             tabClientsTable.Name = "tabClientsTable";
-            tabClientsTable.Size = new Size(1147, 630);
+            tabClientsTable.Size = new Size(1120, 643);
             tabClientsTable.Text = "CLIENTS";
             // 
             // gridByClient
@@ -811,7 +835,7 @@ namespace CHIFA.Pro.Others
             gridByClient.MainView = viewClients;
             gridByClient.Margin = new Padding(4, 3, 4, 3);
             gridByClient.Name = "gridByClient";
-            gridByClient.Size = new Size(1147, 630);
+            gridByClient.Size = new Size(1120, 643);
             gridByClient.TabIndex = 0;
             gridByClient.ViewCollection.AddRange(new BaseView[] { viewClients, gridView2 });
             // 
@@ -1209,7 +1233,7 @@ namespace CHIFA.Pro.Others
             tabClients.Controls.Add(chrtCntrl);
             tabClients.ImageOptions.Image = (Image)resources.GetObject("tabClients.ImageOptions.Image");
             tabClients.Name = "tabClients";
-            tabClients.Size = new Size(1120, 643);
+            tabClients.Size = new Size(1147, 630);
             tabClients.Text = "CLIENTS";
             // 
             // chrtCntrl
@@ -1334,7 +1358,7 @@ namespace CHIFA.Pro.Others
     series4
     };
             chrtCntrl.SeriesTemplate.ArgumentDataMember = "Malade";
-            chrtCntrl.Size = new Size(1120, 643);
+            chrtCntrl.Size = new Size(1147, 630);
             chrtCntrl.TabIndex = 0;
             // 
             // tabControl
@@ -1348,8 +1372,9 @@ namespace CHIFA.Pro.Others
             tabControl.SelectedTabPage = tabBordereauxTable;
             tabControl.Size = new Size(1285, 649);
             tabControl.TabIndex = 1;
-            tabControl.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] { tabBordereauxTable, tabBordereaux, tabMonthlyTable, tabMonthly, tabWeeklyTable, tabWeekly, tabDailyTable, tabDaily, tabProductTable, tabProducts, tabClientsTable, tabClients });
+            tabControl.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] { tabBordereauxTable, tabBordereaux, tabMonthlyTable, tabMonthly, tabWeeklyTable, tabWeekly, tabDailyTable, tabDaily, tabProductTable, tabProducts2, tabClientsTable, tabClients });
             tabControl.SelectedPageChanged += tabControl_SelectedPageChanged;
+            tabControl.Click += tabControl_Click;
             // 
             // tabBordereaux
             // 
@@ -1978,21 +2003,98 @@ namespace CHIFA.Pro.Others
             chartDaily.Size = new Size(1147, 630);
             chartDaily.TabIndex = 0;
             // 
-            // tabProducts
+            // tabProducts2
             // 
-            tabProducts.Controls.Add(chartProducts);
-            tabProducts.ImageOptions.Image = (Image)resources.GetObject("tabProducts.ImageOptions.Image");
-            tabProducts.Name = "tabProducts";
-            tabProducts.Size = new Size(1120, 643);
-            tabProducts.Text = "PROUITS";
+            tabProducts2.Controls.Add(chartControl1);
+            tabProducts2.ImageOptions.Image = (Image)resources.GetObject("tabProducts2.ImageOptions.Image");
+            tabProducts2.Name = "tabProducts2";
+            tabProducts2.Size = new Size(1120, 643);
+            tabProducts2.Text = "PRODUITS";
             // 
-            // chartProducts
+            // chartControl1
             // 
-            chartProducts.Dock = DockStyle.Fill;
-            chartProducts.Location = new Point(0, 0);
-            chartProducts.Name = "chartProducts";
-            chartProducts.Size = new Size(1120, 643);
-            chartProducts.TabIndex = 0;
+            chartControl1.DataSource = productStatBindingSource;
+            xyDiagram6.AxisX.VisibleInPanesSerializable = "-1";
+            xyDiagram6.AxisY.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+            xyDiagram6.AxisY.VisibleInPanesSerializable = "-1";
+            xyDiagramPane10.Name = "Pane 1";
+            xyDiagramPane10.PaneID = 0;
+            xyDiagramPane11.Name = "Pane 2";
+            xyDiagramPane11.PaneID = 1;
+            xyDiagram6.Panes.AddRange(new XYDiagramPane[] { xyDiagramPane10, xyDiagramPane11 });
+            secondaryAxisx4.Alignment = AxisAlignment.Near;
+            secondaryAxisx4.AxisID = 0;
+            secondaryAxisx4.Name = "Secondary AxisX 1";
+            secondaryAxisx4.VisibleInPanesSerializable = "0";
+            secondaryAxisx5.Alignment = AxisAlignment.Near;
+            secondaryAxisx5.AxisID = 1;
+            secondaryAxisx5.Name = "Secondary AxisX 2";
+            secondaryAxisx5.VisibleInPanesSerializable = "1";
+            xyDiagram6.SecondaryAxesX.AddRange(new SecondaryAxisX[] { secondaryAxisx4, secondaryAxisx5 });
+            secondaryAxisy14.Alignment = AxisAlignment.Near;
+            secondaryAxisy14.AxisID = 0;
+            secondaryAxisy14.Name = "Secondary AxisY 1";
+            secondaryAxisy14.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+            secondaryAxisy14.VisibleInPanesSerializable = "0";
+            secondaryAxisy15.Alignment = AxisAlignment.Near;
+            secondaryAxisy15.AxisID = 1;
+            secondaryAxisy15.Name = "Secondary AxisY 2";
+            secondaryAxisy15.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+            secondaryAxisy15.VisibleInPanesSerializable = "1";
+            xyDiagram6.SecondaryAxesY.AddRange(new SecondaryAxisY[] { secondaryAxisy14, secondaryAxisy15 });
+            chartControl1.Diagram = xyDiagram6;
+            chartControl1.Dock = DockStyle.Fill;
+            chartControl1.Location = new Point(0, 0);
+            chartControl1.Name = "chartControl1";
+            series25.ArgumentDataMember = "NomCom";
+            series25.ColorDataMember = "Local";
+            series25.Name = "Mont";
+            series25.SeriesID = 0;
+            series25.SeriesPointsSorting = SortingMode.Descending;
+            series25.SeriesPointsSortingKey = SeriesPointKey.Value_1;
+            series25.ToolTipHintDataMember = "Produits";
+            series25.TopNOptions.Count = 10;
+            series25.TopNOptions.Enabled = true;
+            series25.TopNOptions.ShowOthers = false;
+            series25.ValueDataMembersSerializable = "Total";
+            series26.ArgumentDataMember = "NomCom";
+            series26.ColorDataMember = "Local";
+            series26.Name = "Qt";
+            series26.SeriesID = 3;
+            series26.SeriesPointsSorting = SortingMode.Descending;
+            series26.SeriesPointsSortingKey = SeriesPointKey.Value_1;
+            series26.ToolTipHintDataMember = "Produits";
+            series26.TopNOptions.Count = 10;
+            series26.TopNOptions.Enabled = true;
+            series26.TopNOptions.ShowOthers = false;
+            series26.ValueDataMembersSerializable = "Prix";
+            sideBySideBarSeriesView21.AxisXName = "Secondary AxisX 1";
+            sideBySideBarSeriesView21.AxisYName = "Secondary AxisY 1";
+            sideBySideBarSeriesView21.PaneName = "Pane 1";
+            series26.View = sideBySideBarSeriesView21;
+            series27.ArgumentDataMember = "NomCom";
+            series27.ColorDataMember = "Local";
+            series27.Name = "Net";
+            series27.SeriesID = 2;
+            series27.SeriesPointsSorting = SortingMode.Descending;
+            series27.SeriesPointsSortingKey = SeriesPointKey.Value_1;
+            series27.ToolTipHintDataMember = "Produits";
+            series27.TopNOptions.Count = 10;
+            series27.TopNOptions.Enabled = true;
+            series27.TopNOptions.ShowOthers = false;
+            series27.ValueDataMembersSerializable = "Qt";
+            sideBySideBarSeriesView22.AxisXName = "Secondary AxisX 2";
+            sideBySideBarSeriesView22.AxisYName = "Secondary AxisY 2";
+            sideBySideBarSeriesView22.PaneName = "Pane 2";
+            series27.View = sideBySideBarSeriesView22;
+            chartControl1.SeriesSerializable = new Series[]
+    {
+    series25,
+    series26,
+    series27
+    };
+            chartControl1.Size = new Size(1120, 643);
+            chartControl1.TabIndex = 14;
             // 
             // repositoryItemRibbonSearchEdit1
             // 
@@ -2134,8 +2236,20 @@ namespace CHIFA.Pro.Others
             ((System.ComponentModel.ISupportInitialize)sideBySideBarSeriesView20).EndInit();
             ((System.ComponentModel.ISupportInitialize)series24).EndInit();
             ((System.ComponentModel.ISupportInitialize)chartDaily).EndInit();
-            tabProducts.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)chartProducts).EndInit();
+            tabProducts2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)xyDiagramPane10).EndInit();
+            ((System.ComponentModel.ISupportInitialize)xyDiagramPane11).EndInit();
+            ((System.ComponentModel.ISupportInitialize)secondaryAxisx4).EndInit();
+            ((System.ComponentModel.ISupportInitialize)secondaryAxisx5).EndInit();
+            ((System.ComponentModel.ISupportInitialize)secondaryAxisy14).EndInit();
+            ((System.ComponentModel.ISupportInitialize)secondaryAxisy15).EndInit();
+            ((System.ComponentModel.ISupportInitialize)xyDiagram6).EndInit();
+            ((System.ComponentModel.ISupportInitialize)series25).EndInit();
+            ((System.ComponentModel.ISupportInitialize)sideBySideBarSeriesView21).EndInit();
+            ((System.ComponentModel.ISupportInitialize)series26).EndInit();
+            ((System.ComponentModel.ISupportInitialize)sideBySideBarSeriesView22).EndInit();
+            ((System.ComponentModel.ISupportInitialize)series27).EndInit();
+            ((System.ComponentModel.ISupportInitialize)chartControl1).EndInit();
             ((System.ComponentModel.ISupportInitialize)repositoryItemRibbonSearchEdit1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -2219,8 +2333,6 @@ namespace CHIFA.Pro.Others
         private DevExpress.XtraGrid.Columns.GridColumn colBrute;
         private DevExpress.XtraGrid.Columns.GridColumn colNet;
         private DevExpress.XtraGrid.Columns.GridColumn colEcart;
-        private DevExpress.XtraTab.XtraTabPage tabProducts;
-        private ChartControl chartProducts;
         private DevExpress.XtraTab.XtraTabPage tabWeeklyTable;
         private DevExpress.XtraTab.XtraTabPage tabDailyTable;
         private BindingSource monthlyStatBindingSource;
@@ -2277,5 +2389,7 @@ namespace CHIFA.Pro.Others
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
+        private DevExpress.XtraTab.XtraTabPage tabProducts2;
+        private ChartControl chartControl1;
     }
 }

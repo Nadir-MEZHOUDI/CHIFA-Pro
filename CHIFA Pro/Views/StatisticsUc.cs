@@ -117,7 +117,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             {
                 byClientStatBindingSource.DataSource = await StatisticsService.ByClientAsync();
             }
-            if (tab.Name is nameof(tabProducts) or nameof(tabProductTable))
+            if (tab.Name is nameof(tabProducts2) or nameof(tabProductTable))
             {
                 productStatBindingSource.DataSource = await StatisticsService.ProductsAsync();
             }
@@ -135,5 +135,10 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     private async void tabControl_SelectedPageChanged(object sender, TabPageChangedEventArgs e)
     {
         await ReloadSelectedTable(e.Page);
+    }
+
+    private void tabControl_Click(object sender, EventArgs e)
+    {
+
     }
 }

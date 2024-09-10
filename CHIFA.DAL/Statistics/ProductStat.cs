@@ -11,4 +11,5 @@ public class ProductStat
     public string? Dci { get; internal set; }
     public bool? Local { get; internal set; }
     public string NumEnr { get; internal set; }
+    public string NomCom { get; internal set; }
 }
