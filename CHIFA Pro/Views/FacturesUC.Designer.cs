@@ -50,6 +50,7 @@
             colNumAssure = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             dockManager1 = new DevExpress.XtraBars.Docking.DockManager(components);
             dockPanel2 = new DevExpress.XtraBars.Docking.DockPanel();
             dockPanel2_Container = new DevExpress.XtraBars.Docking.ControlContainer();
@@ -65,7 +66,6 @@
             colMontAss = new DevExpress.XtraGrid.Columns.GridColumn();
             colMontPharm = new DevExpress.XtraGrid.Columns.GridColumn();
             colMajLocal = new DevExpress.XtraGrid.Columns.GridColumn();
-            colMajSub = new DevExpress.XtraGrid.Columns.GridColumn();
             colTS = new DevExpress.XtraGrid.Columns.GridColumn();
             ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
             btnRefresh = new DevExpress.XtraBars.BarButtonItem();
@@ -128,12 +128,12 @@
             gridFactures.DataSource = factureDtoBindingSource;
             gridFactures.Dock = DockStyle.Fill;
             gridFactures.EmbeddedNavigator.Margin = new Padding(5, 4, 5, 4);
-            gridFactures.Location = new Point(0, 91);
+            gridFactures.Location = new Point(0, 66);
             gridFactures.MainView = viewFactures;
             gridFactures.Margin = new Padding(5, 4, 5, 4);
             gridFactures.Name = "gridFactures";
             gridFactures.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { repositoryItemDateEdit1 });
-            gridFactures.Size = new Size(1381, 301);
+            gridFactures.Size = new Size(1381, 326);
             gridFactures.TabIndex = 0;
             gridFactures.ViewCollection.AddRange(new BaseView[] { viewFactures });
             // 
@@ -143,7 +143,7 @@
             // 
             // viewFactures
             // 
-            viewFactures.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNumFact, colCentre, colDateFact, colDateSoin, colMontFact, colMontAss1, colMontOff, colAssure, colMajoration, colSpecialite, colBordereau, colMalade, colNumAssure, gridColumn3, gridColumn4 });
+            viewFactures.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNumFact, colCentre, colDateFact, colDateSoin, colMontFact, colMontAss1, colMontOff, colAssure, colMajoration, colSpecialite, colBordereau, colMalade, colNumAssure, gridColumn3, gridColumn4, gridColumn5 });
             viewFactures.DetailHeight = 481;
             viewFactures.GridControl = gridFactures;
             viewFactures.Name = "viewFactures";
@@ -242,7 +242,7 @@
             colAssure.MinWidth = 19;
             colAssure.Name = "colAssure";
             colAssure.Visible = true;
-            colAssure.VisibleIndex = 11;
+            colAssure.VisibleIndex = 12;
             colAssure.Width = 102;
             // 
             // colMajoration
@@ -262,7 +262,7 @@
             colSpecialite.MinWidth = 19;
             colSpecialite.Name = "colSpecialite";
             colSpecialite.Visible = true;
-            colSpecialite.VisibleIndex = 12;
+            colSpecialite.VisibleIndex = 13;
             colSpecialite.Width = 109;
             // 
             // colBordereau
@@ -312,6 +312,16 @@
             gridColumn4.Visible = true;
             gridColumn4.VisibleIndex = 5;
             // 
+            // gridColumn5
+            // 
+            gridColumn5.Caption = "Mont As";
+            gridColumn5.DisplayFormat.FormatString = "n2";
+            gridColumn5.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            gridColumn5.FieldName = "MontAss";
+            gridColumn5.Name = "gridColumn5";
+            gridColumn5.Visible = true;
+            gridColumn5.VisibleIndex = 11;
+            // 
             // dockManager1
             // 
             dockManager1.Form = this;
@@ -358,7 +368,7 @@
             // 
             // viewDetails
             // 
-            viewDetails.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCode, colMedicament, colQt, colTR, colDureeTrait, colPpa, colMontAss, colMontPharm, colMajLocal, colMajSub, colTS });
+            viewDetails.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCode, colMedicament, colQt, colTR, colDureeTrait, colPpa, colMontAss, colMontPharm, colMajLocal, colTS });
             viewDetails.GridControl = gridDetails;
             viewDetails.Name = "viewDetails";
             viewDetails.OptionsView.ShowFooter = true;
@@ -393,7 +403,7 @@
             colQt.Name = "colQt";
             colQt.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Qt", "{0:N2}") });
             colQt.Visible = true;
-            colQt.VisibleIndex = 2;
+            colQt.VisibleIndex = 3;
             colQt.Width = 94;
             // 
             // colTR
@@ -403,7 +413,7 @@
             colTR.Name = "colTR";
             colTR.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, DevExpress.Data.SummaryMode.Mixed, "TR", "{0:N2}") });
             colTR.Visible = true;
-            colTR.VisibleIndex = 3;
+            colTR.VisibleIndex = 5;
             colTR.Width = 94;
             // 
             // colDureeTrait
@@ -412,7 +422,7 @@
             colDureeTrait.MinWidth = 25;
             colDureeTrait.Name = "colDureeTrait";
             colDureeTrait.Visible = true;
-            colDureeTrait.VisibleIndex = 4;
+            colDureeTrait.VisibleIndex = 2;
             colDureeTrait.Width = 94;
             // 
             // colPpa
@@ -422,7 +432,7 @@
             colPpa.Name = "colPpa";
             colPpa.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, DevExpress.Data.SummaryMode.Mixed, "Ppa", "{0:N2}") });
             colPpa.Visible = true;
-            colPpa.VisibleIndex = 5;
+            colPpa.VisibleIndex = 4;
             colPpa.Width = 94;
             // 
             // colMontAss
@@ -432,7 +442,7 @@
             colMontAss.Name = "colMontAss";
             colMontAss.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontAss", "{0:N2}") });
             colMontAss.Visible = true;
-            colMontAss.VisibleIndex = 6;
+            colMontAss.VisibleIndex = 7;
             colMontAss.Width = 94;
             // 
             // colMontPharm
@@ -442,7 +452,7 @@
             colMontPharm.Name = "colMontPharm";
             colMontPharm.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, DevExpress.Data.SummaryMode.Mixed, "MontPharm", "{0:N2}") });
             colMontPharm.Visible = true;
-            colMontPharm.VisibleIndex = 7;
+            colMontPharm.VisibleIndex = 6;
             colMontPharm.Width = 94;
             // 
             // colMajLocal
@@ -455,16 +465,6 @@
             colMajLocal.VisibleIndex = 8;
             colMajLocal.Width = 94;
             // 
-            // colMajSub
-            // 
-            colMajSub.FieldName = "MajSub";
-            colMajSub.MinWidth = 25;
-            colMajSub.Name = "colMajSub";
-            colMajSub.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MajSub", "{0:N2}") });
-            colMajSub.Visible = true;
-            colMajSub.VisibleIndex = 9;
-            colMajSub.Width = 94;
-            // 
             // colTS
             // 
             colTS.FieldName = "TS";
@@ -472,7 +472,7 @@
             colTS.Name = "colTS";
             colTS.OptionsColumn.ReadOnly = true;
             colTS.Visible = true;
-            colTS.VisibleIndex = 10;
+            colTS.VisibleIndex = 9;
             colTS.Width = 94;
             // 
             // ribbonControl1
@@ -498,7 +498,7 @@
             ribbonControl1.ShowPageHeadersMode = DevExpress.XtraBars.Ribbon.ShowPageHeadersMode.Hide;
             ribbonControl1.ShowQatLocationSelector = false;
             ribbonControl1.ShowToolbarCustomizeItem = false;
-            ribbonControl1.Size = new Size(1381, 91);
+            ribbonControl1.Size = new Size(1381, 66);
             ribbonControl1.Toolbar.ShowCustomizeItem = false;
             ribbonControl1.ToolbarLocation = DevExpress.XtraBars.Ribbon.RibbonQuickAccessToolbarLocation.Hidden;
             // 
@@ -808,10 +808,10 @@
         private DevExpress.XtraGrid.Columns.GridColumn colMontAss;
         private DevExpress.XtraGrid.Columns.GridColumn colMontPharm;
         private DevExpress.XtraGrid.Columns.GridColumn colMajLocal;
-        private DevExpress.XtraGrid.Columns.GridColumn colMajSub;
         private DevExpress.XtraGrid.Columns.GridColumn colTS;
         private DevExpress.XtraEditors.Repository.RepositoryItemDateEdit repositoryItemDateEdit1;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
+        private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
     }
 }

@@ -1,22 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<OutputType>WinExe</OutputType>
+ 		<OutputType>WinExe</OutputType>
 		<UseWindowsForms>true</UseWindowsForms>
 		<RootNamespace>CHIFA.Pro</RootNamespace>
   		<StartupObject>CHIFA.Pro.Program</StartupObject>
-		<LangVersion>preview</LangVersion>
-		<Authors>MEZHOUDI Hadj Nadir</Authors>
-		<Company>SmartApps</Company>
-		<Product>CHIFA Pro</Product>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
-		<ImplicitUsings>true</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<Version>1.2.2</Version>
-		<SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	</PropertyGroup>
+ 		<Product>CHIFA Pro</Product>
+ 		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+  	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="FodyWeavers.xml" />
 		<None Remove="FodyWeavers.xsd" />
@@ -32,6 +22,7 @@
 	 
 	<ItemGroup>
 	  <PackageReference Include="DevExpress.Win.Design" Version="24.1.*" />
+	  <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
 	  <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 	  <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
 	  <PackageReference Include="Velopack" Version="0.*" />

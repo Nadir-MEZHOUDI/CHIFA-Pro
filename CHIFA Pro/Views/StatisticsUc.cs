@@ -9,8 +9,6 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     public string Caption { get; } = "STATISTICS";
     public Image Image => frmMain.Image(4);
 
-    private IEnumerable<Gp>? PrincepsVsGeneric;
-
     public StatisticsUc()
     {
         InitializeComponent();
@@ -27,30 +25,12 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         await ReloadSelectedTable(tabControl.SelectedTabPage);
     }
 
-    private async void BtnTop10Montant_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            chrtCntrl.Titles.Add(new ChartTitle { Text = "Top 10 Products By Quantity" });
-            var serie = new Series("Top 10 Products By Montant", ViewType.Line)
-            {
-                ArgumentDataMember = nameof(TopSeal.Produit),
-                ValueDataMembersSerializable = nameof(TopSeal.Prix),
-                DataSource = await Task.Run(() => StatisticsService.Top10ProductsByMontantAsync()).ConfigureAwait(true)
-            };
-            chrtCntrl.Series.Add(serie);
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-    }
-
 
     private async void FromDate_EditValueChanged(object sender, EventArgs e)
     {
         StatisticsService.period.From = (DateTime)FromDate.EditValue;
         await ReloadSelectedTable(tabControl.SelectedTabPage);
+
     }
     private async void ToDate_EditValueChanged(object sender, EventArgs e)
     {
@@ -86,9 +66,12 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     private async void MovementsUc_Load(object sender, EventArgs e)
     {
         viewBord.SetOptions();
-        gridViewStatistics.SetOptions();
+        viewYearly.SetOptions();
         viewMonthly.SetOptions();
+        viewWeekly.SetOptions();
+        viewDaily.SetOptions();
         viewClients.SetOptions();
+        viewProducts.SetOptions();
         await LoadMaxAndMinDates();
     }
 
@@ -121,6 +104,11 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             {
                 productStatBindingSource.DataSource = await StatisticsService.ProductsAsync();
             }
+            if (tab.Name is nameof(tabYearly) or nameof(tabYearlyTable))
+            {
+                yearlyStatBindingSource.DataSource = await StatisticsService.YearlyAsync();
+            }
+            
         }
         catch (Exception ex)
         {
@@ -137,8 +125,45 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         await ReloadSelectedTable(e.Page);
     }
 
-    private void tabControl_Click(object sender, EventArgs e)
+    private void btnAllPeriod_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
+        StatisticsService.period.From = fromDateRepo.MinValue;
+        StatisticsService.period.To = toDateRepo.MaxValue;
+        FromDate.EditValue = StatisticsService.period.From;
+        ToDate.EditValue = StatisticsService.period.To;
 
+    }
+
+    private void btnLastYear_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+    {
+        StatisticsService.period.From = DateTime.Now.AddYears(-1);
+        StatisticsService.period.To = DateTime.Now;
+        FromDate.EditValue = StatisticsService.period.From;
+        ToDate.EditValue = StatisticsService.period.To;
+    }
+
+    private void btn6Months_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+    {
+        StatisticsService.period.From = DateTime.Now.AddMonths(-6);
+        StatisticsService.period.To = DateTime.Now;
+        FromDate.EditValue = StatisticsService.period.From;
+        ToDate.EditValue = StatisticsService.period.To;
+    }
+
+    private void btnThisYear_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+    {
+        StatisticsService.period.From = new DateTime(DateTime.Now.Year, 1, 1);
+        StatisticsService.period.To = DateTime.Now;
+        FromDate.EditValue = StatisticsService.period.From;
+        ToDate.EditValue = StatisticsService.period.To;
+
+    }
+
+    private void btnThisMonth_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+    {
+        StatisticsService.period.From = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        StatisticsService.period.To = DateTime.Now;
+        FromDate.EditValue = StatisticsService.period.From;
+        ToDate.EditValue = StatisticsService.period.To;
     }
 }

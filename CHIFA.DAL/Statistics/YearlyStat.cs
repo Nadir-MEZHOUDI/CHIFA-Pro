@@ -2,11 +2,10 @@
 
 namespace CHIFA.DAL.Statistics;
 
-public class MonthlyStat
+public class YearlyStat
 {
-     public string Date => $"{int.Parse(Year):D4} - {int.Parse(Month):D2}";
-     public string Month { get; init; }
-    public string Year { get; init; }
+    public string Date => $"{Year:D4}";
+    public int? Year { get; init; }
     public DateTime? DateDebut { get; init; }
     public DateTime? DateFin { get; init; }
     public int Factures { get; init; }
@@ -23,6 +22,6 @@ public class MonthlyStat
     public decimal? Marge => (MontantOff / 6).ToDecimal();
     public decimal? Brute => (Marge + MontantMaj).ToDecimal();
 
-    public int Assureis { get; init; }
-    public int Beneficiaires { get; init; }
+    public int Assureis { get; internal set; }
+    public int Beneficiaires { get; internal set; }
 }

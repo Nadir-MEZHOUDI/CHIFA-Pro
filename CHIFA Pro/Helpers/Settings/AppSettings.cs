@@ -5,8 +5,8 @@ namespace Helpers.Settings;
 public class AppSettings : SettingsToRegistry<AppSettings>
 {
     public string ChifaPath { get; set; } = "D:\\CHIFA_OFFICINE";
-    public bool? ServerAutoStart { get; internal set; } = null;
- 
+    public bool? ServerAutoStart { get; internal set; }
+
 
     #region ChifaFiles  
     public string ChifaBackup => Path.Combine(ChifaPath, "Backup");

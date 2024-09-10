@@ -5,7 +5,6 @@ namespace CHIFA.DAL.DTOs;
 public class FactureDto
 {
     private static CultureInfo frCulture = new CultureInfo("fr-FR");
-
     public string Assure { get; set; }
     public string Bordereau { get; set; }
     public string Centre { get; set; }

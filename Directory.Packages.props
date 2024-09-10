@@ -1,0 +1,35 @@
+<Project>
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<LangVersion>preview</LangVersion>
+		<Authors>MEZHOUDI Hadj Nadir</Authors>
+		<Company>SmartApps</Company>
+		<Product>CHIFA Pro</Product>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<ImplicitUsings>true</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	 
+		<CurrentDate>$([System.DateTime]::Now.ToString("yyyy.MM.dd"))</CurrentDate>
+
+		<!-- Get the current date -->
+		<CurrentYear>$([System.DateTime]::Now.Year)</CurrentYear>
+		<CurrentMonth>$([System.DateTime]::Now.Month)</CurrentMonth>
+		<CurrentDay>$([System.DateTime]::Now.Day)</CurrentDay>
+		
+
+		<MajorVersion>$([MSBuild]::Subtract($(CurrentYear), 2022))</MajorVersion>
+		<RealVerison>$(MajorVersion)</RealVerison>
+		<MinorVersion>$(CurrentMonth)</MinorVersion>
+		<PatchVersion>$(CurrentDay)</PatchVersion>
+
+		<Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)</Version>
+		
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<FileVersion>$(Version)</FileVersion>
+		<PackageVersion>$(Version)</PackageVersion>
+	</PropertyGroup>
+</Project>

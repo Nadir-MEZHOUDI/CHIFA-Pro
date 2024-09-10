@@ -7,8 +7,8 @@ public partial class FacturesUC : XtraUserControl, INavigable
     {
         InitializeComponent();
         viewFactures.SetOptions();
-        txtDateFrom.EditValueChanged += async (_, _) => await RefreshData();
-        txtDateTo.EditValueChanged += async (_, _) => await RefreshData();
+        txtDateFrom.EditValueChanged += async (_, _) => await LoadFacturesAsync();
+        txtDateTo.EditValueChanged += async (_, _) => await LoadFacturesAsync();
     }
 
     public string Caption { get; } = "FACTURES";
@@ -25,7 +25,7 @@ public partial class FacturesUC : XtraUserControl, INavigable
         OpenHistoryOfSelectedPatient();
     }
 
-    private async void BtnRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e) => await RefreshData();
+    private async void BtnRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e) => await LoadFacturesAsync();
 
     private void BtnTraitSpes_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e) => new frmTraitSpec().Show();
 
@@ -67,7 +67,7 @@ public partial class FacturesUC : XtraUserControl, INavigable
     private async void LastFacturesUC_Load(object sender, EventArgs e)
     {
         await LoadMaxAndMinDates();
-        await RefreshData();
+        await LoadFacturesAsync();
     }
 
     private async Task LoadMaxAndMinDates()
@@ -101,7 +101,7 @@ public partial class FacturesUC : XtraUserControl, INavigable
         }
     }
 
-    private async Task RefreshData()
+    private async Task LoadFacturesAsync()
     {
         try
         {
@@ -128,11 +128,11 @@ public partial class FacturesUC : XtraUserControl, INavigable
         }
     }
 
-    private async void SwtchFactures_EditValueChanged(object s, EventArgs e) => await RefreshData();
+    private async void SwtchFactures_EditValueChanged(object s, EventArgs e) => await LoadFacturesAsync();
 
-    private async void SwtchTS_EditValueChanged(object sender, EventArgs e) => await RefreshData();
+    private async void SwtchTS_EditValueChanged(object sender, EventArgs e) => await LoadFacturesAsync();
 
-    private async void TxtMedic_EditValueChanged(object sender, EventArgs e) => await RefreshData();
+    private async void TxtMedic_EditValueChanged(object sender, EventArgs e) => await LoadFacturesAsync();
 
     private void ViewFactures_DoubleClick(object sender, EventArgs e)
     {

@@ -14,7 +14,7 @@ public partial class HomeUc : XtraUserControl, INavigable
     private async Task ReLoadDataAsync()
     {
         Cursor = Cursors.WaitCursor;
-        weekStatBindingSource.DataSource = await WeekStatService.GetWeekStatsAsync();
+        weekStatBindingSource.DataSource = await StatisticsService.GetThisWeekStatsAsync();
         Cursor = Cursors.Default;
     }
 

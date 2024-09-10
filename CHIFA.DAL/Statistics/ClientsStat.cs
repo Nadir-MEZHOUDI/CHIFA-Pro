@@ -1,17 +1,20 @@
-﻿namespace CHIFA.DAL.Statistics;
+﻿using CHIFA.DAL.Helpers;
+
+namespace CHIFA.DAL.Statistics;
 
 public class ClientsStat
-{
-    public int Factures { get; set; }
-    public decimal Boites { get; set; }
-    public decimal? MontOff { get; set; }
-    public decimal? MantFact { get; set; }
-    public decimal? MontMaj { get; set; }
-    public decimal? MontAss { get; set; }
-    public decimal? MontFE { get; set; }
-    public decimal? MontGlobal => MontOff + MontMaj + MontFE;
-    public decimal? Marge => MantFact / 6;
-    public decimal? Brut => Marge + MontMaj;
-    public string Malade { get; set; } = "";
-    public string NumAssure { get; set; }
+{    
+    public string NumAssure { get; init; }
+    public string? Malade { get; init; } 
+    public int Factures { get; init; }
+    public decimal Boites { get; init; }
+    public decimal? MontOff { get; init; }
+    public decimal? MantFact { get; init; }
+    public decimal? MontMaj { get; init; }
+    public decimal? MontAss { get; init; }
+    public decimal? MontFE { get; init; }
+    public decimal? MontGlobal => (MontOff + MontMaj + MontFE).ToDecimal()  ;
+    public decimal? Marge => (MantFact / 6).ToDecimal();
+    public decimal? Brut => (Marge + MontMaj).ToDecimal();
+
 }

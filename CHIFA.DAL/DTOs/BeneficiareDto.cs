@@ -2,9 +2,9 @@
 
 public class BeneficiareDto
 {
-    public string? Assure { get; set; }
-    public string? Beneficiare { get; set; }
-    public string? NumAssure { get; set; }
-    public string? Rang { get; set; }
-    public string? Center { get; internal set; }
+    public string? Assure { get;init; }
+    public string? Beneficiare { get;init; }
+    public string? NumAssure { get;init; }
+    public string? Rang { get;init; }
+    public string? Center { get; init; }
 }

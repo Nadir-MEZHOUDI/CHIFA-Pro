@@ -1,18 +1,22 @@
-﻿namespace CHIFA.DAL.Statistics;
+﻿using CHIFA.DAL.Helpers;
+
+namespace CHIFA.DAL.Statistics;
 
 public class BordStatDto
 {
-    public DateTime? DateDebut { get; set; }
-    public DateTime? DateFin { get; set; }
+    public DateTime? DateDebut { get; init; }
+    public DateTime? DateFin { get; init; }
+    public string Num { get; init; } = "";
+    public int Factures { get; init; }
+    public string? Center { get; init; }
+    public decimal? MontantMaj { get; init; }
+    public decimal? MontantFact { get; init; }
+    public decimal? MontantOff { get; init; }
+    public decimal? MontantFE { get; init; }
+    public decimal? Virement { get; init; }
+    public int Assuries { get; init; }
+    public int Beneficiaires { get; init; }
     public DateOnly Date => DateOnly.FromDateTime(DateFin.Value);
-    public string Num { get; set; } = "";
-    public int Factures { get; set; } = 0;
-    public string? Center { get; set; }
-    public decimal? MontantMaj { get; set; }
-    public decimal? MontantFact { get; set; }
-    public decimal? MontantOff { get; set; }
-    public decimal? MontantFE { get; set; }
-    public decimal? Virement { get; set; }
     public int? Jours => (int)(DateFin - DateDebut)?.TotalDays + 1;
     public decimal? MontantJour =>  (MontantOff / Jours).ToDecimal();
     public decimal? FactureJour => (Factures / Jours).ToDecimal();
@@ -23,10 +27,4 @@ public class BordStatDto
     public decimal? Net => (Brute - Ecart).ToDecimal();
     public decimal? Ecart => (Virement > 0 ? MontantGlobal - Virement : 0).ToDecimal();
 
-}
-
-public static class BordStatDtoExtensions
-{
-    public static decimal ToDecimal(this decimal? value) => Math.Round ((value ?? 0),2);
-    public static decimal ToDecimal(this int? value) => Math.Round((decimal)(value ?? 0),2);
 }
