@@ -1,4 +1,5 @@
 ﻿using CHIFA.DAL.DTOs;
+using CHIFA.DAL.Helpers;
 using CHIFA.DAL.Statistics;
 
 using DataModel;
@@ -12,27 +13,6 @@ namespace CHIFA.DAL.DataServices;
 public static class StatisticsService
 {
     public static Period period = new();
-    public static async Task<IEnumerable<BordMonthlyStatDto>> BordereauxMonthlyAsync(Expression<Func<Bordereau, bool>>? predicate = null)
-    {
-        await using var db = new ChifaDb();
-        List<BordMonthlyStatDto> query = await db.Bordereaus
-            .Where(x => x.Etat == 'C')
-            .Where(predicate.SetPeriod(period))
-            .GroupBy(x => new { x.DateExtract!.Value.Year, x.DateExtract.Value.Month })
-            .Select(g => new BordMonthlyStatDto
-            {
-                Year = g.Key.Year,
-                Month = g.Key.Month,
-                Montant = g.Sum(x => x.Factures.Sum(f => f.MontFact)),
-                Factures = g.Sum(x => x.Factures.Count()),
-                Borderaux = g.Count()
-            })
-            .OrderByDescending(x => x.Year)
-            .ThenByDescending(x => x.Month)
-            .ToListAsync()
-            .ConfigureAwait(false);
-        return query;
-    }
     public static async Task<IEnumerable<BordStatDto>> BordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
@@ -70,6 +50,7 @@ public static class StatisticsService
                 MontantFact = x.Sum(f => f.MontFact),
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantMaj = x.Sum(f => f.MontMaj),
+                MontantFE = x.Sum(f => f.MontMajFae),
                 Factures = x.Count(),
                 DateDebut = x.Min(f => f.DateFact),
                 DateFin = x.Max(f => f.DateFact),
@@ -93,6 +74,7 @@ public static class StatisticsService
                 MontantFact = x.Sum(f => f.MontFact),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantOff = x.Sum(f => f.MontOff),
+                MontantFE = x.Sum(f => f.MontMajFae),
                 Factures = x.Count(),
             })
             .OrderByDescending(x => x.DateDebut)
@@ -113,6 +95,7 @@ public static class StatisticsService
                 MontantFact = g.Sum(f => f.MontFact),
                 MontantMaj = g.Sum(f => f.MontMaj),
                 MontantOff = g.Sum(f => f.MontOff),
+                MontantFE = g.Sum(f => f.MontMajFae),
                 Factures = g.Count(),
 
             })
@@ -135,6 +118,7 @@ public static class StatisticsService
                 MontMaj = x.Sum(f => f.MontMaj),
                 MontAss = x.Sum(f => f.MontAs),
                 MontOff = x.Sum(f => f.MontOff),
+                MontFE = x.Sum(f => f.MontMajFae),
                 Boites = x.Sum(f => f.DetailFacts.Sum(d => d.Qte)),
                 Factures = x.Count(),
             })
@@ -266,4 +250,59 @@ public static class StatisticsService
             .ConfigureAwait(false);
         return query;
     }
+
+
+
+    public static Expression<Func<Facture, bool>> SetPeriod(this Expression<Func<Facture, bool>>? predicate, Period? period = default)
+    {
+        period ??= period;
+
+        predicate ??= _ => true;
+
+        predicate = predicate.And(x => x.DateFact != null);
+
+        if (period?.From.HasValue == true)
+            predicate = predicate.And(x => x.DateFact > period.From);
+
+        if (period?.To.HasValue == true)
+            predicate = predicate.And(x => x.DateFact < period.To);
+
+        return predicate;
+
+    }
+    public static Expression<Func<DetailFact, bool>> SetPeriod(this Expression<Func<DetailFact, bool>>? predicate, Period? period = default)
+    {
+        period ??= period;
+        predicate ??= _ => true;
+
+        predicate = predicate.And(x => x.Facture.DateFact.HasValue);
+
+        if (period?.From.HasValue == true)
+            predicate = predicate.And(x => x.Facture.DateFact > period.From);
+
+        if (period?.To.HasValue == true)
+            predicate = predicate.And(x => x.Facture.DateFact < period.To);
+
+        return predicate;
+    }
+    public static Expression<Func<Bordereau, bool>> SetPeriod(this Expression<Func<Bordereau, bool>>? predicate, Period? period = default)
+    {
+        period ??= period;
+
+        predicate ??= _ => true;
+
+        predicate = predicate.And(x => x.DateExtract != null);
+
+        if (period?.From.HasValue == true)
+            predicate = predicate.And(x => x.DateExtract > period.From);
+
+        if (period?.To.HasValue == true)
+            predicate = predicate.And(x => x.DateExtract < period.To);
+
+        return predicate;
+    }
+    public static string FullName(this Medicament? m) => $"{m?.NomCom} {m?.Dosage} {m?.Conditionnement}";
+
+
+
 }

@@ -4,11 +4,8 @@ namespace CHIFA.Pro.Helpers;
 
 public static class DbChecker
 {
-
-    private static readonly Func<bool> ChangeSettingsMsg = () => XtraMessageBox.Show("Cannot connect to database \n Do you want to Change Settings?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes;
-
     private static bool isConnected;
-
+    private static readonly Func<bool> ChangeSettingsMsg = () => XtraMessageBox.Show("Cannot connect to database \n Do you want to Change Settings?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes;
     public static async Task<bool> CheckDbConnectionAsync(string? server = null)
     {
         server ??= ChifaDb.Server;
@@ -32,7 +29,6 @@ public static class DbChecker
                 await con.CloseAsync();
         }
     }
-
     public static bool CheckOrDownloadServer()
     {
         var isRunning = Process.GetProcessesByName("postgres").Any();
@@ -64,7 +60,6 @@ public static class DbChecker
         }
         return isRunning;
     }
-
     public static async Task RunServerAsync()
     {
         if (isConnected) return;
@@ -133,7 +128,6 @@ public static class DbChecker
             ex.Log();
         }
     }
-
     public static async Task Restore(string fileName)
     {
         Environment.SetEnvironmentVariable("PGPASSWORD", AppSettings.Default.DbPassword);

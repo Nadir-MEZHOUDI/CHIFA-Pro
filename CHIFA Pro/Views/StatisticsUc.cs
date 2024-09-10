@@ -46,25 +46,6 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         }
     }
 
-    private async void BtnTOp10Quantity_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            chrtCntrl.Titles.Add(new ChartTitle { Text = "Top 10 Products By Quantity" });
-            var serie = new Series("Top 10 Products By Quantity", ViewType.Line)
-            {
-                ArgumentDataMember = nameof(TopSeal.Produit),
-                ValueDataMembersSerializable = nameof(TopSeal.Qt),
-                DataSource = await Task.Run(() => StatisticsService.Top10ProuctsByQuantityAsync()).ConfigureAwait(true)
-            };
-            chrtCntrl.Series.Add(serie);
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-    }
-
 
     private async void FromDate_EditValueChanged(object sender, EventArgs e)
     {

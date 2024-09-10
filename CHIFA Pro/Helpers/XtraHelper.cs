@@ -84,6 +84,7 @@ public static class XtraHelper
         grid.OptionsFind.FindNullPrompt = "...";
         grid.OptionsView.ShowFooter = true;
         grid.OptionsView.BestFitMaxRowCount = 40;
+        
     }
 
     public static void Log(this Exception ex, [CallerMemberName] string methodName = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0)

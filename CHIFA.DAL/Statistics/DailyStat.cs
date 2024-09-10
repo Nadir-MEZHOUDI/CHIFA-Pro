@@ -9,10 +9,15 @@ public class DailyStat
     public string Day => DateTime.ToString("dddd", culture).ToUpper();
     public DateTime DateTime { get; set; }
     public int Factures { get; set; } = 0;
-    public decimal? MontantFacture => MontantOff / Factures;
     public decimal? MontantMaj { get;  set; }
     public decimal? MontantFact { get;  set; }
     public decimal? MontantOff { get;  set; }
-    public decimal? Marge => MontantOff / 6;
-    public decimal? Brute => Marge + MontantMaj;
+    public decimal? MontantFE { get; set; }
+    public decimal? MontantFacture => (MontantOff / Factures).ToDecimal();
+    public decimal? Marge =>( MontantOff / 6).ToDecimal();
+    public decimal? Brute => (Marge + MontantMaj).ToDecimal();
+
+    public decimal? MontantGlobal => (MontantOff + MontantMaj + MontantFE).ToDecimal();
+
+
 }
