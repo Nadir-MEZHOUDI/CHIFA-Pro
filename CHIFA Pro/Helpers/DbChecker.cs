@@ -31,7 +31,7 @@ public static class DbChecker
     }
     public static bool CheckOrDownloadServer()
     {
-        var isRunning = Process.GetProcessesByName("postgres").Any();
+        var isRunning = Process.GetProcessesByName("postgres").Length != 0;
 
         if (isRunning) return true;
 
@@ -41,27 +41,25 @@ public static class DbChecker
             return false;
         }
 
-        for (var i = 0; i < 5; i++)
+        var process = new Process()
         {
-            var process = new Process()
+            StartInfo = new ProcessStartInfo(AppSettings.Default.ChifaLancer_Serveur)
             {
-                StartInfo= new ProcessStartInfo(AppSettings.Default.ChifaLancer_Serveur)
-                {
-                    UseShellExecute = false,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
-                }
-            };
+                UseShellExecute = false,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+            }
+        };
 
-            process.Start();
-            process.WaitForExit(1000);
+        process.Start();
+        process.WaitForExit(1000);
 
-            isRunning = Process.GetProcessesByName("postgres").Any();
-        }
-        return isRunning;
+        return Process.GetProcessesByName("postgres").Length != 0;
     }
     public static async Task RunServerAsync()
     {
+        if (!AppSettings.Default.IsServer) return;
+
         if (isConnected) return;
         try
         {
@@ -71,7 +69,7 @@ public static class DbChecker
             }
 
             isConnected = await CheckDbConnectionAsync();
- 
+
             if (!isConnected && ChangeSettingsMsg())
             {
                 ParametersUc.ShowAsForm();

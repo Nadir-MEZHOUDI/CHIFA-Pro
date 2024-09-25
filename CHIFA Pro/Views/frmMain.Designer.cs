@@ -41,14 +41,14 @@
             accStatistics = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accAssures = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accordionControlSeparator5 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
+            accLN = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accCM = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accordionControlSeparator2 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             accMedicaments = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accFormes = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accActes = new DevExpress.XtraBars.Navigation.AccordionControlElement();
-            accordionControlSeparator2 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
-            accLN = new DevExpress.XtraBars.Navigation.AccordionControlElement();
-            accCM = new DevExpress.XtraBars.Navigation.AccordionControlElement();
-            accUsers = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accordionControlSeparator4 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
+            accUsers = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accCenters = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accOfficine = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accParametres = new DevExpress.XtraBars.Navigation.AccordionControlElement();
@@ -78,6 +78,7 @@
             toolStripStatusLabel2 = new ToolStripStatusLabel();
             txtDatabase = new ToolStripStatusLabel();
             toolStripStatusLabel5 = new ToolStripStatusLabel();
+            progressBar = new ToolStripProgressBar();
             toolStripStatusLabel3 = new ToolStripStatusLabel();
             txtPharmacie = new ToolStripStatusLabel();
             toolStripStatusLabel4 = new ToolStripStatusLabel();
@@ -101,7 +102,7 @@
             accordionControl1.Name = "accordionControl1";
             accordionControl1.ScrollBarMode = DevExpress.XtraBars.Navigation.ScrollBarMode.Auto;
             accordionControl1.ShowFilterControl = DevExpress.XtraBars.Navigation.ShowFilterControl.Auto;
-            accordionControl1.Size = new Size(208, 777);
+            accordionControl1.Size = new Size(208, 746);
             accordionControl1.TabIndex = 1;
             accordionControl1.ViewType = DevExpress.XtraBars.Navigation.AccordionControlViewType.HamburgerMenu;
             // 
@@ -165,6 +166,26 @@
             // 
             accordionControlSeparator5.Name = "accordionControlSeparator5";
             // 
+            // accLN
+            // 
+            accLN.ImageOptions.Image = (Image)resources.GetObject("accLN.ImageOptions.Image");
+            accLN.Name = "accLN";
+            accLN.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accLN.Text = "LISTE NOIR";
+            accLN.Click += accLN_Click;
+            // 
+            // accCM
+            // 
+            accCM.ImageOptions.Image = (Image)resources.GetObject("accCM.ImageOptions.Image");
+            accCM.Name = "accCM";
+            accCM.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accCM.Text = "CONTROL MEDICAL";
+            accCM.Click += accCM_Click;
+            // 
+            // accordionControlSeparator2
+            // 
+            accordionControlSeparator2.Name = "accordionControlSeparator2";
+            // 
             // accMedicaments
             // 
             accMedicaments.ImageOptions.Image = (Image)resources.GetObject("accMedicaments.ImageOptions.Image");
@@ -189,25 +210,9 @@
             accActes.Text = "SPECIALETES";
             accActes.Click += accSpecialists_Click;
             // 
-            // accordionControlSeparator2
+            // accordionControlSeparator4
             // 
-            accordionControlSeparator2.Name = "accordionControlSeparator2";
-            // 
-            // accLN
-            // 
-            accLN.ImageOptions.Image = (Image)resources.GetObject("accLN.ImageOptions.Image");
-            accLN.Name = "accLN";
-            accLN.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accLN.Text = "LISTE NOIR";
-            accLN.Click += accLN_Click;
-            // 
-            // accCM
-            // 
-            accCM.ImageOptions.Image = (Image)resources.GetObject("accCM.ImageOptions.Image");
-            accCM.Name = "accCM";
-            accCM.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accCM.Text = "CONTROL MEDICAL";
-            accCM.Click += accCM_Click;
+            accordionControlSeparator4.Name = "accordionControlSeparator4";
             // 
             // accUsers
             // 
@@ -216,10 +221,6 @@
             accUsers.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accUsers.Text = "USERS";
             accUsers.Click += accUsers_Click;
-            // 
-            // accordionControlSeparator4
-            // 
-            accordionControlSeparator4.Name = "accordionControlSeparator4";
             // 
             // accCenters
             // 
@@ -252,16 +253,16 @@
             barDockControlTop.Location = new Point(208, 0);
             barDockControlTop.Manager = null;
             barDockControlTop.Margin = new Padding(5, 4, 5, 4);
-            barDockControlTop.Size = new Size(1052, 0);
+            barDockControlTop.Size = new Size(1534, 0);
             // 
             // barDockControlBottom
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = DockStyle.Bottom;
-            barDockControlBottom.Location = new Point(208, 777);
+            barDockControlBottom.Location = new Point(208, 746);
             barDockControlBottom.Manager = null;
             barDockControlBottom.Margin = new Padding(5, 4, 5, 4);
-            barDockControlBottom.Size = new Size(1052, 0);
+            barDockControlBottom.Size = new Size(1534, 0);
             // 
             // barDockControlLeft
             // 
@@ -270,16 +271,16 @@
             barDockControlLeft.Location = new Point(208, 0);
             barDockControlLeft.Manager = null;
             barDockControlLeft.Margin = new Padding(5, 4, 5, 4);
-            barDockControlLeft.Size = new Size(0, 777);
+            barDockControlLeft.Size = new Size(0, 746);
             // 
             // barDockControlRight
             // 
             barDockControlRight.CausesValidation = false;
             barDockControlRight.Dock = DockStyle.Right;
-            barDockControlRight.Location = new Point(1260, 0);
+            barDockControlRight.Location = new Point(1742, 0);
             barDockControlRight.Manager = null;
             barDockControlRight.Margin = new Padding(5, 4, 5, 4);
-            barDockControlRight.Size = new Size(0, 777);
+            barDockControlRight.Size = new Size(0, 746);
             // 
             // skinDropDownButtonItem2
             // 
@@ -295,15 +296,15 @@
             barDockControl1.Dock = DockStyle.Top;
             barDockControl1.Location = new Point(208, 0);
             barDockControl1.Manager = null;
-            barDockControl1.Size = new Size(1052, 0);
+            barDockControl1.Size = new Size(1534, 0);
             // 
             // barDockControl2
             // 
             barDockControl2.CausesValidation = false;
             barDockControl2.Dock = DockStyle.Bottom;
-            barDockControl2.Location = new Point(208, 777);
+            barDockControl2.Location = new Point(208, 746);
             barDockControl2.Manager = null;
-            barDockControl2.Size = new Size(1052, 0);
+            barDockControl2.Size = new Size(1534, 0);
             // 
             // barDockControl3
             // 
@@ -311,15 +312,15 @@
             barDockControl3.Dock = DockStyle.Left;
             barDockControl3.Location = new Point(208, 0);
             barDockControl3.Manager = null;
-            barDockControl3.Size = new Size(0, 777);
+            barDockControl3.Size = new Size(0, 746);
             // 
             // barDockControl4
             // 
             barDockControl4.CausesValidation = false;
             barDockControl4.Dock = DockStyle.Right;
-            barDockControl4.Location = new Point(1260, 0);
+            barDockControl4.Location = new Point(1742, 0);
             barDockControl4.Manager = null;
-            barDockControl4.Size = new Size(0, 777);
+            barDockControl4.Size = new Size(0, 746);
             // 
             // container
             // 
@@ -327,7 +328,7 @@
             container.Dock = DockStyle.Fill;
             container.Location = new Point(208, 0);
             container.Name = "container";
-            container.Size = new Size(1052, 777);
+            container.Size = new Size(1534, 746);
             container.TabIndex = 11;
             // 
             // tabContainer
@@ -339,7 +340,7 @@
             tabContainer.Location = new Point(0, 0);
             tabContainer.MultiLine = DevExpress.Utils.DefaultBoolean.False;
             tabContainer.Name = "tabContainer";
-            tabContainer.Size = new Size(1052, 777);
+            tabContainer.Size = new Size(1534, 746);
             tabContainer.TabIndex = 0;
             tabContainer.CloseButtonClick += TabContainer_CloseButtonClick;
             // 
@@ -347,7 +348,7 @@
             // 
             toolbarFormControl1.Location = new Point(208, 0);
             toolbarFormControl1.Name = "toolbarFormControl1";
-            toolbarFormControl1.Size = new Size(1052, 0);
+            toolbarFormControl1.Size = new Size(1534, 0);
             toolbarFormControl1.TabIndex = 23;
             toolbarFormControl1.TabStop = false;
             // 
@@ -390,17 +391,17 @@
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel7, txtIP, toolStripStatusLabel1, txtServer, toolStripStatusLabel2, txtDatabase, toolStripStatusLabel5, toolStripStatusLabel3, txtPharmacie, toolStripStatusLabel4, txtCodePs });
-            statusStrip1.Location = new Point(0, 777);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel7, txtIP, toolStripStatusLabel1, txtServer, toolStripStatusLabel2, txtDatabase, toolStripStatusLabel5, progressBar, toolStripStatusLabel3, txtPharmacie, toolStripStatusLabel4, txtCodePs });
+            statusStrip1.Location = new Point(0, 746);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1260, 22);
+            statusStrip1.Size = new Size(1742, 23);
             statusStrip1.TabIndex = 25;
             statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel7
             // 
             toolStripStatusLabel7.Name = "toolStripStatusLabel7";
-            toolStripStatusLabel7.Size = new Size(55, 17);
+            toolStripStatusLabel7.Size = new Size(55, 18);
             toolStripStatusLabel7.Text = "AdressIP:";
             // 
             // txtIP
@@ -409,13 +410,13 @@
             txtIP.ForeColor = Color.Green;
             txtIP.Margin = new Padding(0, 3, 50, 2);
             txtIP.Name = "txtIP";
-            txtIP.Size = new Size(16, 17);
+            txtIP.Size = new Size(16, 18);
             txtIP.Text = "...";
             // 
             // toolStripStatusLabel1
             // 
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(42, 17);
+            toolStripStatusLabel1.Size = new Size(42, 18);
             toolStripStatusLabel1.Text = "Server:";
             // 
             // txtServer
@@ -424,33 +425,37 @@
             txtServer.ForeColor = Color.Red;
             txtServer.Margin = new Padding(0, 3, 50, 2);
             txtServer.Name = "txtServer";
-            txtServer.Size = new Size(59, 17);
+            txtServer.Size = new Size(59, 18);
             txtServer.Text = "localhost";
             // 
             // toolStripStatusLabel2
             // 
             toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            toolStripStatusLabel2.Size = new Size(58, 17);
+            toolStripStatusLabel2.Size = new Size(58, 18);
             toolStripStatusLabel2.Text = "Database:";
             // 
             // txtDatabase
             // 
             txtDatabase.Font = new Font("Segoe UI", 9F, FontStyle.Bold | FontStyle.Italic);
             txtDatabase.Name = "txtDatabase";
-            txtDatabase.Size = new Size(100, 17);
+            txtDatabase.Size = new Size(100, 18);
             txtDatabase.Text = "CHIFA_OFFICINE";
             // 
             // toolStripStatusLabel5
             // 
             toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            toolStripStatusLabel5.Size = new Size(564, 17);
+            toolStripStatusLabel5.Size = new Size(613, 18);
             toolStripStatusLabel5.Spring = true;
-            toolStripStatusLabel5.Text = "...";
+            // 
+            // progressBar
+            // 
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(400, 17);
             // 
             // toolStripStatusLabel3
             // 
             toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            toolStripStatusLabel3.Size = new Size(66, 17);
+            toolStripStatusLabel3.Size = new Size(66, 18);
             toolStripStatusLabel3.Text = "Pharmacie:";
             // 
             // txtPharmacie
@@ -458,13 +463,13 @@
             txtPharmacie.Font = new Font("Segoe UI", 9F, FontStyle.Bold | FontStyle.Italic);
             txtPharmacie.Margin = new Padding(0, 3, 50, 2);
             txtPharmacie.Name = "txtPharmacie";
-            txtPharmacie.Size = new Size(16, 17);
+            txtPharmacie.Size = new Size(16, 18);
             txtPharmacie.Text = "...";
             // 
             // toolStripStatusLabel4
             // 
             toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            toolStripStatusLabel4.Size = new Size(83, 17);
+            toolStripStatusLabel4.Size = new Size(83, 18);
             toolStripStatusLabel4.Text = "Code Officine:";
             // 
             // txtCodePs
@@ -473,7 +478,7 @@
             txtCodePs.ForeColor = Color.FromArgb(0, 192, 192);
             txtCodePs.Margin = new Padding(0, 3, 20, 2);
             txtCodePs.Name = "txtCodePs";
-            txtCodePs.Size = new Size(16, 17);
+            txtCodePs.Size = new Size(16, 18);
             txtCodePs.Text = "...";
             // 
             // AppImages
@@ -504,7 +509,7 @@
             Appearance.Options.UseFont = true;
             AutoScaleDimensions = new SizeF(9F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1260, 799);
+            ClientSize = new Size(1742, 769);
             Controls.Add(container);
             Controls.Add(barDockControlLeft);
             Controls.Add(barDockControlRight);
@@ -582,7 +587,6 @@
         private ToolStripStatusLabel txtServer;
         private ToolStripStatusLabel toolStripStatusLabel2;
         private ToolStripStatusLabel txtDatabase;
-        private ToolStripStatusLabel toolStripStatusLabel5;
         private ToolStripStatusLabel toolStripStatusLabel3;
         private ToolStripStatusLabel txtPharmacie;
         private ToolStripStatusLabel toolStripStatusLabel4;
@@ -591,5 +595,7 @@
         private ToolStripStatusLabel txtIP;
         public DevExpress.XtraTab.XtraTabControl tabContainer;
         public DevExpress.Utils.SharedImageCollection AppImages;
+        private ToolStripProgressBar progressBar;
+        private ToolStripStatusLabel toolStripStatusLabel5;
     }
 }

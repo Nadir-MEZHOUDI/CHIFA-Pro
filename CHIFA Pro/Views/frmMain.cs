@@ -1,4 +1,6 @@
-﻿using CHIFA.Pro.uc;
+﻿using System.Windows.Threading;
+
+using CHIFA.Pro.uc;
 
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
@@ -57,11 +59,11 @@ public partial class frmMain : XtraForm
 
             await DbChecker.RunServerAsync();
 
-            var load = LoadServerInfo();
+            Task load = LoadServerInfo();
 
-            var update =  UpdateAppAsync();
+            Task update = UpdateAppAsync();
 
-            await Task.WhenAll(load,update);
+            await Task.WhenAll(load, update);
 
         }
         catch (Exception ex)
@@ -70,47 +72,40 @@ public partial class frmMain : XtraForm
         }
     }
 
-    public static async Task UpdateAppAsync(bool showMessage=false)
+    public async Task UpdateAppAsync(bool showMessage = false)
     {
         var mgr = new UpdateManager("https://nadirsmartapp.blob.core.windows.net/chifa-pro");
 
-        if (!mgr.IsInstalled)            return;
+        if (!mgr.IsInstalled) return;
 
         // check for new version
-        var newVersion = await mgr.CheckForUpdatesAsync();
+        UpdateInfo? newVersion = await mgr.CheckForUpdatesAsync();
         if (newVersion == null)
         {
-            if(showMessage)
+            if (showMessage)
             {
-                var result = XtraMessageBox.Show("No new version available,You are using the latest Version", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _ = XtraMessageBox.Show("No new version available,You are using the latest Version", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            return; // no update available
+            return;
         }
-
-        if (showMessage)
-        {
-            var result = XtraMessageBox.Show("New version available. Updating now", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);            
-        }
-
         // download new version
-        await mgr.DownloadUpdatesAsync(newVersion);
-
+        await mgr.DownloadUpdatesAsync(newVersion, ShowProgress);
         // install new version and restart app
         mgr.ApplyUpdatesAndRestart(newVersion);
-
     }
+
+    private void ShowProgress(int i) => Dispatcher.CurrentDispatcher.Invoke(() => progressBar.Value = i);
 
     private async Task LoadServerInfo()
     {
         try
         {
             txtDatabase.Text = "CHIFA_OFFICINE";
-            txtIP.Text  = XtraHelper.GetThis_PC_IP_Address();
+            txtIP.Text = XtraHelper.GetThis_PC_IP_Address();
             txtServer.Text = ChifaDb.Server;
 
             var db = new ChifaDb();
-            var officine = await db.Parametres.FirstOrDefaultAsync();         
+            Parametre? officine = await db.Parametres.FirstOrDefaultAsync();
 
             txtCodePs.Text = officine?.CodePs ?? "";
             txtPharmacie.Text = officine?.Nom + " " + officine?.Prenom;
@@ -125,10 +120,9 @@ public partial class frmMain : XtraForm
     private void TabContainer_CloseButtonClick(object sender, EventArgs e)
     {
         var index = tabContainer.SelectedTabPageIndex;
-        var page = ((ClosePageButtonEventArgs)e).Page as XtraTabPage;
-        if (page is null || page.Text.Contains("Home", StringComparison.InvariantCultureIgnoreCase))        
+        if (((ClosePageButtonEventArgs)e).Page is not XtraTabPage page || page.Text.Contains("Home", StringComparison.InvariantCultureIgnoreCase))
             return;
-        
+
         tabContainer.SelectedTabPageIndex = index > 1 ? index - 1 : index + 1;
         tabContainer.TabPages.Remove(page, true);
     }

@@ -1,6 +1,6 @@
 ﻿namespace CHIFA.Pro.Others;
 
-public partial class ParametersUc : XtraUserControl,INavigable
+public partial class ParametersUc : XtraUserControl, INavigable
 {
     public Action? Closer;
     public string Caption { get; } = "PARAMETERS";
@@ -28,8 +28,17 @@ public partial class ParametersUc : XtraUserControl,INavigable
         try
         {
             AppSettings.Default.ChifaPath = txtChifaPath.Text;
+            AppSettings.Default.IsServer = rbtServer.Checked; ;
+
             AppSettings.Default.Save();
-            XtraHelper.SetServer(txtServerName.Text);
+            if (rbtServer.Checked)
+            {
+                XtraHelper.SetServer("localhost");
+            }
+            else
+            {
+                XtraHelper.SetServer(txtServerName.Text);
+            }
             XtraMessageBox.Show("Configuration successfully Saved", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Closer?.Invoke();
         }
@@ -45,6 +54,8 @@ public partial class ParametersUc : XtraUserControl,INavigable
         {
             txtChifaPath.Text = AppSettings.Default.ChifaPath;
             txtServerName.Text = ChifaDb.Server;
+            rbtServer.Checked = AppSettings.Default.IsServer;
+            rbtClient.Checked = !AppSettings.Default.IsServer;
 
             var items = await Task.Run(XtraHelper.ListAllDevicesOnLocalNetwork);
 
@@ -109,7 +120,7 @@ public partial class ParametersUc : XtraUserControl,INavigable
         try
         {
             Cursor.Current = Cursors.WaitCursor;
-            await DbChecker.CheckDbConnectionAsync(txtServerName.Text);
+            await DbChecker.CheckDbConnectionAsync(rbtServer.Checked ? "localhost" : txtServerName.Text);
             XtraMessageBox.Show("Connected", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
@@ -123,4 +134,20 @@ public partial class ParametersUc : XtraUserControl,INavigable
         }
     }
 
+    private void txtChifaPath_EditValueChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void rbtServer_CheckedChanged(object sender, EventArgs e)
+    {
+        txtServerName.Enabled = rbtClient.Checked;
+        txtChifaPath.Enabled = rbtServer.Checked;
+    }
+
+    private void rbtClient_CheckedChanged(object sender, EventArgs e)
+    {
+        txtServerName.Enabled = rbtClient.Checked;
+        txtChifaPath.Enabled = rbtServer.Checked;
+    }
 }

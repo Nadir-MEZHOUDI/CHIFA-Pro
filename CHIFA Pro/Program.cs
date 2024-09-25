@@ -39,11 +39,11 @@ internal static class Program
     private static void Main()
     {
         Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext() // Enrich log events with properties from Serilog's LogContext
-            .WriteTo.Console(theme: AnsiConsoleTheme.Literate, // Use a built-in color theme (or create custom themes)
-                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"  // Template for formatting logs
-            )
+            .Enrich.FromLogContext()
+#if DEBUG
+            .WriteTo.Console(theme: AnsiConsoleTheme.Literate)
             .WriteTo.Debug()
+#endif
             .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
@@ -51,7 +51,7 @@ internal static class Program
         AllocConsole();
         Console.WriteLine("Console is ready");
         DataConnection.TurnTraceSwitchOn();
-        DataConnection.WriteTraceLine = Log.Information;
+        DataConnection.WriteTraceLine = Log.Debug;
 #endif
 
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -67,7 +67,7 @@ internal static class Program
         Velopack.VelopackApp.Build().Run();
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        Application.SetHighDpiMode(HighDpiMode.SystemAware);
         SetCulture();
 
         Application.Run(new frmMain());

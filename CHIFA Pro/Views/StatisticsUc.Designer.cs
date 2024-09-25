@@ -937,7 +937,7 @@ namespace CHIFA.Pro.Others
             tabClientsTable.ImageOptions.Image = (Image)resources.GetObject("tabClientsTable.ImageOptions.Image");
             tabClientsTable.Margin = new Padding(4, 3, 4, 3);
             tabClientsTable.Name = "tabClientsTable";
-            tabClientsTable.Size = new Size(1241, 673);
+            tabClientsTable.Size = new Size(1214, 695);
             tabClientsTable.Text = "CLIENTS";
             // 
             // gridByClient
@@ -949,7 +949,7 @@ namespace CHIFA.Pro.Others
             gridByClient.MainView = viewClients;
             gridByClient.Margin = new Padding(4, 3, 4, 3);
             gridByClient.Name = "gridByClient";
-            gridByClient.Size = new Size(1241, 673);
+            gridByClient.Size = new Size(1214, 695);
             gridByClient.TabIndex = 0;
             gridByClient.ViewCollection.AddRange(new BaseView[] { viewClients, gridView2 });
             // 
@@ -1079,7 +1079,7 @@ namespace CHIFA.Pro.Others
             tabMonthlyTable.ImageOptions.Image = (Image)resources.GetObject("tabMonthlyTable.ImageOptions.Image");
             tabMonthlyTable.Margin = new Padding(4, 3, 4, 3);
             tabMonthlyTable.Name = "tabMonthlyTable";
-            tabMonthlyTable.Size = new Size(1241, 673);
+            tabMonthlyTable.Size = new Size(1214, 695);
             tabMonthlyTable.Text = "MENSUELS";
             // 
             // gridMonthly
@@ -1090,7 +1090,7 @@ namespace CHIFA.Pro.Others
             gridMonthly.MainView = viewMonthly;
             gridMonthly.MenuManager = ribbonControl1;
             gridMonthly.Name = "gridMonthly";
-            gridMonthly.Size = new Size(1241, 673);
+            gridMonthly.Size = new Size(1214, 695);
             gridMonthly.TabIndex = 0;
             gridMonthly.ViewCollection.AddRange(new BaseView[] { viewMonthly });
             // 
@@ -1258,7 +1258,7 @@ namespace CHIFA.Pro.Others
             tabProductTable.ImageOptions.Image = (Image)resources.GetObject("tabProductTable.ImageOptions.Image");
             tabProductTable.Margin = new Padding(4, 3, 4, 3);
             tabProductTable.Name = "tabProductTable";
-            tabProductTable.Size = new Size(1241, 673);
+            tabProductTable.Size = new Size(1214, 695);
             tabProductTable.Text = "PROUITS";
             // 
             // gridProducts
@@ -1270,7 +1270,7 @@ namespace CHIFA.Pro.Others
             gridProducts.MainView = viewProducts;
             gridProducts.Margin = new Padding(4, 3, 4, 3);
             gridProducts.Name = "gridProducts";
-            gridProducts.Size = new Size(1241, 673);
+            gridProducts.Size = new Size(1214, 695);
             gridProducts.TabIndex = 0;
             gridProducts.ViewCollection.AddRange(new BaseView[] { viewProducts });
             // 
@@ -1361,7 +1361,7 @@ namespace CHIFA.Pro.Others
             tabClients.Controls.Add(chartClients);
             tabClients.ImageOptions.Image = (Image)resources.GetObject("tabClients.ImageOptions.Image");
             tabClients.Name = "tabClients";
-            tabClients.Size = new Size(1241, 673);
+            tabClients.Size = new Size(1214, 695);
             tabClients.Text = "CLIENTS";
             // 
             // chartClients
@@ -1486,7 +1486,7 @@ namespace CHIFA.Pro.Others
     series4
     };
             chartClients.SeriesTemplate.ArgumentDataMember = "Malade";
-            chartClients.Size = new Size(1241, 673);
+            chartClients.Size = new Size(1214, 695);
             chartClients.TabIndex = 0;
             // 
             // tabControl
@@ -1508,7 +1508,7 @@ namespace CHIFA.Pro.Others
             tabBordereaux.Controls.Add(chartBordereaux);
             tabBordereaux.ImageOptions.Image = (Image)resources.GetObject("tabBordereaux.ImageOptions.Image");
             tabBordereaux.Name = "tabBordereaux";
-            tabBordereaux.Size = new Size(1241, 673);
+            tabBordereaux.Size = new Size(1214, 695);
             tabBordereaux.Text = "BORDEREAUX";
             // 
             // chartBordereaux
@@ -1625,7 +1625,7 @@ namespace CHIFA.Pro.Others
     series12,
     series13
     };
-            chartBordereaux.Size = new Size(1241, 673);
+            chartBordereaux.Size = new Size(1214, 695);
             chartBordereaux.TabIndex = 0;
             // 
             // tabYearlyTable
@@ -1633,7 +1633,7 @@ namespace CHIFA.Pro.Others
             tabYearlyTable.Controls.Add(gridYearly);
             tabYearlyTable.ImageOptions.Image = (Image)resources.GetObject("tabYearlyTable.ImageOptions.Image");
             tabYearlyTable.Name = "tabYearlyTable";
-            tabYearlyTable.Size = new Size(1241, 673);
+            tabYearlyTable.Size = new Size(1214, 695);
             tabYearlyTable.Text = "ANNUELLES";
             // 
             // gridYearly
@@ -1644,7 +1644,7 @@ namespace CHIFA.Pro.Others
             gridYearly.MainView = viewYearly;
             gridYearly.MenuManager = ribbonControl1;
             gridYearly.Name = "gridYearly";
-            gridYearly.Size = new Size(1241, 673);
+            gridYearly.Size = new Size(1214, 695);
             gridYearly.TabIndex = 0;
             gridYearly.ViewCollection.AddRange(new BaseView[] { viewYearly });
             // 
@@ -1835,7 +1835,7 @@ namespace CHIFA.Pro.Others
             tabYearly.Controls.Add(chartYearly);
             tabYearly.ImageOptions.Image = (Image)resources.GetObject("tabYearly.ImageOptions.Image");
             tabYearly.Name = "tabYearly";
-            tabYearly.Size = new Size(1241, 673);
+            tabYearly.Size = new Size(1214, 695);
             tabYearly.Text = "ANNUELLES";
             // 
             // chartYearly
@@ -1884,7 +1884,7 @@ namespace CHIFA.Pro.Others
     series16,
     series17
     };
-            chartYearly.Size = new Size(1241, 673);
+            chartYearly.Size = new Size(1214, 695);
             chartYearly.TabIndex = 0;
             // 
             // tabMonthly
@@ -1892,7 +1892,7 @@ namespace CHIFA.Pro.Others
             tabMonthly.Controls.Add(chartMonthly);
             tabMonthly.ImageOptions.Image = (Image)resources.GetObject("tabMonthly.ImageOptions.Image");
             tabMonthly.Name = "tabMonthly";
-            tabMonthly.Size = new Size(1241, 673);
+            tabMonthly.Size = new Size(1214, 695);
             tabMonthly.Text = "MENSUELS";
             // 
             // chartMonthly
@@ -1954,7 +1954,7 @@ namespace CHIFA.Pro.Others
     series20,
     series21
     };
-            chartMonthly.Size = new Size(1241, 673);
+            chartMonthly.Size = new Size(1214, 695);
             chartMonthly.TabIndex = 0;
             // 
             // tabWeeklyTable
@@ -1962,7 +1962,7 @@ namespace CHIFA.Pro.Others
             tabWeeklyTable.Controls.Add(gridWeekly);
             tabWeeklyTable.ImageOptions.Image = (Image)resources.GetObject("tabWeeklyTable.ImageOptions.Image");
             tabWeeklyTable.Name = "tabWeeklyTable";
-            tabWeeklyTable.Size = new Size(1241, 673);
+            tabWeeklyTable.Size = new Size(1214, 695);
             tabWeeklyTable.Text = "HEBDOMADAIRES";
             // 
             // gridWeekly
@@ -1973,7 +1973,7 @@ namespace CHIFA.Pro.Others
             gridWeekly.MainView = viewWeekly;
             gridWeekly.MenuManager = ribbonControl1;
             gridWeekly.Name = "gridWeekly";
-            gridWeekly.Size = new Size(1241, 673);
+            gridWeekly.Size = new Size(1214, 695);
             gridWeekly.TabIndex = 0;
             gridWeekly.ViewCollection.AddRange(new BaseView[] { viewWeekly });
             // 
@@ -2141,11 +2141,12 @@ namespace CHIFA.Pro.Others
             tabWeekly.Controls.Add(chartWeekly);
             tabWeekly.ImageOptions.Image = (Image)resources.GetObject("tabWeekly.ImageOptions.Image");
             tabWeekly.Name = "tabWeekly";
-            tabWeekly.Size = new Size(1241, 673);
+            tabWeekly.Size = new Size(1214, 695);
             tabWeekly.Text = "HEBDOMADAIRES";
             // 
             // chartWeekly
             // 
+            chartWeekly.DataSource = weeklyStatBindingSource;
             xyDiagram5.AxisX.VisibleInPanesSerializable = "-1;0";
             xyDiagram5.AxisY.VisibleInPanesSerializable = "-1";
             xyDiagram5.EnableAxisXScrolling = true;
@@ -2205,7 +2206,7 @@ namespace CHIFA.Pro.Others
     series24,
     series25
     };
-            chartWeekly.Size = new Size(1241, 673);
+            chartWeekly.Size = new Size(1214, 695);
             chartWeekly.TabIndex = 0;
             // 
             // tabDailyTable
@@ -2213,7 +2214,7 @@ namespace CHIFA.Pro.Others
             tabDailyTable.Controls.Add(gridDaily);
             tabDailyTable.ImageOptions.Image = (Image)resources.GetObject("tabDailyTable.ImageOptions.Image");
             tabDailyTable.Name = "tabDailyTable";
-            tabDailyTable.Size = new Size(1241, 673);
+            tabDailyTable.Size = new Size(1214, 695);
             tabDailyTable.Text = "QUOTIDIENNES";
             // 
             // gridDaily
@@ -2224,7 +2225,7 @@ namespace CHIFA.Pro.Others
             gridDaily.MainView = viewDaily;
             gridDaily.MenuManager = ribbonControl1;
             gridDaily.Name = "gridDaily";
-            gridDaily.Size = new Size(1241, 673);
+            gridDaily.Size = new Size(1214, 695);
             gridDaily.TabIndex = 0;
             gridDaily.ViewCollection.AddRange(new BaseView[] { viewDaily });
             // 
@@ -2364,7 +2365,7 @@ namespace CHIFA.Pro.Others
             tabDaily.Controls.Add(chartDaily);
             tabDaily.ImageOptions.Image = (Image)resources.GetObject("tabDaily.ImageOptions.Image");
             tabDaily.Name = "tabDaily";
-            tabDaily.Size = new Size(1241, 673);
+            tabDaily.Size = new Size(1214, 695);
             tabDaily.Text = "QUOTIDIENNES";
             // 
             // chartDaily
@@ -2416,7 +2417,7 @@ namespace CHIFA.Pro.Others
     series27,
     series28
     };
-            chartDaily.Size = new Size(1241, 673);
+            chartDaily.Size = new Size(1214, 695);
             chartDaily.TabIndex = 0;
             // 
             // tabProducts2
@@ -2466,7 +2467,6 @@ namespace CHIFA.Pro.Others
             chartProducts.Location = new Point(0, 0);
             chartProducts.Name = "chartProducts";
             series29.ArgumentDataMember = "NomCom";
-            series29.ColorDataMember = "Local";
             series29.Name = "Mont";
             series29.SeriesID = 0;
             series29.SeriesPointsSorting = SortingMode.Descending;
@@ -2493,7 +2493,7 @@ namespace CHIFA.Pro.Others
             series30.View = sideBySideBarSeriesView23;
             series31.ArgumentDataMember = "NomCom";
             series31.ColorDataMember = "Local";
-            series31.Name = "Net";
+            series31.Name = "Brut";
             series31.SeriesID = 2;
             series31.SeriesPointsSorting = SortingMode.Descending;
             series31.SeriesPointsSortingKey = SeriesPointKey.Value_1;

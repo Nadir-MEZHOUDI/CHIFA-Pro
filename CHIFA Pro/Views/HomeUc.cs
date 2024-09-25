@@ -101,7 +101,8 @@ public partial class HomeUc : XtraUserControl, INavigable
 
     private async void itemUpdate_ItemClick(object sender, TileItemEventArgs e)
     {
-       await frmMain.UpdateAppAsync(true);
+        var frm = Application.OpenForms.OfType<frmMain>().FirstOrDefault();
+        await frm?.UpdateAppAsync(true);
     }
 }
 

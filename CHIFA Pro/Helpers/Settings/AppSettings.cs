@@ -16,6 +16,8 @@ public class AppSettings : SettingsToRegistry<AppSettings>
     public string ChifaDump => $"{ChifaPath}\\CHIFA_OFFICINE_DB\\bin\\pg_dump.exe";
     public string ChifaRestor => $"{ChifaPath}\\CHIFA_OFFICINE_DB\\bin\\pg_restore.exe";
 
+    public bool IsServer { get; internal set; }
+
     internal readonly string DbName = "CHIFA_OFFICINE";
     internal readonly string DbPassword = "REDACTED";
     internal readonly string DbUser = "pharm";
