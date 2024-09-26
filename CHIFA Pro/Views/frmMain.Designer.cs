@@ -96,13 +96,13 @@
             // accordionControl1
             // 
             accordionControl1.Dock = DockStyle.Left;
-            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accStatistics, accAssures, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres });
+            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accAssures, accStatistics, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres });
             accordionControl1.Location = new Point(0, 0);
             accordionControl1.Margin = new Padding(5, 6, 5, 6);
             accordionControl1.Name = "accordionControl1";
             accordionControl1.ScrollBarMode = DevExpress.XtraBars.Navigation.ScrollBarMode.Auto;
             accordionControl1.ShowFilterControl = DevExpress.XtraBars.Navigation.ShowFilterControl.Auto;
-            accordionControl1.Size = new Size(208, 746);
+            accordionControl1.Size = new Size(208, 747);
             accordionControl1.TabIndex = 1;
             accordionControl1.ViewType = DevExpress.XtraBars.Navigation.AccordionControlViewType.HamburgerMenu;
             // 
@@ -259,7 +259,7 @@
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = DockStyle.Bottom;
-            barDockControlBottom.Location = new Point(208, 746);
+            barDockControlBottom.Location = new Point(208, 747);
             barDockControlBottom.Manager = null;
             barDockControlBottom.Margin = new Padding(5, 4, 5, 4);
             barDockControlBottom.Size = new Size(1534, 0);
@@ -271,7 +271,7 @@
             barDockControlLeft.Location = new Point(208, 0);
             barDockControlLeft.Manager = null;
             barDockControlLeft.Margin = new Padding(5, 4, 5, 4);
-            barDockControlLeft.Size = new Size(0, 746);
+            barDockControlLeft.Size = new Size(0, 747);
             // 
             // barDockControlRight
             // 
@@ -280,7 +280,7 @@
             barDockControlRight.Location = new Point(1742, 0);
             barDockControlRight.Manager = null;
             barDockControlRight.Margin = new Padding(5, 4, 5, 4);
-            barDockControlRight.Size = new Size(0, 746);
+            barDockControlRight.Size = new Size(0, 747);
             // 
             // skinDropDownButtonItem2
             // 
@@ -302,7 +302,7 @@
             // 
             barDockControl2.CausesValidation = false;
             barDockControl2.Dock = DockStyle.Bottom;
-            barDockControl2.Location = new Point(208, 746);
+            barDockControl2.Location = new Point(208, 747);
             barDockControl2.Manager = null;
             barDockControl2.Size = new Size(1534, 0);
             // 
@@ -312,7 +312,7 @@
             barDockControl3.Dock = DockStyle.Left;
             barDockControl3.Location = new Point(208, 0);
             barDockControl3.Manager = null;
-            barDockControl3.Size = new Size(0, 746);
+            barDockControl3.Size = new Size(0, 747);
             // 
             // barDockControl4
             // 
@@ -320,7 +320,7 @@
             barDockControl4.Dock = DockStyle.Right;
             barDockControl4.Location = new Point(1742, 0);
             barDockControl4.Manager = null;
-            barDockControl4.Size = new Size(0, 746);
+            barDockControl4.Size = new Size(0, 747);
             // 
             // container
             // 
@@ -328,7 +328,7 @@
             container.Dock = DockStyle.Fill;
             container.Location = new Point(208, 0);
             container.Name = "container";
-            container.Size = new Size(1534, 746);
+            container.Size = new Size(1534, 747);
             container.TabIndex = 11;
             // 
             // tabContainer
@@ -340,7 +340,7 @@
             tabContainer.Location = new Point(0, 0);
             tabContainer.MultiLine = DevExpress.Utils.DefaultBoolean.False;
             tabContainer.Name = "tabContainer";
-            tabContainer.Size = new Size(1534, 746);
+            tabContainer.Size = new Size(1534, 747);
             tabContainer.TabIndex = 0;
             tabContainer.CloseButtonClick += TabContainer_CloseButtonClick;
             // 
@@ -392,16 +392,16 @@
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel7, txtIP, toolStripStatusLabel1, txtServer, toolStripStatusLabel2, txtDatabase, toolStripStatusLabel5, progressBar, toolStripStatusLabel3, txtPharmacie, toolStripStatusLabel4, txtCodePs });
-            statusStrip1.Location = new Point(0, 746);
+            statusStrip1.Location = new Point(0, 747);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1742, 23);
+            statusStrip1.Size = new Size(1742, 22);
             statusStrip1.TabIndex = 25;
             statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel7
             // 
             toolStripStatusLabel7.Name = "toolStripStatusLabel7";
-            toolStripStatusLabel7.Size = new Size(55, 18);
+            toolStripStatusLabel7.Size = new Size(55, 17);
             toolStripStatusLabel7.Text = "AdressIP:";
             // 
             // txtIP
@@ -410,13 +410,13 @@
             txtIP.ForeColor = Color.Green;
             txtIP.Margin = new Padding(0, 3, 50, 2);
             txtIP.Name = "txtIP";
-            txtIP.Size = new Size(16, 18);
+            txtIP.Size = new Size(16, 17);
             txtIP.Text = "...";
             // 
             // toolStripStatusLabel1
             // 
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(42, 18);
+            toolStripStatusLabel1.Size = new Size(42, 17);
             toolStripStatusLabel1.Text = "Server:";
             // 
             // txtServer
@@ -425,37 +425,38 @@
             txtServer.ForeColor = Color.Red;
             txtServer.Margin = new Padding(0, 3, 50, 2);
             txtServer.Name = "txtServer";
-            txtServer.Size = new Size(59, 18);
+            txtServer.Size = new Size(59, 17);
             txtServer.Text = "localhost";
             // 
             // toolStripStatusLabel2
             // 
             toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            toolStripStatusLabel2.Size = new Size(58, 18);
+            toolStripStatusLabel2.Size = new Size(58, 17);
             toolStripStatusLabel2.Text = "Database:";
             // 
             // txtDatabase
             // 
             txtDatabase.Font = new Font("Segoe UI", 9F, FontStyle.Bold | FontStyle.Italic);
             txtDatabase.Name = "txtDatabase";
-            txtDatabase.Size = new Size(100, 18);
+            txtDatabase.Size = new Size(100, 17);
             txtDatabase.Text = "CHIFA_OFFICINE";
             // 
             // toolStripStatusLabel5
             // 
             toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            toolStripStatusLabel5.Size = new Size(613, 18);
+            toolStripStatusLabel5.Size = new Size(1046, 17);
             toolStripStatusLabel5.Spring = true;
             // 
             // progressBar
             // 
             progressBar.Name = "progressBar";
             progressBar.Size = new Size(400, 17);
+            progressBar.Visible = false;
             // 
             // toolStripStatusLabel3
             // 
             toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            toolStripStatusLabel3.Size = new Size(66, 18);
+            toolStripStatusLabel3.Size = new Size(66, 17);
             toolStripStatusLabel3.Text = "Pharmacie:";
             // 
             // txtPharmacie
@@ -463,13 +464,13 @@
             txtPharmacie.Font = new Font("Segoe UI", 9F, FontStyle.Bold | FontStyle.Italic);
             txtPharmacie.Margin = new Padding(0, 3, 50, 2);
             txtPharmacie.Name = "txtPharmacie";
-            txtPharmacie.Size = new Size(16, 18);
+            txtPharmacie.Size = new Size(16, 17);
             txtPharmacie.Text = "...";
             // 
             // toolStripStatusLabel4
             // 
             toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            toolStripStatusLabel4.Size = new Size(83, 18);
+            toolStripStatusLabel4.Size = new Size(83, 17);
             toolStripStatusLabel4.Text = "Code Officine:";
             // 
             // txtCodePs
@@ -478,7 +479,7 @@
             txtCodePs.ForeColor = Color.FromArgb(0, 192, 192);
             txtCodePs.Margin = new Padding(0, 3, 20, 2);
             txtCodePs.Name = "txtCodePs";
-            txtCodePs.Size = new Size(16, 18);
+            txtCodePs.Size = new Size(16, 17);
             txtCodePs.Text = "...";
             // 
             // AppImages

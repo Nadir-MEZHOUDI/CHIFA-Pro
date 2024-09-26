@@ -14,6 +14,7 @@ public partial class frmMain : XtraForm
     public frmMain()
     {
         InitializeComponent();
+        ChangeNameBasedOnDotNetVersion();
     }
     public static Image Image(int index) => (Application.OpenForms["frmMain"] as frmMain)!.AppImages.ImageSource.Images[index];
 
@@ -53,18 +54,10 @@ public partial class frmMain : XtraForm
     {
         try
         {
-            ChangeNameBasedOnDotNetVersion();
-
-            this.NavigateTo<HomeUc>();
-
             await DbChecker.RunServerAsync();
-
-            Task load = LoadServerInfo();
-
-            Task update = UpdateAppAsync();
-
-            await Task.WhenAll(load, update);
-
+            this.NavigateTo<HomeUc>();
+            await LoadServerInfo();
+            await UpdateAppAsync();
         }
         catch (Exception ex)
         {
@@ -74,24 +67,36 @@ public partial class frmMain : XtraForm
 
     public async Task UpdateAppAsync(bool showMessage = false)
     {
-        var mgr = new UpdateManager("https://nadirsmartapp.blob.core.windows.net/chifa-pro");
-
-        if (!mgr.IsInstalled) return;
-
-        // check for new version
-        UpdateInfo? newVersion = await mgr.CheckForUpdatesAsync();
-        if (newVersion == null)
+        try
         {
-            if (showMessage)
+            progressBar.Visible = true;
+            var mgr = new UpdateManager("https://nadirsmartapp.blob.core.windows.net/chifa-pro");
+
+            if (!mgr.IsInstalled) return;
+
+            // check for new version
+            var newVersion = await mgr.CheckForUpdatesAsync();
+            if (newVersion == null)
             {
-                _ = XtraMessageBox.Show("No new version available,You are using the latest Version", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (showMessage)
+                    _ = XtraMessageBox.Show("This is the latest Version", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            return;
+            else
+            {
+                // download new version
+                await mgr.DownloadUpdatesAsync(newVersion, ShowProgress);
+                // install new version and restart app
+                mgr.ApplyUpdatesAndRestart(newVersion);
+            }
         }
-        // download new version
-        await mgr.DownloadUpdatesAsync(newVersion, ShowProgress);
-        // install new version and restart app
-        mgr.ApplyUpdatesAndRestart(newVersion);
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+        finally
+        {
+            progressBar.Visible = false;
+        }
     }
 
     private void ShowProgress(int i) => Dispatcher.CurrentDispatcher.Invoke(() => progressBar.Value = i);
@@ -105,7 +110,7 @@ public partial class frmMain : XtraForm
             txtServer.Text = ChifaDb.Server;
 
             var db = new ChifaDb();
-            Parametre? officine = await db.Parametres.FirstOrDefaultAsync();
+            var officine = await db.Parametres.FirstOrDefaultAsync();
 
             txtCodePs.Text = officine?.CodePs ?? "";
             txtPharmacie.Text = officine?.Nom + " " + officine?.Prenom;

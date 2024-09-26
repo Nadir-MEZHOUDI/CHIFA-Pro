@@ -15,7 +15,6 @@ public static class StatisticsService
     public static Period period = new();
     public static async Task<List<ThisWeekStat>> GetThisWeekStatsAsync()
     {
-
         await using var db = new ChifaDb();
         DateTime firstDate = DateTime.Today.AddDays(-8);
         List<ThisWeekStat> weekStats = await db.Factures
@@ -30,11 +29,13 @@ public static class StatisticsService
                                       MontantOff = g.Sum(f => f.MontOff),
                                       Maj = g.Sum(f => f.MontMaj),
                                   })
-                                  .ToListAsync();
+                                  .ToListAsync()
+                                  .ConfigureAwait(false)
+                                  ;
 
         return Enumerable.Range(0, 8)
                                .Select(x => DateTime.Today.AddDays(-x))
-                               .Select(date => weekStats.FirstOrDefault(ws => ws.Date == date) ?? new ThisWeekStat(date))
+                               .Select(date => weekStats.Find(ws => ws.Date == date) ?? new ThisWeekStat(date))
                                .OrderByDescending(ws => ws.Date)
                                .ToList();
 

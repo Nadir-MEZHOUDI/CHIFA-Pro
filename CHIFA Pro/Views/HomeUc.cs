@@ -1,4 +1,5 @@
-﻿
+﻿using DevExpress.XtraGrid.Views.Grid.ViewInfo;
+
 namespace CHIFA.Pro.uc;
 
 public partial class HomeUc : XtraUserControl, INavigable
@@ -14,7 +15,8 @@ public partial class HomeUc : XtraUserControl, INavigable
     private async Task ReLoadDataAsync()
     {
         Cursor = Cursors.WaitCursor;
-        weekStatBindingSource.DataSource = await StatisticsService.GetThisWeekStatsAsync();
+        var data = await Task.Run(StatisticsService.GetThisWeekStatsAsync);
+        weekStatBindingSource.DataSource = data ;
         Cursor = Cursors.Default;
     }
 
@@ -49,7 +51,7 @@ public partial class HomeUc : XtraUserControl, INavigable
         this.NavigateTo<AssuresUc>();
     }
 
-    private void itemSpecialetes_ItemClick(object sender, TileItemEventArgs e)
+    private void ItemSpecialists_ItemClick(object sender, TileItemEventArgs e)
     {
         this.NavigateTo<SpecialitesUc>();
     }
@@ -59,12 +61,12 @@ public partial class HomeUc : XtraUserControl, INavigable
         this.NavigateTo<FormesUc>();
     }
 
-    private void itemCenters_ItemClick(object sender, TileItemEventArgs e)
+    private void ItemCenters_ItemClick(object sender, TileItemEventArgs e)
     {
         this.NavigateTo<CentersUc>();
     }
 
-    private void itemListNoir_ItemClick(object sender, TileItemEventArgs e)
+    private void ItemListNoir_ItemClick(object sender, TileItemEventArgs e)
     {
         this.NavigateTo<ListNoirUc>();
     }
@@ -74,27 +76,17 @@ public partial class HomeUc : XtraUserControl, INavigable
         this.NavigateTo<UsersUc>();
     }
 
-    private void itemControlMedical_ItemClick(object sender, TileItemEventArgs e)
+    private void ItemControlMedical_ItemClick(object sender, TileItemEventArgs e)
     {
         this.NavigateTo<ControlMedicalUc>();
     }
 
-    private void itemOfficine_ItemClick(object sender, TileItemEventArgs e)
+    private void ItemOfficine_ItemClick(object sender, TileItemEventArgs e)
     {
         this.NavigateTo<OfficineUc>();
     }
 
-    private async void HomeUc_Enter(object sender, EventArgs e)
-    {
-        await ReLoadDataAsync();
-    }
-
-    private async void HomeUc_Paint(object sender, PaintEventArgs e)
-    {
-        await ReLoadDataAsync();
-    }
-
-    private async void itemRefresh_ItemClick(object sender, TileItemEventArgs e)
+    private async void ItemRefresh_ItemClick(object sender, TileItemEventArgs e)
     {
         await ReLoadDataAsync();
     }
@@ -102,7 +94,13 @@ public partial class HomeUc : XtraUserControl, INavigable
     private async void itemUpdate_ItemClick(object sender, TileItemEventArgs e)
     {
         var frm = Application.OpenForms.OfType<frmMain>().FirstOrDefault();
-        await frm?.UpdateAppAsync(true);
+        if (frm != null)
+            await frm.UpdateAppAsync(true);
+    }
+
+    private async void HomeUc_Load(object sender, EventArgs e)
+    {
+        await ReLoadDataAsync();
     }
 }
 

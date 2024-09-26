@@ -37,7 +37,7 @@ public static class DbChecker
 
         if (!File.Exists(AppSettings.Default.ChifaPostgres))
         {
-            XtraMessageBox.Show("Server not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            XtraMessageBox.Show("Server Postgres not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
         }
 

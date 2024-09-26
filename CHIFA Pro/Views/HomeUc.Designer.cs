@@ -207,7 +207,7 @@
             itemSpecialetes.Id = 8;
             itemSpecialetes.ItemSize = TileItemSize.Medium;
             itemSpecialetes.Name = "itemSpecialetes";
-            itemSpecialetes.ItemClick += itemSpecialetes_ItemClick;
+            itemSpecialetes.ItemClick += ItemSpecialists_ItemClick;
             // 
             // itmMedicaments
             // 
@@ -239,7 +239,7 @@
             itemControlMedical.Id = 10;
             itemControlMedical.ItemSize = TileItemSize.Medium;
             itemControlMedical.Name = "itemControlMedical";
-            itemControlMedical.ItemClick += itemControlMedical_ItemClick;
+            itemControlMedical.ItemClick += ItemControlMedical_ItemClick;
             // 
             // itemListNoir
             // 
@@ -249,7 +249,7 @@
             itemListNoir.Id = 9;
             itemListNoir.ItemSize = TileItemSize.Medium;
             itemListNoir.Name = "itemListNoir";
-            itemListNoir.ItemClick += itemListNoir_ItemClick;
+            itemListNoir.ItemClick += ItemListNoir_ItemClick;
             // 
             // itemUsers
             // 
@@ -269,7 +269,7 @@
             itemCenters.Id = 12;
             itemCenters.ItemSize = TileItemSize.Medium;
             itemCenters.Name = "itemCenters";
-            itemCenters.ItemClick += itemCenters_ItemClick;
+            itemCenters.ItemClick += ItemCenters_ItemClick;
             // 
             // itemOfficine
             // 
@@ -279,7 +279,7 @@
             itemOfficine.Id = 13;
             itemOfficine.ItemSize = TileItemSize.Medium;
             itemOfficine.Name = "itemOfficine";
-            itemOfficine.ItemClick += itemOfficine_ItemClick;
+            itemOfficine.ItemClick += ItemOfficine_ItemClick;
             // 
             // itemUpdate
             // 
@@ -299,7 +299,7 @@
             itemRefresh.Id = 15;
             itemRefresh.ItemSize = TileItemSize.Medium;
             itemRefresh.Name = "itemRefresh";
-            itemRefresh.ItemClick += itemRefresh_ItemClick;
+            itemRefresh.ItemClick += ItemRefresh_ItemClick;
             // 
             // chartControl1
             // 
@@ -307,25 +307,28 @@
             chartControl1.DataSource = weekStatBindingSource;
             xyDiagram1.AxisX.Label.TextPattern = "{A:dd/MM/yyyy}";
             xyDiagram1.AxisX.VisibleInPanesSerializable = "-1;0;1";
+            xyDiagram1.AxisY.Title.Text = "Mont Glob";
+            xyDiagram1.AxisY.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
             xyDiagram1.AxisY.VisibleInPanesSerializable = "-1";
             xyDiagram1.DefaultPane.Title.Text = "Montant par jour";
-            xyDiagram1.DefaultPane.Title.Visibility = DevExpress.Utils.DefaultBoolean.Default;
             xyDiagramPane1.Name = "Pane 1";
             xyDiagramPane1.PaneID = 0;
             xyDiagramPane1.Title.Text = "Nomber des Factures par Jour";
-            xyDiagramPane1.Title.Visibility = DevExpress.Utils.DefaultBoolean.Default;
             xyDiagramPane2.Name = "Pane 2";
             xyDiagramPane2.PaneID = 1;
             xyDiagramPane2.Title.Text = "Majoration par Jour";
-            xyDiagramPane2.Title.Visibility = DevExpress.Utils.DefaultBoolean.Default;
             xyDiagram1.Panes.AddRange(new DevExpress.XtraCharts.XYDiagramPane[] { xyDiagramPane1, xyDiagramPane2 });
             secondaryAxisy1.Alignment = DevExpress.XtraCharts.AxisAlignment.Near;
             secondaryAxisy1.AxisID = 0;
             secondaryAxisy1.Name = "Secondary AxisY 1";
+            secondaryAxisy1.Title.Text = "Factures";
+            secondaryAxisy1.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
             secondaryAxisy1.VisibleInPanesSerializable = "0";
             secondaryAxisy2.Alignment = DevExpress.XtraCharts.AxisAlignment.Near;
             secondaryAxisy2.AxisID = 1;
             secondaryAxisy2.Name = "Secondary AxisY 2";
+            secondaryAxisy2.Title.Text = "Maj";
+            secondaryAxisy2.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
             secondaryAxisy2.VisibleInPanesSerializable = "1";
             xyDiagram1.SecondaryAxesY.AddRange(new DevExpress.XtraCharts.SecondaryAxisY[] { secondaryAxisy1, secondaryAxisy2 });
             chartControl1.Diagram = xyDiagram1;
@@ -393,8 +396,7 @@
             Margin = new Padding(4, 3, 4, 3);
             Name = "HomeUc";
             Size = new Size(1217, 658);
-            Paint += HomeUc_Paint;
-            Enter += HomeUc_Enter;
+            Load += HomeUc_Load;
             ((System.ComponentModel.ISupportInitialize)weekStatBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)xyDiagramPane1).EndInit();
             ((System.ComponentModel.ISupportInitialize)xyDiagramPane2).EndInit();
