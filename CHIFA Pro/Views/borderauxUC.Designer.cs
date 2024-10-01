@@ -1,5 +1,5 @@
 ﻿
-namespace CHIFA.Pro.uc
+namespace CHIFA.Pro.Views
 {
     partial class BordereauxUc
     {
@@ -75,7 +75,7 @@ namespace CHIFA.Pro.uc
             gridBordereaux.MainView = gridView1;
             gridBordereaux.Margin = new Padding(4, 3, 4, 3);
             gridBordereaux.Name = "gridBordereaux";
-            gridBordereaux.Size = new Size(989, 455);
+            gridBordereaux.Size = new Size(1362, 576);
             gridBordereaux.TabIndex = 0;
             gridBordereaux.ViewCollection.AddRange(new BaseView[] { gridView1 });
             // 
@@ -258,7 +258,7 @@ namespace CHIFA.Pro.uc
             Controls.Add(gridBordereaux);
             Margin = new Padding(4, 3, 4, 3);
             Name = "BordereauxUc";
-            Size = new Size(989, 455);
+            Size = new Size(1362, 576);
             ((System.ComponentModel.ISupportInitialize)gridBordereaux).EndInit();
             ((System.ComponentModel.ISupportInitialize)bordereauDtoBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)gridView1).EndInit();

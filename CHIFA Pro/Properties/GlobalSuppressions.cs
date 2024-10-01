@@ -5,7 +5,6 @@
 global using CHIFA.DAL.DataServices;
 global using CHIFA.DAL.DTOs;
 global using DataModel;
-global using CHIFA.Pro.Forms;
 global using CHIFA.Pro.Helpers;
 
 global using DevExpress.XtraEditors;

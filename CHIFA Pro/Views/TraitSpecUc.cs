@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.uc;
+﻿namespace CHIFA.Pro.Views;
 
 public partial class TraitSpecUc : XtraUserControl,INavigable
 {
@@ -24,7 +24,7 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
     private async void facturesUC_Load(object sender, EventArgs e)
     {
         await LoadMaxAndMinDates();
-        await RefreshData();
+        await LoadData();
     }
     private async Task LoadMaxAndMinDates()
     {
@@ -42,6 +42,10 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
 
             FromDate.EditValue = toDateRepo.MinValue;
             ToDate.EditValue = toDateRepo.MaxValue;
+
+
+            FromDate.EditValueChanged += async (_, _) => await LoadData();
+            ToDate.EditValueChanged += async (_, _) => await LoadData();
         }
         catch (Exception ex)
         {
@@ -95,12 +99,12 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
         return viewDetails.LoadDataAsync(() => DataService.GetPatientTraitementAsync(row.NumAssure, row.Rang, procheOnly));
     }
 
-    private Task RefreshData()
+    private Task LoadData()
     {
         Expression<Func<DetailFact, bool>> predicate = f => true;
 
         if (txtMedic.EditValue is string txt)
-            predicate = predicate.And(d => d.Medicament.FullName.Contains(txt, StringComparison.InvariantCultureIgnoreCase));
+            predicate = predicate.And(d => d.Medicament.FullName!.Contains(txt, StringComparison.InvariantCultureIgnoreCase));
 
         var period = new Period { From = (DateTime?)FromDate.EditValue, To = (DateTime?)ToDate.EditValue };
 
@@ -109,27 +113,12 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
 
     private async void swtchTimeOnly_EditValueChangedAsync(object sender, EventArgs e)
     {
-        await RefreshData();
+        await LoadData();
     }
-
-    private async void txtDateFrom_EditValueChangedAsync(object sender, EventArgs e)
-    {
-        await RefreshData();
-    }
-
-    private async void txtDateFrom_ItemClickAsync(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-    {
-        await RefreshData();
-    }
-
-    private async void txtDateTo_EditValueChanged(object sender, EventArgs e)
-    {
-        await RefreshData();
-    }
-
+    
     private async void txtMedic_EditValueChanged(object sender, EventArgs e)
     {
-        await RefreshData();
+        await LoadData();
     }
 
     private void viewFectures_DoubleClick(object sender, EventArgs e)
@@ -141,6 +130,6 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
 
     private async void btnRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        await RefreshData();
+        await LoadData();
     }
 }

@@ -6,9 +6,9 @@ namespace CHIFA.DAL.Statistics;
 
 public class DailyStat
 {
-    private static readonly CultureInfo culture = new("fr");
+    private static readonly CultureInfo Culture = new("ar");
     public string Date => DateTime.ToString("dd - MM - yyyy");
-    public string Day => DateTime.ToString("dddd", culture).ToUpper();
+    public string Day => DateTime.ToString("dddd", Culture).ToUpper();
     public DateTime DateTime { get; init; }
     public int Factures { get; init; }
     public decimal? MontantMaj { get;  init; }

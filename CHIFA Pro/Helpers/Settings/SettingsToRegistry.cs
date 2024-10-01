@@ -1,8 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using System.ComponentModel;
+using Microsoft.Win32;
 
-using System.ComponentModel;
-
-namespace SmartPharm.Helpers.Settings;
+namespace CHIFA.Pro.Helpers.Settings;
 
 public class SettingsToRegistry<T> where T : class, new()
 {

@@ -1,8 +1,10 @@
-﻿namespace CHIFA.Pro.Others;
+﻿using CHIFA.Pro.Helpers.Settings;
+
+namespace CHIFA.Pro.Views;
 
 public partial class ParametersUc : XtraUserControl, INavigable
 {
-    public Action? Closer;
+    private Action? _closer;
     public string Caption { get; } = "PARAMETERS";
     public Image Image => frmMain.Image(14);
 
@@ -19,7 +21,7 @@ public partial class ParametersUc : XtraUserControl, INavigable
             Text = @"Parameters",
             Size = new Size(600, 300)
         };
-        frm.Controls.Add(new ParametersUc { Dock = DockStyle.Fill, Closer = frm.Close });
+        frm.Controls.Add(new ParametersUc { Dock = DockStyle.Fill, _closer = frm.Close });
         frm.ShowDialog();
     }
 
@@ -28,19 +30,11 @@ public partial class ParametersUc : XtraUserControl, INavigable
         try
         {
             AppSettings.Default.ChifaPath = txtChifaPath.Text;
-            AppSettings.Default.IsServer = rbtServer.Checked; ;
-
+            AppSettings.Default.IsServer = rbtServer.Checked;
             AppSettings.Default.Save();
-            if (rbtServer.Checked)
-            {
-                XtraHelper.SetServer("localhost");
-            }
-            else
-            {
-                XtraHelper.SetServer(txtServerName.Text);
-            }
+            XtraHelper.SetServer(rbtServer.Checked ? "localhost" : txtServerName.Text);
             XtraMessageBox.Show("Configuration successfully Saved", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Closer?.Invoke();
+            _closer?.Invoke();
         }
         catch (Exception ex)
         {
@@ -59,11 +53,9 @@ public partial class ParametersUc : XtraUserControl, INavigable
 
             var items = await Task.Run(XtraHelper.ListAllDevicesOnLocalNetwork);
 
-            if (items is { Length: > 0 })
-            {
-                txtServerName.Properties.Items.Clear();
-                txtServerName.Properties.Items.AddRange(items);
-            }
+            if (items is not { Length: > 0 }) return;
+            txtServerName.Properties.Items.Clear();
+            txtServerName.Properties.Items.AddRange(items);
         }
         catch (Exception ex)
         {

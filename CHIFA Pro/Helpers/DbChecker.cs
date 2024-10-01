@@ -1,4 +1,6 @@
-﻿using Npgsql;
+﻿using CHIFA.Pro.Helpers.Settings;
+using CHIFA.Pro.Views;
+using Npgsql;
 
 namespace CHIFA.Pro.Helpers;
 

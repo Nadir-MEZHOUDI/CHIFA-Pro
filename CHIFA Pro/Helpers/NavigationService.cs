@@ -1,4 +1,5 @@
-﻿using DevExpress.Utils;
+﻿using CHIFA.Pro.Views;
+using DevExpress.Utils;
 using DevExpress.XtraTab;
 
 namespace CHIFA.Pro.Helpers;

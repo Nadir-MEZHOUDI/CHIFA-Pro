@@ -1,9 +1,6 @@
-﻿using CHIFA.DAL.Statistics;
+﻿using DevExpress.XtraTab;
 
-using DevExpress.XtraCharts;
-using DevExpress.XtraTab;
-
-namespace CHIFA.Pro.Others;
+namespace CHIFA.Pro.Views;
 public partial class StatisticsUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "STATISTICS";
@@ -28,13 +25,13 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private async void FromDate_EditValueChanged(object sender, EventArgs e)
     {
-        StatisticsService.period.From = (DateTime)FromDate.EditValue;
+        StatisticsService.Period.From = (DateTime)FromDate.EditValue;
         await ReloadSelectedTable(tabControl.SelectedTabPage);
 
     }
     private async void ToDate_EditValueChanged(object sender, EventArgs e)
     {
-        StatisticsService.period.To = (DateTime)ToDate.EditValue;
+        StatisticsService.Period.To = (DateTime)ToDate.EditValue;
         await ReloadSelectedTable(tabControl.SelectedTabPage);
     }
 
@@ -127,43 +124,43 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private void btnAllPeriod_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        StatisticsService.period.From = fromDateRepo.MinValue;
-        StatisticsService.period.To = toDateRepo.MaxValue;
-        FromDate.EditValue = StatisticsService.period.From;
-        ToDate.EditValue = StatisticsService.period.To;
+        StatisticsService.Period.From = fromDateRepo.MinValue;
+        StatisticsService.Period.To = toDateRepo.MaxValue;
+        FromDate.EditValue = StatisticsService.Period.From;
+        ToDate.EditValue = StatisticsService.Period.To;
 
     }
 
     private void btnLastYear_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        StatisticsService.period.From = DateTime.Now.AddYears(-1);
-        StatisticsService.period.To = DateTime.Now;
-        FromDate.EditValue = StatisticsService.period.From;
-        ToDate.EditValue = StatisticsService.period.To;
+        StatisticsService.Period.From = DateTime.Now.AddYears(-1);
+        StatisticsService.Period.To = DateTime.Now;
+        FromDate.EditValue = StatisticsService.Period.From;
+        ToDate.EditValue = StatisticsService.Period.To;
     }
 
     private void btn6Months_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        StatisticsService.period.From = DateTime.Now.AddMonths(-6);
-        StatisticsService.period.To = DateTime.Now;
-        FromDate.EditValue = StatisticsService.period.From;
-        ToDate.EditValue = StatisticsService.period.To;
+        StatisticsService.Period.From = DateTime.Now.AddMonths(-6);
+        StatisticsService.Period.To = DateTime.Now;
+        FromDate.EditValue = StatisticsService.Period.From;
+        ToDate.EditValue = StatisticsService.Period.To;
     }
 
     private void btnThisYear_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        StatisticsService.period.From = new DateTime(DateTime.Now.Year, 1, 1);
-        StatisticsService.period.To = DateTime.Now;
-        FromDate.EditValue = StatisticsService.period.From;
-        ToDate.EditValue = StatisticsService.period.To;
+        StatisticsService.Period.From = new DateTime(DateTime.Now.Year, 1, 1);
+        StatisticsService.Period.To = DateTime.Now;
+        FromDate.EditValue = StatisticsService.Period.From;
+        ToDate.EditValue = StatisticsService.Period.To;
 
     }
 
     private void btnThisMonth_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        StatisticsService.period.From = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-        StatisticsService.period.To = DateTime.Now;
-        FromDate.EditValue = StatisticsService.period.From;
-        ToDate.EditValue = StatisticsService.period.To;
+        StatisticsService.Period.From = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        StatisticsService.Period.To = DateTime.Now;
+        FromDate.EditValue = StatisticsService.Period.From;
+        ToDate.EditValue = StatisticsService.Period.To;
     }
 }

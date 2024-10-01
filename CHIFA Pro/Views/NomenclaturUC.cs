@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.uc;
+﻿namespace CHIFA.Pro.Views;
 
 public partial class NomenclaturUc : XtraUserControl,INavigable
 {

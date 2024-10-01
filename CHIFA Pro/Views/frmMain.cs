@@ -1,13 +1,9 @@
 ﻿using System.Windows.Threading;
-
-using CHIFA.Pro.uc;
-
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
-
 using Velopack;
 
-namespace CHIFA.Pro;
+namespace CHIFA.Pro.Views;
 
 public partial class frmMain : XtraForm
 {
@@ -91,7 +87,7 @@ public partial class frmMain : XtraForm
         }
         catch (Exception ex)
         {
-            ex.Log();
+            ex.Log(false);
         }
         finally
         {

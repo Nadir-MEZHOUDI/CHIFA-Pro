@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.uc
+﻿namespace CHIFA.Pro.Views
 {
     partial class TraitSpecUc
     {
@@ -257,8 +257,6 @@
             FromDate.ImageOptions.Image = (Image)resources.GetObject("FromDate.ImageOptions.Image");
             FromDate.ImageOptions.LargeImage = (Image)resources.GetObject("FromDate.ImageOptions.LargeImage");
             FromDate.Name = "FromDate";
-            FromDate.EditValueChanged += txtDateFrom_EditValueChangedAsync;
-            FromDate.ItemClick += txtDateFrom_ItemClickAsync;
             // 
             // fromDateRepo
             // 
@@ -277,7 +275,6 @@
             ToDate.ImageOptions.LargeImage = (Image)resources.GetObject("ToDate.ImageOptions.LargeImage");
             ToDate.Name = "ToDate";
             ToDate.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
-            ToDate.EditValueChanged += txtDateTo_EditValueChanged;
             // 
             // toDateRepo
             // 

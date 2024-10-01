@@ -1,6 +1,4 @@
-﻿using SmartPharm.Helpers.Settings;
-
-namespace Helpers.Settings;
+﻿namespace CHIFA.Pro.Helpers.Settings;
 
 public class AppSettings : SettingsToRegistry<AppSettings>
 {

@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro
+﻿namespace CHIFA.Pro.Views
 {
     partial class AssuresUc
     {

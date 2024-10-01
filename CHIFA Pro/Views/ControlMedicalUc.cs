@@ -1,5 +1,5 @@
 ﻿
-namespace CHIFA.Pro.uc;
+namespace CHIFA.Pro.Views;
 
 public partial class ControlMedicalUc : XtraUserControl,INavigable
 {
@@ -7,6 +7,8 @@ public partial class ControlMedicalUc : XtraUserControl,INavigable
     {
         InitializeComponent();
         gridView1.SetOptions();
+        gridView1.HorzScrollVisibility = ScrollVisibility.Auto;
+
         Load += async (_, _) => await gridView1.LoadDataAsync(DataService.LoadControlsMedicalAsync);
     }
 

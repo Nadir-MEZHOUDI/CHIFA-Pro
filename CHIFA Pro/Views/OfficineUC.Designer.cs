@@ -1,6 +1,4 @@
-﻿using DataModel;
-
-namespace CHIFA.Pro.uc
+﻿namespace CHIFA.Pro.Views
 {
     partial class OfficineUc
     {

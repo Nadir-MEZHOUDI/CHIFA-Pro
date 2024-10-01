@@ -2,7 +2,7 @@
 using DevExpress.XtraGrid.Columns;
 using DevExpress.XtraGrid.Views.Grid;
 
-namespace CHIFA.Pro.Forms;
+namespace CHIFA.Pro.Views;
 
 public partial class frmTraitSpec : XtraForm
 {

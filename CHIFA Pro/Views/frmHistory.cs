@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Forms;
+﻿namespace CHIFA.Pro.Views;
 
 public partial class FrmHistory : XtraForm
 {
@@ -26,7 +26,7 @@ public partial class FrmHistory : XtraForm
     private async Task GetSelectedDetails()
     {
         if (gridHistFactures.GetRow(gridHistFactures.FocusedRowHandle) is FactureDto row)
-            await gridHistDetails.LoadDataAsync(() => DataService.GetFacturDetailsByIdAsync(row.NumFact));
+            await gridHistDetails.LoadDataAsync(() => DataService.GetFactureDetailsByIdAsync(row.NumFact));
     }
 
     private void gridConsumption_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)

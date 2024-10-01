@@ -1,6 +1,4 @@
-﻿using DevExpress.XtraGrid.Views.Grid.ViewInfo;
-
-namespace CHIFA.Pro.uc;
+﻿namespace CHIFA.Pro.Views;
 
 public partial class HomeUc : XtraUserControl, INavigable
 {

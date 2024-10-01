@@ -1,10 +1,5 @@
 ﻿global using CHIFA.DAL.Helpers;
-global using CHIFA.Pro.Others;
-
 global using DevExpress.XtraGrid.Views.Base;
-
-global using Helpers.Settings;
-
 global using LinqToDB;
 
 global using System;
@@ -21,19 +16,18 @@ using Serilog.Sinks.SystemConsole.Themes;
 
 using System.Globalization;
 using System.Runtime.InteropServices;
+using CHIFA.Pro.Views;
 
 namespace CHIFA.Pro;
-internal static class Program
+internal static partial class Program
 {
 #if DEBUG
     // Import AllocConsole from kernel32.dll to create a new console window
-    [DllImport("kernel32.dll", SetLastError = true)]
+    [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool AllocConsole();
-
+    private static partial bool AllocConsole();
 #endif
 
-    public static CultureInfo frCulture = new("fr-FR");
 
     [STAThread]
     private static void Main()
@@ -49,7 +43,7 @@ internal static class Program
 
 #if DEBUG
         AllocConsole();
-        Console.WriteLine("Console is ready");
+        Console.WriteLine(@"Console is ready");
         DataConnection.TurnTraceSwitchOn();
         DataConnection.WriteTraceLine = Log.Debug;
 #endif
@@ -80,6 +74,7 @@ internal static class Program
 
     private static void SetCulture()
     {
+        CultureInfo frCulture = new("fr-FR");
         Thread.CurrentThread.CurrentCulture = frCulture;
         Thread.CurrentThread.CurrentUICulture = frCulture;
     }
@@ -89,7 +84,6 @@ internal static class Program
         var ex = (Exception)e.ExceptionObject;
         ex.Log();
         if (ex is Npgsql.NpgsqlException)
-            MessageBox.Show("Cannot connect to Database, Check Your Server");
-
+            MessageBox.Show(@"Cannot connect to Database, Check Your Server");
     }
 }

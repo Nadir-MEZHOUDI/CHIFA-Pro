@@ -6,6 +6,7 @@
   		<StartupObject>CHIFA.Pro.Program</StartupObject>
  		<Product>CHIFA Pro</Product>
  		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+ 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="FodyWeavers.xml" />

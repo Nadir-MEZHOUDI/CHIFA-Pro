@@ -11,7 +11,7 @@ namespace CHIFA.DAL.DataServices;
 
 public static class DataService
 {
-    public static Period period = new();
+    public static Period Period = new();
     private static readonly DateTime YearAgo = DateTime.Now.AddYears(-1);
     private static DateTime? maxDate;
     private static DateTime? minDate;
@@ -20,7 +20,7 @@ public static class DataService
     {        
         await using var db = new ChifaDb();
         var list = await db.Bordereaus
-            .Where(predicate.SetPeriod(period))
+            .Where(predicate.SetPeriod(Period))
             .Select(x => new BordereauDto
             {
                 Num = x.NumBord,
@@ -45,6 +45,7 @@ public static class DataService
 
     public static async Task<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period =null,  Expression<Func<Facture, bool>>? predicate = default)
     {
+        
         predicate = predicate.SetPeriod(period);
 
         if (ts == true)
@@ -116,7 +117,7 @@ public static class DataService
         return await db.Centres.ToListAsync().ConfigureAwait(false);
     }
 
-    public static async Task<IEnumerable<FactureDetailDto>> GetFacturDetailsByIdAsync(string id)
+    public static async Task<IEnumerable<FactureDetailDto>> GetFactureDetailsByIdAsync(string id)
     {
         await using var db = new ChifaDb();
         return await db.DetailFacts
@@ -197,7 +198,7 @@ public static class DataService
 
     public static async Task<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = default)
     {
-        
+       
         predicate = predicate.SetPeriod(period).And(x => (x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60);
 
         await using var db = new ChifaDb();
@@ -226,7 +227,7 @@ public static class DataService
     
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
-            .Where(predicate.SetPeriod(period))
+            .Where(predicate.SetPeriod(Period))
             .Where(x => x!.Facture.NumAssure == noAssure && x.Facture.RangAd == rang)
             .Where(x => x!.Ppa >= 1000 && x.Qte >= 3 || x.Ts == true || x.DureeTrait >= 60)
             .SelectMany(a => db.Beneficiaires.Where(b => b.NumAssure == noAssure && b.RangAd == rang),
@@ -343,10 +344,10 @@ public static class DataService
         return list;
     }
 
-    public static async Task<IEnumerable<Cm>> LoadControlsMedicalAsync()
+    public static async Task<IEnumerable<FactureCm>> LoadControlsMedicalAsync()
     {
         await using var db = new ChifaDb();
-        return await db.Cms.ToListAsync().ConfigureAwait(false);
+        return await db.FactureCms.ToListAsync().ConfigureAwait(false);
     }
 
     public static async Task<IEnumerable<FactureDto>> LoadHistoryAsync(string noAssure, string rang)

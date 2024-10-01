@@ -1,6 +1,4 @@
-﻿using DataModel;
-
-namespace CHIFA.Pro.Others
+﻿namespace CHIFA.Pro.Views
 {
     partial class CentersUc
     {
@@ -31,7 +29,7 @@ namespace CHIFA.Pro.Others
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CentersUc));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(CentersUc));
             documentManager1 = new DevExpress.XtraBars.Docking2010.DocumentManager(components);
             gridControl1 = new DevExpress.XtraGrid.GridControl();
             cENTREBindingSource = new BindingSource(components);
@@ -99,12 +97,12 @@ namespace CHIFA.Pro.Others
             // 
             gridControl1.DataSource = cENTREBindingSource;
             gridControl1.Dock = DockStyle.Fill;
-            gridControl1.EmbeddedNavigator.Margin = new Padding(4);
+            gridControl1.EmbeddedNavigator.Margin = new Padding(4, 3, 4, 3);
             gridControl1.Location = new Point(0, 0);
             gridControl1.MainView = gridView1;
-            gridControl1.Margin = new Padding(4);
+            gridControl1.Margin = new Padding(4, 3, 4, 3);
             gridControl1.Name = "gridControl1";
-            gridControl1.Size = new Size(695, 637);
+            gridControl1.Size = new Size(993, 614);
             gridControl1.TabIndex = 1;
             gridControl1.ViewCollection.AddRange(new BaseView[] { gridView1 });
             // 
@@ -115,64 +113,60 @@ namespace CHIFA.Pro.Others
             // gridView1
             // 
             gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCodeCp, colLibelle, colADRESSE, colInBor, colCONV, gridColumn1 });
-            gridView1.DetailHeight = 459;
+            gridView1.DetailHeight = 372;
             gridView1.FixedLineWidth = 3;
             gridView1.GridControl = gridControl1;
             gridView1.Name = "gridView1";
+            gridView1.OptionsEditForm.PopupEditFormWidth = 711;
             // 
             // colCodeCp
             // 
             colCodeCp.FieldName = "CodeCentre";
             colCodeCp.ImageOptions.Image = (Image)resources.GetObject("colCodeCp.ImageOptions.Image");
-            colCodeCp.MinWidth = 22;
             colCodeCp.Name = "colCodeCp";
             colCodeCp.Visible = true;
             colCodeCp.VisibleIndex = 0;
-            colCodeCp.Width = 163;
+            colCodeCp.Width = 145;
             // 
             // colLibelle
             // 
             colLibelle.FieldName = "Nom";
             colLibelle.ImageOptions.Image = (Image)resources.GetObject("colLibelle.ImageOptions.Image");
-            colLibelle.MinWidth = 22;
             colLibelle.Name = "colLibelle";
             colLibelle.Visible = true;
             colLibelle.VisibleIndex = 1;
-            colLibelle.Width = 427;
+            colLibelle.Width = 380;
             // 
             // colADRESSE
             // 
             colADRESSE.FieldName = "Adresse";
             colADRESSE.ImageOptions.Image = (Image)resources.GetObject("colADRESSE.ImageOptions.Image");
-            colADRESSE.MinWidth = 22;
             colADRESSE.Name = "colADRESSE";
             colADRESSE.Visible = true;
             colADRESSE.VisibleIndex = 2;
-            colADRESSE.Width = 427;
+            colADRESSE.Width = 380;
             // 
             // colInBor
             // 
             colInBor.FieldName = "InBor";
-            colInBor.MinWidth = 22;
             colInBor.Name = "colInBor";
-            colInBor.Width = 85;
+            colInBor.Width = 76;
             // 
             // colCONV
             // 
             colCONV.FieldName = "CONV";
-            colCONV.MinWidth = 22;
             colCONV.Name = "colCONV";
-            colCONV.Width = 85;
+            colCONV.Width = 76;
             // 
             // gridColumn1
             // 
             gridColumn1.FieldName = "NumBord";
             gridColumn1.ImageOptions.Image = (Image)resources.GetObject("gridColumn1.ImageOptions.Image");
-            gridColumn1.MinWidth = 21;
+            gridColumn1.MinWidth = 19;
             gridColumn1.Name = "gridColumn1";
             gridColumn1.Visible = true;
             gridColumn1.VisibleIndex = 3;
-            gridColumn1.Width = 95;
+            gridColumn1.Width = 84;
             // 
             // dockManager1
             // 
@@ -185,21 +179,21 @@ namespace CHIFA.Pro.Others
             dockPanel1.Controls.Add(dockPanel1_Container);
             dockPanel1.Dock = DevExpress.XtraBars.Docking.DockingStyle.Right;
             dockPanel1.ID = new Guid("f9a5deaf-7656-4d79-8aac-27857c2c561f");
-            dockPanel1.Location = new Point(695, 0);
-            dockPanel1.Margin = new Padding(4);
+            dockPanel1.Location = new Point(993, 0);
+            dockPanel1.Margin = new Padding(4, 3, 4, 3);
             dockPanel1.Name = "dockPanel1";
             dockPanel1.Options.ShowCloseButton = false;
             dockPanel1.OriginalSize = new Size(352, 200);
-            dockPanel1.Size = new Size(352, 637);
+            dockPanel1.Size = new Size(352, 614);
             dockPanel1.Text = "Details";
             // 
             // dockPanel1_Container
             // 
             dockPanel1_Container.Controls.Add(dataLayoutControl1);
-            dockPanel1_Container.Location = new Point(7, 30);
-            dockPanel1_Container.Margin = new Padding(4);
+            dockPanel1_Container.Location = new Point(5, 25);
+            dockPanel1_Container.Margin = new Padding(4, 3, 4, 3);
             dockPanel1_Container.Name = "dockPanel1_Container";
-            dockPanel1_Container.Size = new Size(340, 602);
+            dockPanel1_Container.Size = new Size(343, 585);
             dockPanel1_Container.TabIndex = 0;
             // 
             // dataLayoutControl1
@@ -212,45 +206,50 @@ namespace CHIFA.Pro.Others
             dataLayoutControl1.DataSource = cENTREBindingSource;
             dataLayoutControl1.Dock = DockStyle.Fill;
             dataLayoutControl1.Location = new Point(0, 0);
+            dataLayoutControl1.Margin = new Padding(3, 2, 3, 2);
             dataLayoutControl1.Name = "dataLayoutControl1";
             dataLayoutControl1.Root = Root;
-            dataLayoutControl1.Size = new Size(340, 602);
+            dataLayoutControl1.Size = new Size(343, 585);
             dataLayoutControl1.TabIndex = 0;
             dataLayoutControl1.Text = "dataLayoutControl1";
             // 
             // CodeCpTextEdit
             // 
             CodeCpTextEdit.DataBindings.Add(new Binding("EditValue", cENTREBindingSource, "CodeCentre", true));
-            CodeCpTextEdit.Location = new Point(12, 36);
+            CodeCpTextEdit.Location = new Point(11, 30);
+            CodeCpTextEdit.Margin = new Padding(3, 2, 3, 2);
             CodeCpTextEdit.Name = "CodeCpTextEdit";
-            CodeCpTextEdit.Size = new Size(316, 28);
+            CodeCpTextEdit.Size = new Size(321, 24);
             CodeCpTextEdit.StyleController = dataLayoutControl1;
             CodeCpTextEdit.TabIndex = 4;
             // 
             // LibelleTextEdit
             // 
             LibelleTextEdit.DataBindings.Add(new Binding("EditValue", cENTREBindingSource, "Nom", true));
-            LibelleTextEdit.Location = new Point(12, 92);
+            LibelleTextEdit.Location = new Point(11, 78);
+            LibelleTextEdit.Margin = new Padding(3, 2, 3, 2);
             LibelleTextEdit.Name = "LibelleTextEdit";
-            LibelleTextEdit.Size = new Size(316, 28);
+            LibelleTextEdit.Size = new Size(321, 24);
             LibelleTextEdit.StyleController = dataLayoutControl1;
             LibelleTextEdit.TabIndex = 5;
             // 
             // ADRESSETextEdit
             // 
             ADRESSETextEdit.DataBindings.Add(new Binding("EditValue", cENTREBindingSource, "Adresse", true));
-            ADRESSETextEdit.Location = new Point(12, 148);
+            ADRESSETextEdit.Location = new Point(11, 126);
+            ADRESSETextEdit.Margin = new Padding(3, 2, 3, 2);
             ADRESSETextEdit.Name = "ADRESSETextEdit";
-            ADRESSETextEdit.Size = new Size(316, 28);
+            ADRESSETextEdit.Size = new Size(321, 24);
             ADRESSETextEdit.StyleController = dataLayoutControl1;
             ADRESSETextEdit.TabIndex = 6;
             // 
             // btnSave
             // 
             btnSave.ImageOptions.Image = (Image)resources.GetObject("btnSave.ImageOptions.Image");
-            btnSave.Location = new Point(12, 214);
+            btnSave.Location = new Point(11, 189);
+            btnSave.Margin = new Padding(3, 2, 3, 2);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(316, 38);
+            btnSave.Size = new Size(321, 38);
             btnSave.StyleController = dataLayoutControl1;
             btnSave.TabIndex = 7;
             btnSave.Text = "Save";
@@ -259,10 +258,11 @@ namespace CHIFA.Pro.Others
             // btnCancel
             // 
             btnCancel.ImageOptions.Image = (Image)resources.GetObject("btnCancel.ImageOptions.Image");
-            btnCancel.Location = new Point(12, 273);
+            btnCancel.Location = new Point(11, 249);
+            btnCancel.Margin = new Padding(3, 2, 3, 2);
             btnCancel.Name = "btnCancel";
             btnCancel.PaintStyle = DevExpress.XtraEditors.Controls.PaintStyles.Light;
-            btnCancel.Size = new Size(316, 38);
+            btnCancel.Size = new Size(321, 38);
             btnCancel.StyleController = dataLayoutControl1;
             btnCancel.TabIndex = 8;
             btnCancel.Text = "Cancel";
@@ -274,7 +274,7 @@ namespace CHIFA.Pro.Others
             Root.GroupBordersVisible = false;
             Root.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlGroup1 });
             Root.Name = "Root";
-            Root.Size = new Size(340, 602);
+            Root.Size = new Size(343, 585);
             Root.TextVisible = false;
             // 
             // layoutControlGroup1
@@ -284,89 +284,89 @@ namespace CHIFA.Pro.Others
             layoutControlGroup1.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { ItemForCodeCp, ItemForLibelle, ItemForADRESSE, layoutControlItem1, layoutControlItem2, emptySpaceItem1, emptySpaceItem2, emptySpaceItem3 });
             layoutControlGroup1.Location = new Point(0, 0);
             layoutControlGroup1.Name = "autoGeneratedGroup0";
-            layoutControlGroup1.Size = new Size(320, 582);
+            layoutControlGroup1.Size = new Size(325, 569);
             // 
             // ItemForCodeCp
             // 
             ItemForCodeCp.Control = CodeCpTextEdit;
             ItemForCodeCp.Location = new Point(0, 0);
             ItemForCodeCp.Name = "ItemForCodeCp";
-            ItemForCodeCp.Size = new Size(320, 56);
+            ItemForCodeCp.Size = new Size(325, 48);
             ItemForCodeCp.Text = "Code Cp";
             ItemForCodeCp.TextLocation = DevExpress.Utils.Locations.Top;
-            ItemForCodeCp.TextSize = new Size(72, 21);
+            ItemForCodeCp.TextSize = new Size(59, 17);
             // 
             // ItemForLibelle
             // 
             ItemForLibelle.Control = LibelleTextEdit;
-            ItemForLibelle.Location = new Point(0, 56);
+            ItemForLibelle.Location = new Point(0, 48);
             ItemForLibelle.Name = "ItemForLibelle";
-            ItemForLibelle.Size = new Size(320, 56);
+            ItemForLibelle.Size = new Size(325, 48);
             ItemForLibelle.Text = "Libelle";
             ItemForLibelle.TextLocation = DevExpress.Utils.Locations.Top;
-            ItemForLibelle.TextSize = new Size(72, 21);
+            ItemForLibelle.TextSize = new Size(59, 17);
             // 
             // ItemForADRESSE
             // 
             ItemForADRESSE.Control = ADRESSETextEdit;
-            ItemForADRESSE.Location = new Point(0, 112);
+            ItemForADRESSE.Location = new Point(0, 96);
             ItemForADRESSE.Name = "ItemForADRESSE";
-            ItemForADRESSE.Size = new Size(320, 56);
+            ItemForADRESSE.Size = new Size(325, 48);
             ItemForADRESSE.Text = "ADRESSE";
             ItemForADRESSE.TextLocation = DevExpress.Utils.Locations.Top;
-            ItemForADRESSE.TextSize = new Size(72, 21);
+            ItemForADRESSE.TextSize = new Size(59, 17);
             // 
             // layoutControlItem1
             // 
             layoutControlItem1.Control = btnSave;
-            layoutControlItem1.Location = new Point(0, 202);
+            layoutControlItem1.Location = new Point(0, 179);
             layoutControlItem1.Name = "layoutControlItem1";
-            layoutControlItem1.Size = new Size(320, 42);
+            layoutControlItem1.Size = new Size(325, 42);
             layoutControlItem1.TextSize = new Size(0, 0);
             layoutControlItem1.TextVisible = false;
             // 
             // layoutControlItem2
             // 
             layoutControlItem2.Control = btnCancel;
-            layoutControlItem2.Location = new Point(0, 261);
+            layoutControlItem2.Location = new Point(0, 239);
             layoutControlItem2.Name = "layoutControlItem2";
-            layoutControlItem2.Size = new Size(320, 42);
+            layoutControlItem2.Size = new Size(325, 42);
             layoutControlItem2.TextSize = new Size(0, 0);
             layoutControlItem2.TextVisible = false;
             // 
             // emptySpaceItem1
             // 
             emptySpaceItem1.AllowHotTrack = false;
-            emptySpaceItem1.Location = new Point(0, 303);
+            emptySpaceItem1.Location = new Point(0, 281);
             emptySpaceItem1.Name = "emptySpaceItem1";
-            emptySpaceItem1.Size = new Size(320, 279);
+            emptySpaceItem1.Size = new Size(325, 288);
             emptySpaceItem1.TextSize = new Size(0, 0);
             // 
             // emptySpaceItem2
             // 
             emptySpaceItem2.AllowHotTrack = false;
-            emptySpaceItem2.Location = new Point(0, 244);
+            emptySpaceItem2.Location = new Point(0, 221);
             emptySpaceItem2.Name = "emptySpaceItem2";
-            emptySpaceItem2.Size = new Size(320, 17);
+            emptySpaceItem2.Size = new Size(325, 18);
             emptySpaceItem2.TextSize = new Size(0, 0);
             // 
             // emptySpaceItem3
             // 
             emptySpaceItem3.AllowHotTrack = false;
-            emptySpaceItem3.Location = new Point(0, 168);
+            emptySpaceItem3.Location = new Point(0, 144);
             emptySpaceItem3.Name = "emptySpaceItem3";
-            emptySpaceItem3.Size = new Size(320, 34);
+            emptySpaceItem3.Size = new Size(325, 35);
             emptySpaceItem3.TextSize = new Size(0, 0);
             // 
             // CentersUc
             // 
-            AutoScaleDimensions = new SizeF(9F, 21F);
+            AutoScaleDimensions = new SizeF(8F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(gridControl1);
             Controls.Add(dockPanel1);
-            Margin = new Padding(4);
+            Margin = new Padding(4, 3, 4, 3);
             Name = "CentersUc";
-            Size = new Size(1047, 637);
+            Size = new Size(1345, 614);
             Load += CentersUC_Load;
             ((System.ComponentModel.ISupportInitialize)documentManager1).EndInit();
             ((System.ComponentModel.ISupportInitialize)gridControl1).EndInit();

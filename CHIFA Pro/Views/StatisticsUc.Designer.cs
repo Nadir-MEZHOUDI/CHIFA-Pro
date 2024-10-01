@@ -1,8 +1,6 @@
-﻿using CHIFA.DAL;
+﻿using DevExpress.XtraCharts;
 
-using DevExpress.XtraCharts;
-
-namespace CHIFA.Pro.Others
+namespace CHIFA.Pro.Views
 {
     partial class StatisticsUc
     {

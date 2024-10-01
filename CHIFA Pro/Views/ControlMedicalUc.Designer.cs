@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.uc
+﻿namespace CHIFA.Pro.Views
 {
     partial class ControlMedicalUc
     {
@@ -28,44 +28,42 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.gridControl = new DevExpress.XtraGrid.GridControl();
-            this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
-            ((System.ComponentModel.ISupportInitialize)(this.gridControl)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridView1)).BeginInit();
-            this.SuspendLayout();
+            gridControl = new DevExpress.XtraGrid.GridControl();
+            gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
+            ((System.ComponentModel.ISupportInitialize)gridControl).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)gridView1).BeginInit();
+            SuspendLayout();
             // 
             // gridControl
             // 
-            this.gridControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControl.EmbeddedNavigator.Margin = new System.Windows.Forms.Padding(4);
-            this.gridControl.Location = new System.Drawing.Point(0, 0);
-            this.gridControl.MainView = this.gridView1;
-            this.gridControl.Margin = new System.Windows.Forms.Padding(4);
-            this.gridControl.Name = "gridControl";
-            this.gridControl.Size = new System.Drawing.Size(1304, 680);
-            this.gridControl.TabIndex = 0;
-            this.gridControl.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.gridView1});
+            gridControl.Dock = DockStyle.Fill;
+            gridControl.Location = new Point(0, 0);
+            gridControl.MainView = gridView1;
+            gridControl.Name = "gridControl";
+            gridControl.Size = new Size(1319, 593);
+            gridControl.TabIndex = 0;
+            gridControl.ViewCollection.AddRange(new BaseView[] { gridView1 });
             // 
             // gridView1
             // 
-            this.gridView1.DetailHeight = 481;
-            this.gridView1.FixedLineWidth = 3;
-            this.gridView1.GridControl = this.gridControl;
-            this.gridView1.Name = "gridView1";
+            gridView1.DetailHeight = 372;
+            gridView1.FixedLineWidth = 3;
+            gridView1.GridControl = gridControl;
+            gridView1.HorzScrollVisibility = ScrollVisibility.Always;
+            gridView1.Name = "gridView1";
+            gridView1.OptionsEditForm.PopupEditFormWidth = 640;
+            gridView1.OptionsView.ColumnAutoWidth = false;
             // 
             // ControlMedicalUc
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 22F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.gridControl);
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "ControlMedicalUc";
-            this.Size = new System.Drawing.Size(1304, 680);
-            ((System.ComponentModel.ISupportInitialize)(this.gridControl)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridView1)).EndInit();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(8F, 17F);
+            AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(gridControl);
+            Name = "ControlMedicalUc";
+            Size = new Size(1319, 593);
+            ((System.ComponentModel.ISupportInitialize)gridControl).EndInit();
+            ((System.ComponentModel.ISupportInitialize)gridView1).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion

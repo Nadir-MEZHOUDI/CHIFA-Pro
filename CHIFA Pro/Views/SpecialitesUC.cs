@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Others;
+﻿namespace CHIFA.Pro.Views;
 
 public partial class SpecialitesUc : XtraUserControl, INavigable
 {

@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Forms
+﻿namespace CHIFA.Pro.Views
 {
     partial class frmTraitSpec
     {

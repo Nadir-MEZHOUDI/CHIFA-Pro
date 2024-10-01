@@ -1,5 +1,5 @@
 ﻿
-namespace CHIFA.Pro.uc;
+namespace CHIFA.Pro.Views;
 
 public partial class FacturesUC : XtraUserControl, INavigable
 {
@@ -7,8 +7,6 @@ public partial class FacturesUC : XtraUserControl, INavigable
     {
         InitializeComponent();
         viewFactures.SetOptions();
-        txtDateFrom.EditValueChanged += async (_, _) => await LoadFacturesAsync();
-        txtDateTo.EditValueChanged += async (_, _) => await LoadFacturesAsync();
     }
 
     public string Caption { get; } = "FACTURES";
@@ -60,7 +58,7 @@ public partial class FacturesUC : XtraUserControl, INavigable
     {
         if (viewFactures.GetRow(viewFactures.FocusedRowHandle) is FactureDto row)
         {
-            await viewDetails.LoadDataAsync(() => DataService.GetFacturDetailsByIdAsync(row.NumFact));
+            await viewDetails.LoadDataAsync(() => DataService.GetFactureDetailsByIdAsync(row.NumFact));
         }
     }
 
@@ -86,6 +84,9 @@ public partial class FacturesUC : XtraUserControl, INavigable
 
             txtDateFrom.EditValue = toDateRepo.MinValue;
             txtDateTo.EditValue = toDateRepo.MaxValue;
+
+            txtDateFrom.EditValueChanged += async (_, _) => await LoadFacturesAsync();
+            txtDateTo.EditValueChanged += async (_, _) => await LoadFacturesAsync();
         }
         catch (Exception ex)
         {
@@ -114,13 +115,10 @@ public partial class FacturesUC : XtraUserControl, INavigable
             if (!string.IsNullOrEmpty(txt))
             {
                 var patterns = txt.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToArray();
-                foreach (var p in patterns)
-                {
-                    predicate = predicate.And(f => f.DetailFacts.Any(d => d.Medicament!.FullName!.Contains(p)));
-                }
+                predicate = patterns.Aggregate(predicate, (current, p) => current.And(f => f.DetailFacts.Any(d => d.Medicament.FullName!.Contains(p))));
             }
             viewFactures.FocusedRowHandle = 0;
-            await factureDtoBindingSource.LoadDataAsync(viewFactures, () => DataService.GetAllFacturesAsync(last, ts,period, predicate));
+            await factureDtoBindingSource.LoadDataAsync(viewFactures, () => DataService.GetAllFacturesAsync(last, ts, period, predicate));
         }
         catch (Exception ex)
         {

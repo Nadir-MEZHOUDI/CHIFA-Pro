@@ -1,5 +1,5 @@
 ﻿
-namespace CHIFA.Pro;
+namespace CHIFA.Pro.Views;
 
 public partial class AssuresUc : XtraUserControl, INavigable
 {

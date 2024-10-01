@@ -1,6 +1,4 @@
-﻿using DataModel;
-
-namespace CHIFA.Pro.Others
+﻿namespace CHIFA.Pro.Views
 {
     partial class UsersUc
     {
