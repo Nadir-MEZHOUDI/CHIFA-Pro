@@ -1,4 +1,6 @@
-﻿namespace CHIFA.DAL.DTOs;
+﻿using System.Globalization;
+
+namespace CHIFA.DAL.DTOs;
 
 public class BordereauDto
 {
@@ -16,8 +18,7 @@ public class BordereauDto
     public char? State { get; set; }
     public decimal? Virment { get; set; } = 0;
     public decimal? Ecart => Virment <= 0 ? 0 : MontGlobal - Virment;
-
-    public string DepotFtp => DateDepotFtp.HasValue && DateDepotFtp.Value.Year > 2000 ? DateDepotFtp.Value.ToString() : string.Empty;
+    public string DepotFtp => DateDepotFtp is { Year: > 2000 } ? DateDepotFtp.Value.ToString(CultureInfo.InvariantCulture) : string.Empty;
     public DateTime? DateDepotFtp { get; set; }
     public DateTime? DateOuverture { get; set; }
     public DateTime? DateCloture { get; set; }

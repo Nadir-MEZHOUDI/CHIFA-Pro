@@ -1,5 +1,4 @@
-﻿
-namespace CHIFA.Pro.Views;
+﻿namespace CHIFA.Pro.Views;
 
 public partial class CentersUc : XtraUserControl, INavigable
 {
@@ -36,7 +35,7 @@ public partial class CentersUc : XtraUserControl, INavigable
         try
         {
             var a = await DataService.GetCentersAsync().ConfigureAwait(false);
-            this.Invoke(() => cENTREBindingSource.DataSource = a);
+            Invoke(() => cENTREBindingSource.DataSource = a);
         }
         catch (Exception ex)
         {

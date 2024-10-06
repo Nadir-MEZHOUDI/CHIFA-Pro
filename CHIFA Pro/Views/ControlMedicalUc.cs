@@ -1,5 +1,4 @@
-﻿
-namespace CHIFA.Pro.Views;
+﻿namespace CHIFA.Pro.Views;
 
 public partial class ControlMedicalUc : XtraUserControl,INavigable
 {

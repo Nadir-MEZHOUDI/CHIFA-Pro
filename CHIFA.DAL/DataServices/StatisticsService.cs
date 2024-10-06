@@ -46,8 +46,8 @@ public static class StatisticsService
             .Where(predicate.SetPeriod(Period))
             .Select(x => new BordStatDto
             {
-                MontantOff = x.Factures.Sum(f => f.MontFact),
-                MontantFact = x.Factures.Sum(f => f.MontOff),
+                MontantOff = x.Factures.Sum(f => f.MontOff),
+                MontantFact = x.Factures.Sum(f => f.MontFact),
                 MontantMaj = x.Factures.Sum(f => f.MontMaj),
                 MontantFE = x.Factures.Sum(f => f.MontMajFae),
                 Assuries = x.Factures.Select(f => f.NumAssure).Distinct().Count(),

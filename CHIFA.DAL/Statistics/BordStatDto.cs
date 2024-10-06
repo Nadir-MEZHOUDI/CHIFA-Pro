@@ -18,10 +18,11 @@ public class BordStatDto
     public int Beneficiaires { get; init; }
     public DateOnly Date => DateOnly.FromDateTime(DateFin.Value);
     public int? Jours => (int)(DateFin - DateDebut)?.TotalDays + 1;
-    public decimal? MontantJour =>  (MontantOff / Jours).ToDecimal();
+    public decimal? MontantJour => (MontantOff / Jours).ToDecimal();
     public decimal? FactureJour => (Factures / Jours).ToDecimal();
     public decimal? MontantFacture => ((MontantOff / Factures)).ToDecimal();
-    public decimal? MontantGlobal => (MontantOff + MontantMaj + MontantFE).ToDecimal();
+    public decimal? MontantGlobal => MontantOff + MontantMaj + MontantFE;
+
     public decimal? Marge => (MontantOff / 6).ToDecimal();
     public decimal? Brute => (Marge + MontantMaj).ToDecimal();
     public decimal? Net => (Brute - Ecart).ToDecimal();

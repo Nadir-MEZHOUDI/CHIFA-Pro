@@ -2,15 +2,6 @@
 // attributes that are applied to this project.
 // Project-level suppressions either have no target or are given
 // a specific target and scoped to a namespace, type, member, etc.
-global using CHIFA.DAL.DataServices;
-global using CHIFA.DAL.DTOs;
-global using DataModel;
-global using CHIFA.Pro.Helpers;
-
-global using DevExpress.XtraEditors;
-
-
-global using System.Linq.Expressions;
 
 using System.Diagnostics.CodeAnalysis;
 

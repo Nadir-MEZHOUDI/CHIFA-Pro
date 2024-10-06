@@ -1,22 +1,26 @@
-﻿global using CHIFA.DAL.Helpers;
-global using DevExpress.XtraGrid.Views.Base;
-global using LinqToDB;
-
-global using System;
-global using System.Collections.Generic;
-global using System.Data;
-global using System.Diagnostics;
+﻿global using System.Diagnostics;
+global using System.Globalization;
 global using System.IO;
+global using System.Linq.Expressions;
 global using System.Reflection;
+global using System.Runtime.InteropServices;
 
-using LinqToDB.Data;
+global using CHIFA.DAL.DataServices;
+global using CHIFA.DAL.DTOs;
+global using CHIFA.DAL.Helpers;
+global using CHIFA.Pro.Helpers;
+global using CHIFA.Pro.Views;
 
-using Serilog;
-using Serilog.Sinks.SystemConsole.Themes;
+global using DataModel;
 
-using System.Globalization;
-using System.Runtime.InteropServices;
-using CHIFA.Pro.Views;
+global using DevExpress.XtraEditors;
+global using DevExpress.XtraGrid.Views.Base;
+
+global using LinqToDB;
+global using LinqToDB.Data;
+
+global using Serilog;
+global using Serilog.Sinks.SystemConsole.Themes;
 
 namespace CHIFA.Pro;
 internal static partial class Program
@@ -54,7 +58,7 @@ internal static partial class Program
         Application.ThreadException += ThreadException_Handler;
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-        TaskScheduler.UnobservedTaskException += (sender, e) =>
+        TaskScheduler.UnobservedTaskException += (_, e) =>
         {
             Log.Error(e.Exception, "Unobserved task exception");
             e.SetObserved();

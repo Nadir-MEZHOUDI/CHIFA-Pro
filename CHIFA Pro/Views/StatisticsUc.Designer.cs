@@ -563,7 +563,6 @@ namespace CHIFA.Pro.Views
             FromDate.Id = 15;
             FromDate.Name = "FromDate";
             FromDate.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
-            FromDate.EditValueChanged += FromDate_EditValueChanged;
             // 
             // fromDateRepo
             // 
@@ -580,7 +579,6 @@ namespace CHIFA.Pro.Views
             ToDate.Id = 16;
             ToDate.Name = "ToDate";
             ToDate.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
-            ToDate.EditValueChanged += ToDate_EditValueChanged;
             // 
             // toDateRepo
             // 
