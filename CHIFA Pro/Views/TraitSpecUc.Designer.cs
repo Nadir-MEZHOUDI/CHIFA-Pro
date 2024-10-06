@@ -661,9 +661,6 @@
         private DevExpress.XtraBars.BarButtonItem btnHistory;
         private DevExpress.XtraBars.BarEditItem swtchTimeOnly;
         private DevExpress.XtraEditors.Repository.RepositoryItemToggleSwitch repositoryItemToggleSwitch2;
-        private DevExpress.XtraBars.Ribbon.RibbonPageCategory ribbonPageCategory1;
-        private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage1;
-        private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage2;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup Search;
         private DevExpress.XtraBars.Ribbon.RibbonPageCategory File;
         private DevExpress.XtraBars.Ribbon.RibbonPage Tools;

@@ -9,8 +9,5 @@ public class PatientOfTraitSpec
     public string? Rang { get; set; }
     public bool? TS { get; set; }
 
-    public override bool Equals(object obj)
-    {
-        return NumAssure == ((PatientOfTraitSpec)obj)?.NumAssure && Rang == ((PatientOfTraitSpec)obj)?.Rang;
-    }
+    public override bool Equals(object? obj) => NumAssure == (obj as PatientOfTraitSpec)?.NumAssure && Rang == (obj as PatientOfTraitSpec)?.Rang;
 }

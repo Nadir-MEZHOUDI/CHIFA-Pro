@@ -2,9 +2,9 @@
 
 public partial class FrmHistory : XtraForm
 {
-    private readonly string? noAssure;
-    private readonly string? rang;
-    private bool isStrict = false;
+    private readonly string? _noAssure;
+    private readonly string? _rang;
+    private bool _isStrict;
 
     public FrmHistory()
     {
@@ -13,8 +13,8 @@ public partial class FrmHistory : XtraForm
 
     public FrmHistory(string noAssure, string rang) : this()
     {
-        this.noAssure = noAssure;
-        this.rang = rang;
+        _noAssure = noAssure;
+        _rang = rang;
     }
 
     private async void FrmHistory_Load(object sender, EventArgs e)
@@ -26,7 +26,7 @@ public partial class FrmHistory : XtraForm
     private async Task GetSelectedDetails()
     {
         if (gridHistFactures.GetRow(gridHistFactures.FocusedRowHandle) is FactureDto row)
-            await gridHistDetails.LoadDataAsync(() => DataService.GetFactureDetailsByIdAsync(row.NumFact));
+            await gridHistDetails.LoadDataAsync(() => DataService.GetFactureDetailsByIdAsync(row.NumFact!));
     }
 
     private void gridConsumption_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
@@ -71,17 +71,17 @@ public partial class FrmHistory : XtraForm
         await GetSelectedDetails();
     }
 
-    private Task LoadConsumption() => gridConsomption.LoadDataAsync(() => DataService.LoadConsumptionAsync(noAssure, rang, isStrict));
+    private Task LoadConsumption() => gridConsomption.LoadDataAsync(() => DataService.LoadConsumptionAsync(_noAssure!, _rang!, _isStrict));
 
     private async Task LoadHistory()
     {
-        await gridHistFactures.LoadDataAsync(() => DataService.LoadHistoryAsync(noAssure, rang));
-        dataLayoutControl1.DataSource = await DataService.GetBeneficiareByIdAsync(noAssure, rang);
+        await gridHistFactures.LoadDataAsync(() => DataService.LoadHistoryAsync(_noAssure!, _rang!));
+        dataLayoutControl1.DataSource = await DataService.GetBeneficiareByIdAsync(_noAssure!, _rang!);
     }
 
     private async void xtraTabControl1_CustomHeaderButtonClick(object sender, DevExpress.XtraTab.ViewInfo.CustomHeaderButtonEventArgs e)
     {
-        isStrict = !isStrict;
+        _isStrict = !_isStrict;
         await LoadConsumption();
     }
 }

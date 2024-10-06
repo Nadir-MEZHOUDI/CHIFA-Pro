@@ -1,6 +1,6 @@
 ﻿namespace CHIFA.Pro.Views
 {
-    partial class frmTraitSpec
+    partial class FrmTraitSpec
     {
         /// <summary>
         /// Required designer variable.
@@ -32,7 +32,7 @@
             var editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
             var serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
             var editorButtonImageOptions2 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(frmTraitSpec));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmTraitSpec));
             var serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
             colMalad = new DevExpress.XtraGrid.Columns.GridColumn();
             colMontant = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -259,7 +259,7 @@
             Controls.Add(xtraTabControl1);
             Font = new Font("Tahoma", 12F);
             IconOptions.LargeImage = (Image)resources.GetObject("frmTraitSpec.IconOptions.LargeImage");
-            Name = "frmTraitSpec";
+            Name = "FrmTraitSpec";
             Text = "Trait Spec";
             WindowState = FormWindowState.Maximized;
             Load += frmTraitSpec_Load;

@@ -4,7 +4,7 @@ namespace CHIFA.DAL.Statistics;
 
 public class ClientsStat
 {    
-    public string NumAssure { get; init; }
+    public string? NumAssure { get; init; }
     public string? Malade { get; init; } 
     public int Factures { get; init; }
     public decimal Boites { get; init; }

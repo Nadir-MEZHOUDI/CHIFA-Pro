@@ -1,6 +1,6 @@
 ﻿namespace CHIFA.Pro.Views
 {
-    partial class FacturesUC
+    partial class FacturesUc
     {
         /// <summary> 
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FacturesUC));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FacturesUc));
             fromDateRepo = new DevExpress.XtraEditors.Repository.RepositoryItemDateEdit();
             gridFactures = new DevExpress.XtraGrid.GridControl();
             factureDtoBindingSource = new BindingSource(components);
@@ -720,7 +720,7 @@
             Controls.Add(dockPanel2);
             Controls.Add(ribbonControl1);
             Margin = new Padding(5, 4, 5, 4);
-            Name = "FacturesUC";
+            Name = "FacturesUc";
             Size = new Size(1381, 649);
             Load += LastFacturesUC_Load;
             ((System.ComponentModel.ISupportInitialize)fromDateRepo.CalendarTimeProperties).EndInit();

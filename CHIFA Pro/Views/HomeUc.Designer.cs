@@ -59,6 +59,10 @@
             var series3 = new DevExpress.XtraCharts.Series();
             var pointSeriesLabel1 = new DevExpress.XtraCharts.PointSeriesLabel();
             var areaSeriesView1 = new DevExpress.XtraCharts.AreaSeriesView();
+            var series4 = new DevExpress.XtraCharts.Series();
+            var areaSeriesView2 = new DevExpress.XtraCharts.AreaSeriesView();
+            var series5 = new DevExpress.XtraCharts.Series();
+            var areaSeriesView3 = new DevExpress.XtraCharts.AreaSeriesView();
             weekStatBindingSource = new BindingSource(components);
             tileControl1 = new TileControl();
             tileGroup1 = new TileGroup();
@@ -94,6 +98,10 @@
             ((System.ComponentModel.ISupportInitialize)series3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pointSeriesLabel1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)areaSeriesView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)series4).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)areaSeriesView2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)series5).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)areaSeriesView3).BeginInit();
             SuspendLayout();
             // 
             // weekStatBindingSource
@@ -378,11 +386,30 @@
             areaSeriesView1.EmptyPointOptions.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
             areaSeriesView1.PaneName = "Pane 2";
             series3.View = areaSeriesView1;
+            series4.ArgumentDataMember = "Date";
+            series4.Name = "Brut";
+            series4.SeriesID = 7;
+            series4.ValueDataMembersSerializable = "Brut";
+            areaSeriesView2.AxisYName = "Secondary AxisY 2";
+            areaSeriesView2.ColorEach = true;
+            areaSeriesView2.EmptyPointOptions.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
+            areaSeriesView2.PaneName = "Pane 2";
+            series4.View = areaSeriesView2;
+            series5.ArgumentDataMember = "Date";
+            series5.Name = "Marge";
+            series5.SeriesID = 8;
+            series5.ValueDataMembersSerializable = "Marge";
+            areaSeriesView3.AxisYName = "Secondary AxisY 2";
+            areaSeriesView3.EmptyPointOptions.FillStyle.FillMode = DevExpress.XtraCharts.FillMode.Solid;
+            areaSeriesView3.PaneName = "Pane 2";
+            series5.View = areaSeriesView3;
             chartControl1.SeriesSerializable = new DevExpress.XtraCharts.Series[]
     {
     series1,
     series2,
-    series3
+    series3,
+    series4,
+    series5
     };
             chartControl1.Size = new Size(822, 658);
             chartControl1.TabIndex = 2;
@@ -412,6 +439,10 @@
             ((System.ComponentModel.ISupportInitialize)pointSeriesLabel1).EndInit();
             ((System.ComponentModel.ISupportInitialize)areaSeriesView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)series3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)areaSeriesView2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)series4).EndInit();
+            ((System.ComponentModel.ISupportInitialize)areaSeriesView3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)series5).EndInit();
             ((System.ComponentModel.ISupportInitialize)chartControl1).EndInit();
             ResumeLayout(false);
         }

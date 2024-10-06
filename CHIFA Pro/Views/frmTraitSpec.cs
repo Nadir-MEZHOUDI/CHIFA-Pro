@@ -4,9 +4,9 @@ using DevExpress.XtraGrid.Views.Grid;
 
 namespace CHIFA.Pro.Views;
 
-public partial class frmTraitSpec : XtraForm
+public partial class FrmTraitSpec : XtraForm
 {
-    public frmTraitSpec()
+    public FrmTraitSpec()
     {
         InitializeComponent();
         gridViewTraitSpec1.SetOptions();
@@ -22,7 +22,7 @@ public partial class frmTraitSpec : XtraForm
     private void GetHistoryOfSelectedPatient()
     {
         if (gridViewTraitSpec2.GetRow(gridViewTraitSpec2.FocusedRowHandle) is TraitSpec2 row)
-            new FrmHistory(row.NumAssure, row.Rang).Show();
+            new FrmHistory(row.NumAssure!, row.Rang).Show();
     }
 
     private void gridView1_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)

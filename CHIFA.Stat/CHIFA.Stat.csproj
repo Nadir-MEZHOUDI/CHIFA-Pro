@@ -8,12 +8,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CHIFA2.Data" Version="1.0.*" />
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
-		<PackageReference Include="DevExpress.Win" Version="24.1.*">
+		<PackageReference Include="CHIFA2.Data" Version="2.*" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
+		<PackageReference Include="DevExpress.Win" Version="24.*">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
-		<PackageReference Include="DevExpress.Win.Dashboard.Design" Version="24.1.*" />
+		<PackageReference Include="DevExpress.Win.Dashboard.Design" Version="24.*" />
 		<PackageReference Include="Velopack" Version="0.*" />
 	</ItemGroup>
 

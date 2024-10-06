@@ -25,7 +25,7 @@ public partial class HomeUc : XtraUserControl, INavigable
 
     private void itmFactures_ItemClick(object sender, TileItemEventArgs e)
     {
-        this.NavigateTo<FacturesUC>();
+        this.NavigateTo<FacturesUc>();
 
     }
 

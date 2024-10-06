@@ -37,7 +37,7 @@ internal static partial class Program
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
 #if DEBUG
-            .WriteTo.Console(theme: AnsiConsoleTheme.Literate)
+            .WriteTo.Console(theme: AnsiConsoleTheme.Code)
             .WriteTo.Debug()
 #endif
             .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
@@ -47,7 +47,7 @@ internal static partial class Program
         AllocConsole();
         Console.WriteLine(@"Console is ready");
         DataConnection.TurnTraceSwitchOn();
-        DataConnection.WriteTraceLine = Log.Debug;
+        DataConnection.WriteTraceLine = Log.Debug!;
 #endif
 
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;

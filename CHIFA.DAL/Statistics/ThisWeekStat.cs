@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using CHIFA.DAL.Helpers;
 
 namespace CHIFA.DAL.Statistics;
 
@@ -11,10 +12,18 @@ public class ThisWeekStat
     public string? Day => DateFact?.ToString("dddd", Culture).ToUpper();
     public int Count { get; set; }
     public DateTime Date { get; set; }
+
     public decimal? Montant { get; set; } = 0;
+
     public decimal? MontantAs { get; set; } = 0;
+
     public decimal? MontantOff { get; set; } = 0;
+
     public decimal? Maj { get; set; } = 0;
+
+    public decimal? Marge => (Montant / 6).ToDecimal();
+
+    public decimal? Brut => (Marge + Maj).ToDecimal();
 }
 
 

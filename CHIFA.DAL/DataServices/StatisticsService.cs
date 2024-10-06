@@ -9,7 +9,7 @@ namespace CHIFA.DAL.DataServices;
 
 public static class StatisticsService
 {
-    public static Period Period = new();
+    public static readonly Period Period = new();
     public static async Task<List<ThisWeekStat>> GetThisWeekStatsAsync()
     {
         await using var db = new ChifaDb();
@@ -243,8 +243,7 @@ public static class StatisticsService
         return predicate;
     }
 
-    public static Expression<Func<DetailFact, bool>> SetPeriod(this Expression<Func<DetailFact, bool>>? predicate,
-        Period? period = default)
+    public static Expression<Func<DetailFact, bool>> SetPeriod(this Expression<Func<DetailFact, bool>>? predicate, Period? period = default)
     {
         period ??= period;
         predicate ??= _ => true;

@@ -1,9 +1,9 @@
 ﻿
 namespace CHIFA.Pro.Views;
 
-public partial class FacturesUC : XtraUserControl, INavigable
+public partial class FacturesUc : XtraUserControl, INavigable
 {
-    public FacturesUC()
+    public FacturesUc()
     {
         InitializeComponent();
         viewFactures.SetOptions();
@@ -25,7 +25,7 @@ public partial class FacturesUC : XtraUserControl, INavigable
 
     private async void BtnRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e) => await LoadFacturesAsync();
 
-    private void BtnTraitSpes_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e) => new frmTraitSpec().Show();
+    private void BtnTraitSpes_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e) => new FrmTraitSpec().Show();
 
 
     private void GridDetails_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
@@ -58,7 +58,7 @@ public partial class FacturesUC : XtraUserControl, INavigable
     {
         if (viewFactures.GetRow(viewFactures.FocusedRowHandle) is FactureDto row)
         {
-            await viewDetails.LoadDataAsync(() => DataService.GetFactureDetailsByIdAsync(row.NumFact));
+            await viewDetails.LoadDataAsync(() => DataService.GetFactureDetailsByIdAsync(row.NumFact!));
         }
     }
 
@@ -73,16 +73,16 @@ public partial class FacturesUC : XtraUserControl, INavigable
         try
         {
             var (min, max) = await DataService.GetMinAndMaxDatesAsync();
-
+            var lastYear = DateTime.Now.AddYears(-1);
             fromDateRepo.MaxValue = max;
             fromDateRepo.MinValue = min;
-            fromDateRepo.TodayDate = min;
+            fromDateRepo.TodayDate = lastYear;
 
             toDateRepo.MaxValue = max;
             toDateRepo.MinValue = min;
             toDateRepo.TodayDate = max;
 
-            txtDateFrom.EditValue = toDateRepo.MinValue;
+            txtDateFrom.EditValue = lastYear;
             txtDateTo.EditValue = toDateRepo.MaxValue;
 
             txtDateFrom.EditValueChanged += async (_, _) => await LoadFacturesAsync();

@@ -13,7 +13,7 @@ public class YearlyStat
     public decimal? MontantFE { get; init; }
     public decimal? MontantFact { get; init; }
     public decimal? MontantOff { get; init; }
-    public int? Jours => (int)(DateFin?.Date - DateDebut?.Date)?.TotalDays + 1;
+    public int? Jours => (int)(DateFin?.Date - DateDebut?.Date)?.TotalDays! + 1;
     public decimal? MontantJour => (MontantOff / Jours).ToDecimal();
     public decimal? FactureJour => (Factures / Jours).ToDecimal();
     public decimal? MontantFacture => (MontantOff / Factures).ToDecimal();
@@ -22,6 +22,6 @@ public class YearlyStat
     public decimal? Marge => (MontantOff / 6).ToDecimal();
     public decimal? Brute => (Marge + MontantMaj).ToDecimal();
 
-    public int Assureis { get; internal set; }
-    public int Beneficiaires { get; internal set; }
+    public int Assureis { get;  set; }
+    public int Beneficiaires { get;  set; }
 }

@@ -1,9 +1,12 @@
 ﻿using System.Runtime.InteropServices;
+// ReSharper disable InconsistentNaming
+// ReSharper disable IdentifierTypo
+// ReSharper disable NotAccessedField.Local
 
 namespace CHIFA.Pro.Helpers;
 public static class SingleInstance
 {
-    private const string appName = "CHIFA.Pro";
+    private const string AppName = "CHIFA.Pro";
 
     private const int HWND_BROADCAST = 0xffff;
 
@@ -21,10 +24,18 @@ public static class SingleInstance
 
     public static bool AppIsRunning()
     {
-        _mutex = new Mutex(true, appName, out var createdNew);
-        if (createdNew) return false;
-        ShowFirstInstance();
-        Application.Exit();
-        return true;
+        try
+        {
+            _mutex = new Mutex(true, AppName, out var createdNew);
+            if (createdNew) return false;
+            ShowFirstInstance();
+            Application.Exit();
+            return true;
+        }
+        catch (Exception)
+        {
+            //Ignore
+        }
+        return false;
     }
 }

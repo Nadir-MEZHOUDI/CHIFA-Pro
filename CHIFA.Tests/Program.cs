@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-
+﻿using System.Diagnostics;
 using CHIFA.Stat.Dtos;
 using CHIFA.Stat.ViewModels;
 
@@ -137,9 +132,6 @@ public class Program
            .ToList();
         return list;
     }
-
-
-
     public static object SelectAnonymous()
     {
         var list = db.Bordereaus.Select(x => new
@@ -214,7 +206,6 @@ public class Program
         var elapsed = Stopwatch.GetElapsedTime(time);
         timeDic.Add((Method, elapsed));
         Console.WriteLine($"{Method}: {elapsed}");
-
     }
 
 }

@@ -1,11 +1,8 @@
-﻿using CHIFA.DAL.DTOs;
+﻿using System.Linq.Expressions;
+using CHIFA.DAL.DTOs;
 using CHIFA.DAL.Helpers;
-
 using DataModel;
-
 using LinqToDB;
-
-using System.Linq.Expressions;
 
 namespace CHIFA.DAL.DataServices;
 
@@ -16,8 +13,9 @@ public static class DataService
     private static DateTime? maxDate;
     private static DateTime? minDate;
 
-    public static async Task<IEnumerable<BordereauDto>> GetAllBordereauxAsync(  Expression<Func<Bordereau, bool>>? predicate = default)
-    {        
+    public static async Task<IEnumerable<BordereauDto>> GetAllBordereauxAsync(
+        Expression<Func<Bordereau, bool>>? predicate = default)
+    {
         await using var db = new ChifaDb();
         var list = await db.Bordereaus
             .Where(predicate.SetPeriod(Period))
@@ -34,7 +32,7 @@ public static class DataService
                 DateOuverture = x.DateOuverture,
                 State = x.Etat,
                 MontOff = x.Factures.Sum(m => m.MontOff),
-                Maj = x.Factures.Sum(m => m.MontMaj),
+                Maj = x.Factures.Sum(m => m.MontMaj)
             })
             .OrderByDescending(x => x.FirstFacture)
             .ThenByDescending(x => x.Num)
@@ -43,42 +41,43 @@ public static class DataService
         return list;
     }
 
-    public static async Task<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period =null,  Expression<Func<Facture, bool>>? predicate = default)
+    public static async Task<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period = null,
+        Expression<Func<Facture, bool>>? predicate = default)
     {
-        
         predicate = predicate.SetPeriod(period);
 
         if (ts == true)
-            predicate = predicate.And(x => x.DetailFacts.Any(d => d.Ts == true || d.DureeTrait >= 30 || (d.Ppa >= 1000 && d.Qte >= 3)));
+            predicate = predicate.And(x =>
+                x.DetailFacts.Any(d => d.Ts == true || d.DureeTrait >= 30 || (d.Ppa >= 1000 && d.Qte >= 3)));
 
         if (last == true)
             predicate = predicate.And(x => x.DateFact > YearAgo);
 
         await using var db = new ChifaDb();
         var list = await db.Factures.Where(predicate)
-                .Select(f => new FactureDto
-                {
-                    NumFact = f.NumFact,
-                    NumAssure = f.NumAssure,
-                    DateFact = f.DateFact,
-                    DateSoin = f.DateSoin,
-                    Malade = f.Beneficiaire.FullName,
-                    Assure = f.Assure.FullName,
-                    MontFact = f.MontFact,
-                    MontAss = f.MontAs,
-                    MontOff = f.MontOff,
-                    Majoration = f.MontMaj,
-                    Bordereau = f.NumBord,
-                    Specialite = f.Specialite.Libelle,
-                    Centre = f.Center.Nom,
-                    Rang = f.RangAd,
-                    TS = f.DetailFacts.Any(m => m.Ts == true),
-                    LongDuree = f.DetailFacts.Any(m => m.DureeTrait >= 60)
-                })
-           .OrderByDescending(x => x.DateFact)
-           .ThenByDescending(x => x.NumFact)
-           .ToListAsync()
-           .ConfigureAwait(false);
+            .Select(f => new FactureDto
+            {
+                NumFact = f.NumFact,
+                NumAssure = f.NumAssure,
+                DateFact = f.DateFact,
+                DateSoin = f.DateSoin,
+                Malade = f.Beneficiaire.FullName,
+                Assure = f.Assure.FullName,
+                MontFact = f.MontFact,
+                MontAss = f.MontAs,
+                MontOff = f.MontOff,
+                Majoration = f.MontMaj,
+                Bordereau = f.NumBord,
+                Specialite = f.Specialite.Libelle,
+                Centre = f.Center.Nom,
+                Rang = f.RangAd,
+                TS = f.DetailFacts.Any(m => m.Ts == true),
+                LongDuree = f.DetailFacts.Any(m => m.DureeTrait >= 60)
+            })
+            .OrderByDescending(x => x.DateFact)
+            .ThenByDescending(x => x.NumFact)
+            .ToListAsync()
+            .ConfigureAwait(false);
 
         return list;
     }
@@ -86,15 +85,14 @@ public static class DataService
     public static async Task<IEnumerable<BeneficiareDto>> GetBeneficiaresAsync()
     {
         await using var db = new ChifaDb();
-        return await db.Beneficiaires.
-                      Select(a => new BeneficiareDto
-                      {
-                          NumAssure = a.NumAssure,
-                          Rang = a.RangAd,
-                          Beneficiare = a.FullName,
-                          Assure = a.Assure.FullName,
-                          Center = a.Factures.FirstOrDefault().Center.Nom
-                      }).ToListAsync();
+        return await db.Beneficiaires.Select(a => new BeneficiareDto
+        {
+            NumAssure = a.NumAssure,
+            Rang = a.RangAd,
+            Beneficiare = a.FullName,
+            Assure = a.Assure.FullName,
+            Center = a.Factures.FirstOrDefault().Center.Nom
+        }).ToListAsync();
     }
 
 
@@ -102,15 +100,15 @@ public static class DataService
     {
         await using var db = new ChifaDb();
         return await db.Beneficiaires
-            .Where(x => x.NumAssure == num && x.RangAd == rang).
-                      Select(a => new BeneficiareDto
-                      {
-                          NumAssure = a.NumAssure,
-                          Rang = a.RangAd,
-                          Beneficiare = a.FullName,
-                          Assure = a.Assure.FullName,
-                      }).FirstOrDefaultAsync();
+            .Where(x => x.NumAssure == num && x.RangAd == rang).Select(a => new BeneficiareDto
+            {
+                NumAssure = a.NumAssure,
+                Rang = a.RangAd,
+                Beneficiare = a.FullName,
+                Assure = a.Assure.FullName
+            }).FirstOrDefaultAsync();
     }
+
     public static async Task<IEnumerable<Centre>> GetCentersAsync()
     {
         await using var db = new ChifaDb();
@@ -152,29 +150,30 @@ public static class DataService
         return await db.Formes.ToListAsync().ConfigureAwait(false);
     }
 
-    public static async Task<IEnumerable<MedicDto>> GetMedicamentsAsync(Expression<Func<Medicament, bool>>? predicate = default)
+    public static async Task<IEnumerable<MedicDto>> GetMedicamentsAsync(
+        Expression<Func<Medicament, bool>>? predicate = default)
     {
         await using var db = new ChifaDb();
         predicate ??= medic => true;
         var list = await db.Medicaments
-           .Where(predicate)
-           .Select(x => new MedicDto
-           {
-               NEnr = x.NumEnr,
-               NomCommercial = x.NomCom,
-               DCI = x.NomDci,
-               COND = x.Conditionnement,
-               DOSAGE = x.Dosage,
-               FORME = x.Forme.LibelleCourt,
-               TR = x.TarifRef,
-               PAYS = x.Pays,
-               Generic = x.Generic,
-               CM = x.Cm == 'O',
-               CodeDCI = x.CodeDci,
-               CodeMedic = x.CodeMedic,
-           })
-           .ToListAsync()
-           .ConfigureAwait(false);
+            .Where(predicate)
+            .Select(x => new MedicDto
+            {
+                NEnr = x.NumEnr,
+                NomCommercial = x.NomCom,
+                DCI = x.NomDci,
+                COND = x.Conditionnement,
+                DOSAGE = x.Dosage,
+                FORME = x.Forme.LibelleCourt,
+                TR = x.TarifRef,
+                PAYS = x.Pays,
+                Generic = x.Generic,
+                CM = x.Cm == 'O',
+                CodeDCI = x.CodeDci,
+                CodeMedic = x.CodeMedic
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
         return list;
     }
 
@@ -182,10 +181,10 @@ public static class DataService
     {
         await using var db = new ChifaDb();
         return await db.Medicaments
-                .Where(x => string.IsNullOrEmpty(nEnr) || x.NumEnr == nEnr)
-                .Select(x => x.Observation)
-                .FirstOrDefaultAsync()
-                .ConfigureAwait(false);
+            .Where(x => string.IsNullOrEmpty(nEnr) || x.NumEnr == nEnr)
+            .Select(x => x.Observation)
+            .FirstOrDefaultAsync()
+            .ConfigureAwait(false);
     }
 
     public static async Task<(DateTime min, DateTime max)> GetMinAndMaxDatesAsync()
@@ -196,24 +195,24 @@ public static class DataService
         return (minDate?.AddDays(-1) ?? new DateTime(2000, 1, 1), maxDate?.AddDays(1) ?? new DateTime(2200, 1, 1));
     }
 
-    public static async Task<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = default)
+    public static async Task<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null,
+        Expression<Func<DetailFact, bool>>? predicate = default)
     {
-       
-        predicate = predicate.SetPeriod(period).And(x => (x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60);
+        predicate = predicate.SetPeriod(period)
+            .And(x => (x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60);
 
         await using var db = new ChifaDb();
-        var list = await db.DetailFacts.Where(predicate).
-                          Select(a => new PatientOfTraitSpec
-                          {
-                              NumAssure = a.Facture.NumAssure,
-                              Assure = a.Facture.Assure.FullName,
-                              Rang = a.Facture.RangAd,
-                              Malade = a.Facture.Beneficiaire.FullName,
-                              TS = a.Ts,
-                              LongDuree = a.DureeTrait >= 60
-                          }
-
-    ).ToListAsync().ConfigureAwait(false);
+        var list = await db.DetailFacts.Where(predicate).Select(a => new PatientOfTraitSpec
+                {
+                    NumAssure = a.Facture.NumAssure,
+                    Assure = a.Facture.Assure.FullName,
+                    Rang = a.Facture.RangAd,
+                    Malade = a.Facture.Beneficiaire.FullName,
+                    TS = a.Ts,
+                    LongDuree = a.DureeTrait >= 60
+                }
+            ).ToListAsync()
+            .ConfigureAwait(false);
         list = list
             .GroupBy(x => new { x.NumAssure, x.Rang })
             .Select(x => x.FirstOrDefault())
@@ -221,15 +220,15 @@ public static class DataService
         return list;
     }
 
-    public static async Task<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang, bool proche,
-          Expression<Func<DetailFact?, bool>>? predicate = default)
+    public static async Task<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang,
+        bool proche,
+        Expression<Func<DetailFact?, bool>>? predicate = default)
     {
-    
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
             .Where(predicate.SetPeriod(Period))
             .Where(x => x!.Facture.NumAssure == noAssure && x.Facture.RangAd == rang)
-            .Where(x => x!.Ppa >= 1000 && x.Qte >= 3 || x.Ts == true || x.DureeTrait >= 60)
+            .Where(x => (x!.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60)
             .SelectMany(a => db.Beneficiaires.Where(b => b.NumAssure == noAssure && b.RangAd == rang),
                 (x, a) => new
                 {
@@ -261,20 +260,19 @@ public static class DataService
                 NEnrg = x.FirstOrDefault()!.NEnrg,
                 TS = x.FirstOrDefault()?.TS,
                 CodeDci = x.Key.CodeDci,
-                Historic = x.Count() <= 1 ? [] : x.Select(m => new MedicHistory
-                {
-                    Medicament = m.Medicament,
-                    Duree = m.Duree,
-                    DateFact = m.DateFact,
-                    Qt = m.Qt,
-                    Prix = m.Prix,
-                }).ToList()
+                Historic = x.Count() <= 1
+                    ? []
+                    : x.Select(m => new MedicHistory
+                    {
+                        Medicament = m.Medicament,
+                        Duree = m.Duree,
+                        DateFact = m.DateFact,
+                        Qt = m.Qt,
+                        Prix = m.Prix
+                    }).ToList()
             });
 
-        if (proche)
-        {
-            list = list.Where(x => x.Prochain <= DateTime.Now);
-        }
+        if (proche) list = list.Where(x => x.Prochain <= DateTime.Now);
         return list.ToList();
     }
 
@@ -290,7 +288,8 @@ public static class DataService
         return await db.ListeNoires.ToListAsync().ConfigureAwait(false);
     }
 
-    public static async Task<IEnumerable<ConsumptionDto>> LoadConsumptionAsync(string noAssure, string rang, bool distinct)
+    public static async Task<IEnumerable<ConsumptionDto>> LoadConsumptionAsync(string noAssure, string rang,
+        bool distinct)
     {
         await using var db = new ChifaDb();
         var query = await db.Factures
@@ -330,16 +329,18 @@ public static class DataService
                 TS = x.FirstOrDefault()?.TS,
                 Médecin = x.FirstOrDefault()?.Médecin,
                 CodeDci = x.Key.CodeDci,
-                Historic = x.Count() <= 1 ? [] : x.Select(m => new MedicHistory
-                {
-                    Facture = m.Facture,
-                    Bord = m.Bord,
-                    Medicament = m.Medicament,
-                    Duree = m.Duree,
-                    DateFact = m.Date,
-                    Qt = m.Qt,
-                    Prix = m.Prix,
-                }).ToList()
+                Historic = x.Count() <= 1
+                    ? []
+                    : x.Select(m => new MedicHistory
+                    {
+                        Facture = m.Facture,
+                        Bord = m.Bord,
+                        Medicament = m.Medicament,
+                        Duree = m.Duree,
+                        DateFact = m.Date,
+                        Qt = m.Qt,
+                        Prix = m.Prix
+                    }).ToList()
             }).ToList();
         return list;
     }
@@ -372,7 +373,7 @@ public static class DataService
                 Majoration = f.MontMajFae,
                 MontAss = f.MontAs,
                 MontOff = f.MontOff,
-                Rang = f.RangAd,
+                Rang = f.RangAd
             })
             .OrderByDescending(x => x.DateFact)
             .ToListAsync()
@@ -380,7 +381,8 @@ public static class DataService
         return query;
     }
 
-    public static async Task<IEnumerable<TraitSpec2>> PatientsWithTraitSpec2Async(Expression<Func<DetailFact, bool>>? predicate = default)
+    public static async Task<IEnumerable<TraitSpec2>> PatientsWithTraitSpec2Async(
+        Expression<Func<DetailFact, bool>>? predicate = default)
     {
         predicate ??= fact => true;
         predicate = predicate.And(x => x.Facture.DateFact > YearAgo);
@@ -395,7 +397,7 @@ public static class DataService
                 d.Medicament.CodeDci,
                 Medicament = d.Medicament.FullName(),
                 d.Facture.DateFact,
-                Duree = (d.DureeTrait == 1 && d.Qte >= 3) ? 80 : d.DureeTrait,
+                Duree = d.DureeTrait == 1 && d.Qte >= 3 ? 80 : d.DureeTrait,
                 NEnrg = d.NumEnr,
                 Qt = d.Qte,
                 TS = d.Ts,
@@ -407,46 +409,50 @@ public static class DataService
             .ConfigureAwait(false);
 
         var list = query
-           .OrderByDescending(x => x.DateFact)
-           .GroupBy(x => new { x.NumAssure, x.RangAd, x.CodeDci })
-           .Where(x => x.Any(d => d.TS == true || d.Duree > 30 || d.Prix >= 1000 && d.Qt >= 3))
-           .Select(x => new TraitSpec2
-           {
-               NumFact = x.FirstOrDefault()?.NumFact,
-               Bord = x.FirstOrDefault()?.NumBord,
-               Assure = x.FirstOrDefault()?.Assure!,
-               DateFact = x.FirstOrDefault()?.DateFact,
-               Duree = x.FirstOrDefault()?.Duree,
-               Qt = x.FirstOrDefault()?.Qt,
-               Medicament = x.FirstOrDefault()!.Medicament,
-               Malade = x.FirstOrDefault()?.Malade,
-               Prix = x.FirstOrDefault()?.Prix,
-               NEnrg = x.FirstOrDefault()?.NEnrg!,
-               TS = x.FirstOrDefault()?.TS ?? false,
-               Code = x.Key.CodeDci,
-               NumAssure = x.Key.NumAssure,
-               Rang = x.Key.RangAd,
-               TC = x.Any(d => d.TS == true || d.Duree > 30 || d.Prix >= 1000 && d.Qt >= 3),
-               Historic = (x.Count() <= 1 ? null : x.Select(m => new MedicHistory
-               {
-                   Facture = m.NumFact,
-                   Bord = m.NumBord,
-                   Medicament = m.Medicament,
-                   Duree = m.Duree,
-                   DateFact = m.DateFact,
-                   Prix = m.Prix,
-                   Qt = m.Qt
-               }).ToList())!
-           })
-           .OrderByDescending(x => x.Montant)
-           .ToList();
+            .OrderByDescending(x => x.DateFact)
+            .GroupBy(x => new { x.NumAssure, x.RangAd, x.CodeDci })
+            .Where(x => x.Any(d => d.TS == true || d.Duree > 30 || (d.Prix >= 1000 && d.Qt >= 3)))
+            .Select(x => new TraitSpec2
+            {
+                NumFact = x.FirstOrDefault()?.NumFact,
+                Bord = x.FirstOrDefault()?.NumBord,
+                Assure = x.FirstOrDefault()?.Assure!,
+                DateFact = x.FirstOrDefault()?.DateFact,
+                Duree = x.FirstOrDefault()?.Duree,
+                Qt = x.FirstOrDefault()?.Qt,
+                Medicament = x.FirstOrDefault()!.Medicament,
+                Malade = x.FirstOrDefault()?.Malade,
+                Prix = x.FirstOrDefault()?.Prix,
+                NEnrg = x.FirstOrDefault()?.NEnrg!,
+                TS = x.FirstOrDefault()?.TS ?? false,
+                Code = x.Key.CodeDci,
+                NumAssure = x.Key.NumAssure,
+                Rang = x.Key.RangAd,
+                TC = x.Any(d => d.TS == true || d.Duree > 30 || (d.Prix >= 1000 && d.Qt >= 3)),
+                Historic = (x.Count() <= 1
+                    ? null
+                    : x.Select(m => new MedicHistory
+                    {
+                        Facture = m.NumFact,
+                        Bord = m.NumBord,
+                        Medicament = m.Medicament,
+                        Duree = m.Duree,
+                        DateFact = m.DateFact,
+                        Prix = m.Prix,
+                        Qt = m.Qt
+                    }).ToList())!
+            })
+            .OrderByDescending(x => x.Montant)
+            .ToList();
         return list;
     }
 
-    public static async Task<IEnumerable<PatientWithTraitSpec>> PatientsWithTraitSpecAsync(Expression<Func<DetailFact, bool>>? predicate = default)
+    public static async Task<IEnumerable<PatientWithTraitSpec>> PatientsWithTraitSpecAsync(
+        Expression<Func<DetailFact, bool>>? predicate = default)
     {
         predicate ??= _ => true;
-        predicate = predicate.And(x => x.Facture.DateFact > YearAgo && x.Ppa >= 1000 && x.Qte >= 3 || x.Ts == true || x.DureeTrait >= 60);
+        predicate = predicate.And(x =>
+            (x.Facture.DateFact > YearAgo && x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60);
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
             .Where(predicate)
@@ -463,7 +469,7 @@ public static class DataService
                 Qt = a.Qte,
                 a.Ts,
                 a.Ppa,
-                Specialite=    a.Facture.Specialite.Libelle,
+                Specialite = a.Facture.Specialite.Libelle,
                 a.Facture.DateSoin,
                 a.Medicament.CodeDci
             })
@@ -480,18 +486,18 @@ public static class DataService
                 Assure = a.FirstOrDefault()!.Assure,
                 Malade = a.FirstOrDefault()!.Malade,
                 DetailsDtos = a.Select(m => new TraitDetailsDto
-                {
-                    Medicament = m.Medicament,
-                    DateFact = m.DateFact,
-                    Duree = m.Duree,
-                    NEnrg = m.NEnrg,
-                    Qt = m.Qt,
-                    TS = m.Ts,
-                    Prix=m.Ppa,
-                    Specialite = m.Specialite,
-                    CodeDci = m.CodeDci,
-                    DateSoin = m.DateSoin,
-                })
+                    {
+                        Medicament = m.Medicament,
+                        DateFact = m.DateFact,
+                        Duree = m.Duree,
+                        NEnrg = m.NEnrg,
+                        Qt = m.Qt,
+                        TS = m.Ts,
+                        Prix = m.Ppa,
+                        Specialite = m.Specialite,
+                        CodeDci = m.CodeDci,
+                        DateSoin = m.DateSoin
+                    })
                     //.DistinctBy(x => x.NEnrg)
                     .ToList()
             }).ToList();
@@ -510,4 +516,3 @@ public static class DataService
         await db.UpdateAsync(center);
     }
 }
- 

@@ -1,6 +1,6 @@
 ﻿namespace CHIFA.Pro.Views;
 
-public partial class TraitSpecUc : XtraUserControl,INavigable
+public partial class TraitSpecUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "TRAITEMENT SPECIFIQUE";
     public Image Image => frmMain.Image(2);
@@ -13,7 +13,7 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
 
     private void btnConsumption_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        new frmTraitSpec().Show();
+        new FrmTraitSpec().Show();
     }
 
     private void btnHistory_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -31,17 +31,19 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
         try
         {
             var (min, max) = await DataService.GetMinAndMaxDatesAsync();
+            var lastYear = DateTime.Now.AddYears(-1);
 
             fromDateRepo.MaxValue = max;
             fromDateRepo.MinValue = min;
-            fromDateRepo.TodayDate = min;
+            fromDateRepo.TodayDate = lastYear;
 
             toDateRepo.MaxValue = max;
             toDateRepo.MinValue = min;
             toDateRepo.TodayDate = max;
 
-            FromDate.EditValue = toDateRepo.MinValue;
+            FromDate.EditValue = lastYear;
             ToDate.EditValue = toDateRepo.MaxValue;
+
 
 
             FromDate.EditValueChanged += async (_, _) => await LoadData();
@@ -96,7 +98,7 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
     private Task LoadDetailsAsync(PatientOfTraitSpec row)
     {
         var procheOnly = (bool)swtchTimeOnly.EditValue;
-        return viewDetails.LoadDataAsync(() => DataService.GetPatientTraitementAsync(row.NumAssure, row.Rang, procheOnly));
+        return viewDetails.LoadDataAsync(() => DataService.GetPatientTraitementAsync(row.NumAssure!, row.Rang!, procheOnly));
     }
 
     private Task LoadData()
@@ -115,7 +117,7 @@ public partial class TraitSpecUc : XtraUserControl,INavigable
     {
         await LoadData();
     }
-    
+
     private async void txtMedic_EditValueChanged(object sender, EventArgs e)
     {
         await LoadData();

@@ -15,7 +15,7 @@ public class ConsumptionDto
     public string Facture { get; set; } = string.Empty;
     public string Bord { get; set; } = string.Empty;
 
-    public override bool Equals(object o) => NEnrg == ((ConsumptionDto)o)?.NEnrg;
+    public override bool Equals(object? o) => NEnrg == (o as ConsumptionDto)?.NEnrg;
 }
 
 public class ConsumptionGroupedDto : ConsumptionDto

@@ -26,6 +26,6 @@ public partial class AssuresUc : XtraUserControl, INavigable
     private void OpenHistoryOfSelectedAssure()
     {
         if (gridView1.GetRow(gridView1.FocusedRowHandle) is BeneficiareDto row)
-            new FrmHistory(row.NumAssure, row.Rang).Show();
+            new FrmHistory(row.NumAssure!, row.Rang!).Show();
     }
 }

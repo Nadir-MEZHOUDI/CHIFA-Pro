@@ -28,7 +28,7 @@ public partial class frmMain : XtraForm
 
     private void accFactures_Click(object sender, EventArgs e) => sender.NavigateTo<TraitSpecUc>();
 
-    private void accLastFactures_Click(object sender, EventArgs e) => sender.NavigateTo<FacturesUC>();
+    private void accLastFactures_Click(object sender, EventArgs e) => sender.NavigateTo<FacturesUc>();
 
     private void accLN_Click(object sender, EventArgs e) => sender.NavigateTo<ListNoirUc>();
 
@@ -135,10 +135,17 @@ public partial class frmMain : XtraForm
     #region Bring Single Instance To Front
     protected override void WndProc(ref Message m)
     {
-        if (m.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
+        try
         {
-            RestoreWindow();
-            // Optionally, you can set m.Result or handle the message as needed
+            if (m.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
+            {
+                RestoreWindow();
+                // Optionally, you can set m.Result or handle the message as needed
+            }
+        }
+        catch (Exception ex)
+        {
+            //ignore
         }
         base.WndProc(ref m);
     }
@@ -146,11 +153,18 @@ public partial class frmMain : XtraForm
     // Method to restore and activate the window
     private void RestoreWindow()
     {
-        if (WindowState == FormWindowState.Minimized)
+        try
         {
-            WindowState = FormWindowState.Maximized; // Or FormWindowState.Normal
+            if (WindowState == FormWindowState.Minimized)
+            {
+                WindowState = FormWindowState.Maximized; // Or FormWindowState.Normal
+            }
+            Activate();
         }
-        Activate();
+        catch (Exception ex)
+        {
+            //Ignore
+        }
     }
 
     #endregion
