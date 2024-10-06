@@ -1,6 +1,8 @@
 ﻿using System.Windows.Threading;
+
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
+
 using Velopack;
 
 namespace CHIFA.Pro.Views;
@@ -127,4 +129,29 @@ public partial class frmMain : XtraForm
         tabContainer.SelectedTabPageIndex = index > 1 ? index - 1 : index + 1;
         tabContainer.TabPages.Remove(page, true);
     }
+
+
+
+    #region Bring Single Instance To Front
+    protected override void WndProc(ref Message m)
+    {
+        if (m.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
+        {
+            RestoreWindow();
+            // Optionally, you can set m.Result or handle the message as needed
+        }
+        base.WndProc(ref m);
+    }
+
+    // Method to restore and activate the window
+    private void RestoreWindow()
+    {
+        if (WindowState == FormWindowState.Minimized)
+        {
+            WindowState = FormWindowState.Maximized; // Or FormWindowState.Normal
+        }
+        Activate();
+    }
+
+    #endregion
 }

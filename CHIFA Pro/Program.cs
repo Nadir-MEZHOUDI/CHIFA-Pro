@@ -32,6 +32,8 @@ internal static partial class Program
     [STAThread]
     private static void Main()
     {
+        if (SingleInstance.AppIsRunning()) return;
+
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
 #if DEBUG
