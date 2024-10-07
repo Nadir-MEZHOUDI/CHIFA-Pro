@@ -665,7 +665,6 @@
         private DevExpress.XtraBars.Ribbon.RibbonPageCategory File;
         private DevExpress.XtraBars.Ribbon.RibbonPage Tools;
         private DevExpress.XtraBars.Docking.ControlContainer dockPanel1_Container;
-        private DevExpress.XtraGrid.Columns.GridColumn colMedicament;
         private DevExpress.XtraGrid.Columns.GridColumn colDateFact;
         private DevExpress.XtraGrid.Columns.GridColumn colDateSoin;
         private DevExpress.XtraGrid.Columns.GridColumn colSpecialite;

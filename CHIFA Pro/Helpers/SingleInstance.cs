@@ -11,11 +11,9 @@ public static class SingleInstance
 
     public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage(AppName + '_' + "WM_SHOWFIRSTINSTANCE");
 
-    [DllImport("user32.dll")]
-    private static extern int RegisterWindowMessage(string lpString);
+    [DllImport("user32.dll")] private static extern int RegisterWindowMessage(string lpString);
 
-    [DllImport("user32.dll")]
-    private static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    [DllImport("user32.dll")] private static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
     private static void ShowFirstInstance() => PostMessage(HWND_BROADCAST, WM_SHOWFIRSTINSTANCE, IntPtr.Zero, IntPtr.Zero);
 

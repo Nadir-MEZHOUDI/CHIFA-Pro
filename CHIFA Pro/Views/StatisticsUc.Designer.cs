@@ -2728,11 +2728,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colMarge;
         private DevExpress.XtraGrid.Views.Grid.GridView gridView2;
         private DevExpress.XtraTab.XtraTabPage tabMonthlyTable;
-        private DevExpress.XtraGrid.GridControl gridCtrlMonthly;
         private DevExpress.XtraGrid.Views.Grid.GridView viewMonthly;
-        private DevExpress.XtraGrid.Columns.GridColumn colMantant;
-        private DevExpress.XtraGrid.Columns.GridColumn colBorderaux;
-        private DevExpress.XtraGrid.Views.Grid.GridView gridView3;
         private DevExpress.XtraTab.XtraTabPage tabProductTable;
         private DevExpress.XtraGrid.GridControl gridProducts;
         private DevExpress.XtraGrid.Columns.GridColumn colCode1;

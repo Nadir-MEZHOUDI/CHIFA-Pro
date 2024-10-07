@@ -113,8 +113,7 @@ public partial class FrmMain : XtraForm
             this.NavigateTo<HomeUc>();
             await LoadServerInfo();
             await UpdateAppAsync();
-            await ShowNotification("Application Démarre");
-
+            //await ShowNotification("Application Démarre");
             await ShowNotifications();
         }
         catch (Exception ex)
