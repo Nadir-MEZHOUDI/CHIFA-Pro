@@ -3,7 +3,7 @@
 public partial class OfficineUc : XtraUserControl,INavigable
 {
     public string Caption { get; } = "OFFICINE";
-    public Image Image => frmMain.Image(13);
+    public Image Image => FrmMain.Image(13);
     public OfficineUc()
     {
         InitializeComponent();

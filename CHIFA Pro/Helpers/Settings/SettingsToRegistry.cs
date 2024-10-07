@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel;
+
 using Microsoft.Win32;
 
 namespace CHIFA.Pro.Helpers.Settings;
 
 public class SettingsToRegistry<T> where T : class, new()
 {
-    private static string KeyName => $"SOFTWARE\\SmartPharm\\{typeof(T).Name}";
+    private static string KeyName => $"SOFTWARE\\{typeof(SettingsToRegistry<>).Assembly.GetName().Name}\\{typeof(T).Name}";
     private static List<string> Properties => typeof(T).GetProperties().Where(x => x.CanWrite).Select(x => x.Name).ToList();
     public static T Default { get; private set; } = Deserialize();
     private static T Deserialize()
@@ -34,7 +35,7 @@ public class SettingsToRegistry<T> where T : class, new()
     {
         try
         {
-            foreach (string name in Properties)
+            foreach (var name in Properties)
             {
                 object? value = typeof(T).GetProperty(name)?.GetValue(this)?.ToString();
                 if (value is null) continue;
@@ -46,4 +47,5 @@ public class SettingsToRegistry<T> where T : class, new()
             ex.Log();
         }
     }
+
 }

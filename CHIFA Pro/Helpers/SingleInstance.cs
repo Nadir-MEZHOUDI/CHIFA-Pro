@@ -1,16 +1,15 @@
-﻿using System.Runtime.InteropServices;
-// ReSharper disable InconsistentNaming
+﻿// ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable NotAccessedField.Local
 
 namespace CHIFA.Pro.Helpers;
 public static class SingleInstance
 {
-    private const string AppName = "CHIFA.Pro";
+    private static readonly string AppName = Assembly.GetExecutingAssembly().GetName().Name!;
 
     private const int HWND_BROADCAST = 0xffff;
 
-    public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage("WM_SHOWFIRSTINSTANCE");
+    public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage(AppName + '_' + "WM_SHOWFIRSTINSTANCE");
 
     [DllImport("user32.dll")]
     private static extern int RegisterWindowMessage(string lpString);

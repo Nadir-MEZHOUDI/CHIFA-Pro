@@ -10,7 +10,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
     }
 
     public string Caption { get; } = "FACTURES";
-    public Image Image => frmMain.Image(1);
+    public Image Image => FrmMain.Image(1);
 
     private void BtnClearDate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {

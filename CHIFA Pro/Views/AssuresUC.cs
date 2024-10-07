@@ -10,7 +10,7 @@ public partial class AssuresUc : XtraUserControl, INavigable
     }
 
     public string Caption { get; } = "ASSURES";
-    public Image Image => frmMain.Image(5);
+    public Image Image => FrmMain.Image(5);
 
     private void btnConsumption_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {

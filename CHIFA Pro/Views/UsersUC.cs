@@ -13,5 +13,5 @@ public partial class UsersUc : XtraUserControl, INavigable
     }
 
     public string Caption { get; } = "UTILISATEURS";
-    public Image Image => frmMain.Image(11);
+    public Image Image => FrmMain.Image(11);
 }

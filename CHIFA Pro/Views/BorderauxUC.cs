@@ -10,5 +10,5 @@ public partial class BordereauxUc : XtraUserControl, INavigable
     }
 
     public string Caption { get; } = "BORDEREAUX";
-    public Image Image => frmMain.Image(3);
+    public Image Image => FrmMain.Image(3);
 }

@@ -5,8 +5,8 @@ using DevExpress.XtraTab;
 namespace CHIFA.Pro.Helpers;
 internal static class NavigationService
 {
-    private static frmMain? frmMain;
-    private static frmMain? Main => frmMain ??= Application.OpenForms.OfType<frmMain>().FirstOrDefault();
+    private static FrmMain? frmMain;
+    private static FrmMain? Main => frmMain ??= Application.OpenForms.OfType<FrmMain>().FirstOrDefault();
     public static void NavigateTo<T>(this object sender) where T : UserControl, INavigable, new()
     {
         if (Main?.tabContainer == null) return;

@@ -3,7 +3,7 @@
 public partial class HomeUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "HOME";
-    public Image Image => frmMain.Image(0);
+    public Image Image => FrmMain.Image(0);
 
     public HomeUc()
     {
@@ -14,7 +14,7 @@ public partial class HomeUc : XtraUserControl, INavigable
     {
         Cursor = Cursors.WaitCursor;
         var data = await Task.Run(StatisticsService.GetThisWeekStatsAsync);
-        weekStatBindingSource.DataSource = data ;
+        weekStatBindingSource.DataSource = data;
         Cursor = Cursors.Default;
     }
 
@@ -87,13 +87,12 @@ public partial class HomeUc : XtraUserControl, INavigable
     private async void ItemRefresh_ItemClick(object sender, TileItemEventArgs e)
     {
         await ReLoadDataAsync();
+        await FrmMain.Instance.ShowNotifications();
     }
 
     private async void itemUpdate_ItemClick(object sender, TileItemEventArgs e)
     {
-        var frm = Application.OpenForms.OfType<frmMain>().FirstOrDefault();
-        if (frm != null)
-            await frm.UpdateAppAsync(true);
+        await FrmMain.Instance.UpdateAppAsync(true);
     }
 
     private async void HomeUc_Load(object sender, EventArgs e)

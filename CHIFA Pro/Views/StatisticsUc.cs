@@ -4,7 +4,7 @@ namespace CHIFA.Pro.Views;
 public partial class StatisticsUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "STATISTICS";
-    public Image Image => frmMain.Image(4);
+    public Image Image => FrmMain.Image(4);
 
     public StatisticsUc()
     {

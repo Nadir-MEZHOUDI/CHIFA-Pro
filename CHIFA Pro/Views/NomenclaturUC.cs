@@ -9,7 +9,7 @@ public partial class NomenclaturUc : XtraUserControl,INavigable
     }
 
     public string Caption { get; } = "NOMENCLATURE";
-    public Image Image => frmMain.Image(6);
+    public Image Image => FrmMain.Image(6);
 
     private void gridView1_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {

@@ -3,7 +3,7 @@
 public partial class TraitSpecUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "TRAITEMENT SPECIFIQUE";
-    public Image Image => frmMain.Image(2);
+    public Image Image => FrmMain.Image(2);
 
     public TraitSpecUc()
     {

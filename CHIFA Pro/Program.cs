@@ -40,20 +40,33 @@ internal static partial class Program
 
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
-#if DEBUG
-            .WriteTo.Console(theme: AnsiConsoleTheme.Code)
-            .WriteTo.Debug()
-#endif
+            //#if DEBUG
+            //            .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+            //            .WriteTo.Debug()
+            //#endif
             .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
-#if DEBUG
-        AllocConsole();
-        Console.WriteLine(@"Console is ready");
-        DataConnection.TurnTraceSwitchOn();
-        DataConnection.WriteTraceLine = Log.Debug!;
-#endif
+        //#if DEBUG
+        //        AllocConsole();
+        //        Console.WriteLine(@"Console is ready");
+        //        DataConnection.TurnTraceSwitchOn();
+        //        DataConnection.WriteTraceLine = Log.Debug!;
+        //#endif
 
+        SetExceptionHandling();
+
+        Velopack.VelopackApp.Build().Run();
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+        SetCulture();
+
+        Application.Run(new FrmMain());
+    }
+
+    private static void SetExceptionHandling()
+    {
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         Application.ThreadException += ThreadException_Handler;
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
@@ -63,14 +76,6 @@ internal static partial class Program
             Log.Error(e.Exception, "Unobserved task exception");
             e.SetObserved();
         };
-
-        Velopack.VelopackApp.Build().Run();
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-        Application.SetHighDpiMode(HighDpiMode.SystemAware);
-        SetCulture();
-
-        Application.Run(new frmMain());
     }
 
     private static void ThreadException_Handler(object sender, ThreadExceptionEventArgs e)

@@ -9,7 +9,7 @@ public partial class CentersUc : XtraUserControl, INavigable
     }
 
     public string Caption { get; } = "CENTERS";
-    public Image Image => frmMain.Image(12);
+    public Image Image => FrmMain.Image(12);
 
     private void btnCancel_Click(object sender, EventArgs e)
     {

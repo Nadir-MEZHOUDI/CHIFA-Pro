@@ -12,5 +12,5 @@ public partial class ControlMedicalUc : XtraUserControl,INavigable
     }
 
     public string Caption { get; } = "CONTROL MEDICAL";
-    public Image Image => frmMain.Image(10);
+    public Image Image => FrmMain.Image(10);
 }

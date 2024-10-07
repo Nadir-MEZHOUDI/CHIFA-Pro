@@ -1,6 +1,6 @@
 ﻿namespace CHIFA.Pro.Views
 {
-    partial class frmMain
+    partial class FrmMain
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@
         {
             components = new System.ComponentModel.Container();
             var splashScreenManager1 = new DevExpress.XtraSplashScreen.SplashScreenManager(this, null, true, true);
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             accordionControl1 = new DevExpress.XtraBars.Navigation.AccordionControl();
             accordionControlSeparator3 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             acHome = new DevExpress.XtraBars.Navigation.AccordionControlElement();
@@ -38,8 +38,8 @@
             accFactures = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accTrtSps = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accBordereaux = new DevExpress.XtraBars.Navigation.AccordionControlElement();
-            accStatistics = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accAssures = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accStatistics = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accordionControlSeparator5 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             accLN = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accCM = new DevExpress.XtraBars.Navigation.AccordionControlElement();
@@ -77,13 +77,19 @@
             txtServer = new ToolStripStatusLabel();
             toolStripStatusLabel2 = new ToolStripStatusLabel();
             txtDatabase = new ToolStripStatusLabel();
-            toolStripStatusLabel5 = new ToolStripStatusLabel();
+            txtSpring = new ToolStripStatusLabel();
             progressBar = new ToolStripProgressBar();
             toolStripStatusLabel3 = new ToolStripStatusLabel();
             txtPharmacie = new ToolStripStatusLabel();
             toolStripStatusLabel4 = new ToolStripStatusLabel();
             txtCodePs = new ToolStripStatusLabel();
             AppImages = new DevExpress.Utils.SharedImageCollection(components);
+            Notification = new NotifyIcon(components);
+            timer = new System.Windows.Forms.Timer(components);
+            contextMenu = new ContextMenuStrip(components);
+            menuOpen = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            menuExit = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)accordionControl1).BeginInit();
             container.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)tabContainer).BeginInit();
@@ -91,6 +97,7 @@
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)AppImages).BeginInit();
             ((System.ComponentModel.ISupportInitialize)AppImages.ImageSource).BeginInit();
+            contextMenu.SuspendLayout();
             SuspendLayout();
             // 
             // accordionControl1
@@ -146,14 +153,6 @@
             accBordereaux.Text = "BORDEREAUX";
             accBordereaux.Click += accBordereaux_Click;
             // 
-            // accStatistics
-            // 
-            accStatistics.ImageOptions.Image = (Image)resources.GetObject("accStatistics.ImageOptions.Image");
-            accStatistics.Name = "accStatistics";
-            accStatistics.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accStatistics.Text = "STATISTICS";
-            accStatistics.Click += accStatistics_Click;
-            // 
             // accAssures
             // 
             accAssures.ImageOptions.Image = (Image)resources.GetObject("accAssures.ImageOptions.Image");
@@ -161,6 +160,14 @@
             accAssures.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accAssures.Text = "ASSURES";
             accAssures.Click += accAssures_Click;
+            // 
+            // accStatistics
+            // 
+            accStatistics.ImageOptions.Image = (Image)resources.GetObject("accStatistics.ImageOptions.Image");
+            accStatistics.Name = "accStatistics";
+            accStatistics.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatistics.Text = "STATISTICS";
+            accStatistics.Click += accStatistics_Click;
             // 
             // accordionControlSeparator5
             // 
@@ -391,7 +398,7 @@
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel7, txtIP, toolStripStatusLabel1, txtServer, toolStripStatusLabel2, txtDatabase, toolStripStatusLabel5, progressBar, toolStripStatusLabel3, txtPharmacie, toolStripStatusLabel4, txtCodePs });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel7, txtIP, toolStripStatusLabel1, txtServer, toolStripStatusLabel2, txtDatabase, txtSpring, progressBar, toolStripStatusLabel3, txtPharmacie, toolStripStatusLabel4, txtCodePs });
             statusStrip1.Location = new Point(0, 747);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(1742, 22);
@@ -441,11 +448,14 @@
             txtDatabase.Size = new Size(100, 17);
             txtDatabase.Text = "CHIFA_OFFICINE";
             // 
-            // toolStripStatusLabel5
+            // txtSpring
             // 
-            toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            toolStripStatusLabel5.Size = new Size(1046, 17);
-            toolStripStatusLabel5.Spring = true;
+            txtSpring.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            txtSpring.ForeColor = Color.Black;
+            txtSpring.Name = "txtSpring";
+            txtSpring.Size = new Size(1046, 17);
+            txtSpring.Spring = true;
+            txtSpring.Text = "DateTime";
             // 
             // progressBar
             // 
@@ -505,7 +515,48 @@
             AppImages.ImageSource.Images.SetKeyName(14, "managedatasource_32x32.png");
             AppImages.ParentControl = this;
             // 
-            // frmMain
+            // Notification
+            // 
+            Notification.BalloonTipIcon = ToolTipIcon.Info;
+            Notification.ContextMenuStrip = contextMenu;
+            Notification.Icon = (Icon)resources.GetObject("Notification.Icon");
+            Notification.Text = "CHIFA Pro";
+            Notification.Visible = true;
+            Notification.MouseDoubleClick += Notification_MouseDoubleClick;
+            // 
+            // timer
+            // 
+            timer.Enabled = true;
+            timer.Interval = 1000;
+            timer.Tick += timer_Tick;
+            // 
+            // contextMenu
+            // 
+            contextMenu.Items.AddRange(new ToolStripItem[] { menuOpen, toolStripSeparator1, menuExit });
+            contextMenu.Name = "contextMenuStrip1";
+            contextMenu.Size = new Size(104, 54);
+            contextMenu.Text = "CHIFA Pro";
+            // 
+            // menuOpen
+            // 
+            menuOpen.Name = "menuOpen";
+            menuOpen.Size = new Size(103, 22);
+            menuOpen.Text = "Open";
+            menuOpen.Click += menuOpen_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(100, 6);
+            // 
+            // menuExit
+            // 
+            menuExit.Name = "menuExit";
+            menuExit.Size = new Size(103, 22);
+            menuExit.Text = "Exit";
+            menuExit.Click += menuExit_Click;
+            // 
+            // FrmMain
             // 
             Appearance.Options.UseFont = true;
             AutoScaleDimensions = new SizeF(9F, 19F);
@@ -524,12 +575,13 @@
             Controls.Add(accordionControl1);
             Controls.Add(statusStrip1);
             Font = new Font("Tahoma", 12F);
-            IconOptions.LargeImage = (Image)resources.GetObject("frmMain.IconOptions.LargeImage");
+            IconOptions.LargeImage = (Image)resources.GetObject("FrmMain.IconOptions.LargeImage");
             IsMdiContainer = true;
             Margin = new Padding(5, 4, 5, 4);
-            Name = "frmMain";
+            Name = "FrmMain";
             Text = "CHIFFA PRO";
             WindowState = FormWindowState.Maximized;
+            FormClosing += FrmMain_FormClosing;
             Load += frmMain_Load;
             ((System.ComponentModel.ISupportInitialize)accordionControl1).EndInit();
             container.ResumeLayout(false);
@@ -539,6 +591,7 @@
             statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)AppImages.ImageSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)AppImages).EndInit();
+            contextMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -597,6 +650,12 @@
         public DevExpress.XtraTab.XtraTabControl tabContainer;
         public DevExpress.Utils.SharedImageCollection AppImages;
         private ToolStripProgressBar progressBar;
-        private ToolStripStatusLabel toolStripStatusLabel5;
+        private ToolStripStatusLabel txtSpring;
+        private NotifyIcon Notification;
+        private System.Windows.Forms.Timer timer;
+        private ContextMenuStrip contextMenu;
+        private ToolStripMenuItem menuOpen;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem menuExit;
     }
 }

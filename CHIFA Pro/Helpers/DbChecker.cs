@@ -1,12 +1,11 @@
 ﻿using CHIFA.Pro.Helpers.Settings;
-using CHIFA.Pro.Views;
 using Npgsql;
 
 namespace CHIFA.Pro.Helpers;
 
 public static class DbChecker
 {
-    private static bool isConnected;
+    private static bool _isConnected;
     private static readonly Func<bool> ChangeSettingsMsg = () => XtraMessageBox.Show("Cannot connect to database \n Do you want to Change Settings?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes;
     public static async Task<bool> CheckDbConnectionAsync(string? server = null)
     {
@@ -15,8 +14,8 @@ public static class DbChecker
         NpgsqlConnection? con = null;
         try
         {
-            var ConnectionString = $"Server={server}; Port=5432; User Id=pharm; Password=REDACTED; Database=CHIFA_OFFICINE;";
-            con = new NpgsqlConnection(ConnectionString);
+            var connectionString = $"Server={server}; Port=5432; User Id=pharm; Password=REDACTED; Database=CHIFA_OFFICINE;";
+            con = new NpgsqlConnection(connectionString);
             await con.OpenAsync();
             return true;
         }
@@ -31,48 +30,58 @@ public static class DbChecker
                 await con.CloseAsync();
         }
     }
-    public static bool CheckOrDownloadServer()
+
+    private static bool CheckOrDownloadServer()
     {
-        var isRunning = Process.GetProcessesByName("postgres").Length != 0;
-
-        if (isRunning) return true;
-
-        if (!File.Exists(AppSettings.Default.ChifaPostgres))
+        try
         {
-            XtraMessageBox.Show("Server Postgres not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
+            var isRunning = Process.GetProcessesByName("postgres").Length != 0;
 
-        var process = new Process()
-        {
-            StartInfo = new ProcessStartInfo(AppSettings.Default.ChifaLancer_Serveur)
+            if (isRunning) return true;
+
+            if (!File.Exists(AppSettings.Default.ChifaPostgres))
             {
-                UseShellExecute = false,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
+                XtraMessageBox.Show("Server Postgres not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
-        };
 
-        process.Start();
-        process.WaitForExit(1000);
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo(AppSettings.Default.ChifaLancerServeur)
+                {
+                    UseShellExecute = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                }
+            };
 
+            process.Start();
+            process.WaitForExit(1000);
+            process.Close();
+            process.Dispose();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
         return Process.GetProcessesByName("postgres").Length != 0;
+
     }
     public static async Task RunServerAsync()
     {
         if (!AppSettings.Default.IsServer) return;
 
-        if (isConnected) return;
+        if (_isConnected) return;
         try
         {
             if (!CheckOrDownloadServer())
             {
-                MessageBox.Show("Postgres SQL Server Not working! and cannot run it!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(@"Postgres SQL Server Not working! and cannot run it!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            isConnected = await CheckDbConnectionAsync();
+            _isConnected = await CheckDbConnectionAsync();
 
-            if (!isConnected && ChangeSettingsMsg())
+            if (!_isConnected && ChangeSettingsMsg())
             {
                 ParametersUc.ShowAsForm();
             }
@@ -82,12 +91,13 @@ public static class DbChecker
             ex.Log();
         }
     }
-    public static string BackupFileName => $"CHIFA_OFFICINE_{DateTime.Now:dd-MM-yyyy_HH-mm-ss}.backup";
+
+    private static string BackupFileName => $"CHIFA_OFFICINE_{DateTime.Now:dd-MM-yyyy_HH-mm-ss}.backup";
     public static async Task SaveBackup()
     {
         try
         {
-            Environment.SetEnvironmentVariable("PGPASSWORD", AppSettings.Default.DbPassword);
+            Environment.SetEnvironmentVariable(@"PGPASSWORD", AppSettings.Default.DbPassword);
 
             if (!Directory.Exists(AppSettings.Default.ChifaBackup))
             {
@@ -111,16 +121,16 @@ public static class DbChecker
             process.Start();
             await process.WaitForExitAsync();
 
-            var output = await process.StandardOutput.ReadToEndAsync();
+            await process.StandardOutput.ReadToEndAsync();
             var error = await process.StandardError.ReadToEndAsync();
 
             if (process.ExitCode == 0)
             {
-                MessageBox.Show("Backup completed successfully.");
+                MessageBox.Show(@"Backup completed successfully.");
             }
             else
             {
-                MessageBox.Show("Database restore failed. Error: " + error);
+                MessageBox.Show(@"Database restore failed. Error: " + error);
             }
         }
         catch (Exception ex)
@@ -135,7 +145,7 @@ public static class DbChecker
         {
             ProcessStartInfo processStartInfo = new()
             {
-                FileName = AppSettings.Default.ChifaRestor,
+                FileName = AppSettings.Default.ChifaRestore,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -143,20 +153,21 @@ public static class DbChecker
                 Arguments = $"""-h "{ChifaDb.Server}" -c  -p 5432 -U pharm -d CHIFA_OFFICINE "{fileName}" """,
             };
 
-            using Process process = new() { StartInfo = processStartInfo };
+            using Process process = new();
+            process.StartInfo = processStartInfo;
             process.Start();
             await process.WaitForExitAsync();
 
-            var output = await process.StandardOutput.ReadToEndAsync();
+            await process.StandardOutput.ReadToEndAsync();
             var error = await process.StandardError.ReadToEndAsync();
 
             if (process.ExitCode == 0)
             {
-                MessageBox.Show("Database restore completed successfully.");
+                MessageBox.Show(@"Database restore completed successfully.");
             }
             else
             {
-                MessageBox.Show("Database restore failed. Error: " + error);
+                MessageBox.Show(@"Database restore failed. Error: " + error);
             }
         }
         catch (Exception ex)

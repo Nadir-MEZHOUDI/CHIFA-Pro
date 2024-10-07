@@ -6,7 +6,7 @@ public partial class ParametersUc : XtraUserControl, INavigable
 {
     private Action? _closer;
     public string Caption { get; } = "PARAMETERS";
-    public Image Image => frmMain.Image(14);
+    public Image Image => FrmMain.Image(14);
 
     public ParametersUc()
     {
@@ -31,8 +31,17 @@ public partial class ParametersUc : XtraUserControl, INavigable
         {
             AppSettings.Default.ChifaPath = txtChifaPath.Text;
             AppSettings.Default.IsServer = rbtServer.Checked;
-            AppSettings.Default.Save();
             XtraHelper.SetServer(rbtServer.Checked ? "localhost" : txtServerName.Text);
+
+            AppSettings.Default.NotificationOnDays = chkDays.Checked;
+            AppSettings.Default.NotificationOnMontant = chkMontant.Checked;
+            AppSettings.Default.NotificationOnNmbr = chkNmbr.Checked;
+
+            AppSettings.Default.MaxDays = Convert.ToInt32(txtJours.EditValue);
+            AppSettings.Default.MaxMontant = Convert.ToInt32(txtMontant.EditValue);
+            AppSettings.Default.MaxNmbr = Convert.ToInt32(txtFactures.EditValue);
+            
+            AppSettings.Default.Save();
             XtraMessageBox.Show("Configuration successfully Saved", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             _closer?.Invoke();
         }
@@ -46,21 +55,41 @@ public partial class ParametersUc : XtraUserControl, INavigable
     {
         try
         {
-            txtChifaPath.Text = AppSettings.Default.ChifaPath;
-            txtServerName.Text = ChifaDb.Server;
-            rbtServer.Checked = AppSettings.Default.IsServer;
-            rbtClient.Checked = !AppSettings.Default.IsServer;
-
-            var items = await Task.Run(XtraHelper.ListAllDevicesOnLocalNetwork);
-
-            if (items is not { Length: > 0 }) return;
-            txtServerName.Properties.Items.Clear();
-            txtServerName.Properties.Items.AddRange(items);
+            LoadNotificationSettings();
+            await LoadChifaServerInfo();
         }
         catch (Exception ex)
         {
             ex.Log();
         }
+    }
+
+    private async Task LoadChifaServerInfo()
+    {
+        try
+        {
+            txtChifaPath.Text = AppSettings.Default.ChifaPath;
+            txtServerName.Text = ChifaDb.Server;
+
+            rbtServer.Checked = AppSettings.Default.IsServer;
+            rbtServer.EditValue = AppSettings.Default.IsServer;
+
+            rbtClient.Checked = !AppSettings.Default.IsServer;
+            rbtClient.EditValue = !AppSettings.Default.IsServer;
+
+            var items = await Task.Run(XtraHelper.ListAllDevicesOnLocalNetwork);
+
+            if (items is not { Length: > 0 }) return;
+
+            txtServerName.Properties.Items.Clear();
+            txtServerName.Properties.Items.AddRange(items);
+        }
+        catch (Exception ex)
+        {
+
+            ex.Log();
+        }
+
     }
 
     private async void btnBackup_Click(object sender, EventArgs e)
@@ -141,5 +170,23 @@ public partial class ParametersUc : XtraUserControl, INavigable
     {
         txtServerName.Enabled = rbtClient.Checked;
         txtChifaPath.Enabled = rbtServer.Checked;
+    }
+
+    private void LoadNotificationSettings()
+    {
+        try
+        {
+            chkNmbr.EditValue = AppSettings.Default.NotificationOnNmbr;
+            chkMontant.EditValue = AppSettings.Default.NotificationOnMontant;
+            chkDays.EditValue = AppSettings.Default.NotificationOnDays;
+
+            txtFactures.EditValue = AppSettings.Default.MaxNmbr;
+            txtMontant.EditValue = AppSettings.Default.MaxMontant;
+            txtJours.EditValue = AppSettings.Default.MaxDays;
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 }

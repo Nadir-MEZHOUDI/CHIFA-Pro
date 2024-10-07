@@ -1,5 +1,7 @@
 ﻿using System.Windows.Threading;
 
+using CHIFA.Pro.Helpers.Settings;
+
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
 
@@ -7,46 +9,101 @@ using Velopack;
 
 namespace CHIFA.Pro.Views;
 
-public partial class frmMain : XtraForm
+public partial class FrmMain : XtraForm
 {
-    public frmMain()
+    public FrmMain()
     {
         InitializeComponent();
         ChangeNameBasedOnDotNetVersion();
     }
-    public static Image Image(int index) => (Application.OpenForms["frmMain"] as frmMain)!.AppImages.ImageSource.Images[index];
 
-    private void accSpecialists_Click(object sender, EventArgs e) => sender.NavigateTo<SpecialitesUc>();
+    public static FrmMain Instance => (Application.OpenForms[nameof(FrmMain)] as FrmMain)!;
 
-    private void accAssures_Click(object sender, EventArgs e) => sender.NavigateTo<AssuresUc>();
+    public static Image Image(int index)
+    {
+        return Instance.AppImages.ImageSource.Images[index];
+    }
 
-    private void accBordereaux_Click(object sender, EventArgs e) => sender.NavigateTo<BordereauxUc>();
+    private void accSpecialists_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<SpecialitesUc>();
+    }
 
-    private void accCenters_Click(object sender, EventArgs e) => sender.NavigateTo<CentersUc>();
+    private void accAssures_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<AssuresUc>();
+    }
 
-    private void accCM_Click(object sender, EventArgs e) => sender.NavigateTo<ControlMedicalUc>();
+    private void accBordereaux_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<BordereauxUc>();
+    }
 
-    private void accFactures_Click(object sender, EventArgs e) => sender.NavigateTo<TraitSpecUc>();
+    private void accCenters_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<CentersUc>();
+    }
 
-    private void accLastFactures_Click(object sender, EventArgs e) => sender.NavigateTo<FacturesUc>();
+    private void accCM_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<ControlMedicalUc>();
+    }
 
-    private void accLN_Click(object sender, EventArgs e) => sender.NavigateTo<ListNoirUc>();
+    private void accFactures_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<TraitSpecUc>();
+    }
 
-    private void accMedicaments_Click(object sender, EventArgs e) => sender.NavigateTo<NomenclaturUc>();
+    private void accLastFactures_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<FacturesUc>();
+    }
 
-    private void accOfficine_Click(object sender, EventArgs e) => sender.NavigateTo<OfficineUc>();
+    private void accLN_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<ListNoirUc>();
+    }
 
-    private void accordionControlElement2_Click(object sender, EventArgs e) => sender.NavigateTo<FormesUc>();
+    private void accMedicaments_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<NomenclaturUc>();
+    }
 
-    private void accParametres_Click(object sender, EventArgs e) => sender.NavigateTo<ParametersUc>();
+    private void accOfficine_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<OfficineUc>();
+    }
 
-    private void accStatistics_Click(object sender, EventArgs e) => sender.NavigateTo<StatisticsUc>();
+    private void accordionControlElement2_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<FormesUc>();
+    }
 
-    private void accUsers_Click(object sender, EventArgs e) => sender.NavigateTo<UsersUc>();
+    private void accParametres_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<ParametersUc>();
+    }
 
-    private void acHome_Click(object sender, EventArgs e) => sender.NavigateTo<HomeUc>();
+    private void accStatistics_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<StatisticsUc>();
+    }
 
-    private void ChangeNameBasedOnDotNetVersion() => Text = $"CHIFA PRO [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )";
+    private void accUsers_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<UsersUc>();
+    }
+
+    private void acHome_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<HomeUc>();
+    }
+
+    private void ChangeNameBasedOnDotNetVersion()
+    {
+        Text =
+            $@"CHIFA PRO [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )";
+    }
 
     private async void frmMain_Load(object sender, EventArgs e)
     {
@@ -56,6 +113,9 @@ public partial class frmMain : XtraForm
             this.NavigateTo<HomeUc>();
             await LoadServerInfo();
             await UpdateAppAsync();
+            await ShowNotification("Application Démarre");
+
+            await ShowNotifications();
         }
         catch (Exception ex)
         {
@@ -72,18 +132,18 @@ public partial class frmMain : XtraForm
 
             if (!mgr.IsInstalled) return;
 
-            // check for new version
             var newVersion = await mgr.CheckForUpdatesAsync();
             if (newVersion == null)
             {
                 if (showMessage)
-                    _ = XtraMessageBox.Show("This is the latest Version", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    _ = XtraMessageBox.Show("This is the latest Version", "Update", MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
             }
             else
             {
-                // download new version
-                await mgr.DownloadUpdatesAsync(newVersion, ShowProgress);
-                // install new version and restart app
+                await mgr.DownloadUpdatesAsync(newVersion,
+                    i => Dispatcher.CurrentDispatcher.Invoke(() => progressBar.Value = i));
+
                 mgr.ApplyUpdatesAndRestart(newVersion);
             }
         }
@@ -97,13 +157,12 @@ public partial class frmMain : XtraForm
         }
     }
 
-    private void ShowProgress(int i) => Dispatcher.CurrentDispatcher.Invoke(() => progressBar.Value = i);
 
     private async Task LoadServerInfo()
     {
         try
         {
-            txtDatabase.Text = "CHIFA_OFFICINE";
+            txtDatabase.Text = @"CHIFA_OFFICINE";
             txtIP.Text = XtraHelper.GetThis_PC_IP_Address();
             txtServer.Text = ChifaDb.Server;
 
@@ -111,8 +170,7 @@ public partial class frmMain : XtraForm
             var officine = await db.Parametres.FirstOrDefaultAsync();
 
             txtCodePs.Text = officine?.CodePs ?? "";
-            txtPharmacie.Text = officine?.Nom + " " + officine?.Prenom;
-
+            txtPharmacie.Text = officine?.Nom + @" " + officine?.Prenom;
         }
         catch (Exception ex)
         {
@@ -123,7 +181,8 @@ public partial class frmMain : XtraForm
     private void TabContainer_CloseButtonClick(object sender, EventArgs e)
     {
         var index = tabContainer.SelectedTabPageIndex;
-        if (((ClosePageButtonEventArgs)e).Page is not XtraTabPage page || page.Text.Contains("Home", StringComparison.InvariantCultureIgnoreCase))
+        if (((ClosePageButtonEventArgs)e).Page is not XtraTabPage page ||
+            page.Text.Contains("Home", StringComparison.InvariantCultureIgnoreCase))
             return;
 
         tabContainer.SelectedTabPageIndex = index > 1 ? index - 1 : index + 1;
@@ -131,41 +190,153 @@ public partial class frmMain : XtraForm
     }
 
 
-
     #region Bring Single Instance To Front
+
     protected override void WndProc(ref Message m)
     {
         try
         {
             if (m.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
             {
-                RestoreWindow();
-                // Optionally, you can set m.Result or handle the message as needed
+                Show();
+
+                Notification.Visible = false;
+
+                if (WindowState == FormWindowState.Minimized)
+                    WindowState = FormWindowState.Maximized;
+
+                Activate();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             //ignore
         }
+
         base.WndProc(ref m);
     }
 
-    // Method to restore and activate the window
-    private void RestoreWindow()
+    #endregion
+
+    private void timer_Tick(object sender, EventArgs e)
     {
-        try
+        txtSpring.Text = DateTime.Now.ToString("dddd, dd MMMM yyyy HH:mm:ss").ToUpperInvariant();
+    }
+
+    private async void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        if (e.CloseReason == CloseReason.UserClosing)
         {
-            if (WindowState == FormWindowState.Minimized)
-            {
-                WindowState = FormWindowState.Maximized; // Or FormWindowState.Normal
-            }
-            Activate();
+            e.Cancel = true;
+            Hide();
+            Notification.Visible = true;
+            await ShowNotification("Minimized to Tray , The application is still running.");
         }
-        catch (Exception ex)
+        else
         {
-            //Ignore
+            Notification.Visible = false;
         }
     }
 
-    #endregion
+    private void Notification_MouseDoubleClick(object sender, MouseEventArgs e)
+    {
+        try
+        {
+            Show();
+            WindowState = FormWindowState.Maximized;
+            Notification.Visible = false;
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+
+    public async Task ShowNotifications()
+    {
+        try
+        {
+            var db = new ChifaDb();
+            var bords = await db.Bordereaus
+                .Where(x => x.Etat == 'O')
+                .Select(x => new BordNotification
+                {
+                    NumBord = x.NumBord,
+                    Center = x.Center!.Nom,
+                    NmbrFact = x.Factures.Count(),
+                    Min = x.Factures.Min(f => f.DateFact),
+                    Max = x.Factures.Max(f => f.DateFact),
+                    Montant = x.Factures.Sum(f => f.MontOff + f.MontMaj + f.MontMajFae)
+                })
+                .ToListAsync();
+
+
+            foreach (var bord in bords)
+            {
+                if (AppSettings.Default.NotificationOnDays && AppSettings.Default.MaxDays > 0 && bord.Days > AppSettings.Default.MaxDays)
+                {
+                    await ShowNotification($"Le Bord {bord.NumBord} de {bord.Center} a  {bord.Days:N0} Jours", ToolTipIcon.Warning);
+                }
+
+                if (AppSettings.Default.NotificationOnMontant && AppSettings.Default.MaxMontant > 0 && bord.Montant > AppSettings.Default.MaxMontant)
+                {
+                    await ShowNotification($"Le Bord {bord.NumBord} de {bord.Center} a  {bord.Montant:N2} DA", ToolTipIcon.Warning);
+                }
+
+                if (AppSettings.Default.NotificationOnNmbr && AppSettings.Default.MaxNmbr > 0 && bord.NmbrFact > AppSettings.Default.MaxNmbr)
+                {
+                    await ShowNotification($"Le Bord {bord.NumBord} de {bord.Center} a {bord.NmbrFact:N0} Factures", ToolTipIcon.Warning);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+    private async Task ShowNotification(string message,string text, ToolTipIcon icon = ToolTipIcon.Info)
+    {
+        Notification.ShowBalloonTip(5, message, text, icon);
+        Application.DoEvents();
+        await Task.Delay(2000);
+    }
+
+
+    private async Task ShowNotification(string message, ToolTipIcon icon = ToolTipIcon.Info)
+    {
+        await ShowNotification(message, "CHIFA Pro",icon);
+    }
+
+
+    private void menuExit_Click(object sender, EventArgs e)
+    {
+        Application.Exit();
+    }
+
+    private void menuOpen_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            Show();
+            WindowState = FormWindowState.Maximized;
+            Notification.Visible = false;
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+}
+
+public record BordNotification
+{
+    public int Days => (Max - Min)?.Days ?? 0;
+    public string? NumBord { get; init; }
+    public string? Center { get; init; }
+    public int NmbrFact { get; init; }
+    public DateTime? Min { get; init; }
+    public DateTime? Max { get; init; }
+    public decimal? Montant { get; init; }
 }

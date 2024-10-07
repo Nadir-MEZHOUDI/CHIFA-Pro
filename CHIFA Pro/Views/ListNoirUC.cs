@@ -10,7 +10,7 @@ public partial class ListNoirUc : XtraUserControl,INavigable
     }
 
     public string Caption { get; }= "LISTE NOIR";
-    public Image Image => frmMain.Image(9);
+    public Image Image => FrmMain.Image(9);
 
     private async void ListNoirUc_Load(object sender, EventArgs e)
     {

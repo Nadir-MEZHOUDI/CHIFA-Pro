@@ -11,5 +11,5 @@ public partial class SpecialitesUc : XtraUserControl, INavigable
 
     public string Caption { get; } = "SPECIALITES";
 
-    public Image Image => frmMain.Image(8);
+    public Image Image => FrmMain.Image(8);
 }

@@ -11,5 +11,5 @@ public partial class FormesUc : XtraUserControl, INavigable
     }
 
     public string Caption { get; } = "FORMES";
-    public Image Image => frmMain.Image(7);
+    public Image Image => FrmMain.Image(7);
 }
