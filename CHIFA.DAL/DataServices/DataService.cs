@@ -1,17 +1,18 @@
 ﻿using System.Linq.Expressions;
+
 using CHIFA.DAL.DTOs;
 using CHIFA.DAL.Helpers;
+
 using DataModel;
+
 using LinqToDB;
 
 namespace CHIFA.DAL.DataServices;
 
 public static class DataService
 {
-    public static Period Period = new();
+    public static Period Period { get; } = new();
     private static readonly DateTime YearAgo = DateTime.Now.AddYears(-1);
-    private static DateTime? maxDate;
-    private static DateTime? minDate;
 
     public static async Task<IEnumerable<BordereauDto>> GetAllBordereauxAsync(
         Expression<Func<Bordereau, bool>>? predicate = default)
@@ -22,7 +23,7 @@ public static class DataService
             .Select(x => new BordereauDto
             {
                 Num = x.NumBord,
-                Center = x.Center.Nom,
+                Center = x.Center!.Nom,
                 FirstFacture = x.DateGen,
                 LastFacture = x.DateExtract,
                 Nmbr = x.Factures.Count(),
@@ -68,8 +69,8 @@ public static class DataService
                 MontOff = f.MontOff,
                 Majoration = f.MontMaj,
                 Bordereau = f.NumBord,
-                Specialite = f.Specialite.Libelle,
-                Centre = f.Center.Nom,
+                Specialite = f.Specialite!.Libelle,
+                Centre = f.Center!.Nom,
                 Rang = f.RangAd,
                 TS = f.DetailFacts.Any(m => m.Ts == true),
                 LongDuree = f.DetailFacts.Any(m => m.DureeTrait >= 60)
@@ -90,8 +91,8 @@ public static class DataService
             NumAssure = a.NumAssure,
             Rang = a.RangAd,
             Beneficiare = a.FullName,
-            Assure = a.Assure.FullName,
-            Center = a.Factures.FirstOrDefault().Center.Nom
+            Assure = a.Assure!.FullName,
+            Center = a.Factures.FirstOrDefault()!.Center!.Nom
         }).ToListAsync();
     }
 
@@ -105,7 +106,7 @@ public static class DataService
                 NumAssure = a.NumAssure,
                 Rang = a.RangAd,
                 Beneficiare = a.FullName,
-                Assure = a.Assure.FullName
+                Assure = a.Assure!.FullName
             }).FirstOrDefaultAsync();
     }
 
@@ -187,13 +188,7 @@ public static class DataService
             .ConfigureAwait(false);
     }
 
-    public static async Task<(DateTime min, DateTime max)> GetMinAndMaxDatesAsync()
-    {
-        await using var db = new ChifaDb();
-        minDate ??= await db.Factures.MinAsync(x => x.DateFact).ConfigureAwait(false);
-        maxDate ??= await db.Factures.MaxAsync(x => x.DateFact).ConfigureAwait(false);
-        return (minDate?.AddDays(-1) ?? new DateTime(2000, 1, 1), maxDate?.AddDays(1) ?? new DateTime(2200, 1, 1));
-    }
+  
 
     public static async Task<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null,
         Expression<Func<DetailFact, bool>>? predicate = default)
@@ -203,14 +198,14 @@ public static class DataService
 
         await using var db = new ChifaDb();
         var list = await db.DetailFacts.Where(predicate).Select(a => new PatientOfTraitSpec
-                {
-                    NumAssure = a.Facture.NumAssure,
-                    Assure = a.Facture.Assure.FullName,
-                    Rang = a.Facture.RangAd,
-                    Malade = a.Facture.Beneficiaire.FullName,
-                    TS = a.Ts,
-                    LongDuree = a.DureeTrait >= 60
-                }
+        {
+            NumAssure = a.Facture.NumAssure,
+            Assure = a.Facture.Assure.FullName,
+            Rang = a.Facture.RangAd,
+            Malade = a.Facture.Beneficiaire.FullName,
+            TS = a.Ts,
+            LongDuree = a.DureeTrait >= 60
+        }
             ).ToListAsync()
             .ConfigureAwait(false);
         list = list
@@ -220,26 +215,25 @@ public static class DataService
         return list;
     }
 
-    public static async Task<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang,
-        bool proche,
-        Expression<Func<DetailFact?, bool>>? predicate = default)
+    public static async Task<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang, bool proche, Expression<Func<DetailFact?, bool>>? predicate = default)
     {
+        predicate ??= _ => true;
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
-            .Where(predicate.SetPeriod(Period))
-            .Where(x => x!.Facture.NumAssure == noAssure && x.Facture.RangAd == rang)
-            .Where(x => (x!.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60)
+            .Where(predicate!.SetPeriod(Period))
+            .Where(x => x.Facture.NumAssure == noAssure && x.Facture.RangAd == rang)
+            .Where(x => (x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60)
             .SelectMany(a => db.Beneficiaires.Where(b => b.NumAssure == noAssure && b.RangAd == rang),
                 (x, a) => new
                 {
-                    Medicament = x!.Medicament.FullName(),
+                    Medicament = x.Medicament.FullName(),
                     NEnrg = x.NumEnr,
                     x.Medicament.CodeDci,
                     Duree = x.DureeTrait,
                     TS = x.Ts,
                     Qt = x.Qte,
                     Prix = x.Ppa,
-                    Specialite = x.Facture.Specialite.Libelle,
+                    Specialite = x.Facture.Specialite!.Libelle,
                     x.Facture.DateSoin,
                     x.Facture.DateFact
                 })
@@ -305,7 +299,7 @@ public static class DataService
                 Qt = d.Qte,
                 Prix = d.Ppa,
                 CodeDci = d.Medicament.CodeDci,
-                Médecin = f.Specialite.Libelle,
+                Médecin = f.Specialite!.Libelle,
                 NEnrg = d.NumEnr
             })
             .OrderByDescending(x => x.Date)
@@ -365,11 +359,11 @@ public static class DataService
                 Assure = f.Assure.FullName,
                 Malade = f.Beneficiaire.FullName,
                 Bordereau = f.NumBord,
-                Specialite = f.Specialite.Libelle,
+                Specialite = f.Specialite!.Libelle,
                 TS = f.DetailFacts.Any(x => x.Ts == true),
                 LongDuree = f.DetailFacts.Any(x => x.DureeTrait >= 60),
                 MontFact = f.MontFact,
-                Centre = f.Center.Nom,
+                Centre = f.Center!.Nom,
                 Majoration = f.MontMajFae,
                 MontAss = f.MontAs,
                 MontOff = f.MontOff,
@@ -381,13 +375,13 @@ public static class DataService
         return query;
     }
 
-    public static async Task<IEnumerable<TraitSpec2>> PatientsWithTraitSpec2Async(
-        Expression<Func<DetailFact, bool>>? predicate = default)
+    public static async Task<IEnumerable<TraitSpec2>> PatientsWithTraitSpec2Async(Expression<Func<DetailFact, bool>>? predicate = default)
     {
-        predicate ??= fact => true;
+        predicate ??= (fact => true);
         predicate = predicate.And(x => x.Facture.DateFact > YearAgo);
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
+            .Where(predicate)
             .Select(d => new
             {
                 d.Facture.NumAssure,
@@ -427,7 +421,7 @@ public static class DataService
                 TS = x.FirstOrDefault()?.TS ?? false,
                 Code = x.Key.CodeDci,
                 NumAssure = x.Key.NumAssure,
-                Rang = x.Key.RangAd,
+                Rang = x.Key.RangAd!,
                 TC = x.Any(d => d.TS == true || d.Duree > 30 || (d.Prix >= 1000 && d.Qt >= 3)),
                 Historic = (x.Count() <= 1
                     ? null
@@ -469,7 +463,7 @@ public static class DataService
                 Qt = a.Qte,
                 a.Ts,
                 a.Ppa,
-                Specialite = a.Facture.Specialite.Libelle,
+                Specialite = a.Facture.Specialite!.Libelle,
                 a.Facture.DateSoin,
                 a.Medicament.CodeDci
             })
@@ -486,18 +480,18 @@ public static class DataService
                 Assure = a.FirstOrDefault()!.Assure,
                 Malade = a.FirstOrDefault()!.Malade,
                 DetailsDtos = a.Select(m => new TraitDetailsDto
-                    {
-                        Medicament = m.Medicament,
-                        DateFact = m.DateFact,
-                        Duree = m.Duree,
-                        NEnrg = m.NEnrg,
-                        Qt = m.Qt,
-                        TS = m.Ts,
-                        Prix = m.Ppa,
-                        Specialite = m.Specialite,
-                        CodeDci = m.CodeDci,
-                        DateSoin = m.DateSoin
-                    })
+                {
+                    Medicament = m.Medicament,
+                    DateFact = m.DateFact,
+                    Duree = m.Duree,
+                    NEnrg = m.NEnrg,
+                    Qt = m.Qt,
+                    TS = m.Ts,
+                    Prix = m.Ppa,
+                    Specialite = m.Specialite,
+                    CodeDci = m.CodeDci,
+                    DateSoin = m.DateSoin
+                })
                     //.DistinctBy(x => x.NEnrg)
                     .ToList()
             }).ToList();

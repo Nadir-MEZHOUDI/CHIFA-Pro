@@ -30,21 +30,18 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     {
         try
         {
-            var (min, max) = await DataService.GetMinAndMaxDatesAsync();
+            await Period.GetMinAndMaxDatesAsync();
             var lastYear = DateTime.Now.AddYears(-1);
-
-            fromDateRepo.MaxValue = max;
-            fromDateRepo.MinValue = min;
+            fromDateRepo.MaxValue = Period.MaxDate;
+            fromDateRepo.MinValue = Period.MinDate;
             fromDateRepo.TodayDate = lastYear;
 
-            toDateRepo.MaxValue = max;
-            toDateRepo.MinValue = min;
-            toDateRepo.TodayDate = max;
+            toDateRepo.MaxValue = Period.MaxDate;
+            toDateRepo.MinValue = Period.MinDate;
+            toDateRepo.TodayDate = Period.MaxDate;
 
             FromDate.EditValue = lastYear;
             ToDate.EditValue = toDateRepo.MaxValue;
-
-
 
             FromDate.EditValueChanged += async (_, _) => await LoadData();
             ToDate.EditValueChanged += async (_, _) => await LoadData();

@@ -4,9 +4,9 @@ namespace CHIFA.DAL.Statistics;
 
 public class MonthlyStat
 {
-     public string Date => $"{int.Parse(Year):D4} - {int.Parse(Month):D2}";
-     public string Month { get; init; }
-    public string Year { get; init; }
+    public string Date => $"{int.Parse(Year ?? "0"):D4} - {int.Parse(Month ?? "0"):D2}";
+    public string? Month { get; init; }
+    public string? Year { get; init; }
     public DateTime? DateDebut { get; init; }
     public DateTime? DateFin { get; init; }
     public int Factures { get; init; }

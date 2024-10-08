@@ -227,7 +227,7 @@
             itmMedicaments.Id = 3;
             itmMedicaments.ItemSize = TileItemSize.Medium;
             itmMedicaments.Name = "itmMedicaments";
-            itmMedicaments.ItemClick += itmMedicaments_ItemClick;
+            itmMedicaments.ItemClick += ItmMedicaments_ItemClick;
             // 
             // itemFormes
             // 

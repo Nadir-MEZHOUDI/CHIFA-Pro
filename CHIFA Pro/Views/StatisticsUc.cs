@@ -1,5 +1,5 @@
 ﻿using DevExpress.XtraTab;
-
+using Period=CHIFA.DAL.DTOs.Period;
 namespace CHIFA.Pro.Views;
 public partial class StatisticsUc : XtraUserControl, INavigable
 {
@@ -40,17 +40,17 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         try
         {
-            (DateTime min, DateTime max) = await DataService.GetMinAndMaxDatesAsync();
-
+            await Period.GetMinAndMaxDatesAsync();
+ 
             var towYearsBefore = DateTime.Now.AddYears(-2);
 
-            fromDateRepo.MaxValue = max;
-            fromDateRepo.MinValue = min;
-            fromDateRepo.TodayDate = min < towYearsBefore ? towYearsBefore : min;
+            fromDateRepo.MaxValue = Period.MaxDate;
+            fromDateRepo.MinValue = Period.MinDate;
+            fromDateRepo.TodayDate = Period.MinDate < towYearsBefore ? towYearsBefore : Period.MinDate;
 
-            toDateRepo.MaxValue = max;
-            toDateRepo.MinValue = min;
-            toDateRepo.TodayDate = max;
+            toDateRepo.MaxValue = Period.MaxDate;
+            toDateRepo.MinValue = Period.MinDate;
+            toDateRepo.TodayDate = Period.MaxDate;
 
             FromDate.EditValue = fromDateRepo.TodayDate;
             ToDate.EditValue = toDateRepo.TodayDate;

@@ -29,7 +29,7 @@ public partial class HomeUc : XtraUserControl, INavigable
 
     }
 
-    private void itmMedicaments_ItemClick(object sender, TileItemEventArgs e)
+    private void ItmMedicaments_ItemClick(object sender, TileItemEventArgs e)
     {
         this.NavigateTo<NomenclaturUc>();
     }
@@ -97,7 +97,9 @@ public partial class HomeUc : XtraUserControl, INavigable
 
     private async void HomeUc_Load(object sender, EventArgs e)
     {
+        await DbChecker.RunServerAsync();
         await ReLoadDataAsync();
+        await FrmMain.Instance.ShowNotifications();
     }
 }
 

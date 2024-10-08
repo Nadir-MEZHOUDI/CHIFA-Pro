@@ -10,9 +10,9 @@ using LinqToDB.Data;
 namespace CHIFA.Tests;
 public class Program
 {
-    static ChifaDb db = new ChifaDb();
-    static int N = 10;
-    static List<(string MethodName, TimeSpan Time)> timeDic = new List<(string method, TimeSpan time)>();
+    private static readonly ChifaDb Db = new();
+    private static readonly int N = 10;
+    static readonly List<(string MethodName, TimeSpan Time)> TimeDic = new List<(string method, TimeSpan time)>();
 
     public static async Task Main()
     {
@@ -21,28 +21,28 @@ public class Program
             DataConnection.TurnTraceSwitchOn();
             // DataConnection.WriteTraceLine = (s1, s2, s3) => LogQuery(s1, s2, s3);
             Benchmark benchmark = new Benchmark();
-            timeDic.Clear();
+            TimeDic.Clear();
 
-            long time = Stopwatch.GetTimestamp();
+            long time;
             for (int i = 0; i < 5; i++)
             {
-                Console.WriteLine($"-------------------Run {i} --------------------------");
+                Console.WriteLine($@"-------------------Run {i} --------------------------");
 
                 time = Stopwatch.GetTimestamp();
                 benchmark.GetBordereaux();
-                Console.WriteLine($"GetBordereaux: {Stopwatch.GetElapsedTime(time)}");
+                Console.WriteLine($@"GetBordereaux: {Stopwatch.GetElapsedTime(time)}");
                 time = Stopwatch.GetTimestamp();
                 await ChifaStatService.Instance.LoadDataAsync();
-                Console.WriteLine($"Load All Data Async In : {Stopwatch.GetElapsedTime(time)}");
+                Console.WriteLine($@"Load All Data Async In : {Stopwatch.GetElapsedTime(time)}");
 
                 time = Stopwatch.GetTimestamp();
-                ChifaStatService.Instance.LoadData();
-                Console.WriteLine($"Load All Data In : {Stopwatch.GetElapsedTime(time)}");
+                await ChifaStatService.Instance.LoadDataAsync();
+                Console.WriteLine($@"Load All Data In : {Stopwatch.GetElapsedTime(time)}");
 
             }
             for (int i = 0; i < N; i++)
             {
-                Console.WriteLine($"-------------------Run {i} --------------------------");
+                Console.WriteLine($@"-------------------Run {i} --------------------------");
 
                 time = Stopwatch.GetTimestamp();
                 benchmark.GetBordereaux();
@@ -72,7 +72,7 @@ public class Program
                 //LogQuery(nameof(Method6));
 
 
-                Console.WriteLine($"-------------------End {i} --------------------------");
+                Console.WriteLine($@"-------------------End {i} --------------------------");
             }
             ShowMedians();
         }
@@ -84,27 +84,27 @@ public class Program
 
     private static void ShowMedians()
     {
-        Console.WriteLine($"-------------------Medians --------------------------");
+        Console.WriteLine(@"-------------------Medians --------------------------");
         Console.ForegroundColor = ConsoleColor.Blue;
 
-        var list = timeDic.GroupBy(x => x.MethodName).Select(x => new
+        var list = TimeDic.GroupBy(x => x.MethodName).Select(x => new
         {
             MethodName = x.Key,
-            Avrg = TimeSpan.FromTicks(Convert.ToInt64(x.Average(x => x.Time.Ticks)))
+            Avrg = TimeSpan.FromTicks(Convert.ToInt64(x.Average(v => v.Time.Ticks)))
         })
         .OrderByDescending(x => x.Avrg)
         .ToList();
         foreach (var item in list)
         {
-            Console.WriteLine($"{item.MethodName} : {item.Avrg}");
+            Console.WriteLine($@"{item.MethodName} : {item.Avrg}");
         }
         Console.ResetColor();
     }
 
     public static object Method1()
     {
-        var list = db.Factures
-           .Select(x => x.DateFact.Value.Year)
+        var list = Db.Factures
+           .Select(x => x.DateFact!.Value.Year)
            .Distinct()
            .ToList()
            .OrderDescending()
@@ -114,8 +114,8 @@ public class Program
 
     public static object Method2()
     {
-        var list = db.Factures
-           .Select(x => x.DateFact.Value.Year)
+        var list = Db.Factures
+           .Select(x => x.DateFact!.Value.Year)
            .Distinct()
            .OrderByDescending(x => x)
            .ToList();
@@ -124,8 +124,8 @@ public class Program
     }
     public static object Method3()
     {
-        var list = db.Factures
-           .Select(x => x.DateFact.Value.Year)
+        var list = Db.Factures
+           .Select(x => x.DateFact!.Value.Year)
            .Distinct()
            .ToList()
            .OrderDescending()
@@ -134,35 +134,35 @@ public class Program
     }
     public static object SelectAnonymous()
     {
-        var list = db.Bordereaus.Select(x => new
+        var list = Db.Bordereaus.Select(x => new
         {
             x.NumBord,
-            x.Center.Nom,
+            x.Center!.Nom,
             Factures = x.Factures.Select(f => new
             {
                 f.NumFact,
                 f.MontFact,
                 f.MontMaj,
                 f.NumAssure,
-                Details = f.DetailFacts.Select(x => new
+                Details = f.DetailFacts.Select(d => new
                 {
-                    x.Qte,
-                    x.Ppa
+                    d.Qte,
+                    d.Ppa
                 })
             })
         })
              .ToList();
-        Console.WriteLine("SelectAnonymous Count: " + list.Count);
+        Console.WriteLine(@"SelectAnonymous Count: " + list.Count);
         return list;
     }
     public static object SelectObject()
     {
-        var list = db.Bordereaus
+        var list = Db.Bordereaus
 
    .Select(x => new BordStat
    {
        NumBord = x.NumBord,
-       Center = x.Center.Nom,
+       Center = x.Center!.Nom,
        Factures = x.Factures.Select(f => new FactureStat
        {
            NumFact = f.NumFact,
@@ -177,35 +177,35 @@ public class Program
        })
    })
    .ToList();
-        Console.WriteLine("SelectObject Count: " + list.Count);
+        Console.WriteLine(@"SelectObject Count: " + list.Count);
 
         return list;
     }
     public static object Method6()
     {
-        var list = db.Bordereaus
+        var list = Db.Bordereaus
             .LoadWith(x => x.Center)
             .LoadWith(x => x.Factures)
             .ThenLoad(f => f.DetailFacts)
             .ToList();
-        Console.WriteLine("Mathod 4 Count: " + list.Count);
+        Console.WriteLine(@"Method 4 Count: " + list.Count);
 
         return list;
     }
-    public static void LogQuery(string? s1, string? s2, object s3 = null)
+    public static void LogQuery(string? s1, string? s2, object? s3 = null)
     {
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine(s1, s2);
+        Console.WriteLine(s1!, s2);
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(s3);
         Console.ResetColor();
     }
 
-    public static void LogQuery(string Method, long time)
+    public static void LogQuery(string method, long time)
     {
         var elapsed = Stopwatch.GetElapsedTime(time);
-        timeDic.Add((Method, elapsed));
-        Console.WriteLine($"{Method}: {elapsed}");
+        TimeDic.Add((method, elapsed));
+        Console.WriteLine($@"{method}: {elapsed}");
     }
 
 }

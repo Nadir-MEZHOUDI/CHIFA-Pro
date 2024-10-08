@@ -2,30 +2,28 @@
 
 using LinqToDB;
 
-using System.Threading.Tasks;
-
 namespace CHIFA.Stat.ViewModels;
 public class ChifaStatService
 {
-    private static Lazy<ChifaStatService> instance = new(() => new ChifaStatService());
-    public static ChifaStatService Instance => instance.Value;
+    private static readonly Lazy<ChifaStatService> _instance = new(() => new ChifaStatService());
+    public static ChifaStatService Instance => _instance.Value;
 
-    private List<FactureStat> _factures;
+    private List<FactureStat>? _factures;
     public List<FactureStat> Factures => _factures ??= GetFactures() ?? new();
 
-    private List<BordStat> _bordereaux;
+    private List<BordStat>? _bordereaux;
     public List<BordStat> Bordereaux => _bordereaux ??= GetBordereaux() ?? new();
 
-    private List<MedicStat> _medicaments;
+    private List<MedicStat>? _medicaments;
     public List<MedicStat> Medicaments => _medicaments ??= GetMedics() ?? new();
 
-    private readonly ChifaDb db;
+    private readonly ChifaDb _db;
 
     public static DateTime LastDate { get; set; } = DateTime.Today;
     private ChifaStatService()
     {
-        db = new();
-        LastDate = db.Factures.Max(x => x.DateFact).GetValueOrDefault();
+        _db = new();
+        LastDate = _db.Factures.Max(x => x.DateFact).GetValueOrDefault();
     }
     public void LoadData()
     {
@@ -33,11 +31,11 @@ public class ChifaStatService
     }
     public Task LoadDataAsync() => Task.Run(LoadData);
 
-    private List<MedicStat> GetMedics()
+    private List<MedicStat>? GetMedics()
     {
         try
         {
-            var list = db.DetailFacts
+            var list = _db.DetailFacts
                          .Select(x => new MedicStat
                          {
                              DateFact = x.Facture.DateFact,
@@ -65,11 +63,11 @@ public class ChifaStatService
             return null;
         }
     }
-    private List<FactureStat> GetFactures()
+    private List<FactureStat>? GetFactures()
     {
         try
         {
-            var list = db.Factures
+            var list = _db.Factures
                          .Select(f => new FactureStat
                          {
                              NumFact = f.NumFact,
@@ -101,11 +99,11 @@ public class ChifaStatService
             return null;
         }
     }
-    private List<BordStat> GetBordereaux()
+    private List<BordStat>? GetBordereaux()
     {
         try
         {
-            var list = db.Bordereaus
+            var list = _db.Bordereaus
                 .Select(x => new BordStat
                 {
                     Center = x.Center!.Nom!,
@@ -121,17 +119,17 @@ public class ChifaStatService
                                     NumBord = f.NumBord,
                                     DateSoin = f.DateSoin,
                                     DateFact = f.DateFact,
-                                    Center = f.Center!.Nom,
+                                    Center = f.Center!.Nom!,
                                     NumMalad = f.NumAssure + "-" + f.RangAd,
                                     NumAssure = f.NumAssure + "-00",
-                                    Details = f.DetailFacts.Select(x => new DetailFactStat
+                                    Details = f.DetailFacts.Select(d => new DetailFactStat
                                     {
-                                        NumFact = x.NumFact,
-                                        Qte = x.Qte,
-                                        CodeDci = x.Medicament.CodeDci,
-                                        Medicament = x.Medicament.FullName,
-                                        CodeMedic = x.Medicament.CodeMedic,
-                                        Ppa = x.Ppa,
+                                        NumFact = d.NumFact,
+                                        Qte = d.Qte,
+                                        CodeDci = d.Medicament.CodeDci,
+                                        Medicament = d.Medicament.FullName,
+                                        CodeMedic = d.Medicament.CodeMedic,
+                                        Ppa = d.Ppa,
                                     })
                                 })
                 });
@@ -145,13 +143,13 @@ public class ChifaStatService
         }
     }
 
-    public static async Task<List<int>> GetYearsAsync()
+    public static async Task<List<int>?> GetYearsAsync()
     {
         try
         {
             var db = new ChifaDb();
             var list = (await db.Factures
-                .Select(x => x.DateFact.Value.Year)
+                .Select(x => x.DateFact!.Value.Year)
                 .Distinct()
                 .ToListAsync())
                 .OrderDescending()

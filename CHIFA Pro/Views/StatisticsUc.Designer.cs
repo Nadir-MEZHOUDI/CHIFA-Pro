@@ -154,7 +154,7 @@ namespace CHIFA.Pro.Views
             ToDate = new DevExpress.XtraBars.BarEditItem();
             toDateRepo = new DevExpress.XtraEditors.Repository.RepositoryItemDateEdit();
             btnClearDates = new DevExpress.XtraBars.BarButtonItem();
-            Period = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            PeriodRange = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             btnAllPeriod = new DevExpress.XtraBars.BarButtonItem();
             btnLastYear = new DevExpress.XtraBars.BarButtonItem();
             btn6Months = new DevExpress.XtraBars.BarButtonItem();
@@ -532,7 +532,7 @@ namespace CHIFA.Pro.Views
             // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup2, Period });
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup2, PeriodRange });
             ribbonPage1.Name = "ribbonPage1";
             ribbonPage1.Text = "ribbonPage1";
             // 
@@ -596,15 +596,15 @@ namespace CHIFA.Pro.Views
             btnClearDates.Name = "btnClearDates";
             btnClearDates.ItemClick += BtnClearDates_ItemClick;
             // 
-            // Period
+            // PeriodRange
             // 
-            Period.ItemLinks.Add(btnAllPeriod);
-            Period.ItemLinks.Add(btnLastYear);
-            Period.ItemLinks.Add(btn6Months);
-            Period.ItemLinks.Add(btnThisYear);
-            Period.ItemLinks.Add(btnThisMonth);
-            Period.Name = "Period";
-            Period.Text = "Period";
+            PeriodRange.ItemLinks.Add(btnAllPeriod);
+            PeriodRange.ItemLinks.Add(btnLastYear);
+            PeriodRange.ItemLinks.Add(btn6Months);
+            PeriodRange.ItemLinks.Add(btnThisYear);
+            PeriodRange.ItemLinks.Add(btnThisMonth);
+            PeriodRange.Name = "PeriodRange";
+            PeriodRange.Text = "PeriodRange";
             // 
             // btnAllPeriod
             // 
@@ -895,10 +895,10 @@ namespace CHIFA.Pro.Views
             // 
             colBrute.DisplayFormat.FormatString = "N2";
             colBrute.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute.FieldName = "Brute";
+            colBrute.FieldName = "Brut";
             colBrute.Name = "colBrute";
             colBrute.OptionsColumn.ReadOnly = true;
-            colBrute.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brute", "{0:n2}") });
+            colBrute.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
             colBrute.Visible = true;
             colBrute.VisibleIndex = 15;
             colBrute.Width = 60;
@@ -1226,10 +1226,10 @@ namespace CHIFA.Pro.Views
             // 
             colBrute1.DisplayFormat.FormatString = "n";
             colBrute1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute1.FieldName = "Brute";
+            colBrute1.FieldName = "Brut";
             colBrute1.Name = "colBrute1";
             colBrute1.OptionsColumn.ReadOnly = true;
-            colBrute1.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brute", "{0:N2}") });
+            colBrute1.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:N2}") });
             colBrute1.Visible = true;
             colBrute1.VisibleIndex = 9;
             colBrute1.Width = 125;
@@ -1598,7 +1598,7 @@ namespace CHIFA.Pro.Views
             series12.ArgumentDataMember = "Date";
             series12.Name = "Brut";
             series12.SeriesID = 7;
-            series12.ValueDataMembersSerializable = "Brute";
+            series12.ValueDataMembersSerializable = "Brut";
             sideBySideBarSeriesView11.AxisYName = "Secondary AxisY 3";
             sideBySideBarSeriesView11.PaneName = "Pane 3";
             series12.View = sideBySideBarSeriesView11;
@@ -1800,10 +1800,10 @@ namespace CHIFA.Pro.Views
             // 
             colBrute4.DisplayFormat.FormatString = "n2";
             colBrute4.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute4.FieldName = "Brute";
+            colBrute4.FieldName = "Brut";
             colBrute4.Name = "colBrute4";
             colBrute4.OptionsColumn.ReadOnly = true;
-            colBrute4.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brute", "{0:n2}") });
+            colBrute4.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
             colBrute4.Visible = true;
             colBrute4.VisibleIndex = 16;
             // 
@@ -1858,7 +1858,7 @@ namespace CHIFA.Pro.Views
             series15.ArgumentDataMember = "Date";
             series15.Name = "Mont Brut";
             series15.SeriesID = 1;
-            series15.ValueDataMembersSerializable = "Brute";
+            series15.ValueDataMembersSerializable = "Brut";
             series16.ArgumentDataMember = "Date";
             series16.Name = "Factures";
             series16.SeriesID = 2;
@@ -1925,7 +1925,7 @@ namespace CHIFA.Pro.Views
             series19.ArgumentDataMember = "Date";
             series19.Name = "Mnt Brut";
             series19.SeriesID = 1;
-            series19.ValueDataMembersSerializable = "Brute";
+            series19.ValueDataMembersSerializable = "Brut";
             sideBySideBarSeriesView15.AxisYName = "Secondary AxisY 3";
             series19.View = sideBySideBarSeriesView15;
             series20.ArgumentDataMember = "Date";
@@ -2111,10 +2111,10 @@ namespace CHIFA.Pro.Views
             // 
             colBrute2.DisplayFormat.FormatString = "n2";
             colBrute2.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute2.FieldName = "Brute";
+            colBrute2.FieldName = "Brut";
             colBrute2.Name = "colBrute2";
             colBrute2.OptionsColumn.ReadOnly = true;
-            colBrute2.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brute", "{0:n}") });
+            colBrute2.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n}") });
             colBrute2.Visible = true;
             colBrute2.VisibleIndex = 13;
             // 
@@ -2176,7 +2176,7 @@ namespace CHIFA.Pro.Views
             series23.DataSource = weeklyStatBindingSource;
             series23.Name = "Mnt Brut";
             series23.SeriesID = 3;
-            series23.ValueDataMembersSerializable = "Brute";
+            series23.ValueDataMembersSerializable = "Brut";
             sideBySideBarSeriesView18.AxisYName = "Secondary AxisY 1";
             series23.View = sideBySideBarSeriesView18;
             series24.ArgumentDataMember = "Date";
@@ -2333,10 +2333,10 @@ namespace CHIFA.Pro.Views
             // 
             colBrute3.DisplayFormat.FormatString = "n2";
             colBrute3.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute3.FieldName = "Brute";
+            colBrute3.FieldName = "Brut";
             colBrute3.Name = "colBrute3";
             colBrute3.OptionsColumn.ReadOnly = true;
-            colBrute3.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brute", "{0:n2}") });
+            colBrute3.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
             colBrute3.Visible = true;
             colBrute3.VisibleIndex = 8;
             // 
@@ -2397,7 +2397,7 @@ namespace CHIFA.Pro.Views
             series27.ArgumentDataMember = "Date";
             series27.Name = "Mnt Brut";
             series27.SeriesID = 1;
-            series27.ValueDataMembersSerializable = "Brute";
+            series27.ValueDataMembersSerializable = "Brut";
             sideBySideBarSeriesView21.AxisYName = "Secondary AxisY 1";
             series27.View = sideBySideBarSeriesView21;
             series28.ArgumentDataMember = "Date";
@@ -2834,7 +2834,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
         private DevExpress.XtraTab.XtraTabPage tabProducts2;
         private ChartControl chartProducts;
-        private DevExpress.XtraBars.Ribbon.RibbonPageGroup Period;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup PeriodRange;
         private DevExpress.XtraBars.BarButtonItem btnLastYear;
         private DevExpress.XtraBars.BarButtonItem btn6Months;
         private DevExpress.XtraBars.BarButtonItem btnThisYear;

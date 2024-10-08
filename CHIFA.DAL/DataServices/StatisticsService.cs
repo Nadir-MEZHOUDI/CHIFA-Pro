@@ -1,8 +1,11 @@
 ﻿using System.Linq.Expressions;
+
 using CHIFA.DAL.DTOs;
 using CHIFA.DAL.Helpers;
 using CHIFA.DAL.Statistics;
+
 using DataModel;
+
 using LinqToDB;
 
 namespace CHIFA.DAL.DataServices;
@@ -15,12 +18,13 @@ public static class StatisticsService
         await using var db = new ChifaDb();
         var firstDate = DateTime.Today.AddDays(-8);
         var weekStats = await db.Factures
-                .Where(f => f.DateFact.Value.Date >= firstDate)
-                .GroupBy(f => f.DateFact.Value.Date)
+                .Where(f => f.DateFact!.Value.Date >= firstDate)
+                .GroupBy(f => f.DateFact!.Value.Date)
                 .Select(g => new ThisWeekStat
                 {
                     Date = g.Key,
                     Count = g.Count(),
+
                     Montant = g.Sum(f => f.MontFact),
                     MontantAs = g.Sum(f => f.MontAs),
                     MontantOff = g.Sum(f => f.MontOff),
@@ -33,6 +37,7 @@ public static class StatisticsService
         return Enumerable.Range(0, 8)
             .Select(x => DateTime.Today.AddDays(-x))
             .Select(date => weekStats.Find(ws => ws.Date == date) ?? new ThisWeekStat(date))
+            // .GroupBy(x=>x.Center)
             .OrderByDescending(ws => ws.Date)
             .ToList();
     }
@@ -55,7 +60,7 @@ public static class StatisticsService
                 Factures = x.Factures.Count(),
                 DateDebut = x.DateGen,
                 DateFin = x.DateExtract,
-                Center = x.Center.Nom,
+                Center = x.Center!.Nom,
                 Num = x.NumBord,
                 Virement = x.MontVir
             })
@@ -70,7 +75,7 @@ public static class StatisticsService
         await using var db = new ChifaDb();
         var list = await db.Factures
             .Where(predicate.SetPeriod(Period))
-            .GroupBy(x => x.DateFact.Value.Date.Year)
+            .GroupBy(x => x.DateFact!.Value.Date.Year)
             .Select(x => new YearlyStat
             {
                 Year = x.Key,
@@ -121,7 +126,7 @@ public static class StatisticsService
         await using var db = new ChifaDb();
         var query = await db.Factures
             .Where(predicate.SetPeriod(Period))
-            .GroupBy(x => new { Start = $"{x.DateFact.Value.Date.AddDays(-(int)x.DateFact.Value.Date.DayOfWeek)}" })
+            .GroupBy(x => new { Start = $"{x.DateFact!.Value.Date.AddDays(-(int)x.DateFact.Value.Date.DayOfWeek)}" })
             .Select(x => new WeeklyStat
             {
                 Key = x.Key.Start,
@@ -197,9 +202,21 @@ public static class StatisticsService
             .Select(
                 x => new
                 {
-                    x.NumEnr, x.Local, x.InfTr, x.MajLocal, x.MajSub, x.Medicament.Generic, x.Qte, x.Mont, x.Ppa,
-                    x.Medicament.Dosage, x.Medicament.Conditionnement, x.Medicament.NomCom, x.Medicament.CodeDci,
-                    x.Medicament.NomDci, x.Medicament.FullName
+                    x.NumEnr,
+                    x.Local,
+                    x.InfTr,
+                    x.MajLocal,
+                    x.MajSub,
+                    x.Medicament.Generic,
+                    x.Qte,
+                    x.Mont,
+                    x.Ppa,
+                    x.Medicament.Dosage,
+                    x.Medicament.Conditionnement,
+                    x.Medicament.NomCom,
+                    x.Medicament.CodeDci,
+                    x.Medicament.NomDci,
+                    x.Medicament.FullName
                 })
             .ToListAsync();
 
@@ -207,13 +224,13 @@ public static class StatisticsService
             .GroupBy(x => x.NumEnr)
             .Select(x => new ProductStat
             {
-                NomCom = x.FirstOrDefault().NomCom,
-                CodeDci = x.FirstOrDefault().CodeDci,
-                Dci = x.FirstOrDefault().NomDci,
-                Condition = x.FirstOrDefault().Conditionnement,
-                Dosage = x.FirstOrDefault().Dosage,
+                NomCom = x.FirstOrDefault()?.NomCom,
+                CodeDci = x.FirstOrDefault()?.CodeDci,
+                Dci = x.FirstOrDefault()?.NomDci,
+                Condition = x.FirstOrDefault()?.Conditionnement,
+                Dosage = x.FirstOrDefault()?.Dosage,
                 Qt = x.Sum(m => m.Qte),
-                Prix = x.FirstOrDefault().Ppa,
+                Prix = x.FirstOrDefault()?.Ppa ?? 0,
                 Montant = x.Sum(m => m.Mont),
                 NumEnr = x.FirstOrDefault()!.NumEnr,
                 Local = x.FirstOrDefault()!.Local,
@@ -234,10 +251,10 @@ public static class StatisticsService
 
         predicate = predicate.And(x => x.DateFact != null);
 
-        if (period?.From.HasValue == true)
+        if (period.From.HasValue)
             predicate = predicate.And(x => x.DateFact > period.From);
 
-        if (period?.To.HasValue == true)
+        if (period.To.HasValue)
             predicate = predicate.And(x => x.DateFact < period.To);
 
         return predicate;

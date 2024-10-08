@@ -4,7 +4,7 @@ public class BordStat
 {
     public int NmbrOrd => Factures.Count();
     public string NumBord { get; set; } = string.Empty;
-    public string Center { get; set; } = string.Empty;
+    public string? Center { get; set; } = string.Empty;
     public DateTime? MinDate => Factures.Min(x => x.DateFact);
     public DateTime? MaxDate => Factures.Max(x => x.DateFact);
 
@@ -19,11 +19,11 @@ public class BordStat
     public int Year => MinDate?.Year ?? 0;
     public int Month => MinDate?.Month ?? 0;
     public int Day => MinDate?.Day ?? 0;
-    public string DayName => MinDate?.ToString("dddd");
-    public string MonthName => MinDate?.ToString("MMMM");
-    public string YearMonth => $"{Year}-{Month}";
+    public string? DayName => MinDate?.ToString("dddd");
+    public string? MonthName => MinDate?.ToString("MMMM");
+    public string? YearMonth => $"{Year}-{Month}";
     public DayOfWeek? DayOfWeek => MinDate?.DayOfWeek;
-    public string Date => MinDate?.ToString("dddd  dd/MM/yyyy");
+    public string? Date => MinDate?.ToString("dddd  dd/MM/yyyy");
 
 
     public IEnumerable<FactureStat> Factures { get; set; }
