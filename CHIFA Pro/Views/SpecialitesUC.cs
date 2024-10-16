@@ -6,7 +6,7 @@ public partial class SpecialitesUc : XtraUserControl, INavigable
     {
         InitializeComponent();
         gridView1.SetOptions();
-        Load += async (_, _) => await gridView1.LoadDataAsync(DataService.SpecialitesAsync);
+        Load += async (_, _) => await gridView1.LoadDataAsync(ChifaService.Instance.SpecialitesAsync);
     }
 
     public string Caption { get; } = "SPECIALITES";

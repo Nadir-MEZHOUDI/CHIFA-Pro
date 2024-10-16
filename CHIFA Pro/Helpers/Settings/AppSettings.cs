@@ -23,6 +23,9 @@ public class AppSettings : SettingsToRegistry<AppSettings>
     public int MaxDays { get; set; } = 7;
     public int MaxMontant { get; set; } = 500_000;
     public int MaxNmbr { get; set; } = 100;
+    public bool UseChifaMobile { get; set; }
+    public string? ChifaMobilEmail { get; set; }
+    public string? ChifaMobilPassword { get; set; }
 
     #endregion
 

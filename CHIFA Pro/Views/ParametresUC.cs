@@ -40,7 +40,11 @@ public partial class ParametersUc : XtraUserControl, INavigable
             AppSettings.Default.MaxDays = Convert.ToInt32(txtJours.EditValue);
             AppSettings.Default.MaxMontant = Convert.ToInt32(txtMontant.EditValue);
             AppSettings.Default.MaxNmbr = Convert.ToInt32(txtFactures.EditValue);
-            
+
+            AppSettings.Default.ChifaMobilEmail = txtEmail.Text;
+            AppSettings.Default.ChifaMobilPassword = txtPassword.Text;
+            AppSettings.Default.UseChifaMobile = chkUseChifaMobile.Checked;
+
             AppSettings.Default.Save();
             XtraMessageBox.Show("Configuration successfully Saved", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             _closer?.Invoke();
@@ -56,12 +60,29 @@ public partial class ParametersUc : XtraUserControl, INavigable
         try
         {
             LoadNotificationSettings();
+            LoadChifaMobileInfo();
             await LoadChifaServerInfo();
+            tabbedControlGroup1.Selected = true;
         }
         catch (Exception ex)
         {
             ex.Log();
         }
+    }
+
+    private void LoadChifaMobileInfo()
+    {
+        try
+        {
+            chkUseChifaMobile.Checked = AppSettings.Default.UseChifaMobile;
+            txtEmail.Text = AppSettings.Default.ChifaMobilEmail;
+            txtPassword.Text = AppSettings.Default.ChifaMobilPassword;
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+
     }
 
     private async Task LoadChifaServerInfo()
@@ -86,10 +107,8 @@ public partial class ParametersUc : XtraUserControl, INavigable
         }
         catch (Exception ex)
         {
-
             ex.Log();
         }
-
     }
 
     private async void btnBackup_Click(object sender, EventArgs e)
@@ -188,5 +207,51 @@ public partial class ParametersUc : XtraUserControl, INavigable
         {
             ex.Log();
         }
+    }
+
+    private void chkStartup_CheckStateChanged(object sender, EventArgs e)
+    {
+        if (chkStartup.Checked)
+        {
+            AppStartup.AddApplicationToStartup();
+        }
+        else
+        {
+            AppStartup.RemoveApplicationFromStartup();
+        }
+    }
+
+    private void chkUseChifaMobile_CheckedChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            AppSettings.Default.UseChifaMobile = chkUseChifaMobile.Checked;
+            AppSettings.Default.ChifaMobilPassword = txtPassword.Text;
+            AppSettings.Default.Save();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+
+    }
+
+    private async void btnRunServerConnection_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            await FrmMain.Instance.RunChifaMobileServer();
+
+            XtraMessageBox.Show( "Connected" , "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+        finally
+        {
+            Cursor.Current = Cursors.Default;
+        }
+
     }
 }

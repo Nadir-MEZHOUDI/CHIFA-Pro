@@ -1,19 +1,14 @@
-﻿using System.Linq.Expressions;
-
-using CHIFA.DAL.DTOs;
-using CHIFA.DAL.Helpers;
-using CHIFA.DAL.Statistics;
-
-using DataModel;
-
-using LinqToDB;
+﻿using System;
 
 namespace CHIFA.DAL.DataServices;
 
-public static class StatisticsService
+public class StatisticsService : IStatisticsService
 {
-    public static readonly Period Period = new();
-    public static async Task<List<ThisWeekStat>> GetThisWeekStatsAsync()
+    private static StatisticsService? _instance;
+    public static StatisticsService Instance => _instance ??= new StatisticsService();
+
+    public readonly Period Period = new();
+    public async ValueTask<List<ThisWeekStat>> GetThisWeekStatsAsync()
     {
         await using var db = new ChifaDb();
         var firstDate = DateTime.Today.AddDays(-8);
@@ -42,8 +37,7 @@ public static class StatisticsService
             .ToList();
     }
 
-    public static async Task<IEnumerable<BordStatDto>> BordereauxAsync(
-        Expression<Func<Bordereau, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<BordStatDto>> BordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
         var query = await db.Bordereaus
@@ -70,8 +64,10 @@ public static class StatisticsService
         return query;
     }
 
-    public static async Task<IEnumerable<YearlyStat>> YearlyAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<YearlyStat>> YearlyAsync()
     {
+        Expression<Func<Facture, bool>> predicate = x => true;
+
         await using var db = new ChifaDb();
         var list = await db.Factures
             .Where(predicate.SetPeriod(Period))
@@ -95,7 +91,7 @@ public static class StatisticsService
         return list;
     }
 
-    public static async Task<IEnumerable<MonthlyStat>> MonthlyAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<MonthlyStat>> MonthlyAsync(Expression<Func<Facture, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
         var list = await db.Factures
@@ -121,7 +117,7 @@ public static class StatisticsService
         return list;
     }
 
-    public static async Task<IEnumerable<WeeklyStat>> WeeklyAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<WeeklyStat>> WeeklyAsync(Expression<Func<Facture, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
         var query = await db.Factures
@@ -129,7 +125,7 @@ public static class StatisticsService
             .GroupBy(x => new { Start = $"{x.DateFact!.Value.Date.AddDays(-(int)x.DateFact.Value.Date.DayOfWeek)}" })
             .Select(x => new WeeklyStat
             {
-                Key = x.Key.Start,
+                StartDate = x.Key.Start,
                 DateDebut = DateTime.Parse(x.Key.Start),
                 MontantFact = x.Sum(f => f.MontFact),
                 MontantMaj = x.Sum(f => f.MontMaj),
@@ -145,7 +141,7 @@ public static class StatisticsService
         return query;
     }
 
-    public static async Task<IEnumerable<DailyStat>> DailyAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<DailyStat>> DailyAsync(Expression<Func<Facture, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
         var query = await db.Factures
@@ -168,7 +164,7 @@ public static class StatisticsService
         return query;
     }
 
-    public static async Task<IEnumerable<ClientsStat>> ByClientAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<ClientsStat>> ByClientAsync(Expression<Func<Facture, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
         var list = await db.Factures
@@ -192,9 +188,7 @@ public static class StatisticsService
             .ConfigureAwait(false);
         return list;
     }
-
-    public static async Task<IEnumerable<ProductStat>> ProductsAsync(
-        Expression<Func<DetailFact, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<ProductStat>> ProductsAsync(Expression<Func<DetailFact, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
         var list = await db.DetailFacts
@@ -243,10 +237,13 @@ public static class StatisticsService
 
         return query;
     }
+}
 
+public static class PredicateExtensions
+{
     public static Expression<Func<Facture, bool>> SetPeriod(this Expression<Func<Facture, bool>>? predicate, Period? period = default)
     {
-        period ??= Period;
+        period ??= new Period();
         predicate ??= _ => true;
 
         predicate = predicate.And(x => x.DateFact != null);

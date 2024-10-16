@@ -106,7 +106,7 @@
             // 
             // weekStatBindingSource
             // 
-            weekStatBindingSource.DataSource = typeof(DAL.Statistics.ThisWeekStat);
+            weekStatBindingSource.DataSource = typeof(Contract.Statistics.ThisWeekStat);
             // 
             // tileControl1
             // 

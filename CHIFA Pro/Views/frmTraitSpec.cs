@@ -55,11 +55,11 @@ public partial class FrmTraitSpec : XtraForm
 
     private void gridView2_DoubleClick(object sender, EventArgs e) => GetHistoryOfSelectedPatient();
 
-    private Task LoadData1() => gridViewTraitSpec1.LoadDataAsync(() => DataService.PatientsWithTraitSpecAsync());
+    private Task LoadData1() => gridViewTraitSpec1.LoadDataAsync(() => ChifaService.Instance.PatientsWithTraitSpecAsync());
 
     private async Task LoadData2()
     {
-        await gridViewTraitSpec2.LoadDataAsync(() => DataService.PatientsWithTraitSpec2Async());
+        await gridViewTraitSpec2.LoadDataAsync(() => ChifaService.Instance.PatientsWithTraitSpec2Async());
         var firstGroupColumn = gridViewTraitSpec2.SortInfo[0].Column;
         GroupSummarySortInfo[] groupSummaryToSort = { new(gridViewTraitSpec2.GroupSummary[2], firstGroupColumn, ColumnSortOrder.Descending) };
         gridViewTraitSpec2.GroupSummarySortInfo.ClearAndAddRange(groupSummaryToSort);

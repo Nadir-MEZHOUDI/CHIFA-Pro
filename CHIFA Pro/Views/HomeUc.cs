@@ -12,10 +12,17 @@ public partial class HomeUc : XtraUserControl, INavigable
 
     private async Task ReLoadDataAsync()
     {
-        Cursor = Cursors.WaitCursor;
-        var data = await Task.Run(StatisticsService.GetThisWeekStatsAsync);
-        weekStatBindingSource.DataSource = data;
-        Cursor = Cursors.Default;
+        try
+        {
+            Cursor = Cursors.WaitCursor;
+            var data = await Task.Run(async () => await StatisticsService.Instance.GetThisWeekStatsAsync());
+            weekStatBindingSource.DataSource = data;
+            Cursor = Cursors.Default;
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private void itmBordereaux_ItemClick(object sender, TileItemEventArgs e)
@@ -86,20 +93,45 @@ public partial class HomeUc : XtraUserControl, INavigable
 
     private async void ItemRefresh_ItemClick(object sender, TileItemEventArgs e)
     {
-        await ReLoadDataAsync();
-        await FrmMain.Instance.ShowNotifications();
+        try
+        {
+            await ReLoadDataAsync();
+            await FrmMain.Instance.ShowBordereauxNotifications();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private async void itemUpdate_ItemClick(object sender, TileItemEventArgs e)
     {
-        await FrmMain.Instance.UpdateAppAsync(true);
+        try
+        {
+            await FrmMain.Instance.UpdateAppAsync(true);
+        }
+        catch (Exception ex)
+        {
+
+            ex.Log();
+        }
     }
 
     private async void HomeUc_Load(object sender, EventArgs e)
     {
-        await DbChecker.RunServerAsync();
-        await ReLoadDataAsync();
-        await FrmMain.Instance.ShowNotifications();
+        try
+        {
+            Application.DoEvents();
+            await Task.Delay(1000);
+            Application.DoEvents();
+            await DbChecker.RunServerAsync();
+            await ReLoadDataAsync();
+            await FrmMain.Instance.ShowBordereauxNotifications();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 }
 

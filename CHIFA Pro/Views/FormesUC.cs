@@ -7,7 +7,7 @@ public partial class FormesUc : XtraUserControl, INavigable
     {
         InitializeComponent();
         gridView1.SetOptions();
-        Load += async (_, _) => await gridView1.LoadDataAsync(DataService.GetFormesAsync);
+        Load += async (_, _) => await gridView1.LoadDataAsync(ChifaService.Instance.GetFormesAsync);
     }
 
     public string Caption { get; } = "FORMES";

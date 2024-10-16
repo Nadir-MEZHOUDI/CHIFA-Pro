@@ -22,7 +22,7 @@ public partial class CentersUc : XtraUserControl, INavigable
         {
             cENTREBindingSource.EndEdit();
             if (cENTREBindingSource.Current is Centre centre)
-                await DataService.UpdateCenter(centre);
+                await ChifaService.Instance.UpdateCenter(centre);
         }
         catch (Exception ex)
         {
@@ -34,7 +34,7 @@ public partial class CentersUc : XtraUserControl, INavigable
     {
         try
         {
-            var a = await DataService.GetCentersAsync().ConfigureAwait(false);
+            var a = await ChifaService.Instance.GetCentersAsync();
             Invoke(() => cENTREBindingSource.DataSource = a);
         }
         catch (Exception ex)

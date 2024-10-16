@@ -30,7 +30,7 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     {
         try
         {
-            await Period.GetMinAndMaxDatesAsync();
+            await ChifaService.Instance.GetMinAndMaxDatesAsync();
             var lastYear = DateTime.Now.AddYears(-1);
             fromDateRepo.MaxValue = Period.MaxDate;
             fromDateRepo.MinValue = Period.MinDate;
@@ -95,7 +95,7 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     private Task LoadDetailsAsync(PatientOfTraitSpec row)
     {
         var procheOnly = (bool)swtchTimeOnly.EditValue;
-        return viewDetails.LoadDataAsync(() => DataService.GetPatientTraitementAsync(row.NumAssure!, row.Rang!, procheOnly));
+        return viewDetails.LoadDataAsync(() => ChifaService.Instance.GetPatientTraitementAsync(row.NumAssure!, row.Rang!, procheOnly));
     }
 
     private Task LoadData()
@@ -107,7 +107,7 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
         var period = new Period { From = (DateTime?)FromDate.EditValue, To = (DateTime?)ToDate.EditValue };
 
-        return viewFectures.LoadDataAsync(() => DataService.GetPatientsOfTraitSpecAsync(period, predicate));
+        return viewFectures.LoadDataAsync(() => ChifaService.Instance.GetPatientsOfTraitSpecAsync(period, predicate));
     }
 
     private async void swtchTimeOnly_EditValueChangedAsync(object sender, EventArgs e)

@@ -26,7 +26,7 @@ public partial class FrmHistory : XtraForm
     private async Task GetSelectedDetails()
     {
         if (gridHistFactures.GetRow(gridHistFactures.FocusedRowHandle) is FactureDto row)
-            await gridHistDetails.LoadDataAsync(() => DataService.GetFactureDetailsByIdAsync(row.NumFact!));
+            await gridHistDetails.LoadDataAsync(() => ChifaService.Instance.GetFactureDetailsByIdAsync(row.NumFact!));
     }
 
     private void gridConsumption_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
@@ -71,12 +71,12 @@ public partial class FrmHistory : XtraForm
         await GetSelectedDetails();
     }
 
-    private Task LoadConsumption() => gridConsomption.LoadDataAsync(() => DataService.LoadConsumptionAsync(_noAssure!, _rang!, _isStrict));
+    private Task LoadConsumption() => gridConsomption.LoadDataAsync(() => ChifaService.Instance.LoadConsumptionAsync(_noAssure!, _rang!, _isStrict));
 
     private async Task LoadHistory()
     {
-        await gridHistFactures.LoadDataAsync(() => DataService.LoadHistoryAsync(_noAssure!, _rang!));
-        dataLayoutControl1.DataSource = await DataService.GetBeneficiareByIdAsync(_noAssure!, _rang!);
+        await gridHistFactures.LoadDataAsync(() => ChifaService.Instance.LoadHistoryAsync(_noAssure!, _rang!));
+        dataLayoutControl1.DataSource = await ChifaService.Instance.GetBeneficiareByIdAsync(_noAssure!, _rang!);
     }
 
     private async void xtraTabControl1_CustomHeaderButtonClick(object sender, DevExpress.XtraTab.ViewInfo.CustomHeaderButtonEventArgs e)

@@ -14,7 +14,7 @@ public partial class FrmMain : XtraForm
     public FrmMain()
     {
         InitializeComponent();
-        ChangeNameBasedOnDotNetVersion();
+        ChangeTitle();
     }
 
     public static FrmMain Instance => (Application.OpenForms[nameof(FrmMain)] as FrmMain)!;
@@ -99,7 +99,7 @@ public partial class FrmMain : XtraForm
         sender.NavigateTo<HomeUc>();
     }
 
-    private void ChangeNameBasedOnDotNetVersion()
+    private void ChangeTitle()
     {
         Text =
             $@"CHIFA PRO [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )";
@@ -109,9 +109,65 @@ public partial class FrmMain : XtraForm
     {
         try
         {
+            if (Environment.GetCommandLineArgs().Contains("minimized"))
+            {
+                _ = MinimizeApp();//to hide it only
+            }
+
             this.NavigateTo<HomeUc>();
+            Application.DoEvents();
+            await Task.Delay(500);
             await LoadServerInfo();
             await UpdateAppAsync();
+            await RunChifaMobileServer();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+
+
+    private async Task GetServerAddressAndForwardPort()
+    {
+        const int Port = 5432;
+        var natDiscoverer = new NatDiscoverer();
+        var cts = new CancellationTokenSource(10_000);
+        var device = await natDiscoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
+        var Address = (await device.GetExternalIPAsync()).ToString();
+
+        await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, Port, Port));
+        await device.CreatePortMapAsync(new Mapping(Protocol.Udp, Port, Port));
+        Log.Information($"Port: {Port} forwarded to this pc {Address}");
+
+
+    }
+
+
+    public static string Api => Debugger.IsAttached ? "https://localhost:7048/api/peers/" : "https://smartpharm.azurewebsites.net/api/peers/";
+    public BridgeService? Server { get; private set; }
+    public async Task RunChifaMobileServer()
+    {
+        try
+        {
+            await GetServerAddressAndForwardPort();
+
+            if (AppSettings.Default.UseChifaMobile)
+            {
+                ArgumentException.ThrowIfNullOrWhiteSpace(AppSettings.Default.ChifaMobilEmail);
+                ArgumentException.ThrowIfNullOrWhiteSpace(AppSettings.Default.ChifaMobilPassword);
+                Server?.Stop();
+
+                Server = new BridgeService(Log.Information)
+                {
+                    BaseUri = Api,
+                    Key = AppSettings.Default.ChifaMobilEmail + AppSettings.Default.ChifaMobilPassword,
+                };
+                Server.AddService(new ChifaService());
+                Server.AddService(new StatisticsService());
+                await Server.StartAsync();
+            }
         }
         catch (Exception ex)
         {
@@ -132,8 +188,7 @@ public partial class FrmMain : XtraForm
             if (newVersion == null)
             {
                 if (showMessage)
-                    _ = XtraMessageBox.Show("This is the latest Version", "Update", MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    await ShowNotification("This is the latest Version", "Update");
             }
             else
             {
@@ -158,15 +213,14 @@ public partial class FrmMain : XtraForm
     {
         try
         {
+
             txtDatabase.Text = @"CHIFA_OFFICINE";
             txtIP.Text = XtraHelper.GetThis_PC_IP_Address();
             txtServer.Text = ChifaDb.Server;
-
-            var db = new ChifaDb();
-            var officine = await db.Parametres.FirstOrDefaultAsync();
-
+            var officine = await ChifaService.Instance.GetFirstOfficineAsync();
             txtCodePs.Text = officine?.CodePs ?? "";
             txtPharmacie.Text = officine?.Nom + @" " + officine?.Prenom;
+
         }
         catch (Exception ex)
         {
@@ -221,17 +275,29 @@ public partial class FrmMain : XtraForm
 
     private async void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
     {
-        if (e.CloseReason == CloseReason.UserClosing)
+        try
         {
-            e.Cancel = true;
-            Hide();
-            Notification.Visible = true;
-            await ShowNotification("Minimized to Tray , The application is still running.");
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                await MinimizeApp();
+            }
+            else
+            {
+                Notification.Visible = false;
+            }
         }
-        else
+        catch (Exception ex)
         {
-            Notification.Visible = false;
+            ex.Log();
         }
+    }
+
+    private async Task MinimizeApp()
+    {
+        Hide();
+        Notification.Visible = true;
+        await ShowNotification("Application Minimized but still running.");
     }
 
     private void Notification_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -248,8 +314,7 @@ public partial class FrmMain : XtraForm
         }
     }
 
-
-    public async Task ShowNotifications()
+    public async Task ShowBordereauxNotifications()
     {
         try
         {
@@ -267,23 +332,26 @@ public partial class FrmMain : XtraForm
                 })
                 .ToListAsync();
 
-
             foreach (var bord in bords)
             {
+                var message = "";
                 if (AppSettings.Default.NotificationOnDays && AppSettings.Default.MaxDays > 0 && bord.Days > AppSettings.Default.MaxDays)
                 {
-                    await ShowNotification($"Le Bord {bord.NumBord} de {bord.Center} a  {bord.Days:N0} Jours", ToolTipIcon.Warning);
+                    message += $"\n a {bord.Days:N0} Jours";
                 }
 
                 if (AppSettings.Default.NotificationOnMontant && AppSettings.Default.MaxMontant > 0 && bord.Montant > AppSettings.Default.MaxMontant)
                 {
-                    await ShowNotification($"Le Bord {bord.NumBord} de {bord.Center} a  {bord.Montant:N2} DA", ToolTipIcon.Warning);
+                    message += $"\n a {bord.Montant:N2} DA";
                 }
 
                 if (AppSettings.Default.NotificationOnNmbr && AppSettings.Default.MaxNmbr > 0 && bord.NmbrFact > AppSettings.Default.MaxNmbr)
                 {
-                    await ShowNotification($"Le Bord {bord.NumBord} de {bord.Center} a {bord.NmbrFact:N0} Factures", ToolTipIcon.Warning);
+                    message += $"\n a {bord.NmbrFact:N0} Factures";
                 }
+                if (!string.IsNullOrWhiteSpace(message))
+                    await ShowNotification($"Le Bord {bord.NumBord} de {bord.Center} " + message, ToolTipIcon.Warning);
+
             }
         }
         catch (Exception ex)
@@ -292,17 +360,17 @@ public partial class FrmMain : XtraForm
         }
     }
 
-    private async Task ShowNotification(string message,string text, ToolTipIcon icon = ToolTipIcon.Info)
+    private async Task ShowNotification(string message, string text, ToolTipIcon icon = ToolTipIcon.Info)
     {
         Notification.ShowBalloonTip(5, message, text, icon);
         Application.DoEvents();
-        await Task.Delay(2000);
+        await Task.Delay(200);
     }
 
 
     private async Task ShowNotification(string message, ToolTipIcon icon = ToolTipIcon.Info)
     {
-        await ShowNotification(message, "CHIFA Pro",icon);
+        await ShowNotification(message, "CHIFA Pro", icon);
     }
 
 

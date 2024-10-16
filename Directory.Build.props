@@ -1,7 +1,6 @@
 <Project>
 	<PropertyGroup>
 		<TargetFramework>net8.0-windows</TargetFramework>
-		<UseWindowsForms>true</UseWindowsForms>
 		<LangVersion>preview</LangVersion>
 		<Authors>MEZHOUDI Hadj Nadir</Authors>
 		<Company>SmartApps</Company>

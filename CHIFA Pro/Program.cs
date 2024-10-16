@@ -6,8 +6,6 @@ global using System.Reflection;
 global using System.Runtime.InteropServices;
 
 global using CHIFA.DAL.DataServices;
-global using CHIFA.DAL.DTOs;
-global using CHIFA.DAL.Helpers;
 global using CHIFA.Pro.Helpers;
 global using CHIFA.Pro.Views;
 
@@ -40,19 +38,19 @@ internal static partial class Program
 
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
-            //#if DEBUG
-            //            .WriteTo.Console(theme: AnsiConsoleTheme.Code)
-            //            .WriteTo.Debug()
-            //#endif
+#if DEBUG
+                        .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+                      //  .WriteTo.Debug()
+#endif
             .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
-        //#if DEBUG
-        //        AllocConsole();
-        //        Console.WriteLine(@"Console is ready");
-        //        DataConnection.TurnTraceSwitchOn();
-        //        DataConnection.WriteTraceLine = Log.Debug!;
-        //#endif
+#if DEBUG
+        AllocConsole();
+        Console.WriteLine(@"Console is ready");
+     //   DataConnection.TurnTraceSwitchOn();
+      //  DataConnection.WriteTraceLine = Log.Debug!;
+#endif
 
         SetExceptionHandling();
 

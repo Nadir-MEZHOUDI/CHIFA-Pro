@@ -6,7 +6,7 @@ public partial class BordereauxUc : XtraUserControl, INavigable
     {
         InitializeComponent();
         gridView1.SetOptions();
-        Load += async (_, _) => await gridView1.LoadDataAsync(() => DataService.GetAllBordereauxAsync());
+        Load += async (_, _) => await gridView1.LoadDataAsync(() => ChifaService.Instance.GetAllBordereauxAsync());
     }
 
     public string Caption { get; } = "BORDEREAUX";

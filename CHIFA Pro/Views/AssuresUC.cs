@@ -6,7 +6,7 @@ public partial class AssuresUc : XtraUserControl, INavigable
     {
         InitializeComponent();
         gridView1.SetOptions();
-        Load += async (_, _) => await gridView1.LoadDataAsync(DataService.GetBeneficiaresAsync);
+        Load += async (_, _) => await gridView1.LoadDataAsync(ChifaService.Instance.GetBeneficiaresAsync);
     }
 
     public string Caption { get; } = "ASSURES";

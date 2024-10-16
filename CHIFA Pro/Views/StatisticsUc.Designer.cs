@@ -479,7 +479,7 @@ namespace CHIFA.Pro.Views
             // 
             // weeklyStatBindingSource
             // 
-            weeklyStatBindingSource.DataSource = typeof(DAL.Statistics.WeeklyStat);
+            weeklyStatBindingSource.DataSource = typeof(Contract.Statistics.WeeklyStat);
             // 
             // colTPa
             // 
@@ -703,7 +703,7 @@ namespace CHIFA.Pro.Views
             // 
             // bordStatDtoBindingSource
             // 
-            bordStatDtoBindingSource.DataSource = typeof(DAL.Statistics.BordStatDto);
+            bordStatDtoBindingSource.DataSource = typeof(Contract.Statistics.BordStatDto);
             // 
             // viewBord
             // 
@@ -951,7 +951,7 @@ namespace CHIFA.Pro.Views
             // 
             // byClientStatBindingSource
             // 
-            byClientStatBindingSource.DataSource = typeof(DAL.Statistics.ClientsStat);
+            byClientStatBindingSource.DataSource = typeof(Contract.Statistics.ClientsStat);
             // 
             // viewClients
             // 
@@ -1092,7 +1092,7 @@ namespace CHIFA.Pro.Views
             // 
             // monthlyStatBindingSource
             // 
-            monthlyStatBindingSource.DataSource = typeof(DAL.Statistics.MonthlyStat);
+            monthlyStatBindingSource.DataSource = typeof(Contract.Statistics.MonthlyStat);
             // 
             // viewMonthly
             // 
@@ -1272,7 +1272,7 @@ namespace CHIFA.Pro.Views
             // 
             // productStatBindingSource
             // 
-            productStatBindingSource.DataSource = typeof(DAL.Statistics.ProductStat);
+            productStatBindingSource.DataSource = typeof(Contract.Statistics.ProductStat);
             // 
             // viewProducts
             // 
@@ -1646,7 +1646,7 @@ namespace CHIFA.Pro.Views
             // 
             // yearlyStatBindingSource
             // 
-            yearlyStatBindingSource.DataSource = typeof(DAL.Statistics.YearlyStat);
+            yearlyStatBindingSource.DataSource = typeof(Contract.Statistics.YearlyStat);
             // 
             // viewYearly
             // 
@@ -2227,7 +2227,7 @@ namespace CHIFA.Pro.Views
             // 
             // dailyStatBindingSource
             // 
-            dailyStatBindingSource.DataSource = typeof(DAL.Statistics.DailyStat);
+            dailyStatBindingSource.DataSource = typeof(Contract.Statistics.DailyStat);
             // 
             // viewDaily
             // 

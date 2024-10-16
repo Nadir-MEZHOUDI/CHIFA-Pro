@@ -46,15 +46,19 @@
             chkDays = new CheckEdit();
             txtJours = new SpinEdit();
             txtMontant = new SpinEdit();
+            chkStartup = new CheckEdit();
+            txtEmail = new TextEdit();
+            chkUseChifaMobile = new CheckEdit();
+            btnTestConnection = new SimpleButton();
+            txtPassword = new TextEdit();
             layoutControlGroup1 = new DevExpress.XtraLayout.LayoutControlGroup();
             tabbedControlGroup1 = new DevExpress.XtraLayout.TabbedControlGroup();
-            layoutControlGroup2 = new DevExpress.XtraLayout.LayoutControlGroup();
-            layoutControlItem8 = new DevExpress.XtraLayout.LayoutControlItem();
-            layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
-            layoutControlItem11 = new DevExpress.XtraLayout.LayoutControlItem();
-            layoutControlItem12 = new DevExpress.XtraLayout.LayoutControlItem();
-            layoutControlItem13 = new DevExpress.XtraLayout.LayoutControlItem();
-            layoutControlItem14 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlGroup5 = new DevExpress.XtraLayout.LayoutControlGroup();
+            layoutControlItem17 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem16 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem18 = new DevExpress.XtraLayout.LayoutControlItem();
+            emptySpaceItem4 = new DevExpress.XtraLayout.EmptySpaceItem();
+            layoutControlItem19 = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlGroup3 = new DevExpress.XtraLayout.LayoutControlGroup();
             layoutControlItem4 = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlItem9 = new DevExpress.XtraLayout.LayoutControlItem();
@@ -64,9 +68,17 @@
             layoutControlItem3 = new DevExpress.XtraLayout.LayoutControlItem();
             emptySpaceItem1 = new DevExpress.XtraLayout.EmptySpaceItem();
             emptySpaceItem2 = new DevExpress.XtraLayout.EmptySpaceItem();
+            layoutControlItem15 = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlGroup4 = new DevExpress.XtraLayout.LayoutControlGroup();
             layoutControlItem6 = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControlItem7 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlGroup2 = new DevExpress.XtraLayout.LayoutControlGroup();
+            layoutControlItem8 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem10 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem11 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem12 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem13 = new DevExpress.XtraLayout.LayoutControlItem();
+            layoutControlItem14 = new DevExpress.XtraLayout.LayoutControlItem();
             emptySpaceItem3 = new DevExpress.XtraLayout.EmptySpaceItem();
             layoutControlItem2 = new DevExpress.XtraLayout.LayoutControlItem();
             layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
@@ -85,15 +97,18 @@
             ((System.ComponentModel.ISupportInitialize)chkDays.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)txtJours.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)txtMontant.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)chkStartup.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)txtEmail.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)chkUseChifaMobile.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)txtPassword.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)tabbedControlGroup1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlGroup2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem8).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem10).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem11).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem12).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem13).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem14).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlGroup5).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem17).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem16).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem18).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)emptySpaceItem4).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem19).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem9).BeginInit();
@@ -103,9 +118,17 @@
             ((System.ComponentModel.ISupportInitialize)layoutControlItem3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem15).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup4).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem6).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem7).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlGroup2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem8).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem10).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem11).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem12).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem13).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem14).BeginInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)layoutControl1).BeginInit();
@@ -142,6 +165,11 @@
             layoutControl2.Controls.Add(chkDays);
             layoutControl2.Controls.Add(txtJours);
             layoutControl2.Controls.Add(txtMontant);
+            layoutControl2.Controls.Add(chkStartup);
+            layoutControl2.Controls.Add(txtEmail);
+            layoutControl2.Controls.Add(chkUseChifaMobile);
+            layoutControl2.Controls.Add(btnTestConnection);
+            layoutControl2.Controls.Add(txtPassword);
             layoutControl2.Dock = DockStyle.Fill;
             layoutControl2.Location = new Point(2, 39);
             layoutControl2.Margin = new Padding(2);
@@ -154,10 +182,10 @@
             // 
             // txtChifaPath
             // 
-            txtChifaPath.Location = new Point(302, 50);
+            txtChifaPath.Location = new Point(305, 61);
             txtChifaPath.Margin = new Padding(2);
             txtChifaPath.Name = "txtChifaPath";
-            txtChifaPath.Size = new Size(655, 24);
+            txtChifaPath.Size = new Size(640, 24);
             txtChifaPath.StyleController = layoutControl2;
             txtChifaPath.TabIndex = 1;
             txtChifaPath.EditValueChanged += txtChifaPath_EditValueChanged;
@@ -165,10 +193,10 @@
             // btnSave
             // 
             btnSave.ImageOptions.Image = (Image)resources.GetObject("btnSave.ImageOptions.Image");
-            btnSave.Location = new Point(527, 221);
-            btnSave.Margin = new Padding(10);
+            btnSave.Location = new Point(518, 230);
+            btnSave.Margin = new Padding(3, 4, 3, 4);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(513, 38);
+            btnSave.Size = new Size(509, 38);
             btnSave.StyleController = layoutControl2;
             btnSave.TabIndex = 1;
             btnSave.Text = "Save Settings";
@@ -177,23 +205,23 @@
             // txtServerName
             // 
             txtServerName.EditValue = "localhost";
-            txtServerName.Location = new Point(302, 78);
+            txtServerName.Location = new Point(305, 89);
             txtServerName.Margin = new Padding(2);
             txtServerName.Name = "txtServerName";
             txtServerName.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             txtServerName.Properties.Items.AddRange(new object[] { "localhost" });
-            txtServerName.Size = new Size(726, 24);
+            txtServerName.Size = new Size(711, 24);
             txtServerName.StyleController = layoutControl2;
             txtServerName.TabIndex = 1;
             // 
             // btnBackup
             // 
             btnBackup.ImageOptions.Image = (Image)resources.GetObject("btnBackup.ImageOptions.Image");
-            btnBackup.Location = new Point(24, 50);
+            btnBackup.Location = new Point(17, 61);
             btnBackup.Margin = new Padding(2);
             btnBackup.Name = "btnBackup";
             btnBackup.ShowFocusRectangle = DevExpress.Utils.DefaultBoolean.False;
-            btnBackup.Size = new Size(1004, 38);
+            btnBackup.Size = new Size(999, 38);
             btnBackup.StyleController = layoutControl2;
             btnBackup.TabIndex = 0;
             btnBackup.Text = "Backup";
@@ -202,10 +230,10 @@
             // btnRestor
             // 
             btnRestor.ImageOptions.Image = (Image)resources.GetObject("btnRestor.ImageOptions.Image");
-            btnRestor.Location = new Point(24, 92);
+            btnRestor.Location = new Point(17, 103);
             btnRestor.Margin = new Padding(2);
             btnRestor.Name = "btnRestor";
-            btnRestor.Size = new Size(1004, 38);
+            btnRestor.Size = new Size(999, 38);
             btnRestor.StyleController = layoutControl2;
             btnRestor.TabIndex = 2;
             btnRestor.Text = "Restore";
@@ -214,10 +242,10 @@
             // simpleButton1
             // 
             simpleButton1.ImageOptions.Image = (Image)resources.GetObject("simpleButton1.ImageOptions.Image");
-            simpleButton1.Location = new Point(961, 50);
+            simpleButton1.Location = new Point(947, 61);
             simpleButton1.Margin = new Padding(2);
             simpleButton1.Name = "simpleButton1";
-            simpleButton1.Size = new Size(67, 24);
+            simpleButton1.Size = new Size(69, 24);
             simpleButton1.StyleController = layoutControl2;
             simpleButton1.TabIndex = 1;
             simpleButton1.Text = "...";
@@ -226,10 +254,10 @@
             // btnTest
             // 
             btnTest.ImageOptions.Image = (Image)resources.GetObject("btnTest.ImageOptions.Image");
-            btnTest.Location = new Point(527, 106);
-            btnTest.Margin = new Padding(10);
+            btnTest.Location = new Point(517, 117);
+            btnTest.Margin = new Padding(3, 4, 3, 4);
             btnTest.Name = "btnTest";
-            btnTest.Size = new Size(501, 38);
+            btnTest.Size = new Size(499, 38);
             btnTest.StyleController = layoutControl2;
             btnTest.TabIndex = 1;
             btnTest.Text = "Test";
@@ -238,26 +266,26 @@
             // rbtServer
             // 
             rbtServer.EditValue = true;
-            rbtServer.Location = new Point(24, 50);
+            rbtServer.Location = new Point(17, 61);
             rbtServer.Margin = new Padding(2);
             rbtServer.Name = "rbtServer";
             rbtServer.Properties.Caption = "Server:";
             rbtServer.Properties.CheckBoxOptions.Style = DevExpress.XtraEditors.Controls.CheckBoxStyle.Radio;
             rbtServer.Properties.RadioGroupIndex = 0;
-            rbtServer.Size = new Size(186, 21);
+            rbtServer.Size = new Size(187, 21);
             rbtServer.StyleController = layoutControl2;
             rbtServer.TabIndex = 1;
             rbtServer.CheckedChanged += rbtServer_CheckedChanged;
             // 
             // rbtClient
             // 
-            rbtClient.Location = new Point(24, 78);
+            rbtClient.Location = new Point(17, 89);
             rbtClient.Margin = new Padding(2);
             rbtClient.Name = "rbtClient";
             rbtClient.Properties.Caption = "Client:";
             rbtClient.Properties.CheckBoxOptions.Style = DevExpress.XtraEditors.Controls.CheckBoxStyle.Radio;
             rbtClient.Properties.RadioGroupIndex = 0;
-            rbtClient.Size = new Size(186, 21);
+            rbtClient.Size = new Size(187, 21);
             rbtClient.StyleController = layoutControl2;
             rbtClient.TabIndex = 1;
             rbtClient.TabStop = false;
@@ -265,61 +293,67 @@
             // 
             // chkMontant
             // 
-            chkMontant.Location = new Point(24, 50);
+            chkMontant.Location = new Point(17, 61);
+            chkMontant.Margin = new Padding(2);
             chkMontant.Name = "chkMontant";
             chkMontant.Properties.Caption = "Notification On Montant :";
-            chkMontant.Size = new Size(1004, 21);
+            chkMontant.Size = new Size(999, 21);
             chkMontant.StyleController = layoutControl2;
             chkMontant.TabIndex = 4;
             // 
             // chkNmbr
             // 
-            chkNmbr.Location = new Point(24, 103);
+            chkNmbr.Location = new Point(17, 114);
+            chkNmbr.Margin = new Padding(2);
             chkNmbr.Name = "chkNmbr";
             chkNmbr.Properties.Caption = "Notification On Nmbr Factures :";
-            chkNmbr.Size = new Size(1004, 21);
+            chkNmbr.Size = new Size(999, 21);
             chkNmbr.StyleController = layoutControl2;
             chkNmbr.TabIndex = 6;
             // 
             // txtFactures
             // 
             txtFactures.EditValue = new decimal(new int[] { 100, 0, 0, 0 });
-            txtFactures.Location = new Point(112, 128);
+            txtFactures.Location = new Point(116, 139);
+            txtFactures.Margin = new Padding(2);
             txtFactures.Name = "txtFactures";
             txtFactures.Properties.BeepOnError = true;
             txtFactures.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             txtFactures.Properties.MaskSettings.Set("mask", "d");
             txtFactures.Properties.UseMaskAsDisplayFormat = true;
-            txtFactures.Size = new Size(916, 24);
+            txtFactures.Size = new Size(900, 24);
             txtFactures.StyleController = layoutControl2;
             txtFactures.TabIndex = 7;
             // 
             // chkDays
             // 
-            chkDays.Location = new Point(24, 156);
+            chkDays.Location = new Point(17, 167);
+            chkDays.Margin = new Padding(2);
             chkDays.Name = "chkDays";
             chkDays.Properties.Caption = "Notification On Jours";
-            chkDays.Size = new Size(1004, 21);
+            chkDays.Size = new Size(999, 21);
             chkDays.StyleController = layoutControl2;
             chkDays.TabIndex = 8;
             // 
             // txtJours
             // 
             txtJours.EditValue = new decimal(new int[] { 7, 0, 0, 0 });
-            txtJours.Location = new Point(112, 181);
+            txtJours.Location = new Point(116, 192);
+            txtJours.Margin = new Padding(2);
             txtJours.Name = "txtJours";
             txtJours.Properties.BeepOnError = true;
             txtJours.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             txtJours.Properties.MaskSettings.Set("mask", "d");
             txtJours.Properties.UseMaskAsDisplayFormat = true;
-            txtJours.Size = new Size(916, 24);
+            txtJours.Size = new Size(900, 24);
             txtJours.StyleController = layoutControl2;
             txtJours.TabIndex = 9;
             // 
             // txtMontant
             // 
             txtMontant.EditValue = new decimal(new int[] { 500000, 0, 0, 0 });
-            txtMontant.Location = new Point(112, 75);
+            txtMontant.Location = new Point(116, 86);
+            txtMontant.Margin = new Padding(2);
             txtMontant.Name = "txtMontant";
             txtMontant.Properties.BeepOnError = true;
             txtMontant.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
@@ -328,9 +362,62 @@
             txtMontant.Properties.MaskSettings.Set("valueAfterDelete", DevExpress.Data.Mask.NumericMaskManager.ValueAfterDelete.ZeroThenNull);
             txtMontant.Properties.MaskSettings.Set("culture", "invariant");
             txtMontant.Properties.UseMaskAsDisplayFormat = true;
-            txtMontant.Size = new Size(916, 24);
+            txtMontant.Size = new Size(900, 24);
             txtMontant.StyleController = layoutControl2;
             txtMontant.TabIndex = 5;
+            // 
+            // chkStartup
+            // 
+            chkStartup.Location = new Point(17, 159);
+            chkStartup.Margin = new Padding(2);
+            chkStartup.Name = "chkStartup";
+            chkStartup.Properties.Caption = "StartAsync with Windows";
+            chkStartup.Size = new Size(999, 21);
+            chkStartup.StyleController = layoutControl2;
+            chkStartup.TabIndex = 10;
+            chkStartup.CheckStateChanged += chkStartup_CheckStateChanged;
+            // 
+            // txtEmail
+            // 
+            txtEmail.Location = new Point(116, 86);
+            txtEmail.Margin = new Padding(2);
+            txtEmail.Name = "txtEmail";
+            txtEmail.Size = new Size(900, 24);
+            txtEmail.StyleController = layoutControl2;
+            txtEmail.TabIndex = 11;
+            // 
+            // chkUseChifaMobile
+            // 
+            chkUseChifaMobile.Location = new Point(17, 61);
+            chkUseChifaMobile.Margin = new Padding(2);
+            chkUseChifaMobile.Name = "chkUseChifaMobile";
+            chkUseChifaMobile.Properties.Caption = "Use CHIFA Mobile";
+            chkUseChifaMobile.Size = new Size(999, 21);
+            chkUseChifaMobile.StyleController = layoutControl2;
+            chkUseChifaMobile.TabIndex = 12;
+            chkUseChifaMobile.CheckedChanged += chkUseChifaMobile_CheckedChanged;
+            // 
+            // btnTestConnection
+            // 
+            btnTestConnection.ImageOptions.Image = (Image)resources.GetObject("btnTestConnection.ImageOptions.Image");
+            btnTestConnection.Location = new Point(849, 142);
+            btnTestConnection.Margin = new Padding(2);
+            btnTestConnection.Name = "btnTestConnection";
+            btnTestConnection.Size = new Size(167, 38);
+            btnTestConnection.StyleController = layoutControl2;
+            btnTestConnection.TabIndex = 13;
+            btnTestConnection.Text = "Run";
+            btnTestConnection.Click += btnRunServerConnection_Click;
+            // 
+            // txtPassword
+            // 
+            txtPassword.Location = new Point(116, 114);
+            txtPassword.Margin = new Padding(2, 2, 2, 2);
+            txtPassword.Name = "txtPassword";
+            txtPassword.Properties.UseSystemPasswordChar = true;
+            txtPassword.Size = new Size(900, 24);
+            txtPassword.StyleController = layoutControl2;
+            txtPassword.TabIndex = 14;
             // 
             // layoutControlGroup1
             // 
@@ -338,86 +425,78 @@
             layoutControlGroup1.GroupBordersVisible = false;
             layoutControlGroup1.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { tabbedControlGroup1, emptySpaceItem3, layoutControlItem2 });
             layoutControlGroup1.Name = "Root";
-            layoutControlGroup1.Size = new Size(1052, 275);
+            layoutControlGroup1.Size = new Size(1035, 278);
             layoutControlGroup1.TextVisible = false;
             // 
             // tabbedControlGroup1
             // 
             tabbedControlGroup1.Location = new Point(0, 0);
             tabbedControlGroup1.Name = "tabbedControlGroup1";
-            tabbedControlGroup1.SelectedTabPage = layoutControlGroup2;
-            tabbedControlGroup1.Size = new Size(1032, 209);
-            tabbedControlGroup1.TabPages.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlGroup3, layoutControlGroup4, layoutControlGroup2 });
+            tabbedControlGroup1.SelectedTabPage = layoutControlGroup5;
+            tabbedControlGroup1.Size = new Size(1021, 220);
+            tabbedControlGroup1.TabPages.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlGroup3, layoutControlGroup4, layoutControlGroup2, layoutControlGroup5 });
             // 
-            // layoutControlGroup2
+            // layoutControlGroup5
             // 
-            layoutControlGroup2.CustomizationFormText = "SETTINGS";
-            layoutControlGroup2.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem8, layoutControlItem10, layoutControlItem11, layoutControlItem12, layoutControlItem13, layoutControlItem14 });
-            layoutControlGroup2.Location = new Point(0, 0);
-            layoutControlGroup2.Name = "layoutControlGroup2";
-            layoutControlGroup2.Size = new Size(1008, 159);
-            layoutControlGroup2.Text = "NOTIFICATIONS";
+            layoutControlGroup5.CaptionImageOptions.Image = (Image)resources.GetObject("layoutControlGroup5.CaptionImageOptions.Image");
+            layoutControlGroup5.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem17, layoutControlItem16, layoutControlItem18, emptySpaceItem4, layoutControlItem19 });
+            layoutControlGroup5.Location = new Point(0, 0);
+            layoutControlGroup5.Name = "layoutControlGroup5";
+            layoutControlGroup5.Size = new Size(1001, 159);
+            layoutControlGroup5.Text = "CHIFA Mobile";
+            layoutControlGroup5.TextLocation = DevExpress.Utils.Locations.Right;
             // 
-            // layoutControlItem8
+            // layoutControlItem17
             // 
-            layoutControlItem8.Control = chkMontant;
-            layoutControlItem8.Location = new Point(0, 0);
-            layoutControlItem8.Name = "layoutControlItem8";
-            layoutControlItem8.Size = new Size(1008, 25);
-            layoutControlItem8.TextSize = new Size(0, 0);
-            layoutControlItem8.TextVisible = false;
+            layoutControlItem17.Control = chkUseChifaMobile;
+            layoutControlItem17.Location = new Point(0, 0);
+            layoutControlItem17.Name = "layoutControlItem17";
+            layoutControlItem17.Size = new Size(1001, 25);
+            layoutControlItem17.TextSize = new Size(0, 0);
+            layoutControlItem17.TextVisible = false;
             // 
-            // layoutControlItem10
+            // layoutControlItem16
             // 
-            layoutControlItem10.Control = txtMontant;
-            layoutControlItem10.Location = new Point(0, 25);
-            layoutControlItem10.Name = "layoutControlItem10";
-            layoutControlItem10.Size = new Size(1008, 28);
-            layoutControlItem10.Text = "Max:";
-            layoutControlItem10.TextSize = new Size(84, 17);
+            layoutControlItem16.Control = txtEmail;
+            layoutControlItem16.Location = new Point(0, 25);
+            layoutControlItem16.Name = "layoutControlItem16";
+            layoutControlItem16.Size = new Size(1001, 28);
+            layoutControlItem16.Text = "ChifaMobilEmail:";
+            layoutControlItem16.TextSize = new Size(96, 17);
             // 
-            // layoutControlItem11
+            // layoutControlItem18
             // 
-            layoutControlItem11.Control = chkNmbr;
-            layoutControlItem11.Location = new Point(0, 53);
-            layoutControlItem11.Name = "layoutControlItem11";
-            layoutControlItem11.Size = new Size(1008, 25);
-            layoutControlItem11.TextSize = new Size(0, 0);
-            layoutControlItem11.TextVisible = false;
+            layoutControlItem18.Control = btnTestConnection;
+            layoutControlItem18.Location = new Point(832, 81);
+            layoutControlItem18.Name = "layoutControlItem18";
+            layoutControlItem18.Size = new Size(169, 78);
+            layoutControlItem18.TextSize = new Size(0, 0);
+            layoutControlItem18.TextVisible = false;
             // 
-            // layoutControlItem12
+            // emptySpaceItem4
             // 
-            layoutControlItem12.Control = txtFactures;
-            layoutControlItem12.Location = new Point(0, 78);
-            layoutControlItem12.Name = "layoutControlItem12";
-            layoutControlItem12.Size = new Size(1008, 28);
-            layoutControlItem12.Text = "Max:";
-            layoutControlItem12.TextSize = new Size(84, 17);
+            emptySpaceItem4.AllowHotTrack = false;
+            emptySpaceItem4.Location = new Point(0, 81);
+            emptySpaceItem4.Name = "emptySpaceItem4";
+            emptySpaceItem4.Size = new Size(832, 78);
+            emptySpaceItem4.TextSize = new Size(0, 0);
             // 
-            // layoutControlItem13
+            // layoutControlItem19
             // 
-            layoutControlItem13.Control = chkDays;
-            layoutControlItem13.Location = new Point(0, 106);
-            layoutControlItem13.Name = "layoutControlItem13";
-            layoutControlItem13.Size = new Size(1008, 25);
-            layoutControlItem13.TextSize = new Size(0, 0);
-            layoutControlItem13.TextVisible = false;
-            // 
-            // layoutControlItem14
-            // 
-            layoutControlItem14.Control = txtJours;
-            layoutControlItem14.Location = new Point(0, 131);
-            layoutControlItem14.Name = "layoutControlItem14";
-            layoutControlItem14.Size = new Size(1008, 28);
-            layoutControlItem14.Text = "Max:";
-            layoutControlItem14.TextSize = new Size(84, 17);
+            layoutControlItem19.Control = txtPassword;
+            layoutControlItem19.Location = new Point(0, 53);
+            layoutControlItem19.Name = "layoutControlItem19";
+            layoutControlItem19.Size = new Size(1001, 28);
+            layoutControlItem19.Text = "Password:";
+            layoutControlItem19.TextSize = new Size(96, 17);
             // 
             // layoutControlGroup3
             // 
-            layoutControlGroup3.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem4, layoutControlItem9, layoutControlItem5, layoutControlItem1, btnBrowse, layoutControlItem3, emptySpaceItem1, emptySpaceItem2 });
+            layoutControlGroup3.CaptionImageOptions.Image = (Image)resources.GetObject("layoutControlGroup3.CaptionImageOptions.Image");
+            layoutControlGroup3.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem4, layoutControlItem9, layoutControlItem5, layoutControlItem1, btnBrowse, layoutControlItem3, emptySpaceItem1, emptySpaceItem2, layoutControlItem15 });
             layoutControlGroup3.Location = new Point(0, 0);
             layoutControlGroup3.Name = "layoutControlGroup3";
-            layoutControlGroup3.Size = new Size(1008, 159);
+            layoutControlGroup3.Size = new Size(1001, 159);
             layoutControlGroup3.Text = "CHIFA SERVER";
             // 
             // layoutControlItem4
@@ -425,7 +504,7 @@
             layoutControlItem4.Control = rbtClient;
             layoutControlItem4.Location = new Point(0, 28);
             layoutControlItem4.Name = "layoutControlItem4";
-            layoutControlItem4.Size = new Size(190, 28);
+            layoutControlItem4.Size = new Size(189, 28);
             layoutControlItem4.TextSize = new Size(0, 0);
             layoutControlItem4.TextVisible = false;
             // 
@@ -434,32 +513,32 @@
             layoutControlItem9.Control = rbtServer;
             layoutControlItem9.Location = new Point(0, 0);
             layoutControlItem9.Name = "layoutControlItem9";
-            layoutControlItem9.Size = new Size(190, 28);
+            layoutControlItem9.Size = new Size(189, 28);
             layoutControlItem9.TextSize = new Size(0, 0);
             layoutControlItem9.TextVisible = false;
             // 
             // layoutControlItem5
             // 
             layoutControlItem5.Control = txtServerName;
-            layoutControlItem5.Location = new Point(190, 28);
+            layoutControlItem5.Location = new Point(189, 28);
             layoutControlItem5.Name = "layoutControlItem5";
-            layoutControlItem5.Size = new Size(818, 28);
+            layoutControlItem5.Size = new Size(812, 28);
             layoutControlItem5.Text = "Server Name:";
-            layoutControlItem5.TextSize = new Size(84, 17);
+            layoutControlItem5.TextSize = new Size(96, 17);
             // 
             // layoutControlItem1
             // 
             layoutControlItem1.Control = txtChifaPath;
-            layoutControlItem1.Location = new Point(190, 0);
+            layoutControlItem1.Location = new Point(189, 0);
             layoutControlItem1.Name = "layoutControlItem1";
-            layoutControlItem1.Size = new Size(747, 28);
+            layoutControlItem1.Size = new Size(741, 28);
             layoutControlItem1.Text = "CHIFA Path:";
-            layoutControlItem1.TextSize = new Size(84, 17);
+            layoutControlItem1.TextSize = new Size(96, 17);
             // 
             // btnBrowse
             // 
             btnBrowse.Control = simpleButton1;
-            btnBrowse.Location = new Point(937, 0);
+            btnBrowse.Location = new Point(930, 0);
             btnBrowse.Name = "btnBrowse";
             btnBrowse.Size = new Size(71, 28);
             btnBrowse.TextSize = new Size(0, 0);
@@ -468,18 +547,18 @@
             // layoutControlItem3
             // 
             layoutControlItem3.Control = btnTest;
-            layoutControlItem3.Location = new Point(503, 56);
+            layoutControlItem3.Location = new Point(500, 56);
             layoutControlItem3.Name = "layoutControlItem3";
-            layoutControlItem3.Size = new Size(505, 42);
+            layoutControlItem3.Size = new Size(501, 42);
             layoutControlItem3.TextSize = new Size(0, 0);
             layoutControlItem3.TextVisible = false;
             // 
             // emptySpaceItem1
             // 
             emptySpaceItem1.AllowHotTrack = false;
-            emptySpaceItem1.Location = new Point(0, 98);
+            emptySpaceItem1.Location = new Point(0, 123);
             emptySpaceItem1.Name = "emptySpaceItem1";
-            emptySpaceItem1.Size = new Size(1008, 61);
+            emptySpaceItem1.Size = new Size(1001, 36);
             emptySpaceItem1.TextSize = new Size(0, 0);
             // 
             // emptySpaceItem2
@@ -487,15 +566,25 @@
             emptySpaceItem2.AllowHotTrack = false;
             emptySpaceItem2.Location = new Point(0, 56);
             emptySpaceItem2.Name = "emptySpaceItem2";
-            emptySpaceItem2.Size = new Size(503, 42);
+            emptySpaceItem2.Size = new Size(500, 42);
             emptySpaceItem2.TextSize = new Size(0, 0);
+            // 
+            // layoutControlItem15
+            // 
+            layoutControlItem15.Control = chkStartup;
+            layoutControlItem15.Location = new Point(0, 98);
+            layoutControlItem15.Name = "layoutControlItem15";
+            layoutControlItem15.Size = new Size(1001, 25);
+            layoutControlItem15.TextSize = new Size(0, 0);
+            layoutControlItem15.TextVisible = false;
             // 
             // layoutControlGroup4
             // 
+            layoutControlGroup4.CaptionImageOptions.Image = (Image)resources.GetObject("layoutControlGroup4.CaptionImageOptions.Image");
             layoutControlGroup4.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem6, layoutControlItem7 });
             layoutControlGroup4.Location = new Point(0, 0);
             layoutControlGroup4.Name = "layoutControlGroup4";
-            layoutControlGroup4.Size = new Size(1008, 159);
+            layoutControlGroup4.Size = new Size(1001, 159);
             layoutControlGroup4.Text = "BACKUP RESTORE";
             // 
             // layoutControlItem6
@@ -503,7 +592,7 @@
             layoutControlItem6.Control = btnBackup;
             layoutControlItem6.Location = new Point(0, 0);
             layoutControlItem6.Name = "layoutControlItem6";
-            layoutControlItem6.Size = new Size(1008, 42);
+            layoutControlItem6.Size = new Size(1001, 42);
             layoutControlItem6.TextSize = new Size(0, 0);
             layoutControlItem6.TextVisible = false;
             // 
@@ -512,30 +601,94 @@
             layoutControlItem7.Control = btnRestor;
             layoutControlItem7.Location = new Point(0, 42);
             layoutControlItem7.Name = "layoutControlItem7";
-            layoutControlItem7.Size = new Size(1008, 117);
+            layoutControlItem7.Size = new Size(1001, 117);
             layoutControlItem7.TextSize = new Size(0, 0);
             layoutControlItem7.TextVisible = false;
+            // 
+            // layoutControlGroup2
+            // 
+            layoutControlGroup2.CaptionImageOptions.Image = (Image)resources.GetObject("layoutControlGroup2.CaptionImageOptions.Image");
+            layoutControlGroup2.CustomizationFormText = "SETTINGS";
+            layoutControlGroup2.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { layoutControlItem8, layoutControlItem10, layoutControlItem11, layoutControlItem12, layoutControlItem13, layoutControlItem14 });
+            layoutControlGroup2.Location = new Point(0, 0);
+            layoutControlGroup2.Name = "layoutControlGroup2";
+            layoutControlGroup2.Size = new Size(1001, 159);
+            layoutControlGroup2.Text = "NOTIFICATIONS";
+            // 
+            // layoutControlItem8
+            // 
+            layoutControlItem8.Control = chkMontant;
+            layoutControlItem8.Location = new Point(0, 0);
+            layoutControlItem8.Name = "layoutControlItem8";
+            layoutControlItem8.Size = new Size(1001, 25);
+            layoutControlItem8.TextSize = new Size(0, 0);
+            layoutControlItem8.TextVisible = false;
+            // 
+            // layoutControlItem10
+            // 
+            layoutControlItem10.Control = txtMontant;
+            layoutControlItem10.Location = new Point(0, 25);
+            layoutControlItem10.Name = "layoutControlItem10";
+            layoutControlItem10.Size = new Size(1001, 28);
+            layoutControlItem10.Text = "Max:";
+            layoutControlItem10.TextSize = new Size(96, 17);
+            // 
+            // layoutControlItem11
+            // 
+            layoutControlItem11.Control = chkNmbr;
+            layoutControlItem11.Location = new Point(0, 53);
+            layoutControlItem11.Name = "layoutControlItem11";
+            layoutControlItem11.Size = new Size(1001, 25);
+            layoutControlItem11.TextSize = new Size(0, 0);
+            layoutControlItem11.TextVisible = false;
+            // 
+            // layoutControlItem12
+            // 
+            layoutControlItem12.Control = txtFactures;
+            layoutControlItem12.Location = new Point(0, 78);
+            layoutControlItem12.Name = "layoutControlItem12";
+            layoutControlItem12.Size = new Size(1001, 28);
+            layoutControlItem12.Text = "Max:";
+            layoutControlItem12.TextSize = new Size(96, 17);
+            // 
+            // layoutControlItem13
+            // 
+            layoutControlItem13.Control = chkDays;
+            layoutControlItem13.Location = new Point(0, 106);
+            layoutControlItem13.Name = "layoutControlItem13";
+            layoutControlItem13.Size = new Size(1001, 25);
+            layoutControlItem13.TextSize = new Size(0, 0);
+            layoutControlItem13.TextVisible = false;
+            // 
+            // layoutControlItem14
+            // 
+            layoutControlItem14.Control = txtJours;
+            layoutControlItem14.Location = new Point(0, 131);
+            layoutControlItem14.Name = "layoutControlItem14";
+            layoutControlItem14.Size = new Size(1001, 28);
+            layoutControlItem14.Text = "Max:";
+            layoutControlItem14.TextSize = new Size(96, 17);
             // 
             // emptySpaceItem3
             // 
             emptySpaceItem3.AllowHotTrack = false;
-            emptySpaceItem3.Location = new Point(0, 209);
+            emptySpaceItem3.Location = new Point(0, 220);
             emptySpaceItem3.Name = "emptySpaceItem3";
-            emptySpaceItem3.Size = new Size(515, 46);
+            emptySpaceItem3.Size = new Size(510, 42);
             emptySpaceItem3.TextSize = new Size(0, 0);
             // 
             // layoutControlItem2
             // 
             layoutControlItem2.Control = btnSave;
-            layoutControlItem2.Location = new Point(515, 209);
+            layoutControlItem2.Location = new Point(510, 220);
             layoutControlItem2.Name = "layoutControlItem2";
-            layoutControlItem2.Size = new Size(517, 46);
+            layoutControlItem2.Size = new Size(511, 42);
             layoutControlItem2.TextSize = new Size(0, 0);
             layoutControlItem2.TextVisible = false;
             // 
             // layoutControl1
             // 
-            layoutControl1.Location = new Point(50, 13);
+            layoutControl1.Location = new Point(16, 5);
             layoutControl1.Margin = new Padding(2);
             layoutControl1.Name = "layoutControl1";
             layoutControl1.Root = Root;
@@ -548,7 +701,7 @@
             Root.EnableIndentsWithoutBorders = DevExpress.Utils.DefaultBoolean.True;
             Root.GroupBordersVisible = false;
             Root.Name = "Root";
-            Root.Size = new Size(20, 20);
+            Root.Size = new Size(14, 16);
             Root.TextVisible = false;
             // 
             // ParametersUc
@@ -573,15 +726,18 @@
             ((System.ComponentModel.ISupportInitialize)chkDays.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)txtJours.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)txtMontant.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)chkStartup.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)txtEmail.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)chkUseChifaMobile.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)txtPassword.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup1).EndInit();
             ((System.ComponentModel.ISupportInitialize)tabbedControlGroup1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlGroup2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem8).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem10).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem11).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem12).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem13).EndInit();
-            ((System.ComponentModel.ISupportInitialize)layoutControlItem14).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlGroup5).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem17).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem16).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem18).EndInit();
+            ((System.ComponentModel.ISupportInitialize)emptySpaceItem4).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem19).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup3).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem4).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem9).EndInit();
@@ -591,9 +747,17 @@
             ((System.ComponentModel.ISupportInitialize)layoutControlItem3).EndInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem1).EndInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem15).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlGroup4).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem6).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem7).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlGroup2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem8).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem10).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem11).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem12).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem13).EndInit();
+            ((System.ComponentModel.ISupportInitialize)layoutControlItem14).EndInit();
             ((System.ComponentModel.ISupportInitialize)emptySpaceItem3).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControlItem2).EndInit();
             ((System.ComponentModel.ISupportInitialize)layoutControl1).EndInit();
@@ -645,5 +809,17 @@
         private DevExpress.XtraLayout.EmptySpaceItem emptySpaceItem3;
         private DevExpress.XtraLayout.EmptySpaceItem emptySpaceItem1;
         private DevExpress.XtraLayout.EmptySpaceItem emptySpaceItem2;
+        private CheckEdit chkStartup;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem15;
+        private TextEdit txtEmail;
+        private CheckEdit chkUseChifaMobile;
+        private SimpleButton btnTestConnection;
+        private DevExpress.XtraLayout.LayoutControlGroup layoutControlGroup5;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem17;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem16;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem18;
+        private DevExpress.XtraLayout.EmptySpaceItem emptySpaceItem4;
+        private TextEdit txtPassword;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem19;
     }
 }

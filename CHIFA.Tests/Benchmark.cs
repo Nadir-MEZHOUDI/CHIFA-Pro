@@ -39,10 +39,6 @@ public class Benchmark
         return list;
     }
 
-    [Benchmark]
-    public object Method4()
-    {
-        return null;
-    }
+    
 
 }

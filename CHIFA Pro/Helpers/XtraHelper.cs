@@ -3,13 +3,14 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+
 using DevExpress.XtraGrid.Views.Grid;
 
 namespace CHIFA.Pro.Helpers;
 
 public static class XtraHelper
 {
-    public static async Task LoadDataAsync<T>(this GridView gridView, Func<Task<IEnumerable<T>>> func)
+    public static async Task LoadDataAsync<T>(this GridView gridView, Func<ValueTask<IEnumerable<T>>> func)
     {
         try
         {
@@ -41,7 +42,7 @@ public static class XtraHelper
     }
 
     public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
-        Func<Task<IEnumerable<T>>> func)
+        Func<ValueTask<IEnumerable<T>>> func)
     {
         try
         {
@@ -89,11 +90,20 @@ public static class XtraHelper
     public static void Log(this Exception ex, bool showMessage = true, [CallerMemberName] string methodName = "",
         [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0)
     {
-        Serilog.Log.Error(ex, "An error occurred in method {MethodName}, file {FileName}, line {LineNumber}",
-            methodName, fileName, lineNumber);
+
+
+
+        Serilog.Log.Error(ex, "An error occurred in method {MethodName}, file {FileName}, line {LineNumber}", methodName, fileName, lineNumber);
         var result = ex.Message;
 
-        if (Debugger.IsAttached) result = $"Method: {methodName}\nFile:{fileName}\nLine:{lineNumber}\n{ex}";
+        if (ex is Npgsql.NpgsqlException pg && pg.Message.Contains("Failed to connect"))
+        {
+            //    XtraMessageBox.Show("Cannot connect to Server Run Server Or Check Settings", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+        }
+
+        if (Debugger.IsAttached)
+            result = $"Method: {methodName}\nFile:{fileName}\nLine:{lineNumber}\n{ex}";
         if (showMessage)
             XtraMessageBox.Show(result, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }

@@ -1,5 +1,4 @@
 ﻿using DevExpress.XtraTab;
-using Period=CHIFA.DAL.DTOs.Period;
 namespace CHIFA.Pro.Views;
 public partial class StatisticsUc : XtraUserControl, INavigable
 {
@@ -25,13 +24,13 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private async void FromDate_EditValueChanged(object sender, EventArgs e)
     {
-        StatisticsService.Period.From = (DateTime)FromDate.EditValue;
+        StatisticsService.Instance.Period.From = (DateTime)FromDate.EditValue;
         await ReloadSelectedTable(tabControl.SelectedTabPage);
 
     }
     private async void ToDate_EditValueChanged(object sender, EventArgs e)
     {
-        StatisticsService.Period.To = (DateTime)ToDate.EditValue;
+        StatisticsService.Instance.Period.To = (DateTime)ToDate.EditValue;
         await ReloadSelectedTable(tabControl.SelectedTabPage);
     }
 
@@ -40,7 +39,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         try
         {
-            await Period.GetMinAndMaxDatesAsync();
+            await ChifaService.Instance.GetMinAndMaxDatesAsync();
  
             var towYearsBefore = DateTime.Now.AddYears(-2);
 
@@ -84,31 +83,31 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             Cursor = Cursors.WaitCursor;
             if (tab.Name is nameof(tabBordereaux) or nameof(tabBordereauxTable))
             {
-                bordStatDtoBindingSource.DataSource = await StatisticsService.BordereauxAsync();
+                bordStatDtoBindingSource.DataSource = await StatisticsService.Instance.BordereauxAsync();
             }
             if (tab.Name is nameof(tabMonthly) or nameof(tabMonthlyTable))
             {
-                monthlyStatBindingSource.DataSource = await StatisticsService.MonthlyAsync();
+                monthlyStatBindingSource.DataSource = await StatisticsService.Instance.MonthlyAsync();
             }
             if (tab.Name is nameof(tabWeekly) or nameof(tabWeeklyTable))
             {
-                weeklyStatBindingSource.DataSource = await StatisticsService.WeeklyAsync();
+                weeklyStatBindingSource.DataSource = await StatisticsService.Instance.WeeklyAsync();
             }
             if (tab.Name is nameof(tabDaily) or nameof(tabDailyTable))
             {
-                dailyStatBindingSource.DataSource = await StatisticsService.DailyAsync();
+                dailyStatBindingSource.DataSource = await StatisticsService.Instance.DailyAsync();
             }
             if (tab.Name is nameof(tabClients) or nameof(tabClientsTable))
             {
-                byClientStatBindingSource.DataSource = await StatisticsService.ByClientAsync();
+                byClientStatBindingSource.DataSource = await StatisticsService.Instance.ByClientAsync();
             }
             if (tab.Name is nameof(tabProducts2) or nameof(tabProductTable))
             {
-                productStatBindingSource.DataSource = await StatisticsService.ProductsAsync();
+                productStatBindingSource.DataSource = await StatisticsService.Instance.ProductsAsync();
             }
             if (tab.Name is nameof(tabYearly) or nameof(tabYearlyTable))
             {
-                yearlyStatBindingSource.DataSource = await StatisticsService.YearlyAsync();
+                yearlyStatBindingSource.DataSource = await StatisticsService.Instance.YearlyAsync();
             }
 
         }
@@ -154,9 +153,9 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private void SetDates(DateTime from, DateTime to)
     {
-        StatisticsService.Period.From = from;
-        StatisticsService.Period.To = to;
-        FromDate.EditValue = StatisticsService.Period.From;
-        ToDate.EditValue = StatisticsService.Period.To;
+        StatisticsService.Instance.Period.From = from;
+        StatisticsService.Instance.Period.To = to;
+        FromDate.EditValue = StatisticsService.Instance.Period.From;
+        ToDate.EditValue = StatisticsService.Instance.Period.To;
     }
 }

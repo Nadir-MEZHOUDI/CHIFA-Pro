@@ -265,7 +265,7 @@
             // 
             // EMAILTextEdit
             // 
-            EMAILTextEdit.DataBindings.Add(new Binding("EditValue", oFFICINEBindingSource, "Email", true));
+            EMAILTextEdit.DataBindings.Add(new Binding("EditValue", oFFICINEBindingSource, "ChifaMobilEmail", true));
             EMAILTextEdit.Location = new Point(151, 273);
             EMAILTextEdit.Margin = new Padding(2, 3, 2, 3);
             EMAILTextEdit.Name = "EMAILTextEdit";

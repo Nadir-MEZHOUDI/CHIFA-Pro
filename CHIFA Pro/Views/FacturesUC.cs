@@ -1,5 +1,4 @@
-﻿
-namespace CHIFA.Pro.Views;
+﻿namespace CHIFA.Pro.Views;
 
 public partial class FacturesUc : XtraUserControl, INavigable
 {
@@ -58,7 +57,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
     {
         if (viewFactures.GetRow(viewFactures.FocusedRowHandle) is FactureDto row)
         {
-            await viewDetails.LoadDataAsync(() => DataService.GetFactureDetailsByIdAsync(row.NumFact!));
+            await viewDetails.LoadDataAsync(() => ChifaService.Instance.GetFactureDetailsByIdAsync(row.NumFact!));
         }
     }
 
@@ -72,7 +71,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
     {
         try
         {
-            await Period.GetMinAndMaxDatesAsync();
+            await ChifaService.Instance.GetMinAndMaxDatesAsync();
             var lastYear = DateTime.Now.AddYears(-1);
             fromDateRepo.MaxValue = Period.MaxDate;
             fromDateRepo.MinValue = Period.MinDate;
@@ -107,18 +106,22 @@ public partial class FacturesUc : XtraUserControl, INavigable
         try
         {
             var last = (bool)swtchFactures.EditValue;
+
             var ts = (bool)swtchTS.EditValue;
+
             var period = new Period { From = (DateTime?)txtDateFrom.EditValue, To = (DateTime?)txtDateTo.EditValue };
+
             Expression<Func<Facture, bool>> predicate = f => true;
 
             var txt = (txtMedic.EditValue as string)?.ToUpperInvariant();
+
             if (!string.IsNullOrEmpty(txt))
             {
                 var patterns = txt.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToArray();
                 predicate = patterns.Aggregate(predicate, (current, p) => current.And(f => f.DetailFacts.Any(d => d.Medicament.FullName!.Contains(p))));
             }
             viewFactures.FocusedRowHandle = 0;
-            await factureDtoBindingSource.LoadDataAsync(viewFactures, () => DataService.GetAllFacturesAsync(last, ts, period, predicate));
+            await factureDtoBindingSource.LoadDataAsync(viewFactures, () => ChifaService.Instance.GetAllFacturesAsync(last, ts, period, predicate));
         }
         catch (Exception ex)
         {

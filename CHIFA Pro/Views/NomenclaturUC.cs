@@ -21,12 +21,12 @@ public partial class NomenclaturUc : XtraUserControl,INavigable
     private async void gridView1_FocusedRowChanged(object sender, FocusedRowChangedEventArgs e)
     {
         if (gridView1.GetRow(gridView1.FocusedRowHandle) is MedicDto row)
-            txtObs.Text = await DataService.GetMedicObsAsync(row.NEnr!).ConfigureAwait(true);
+            txtObs.Text = await ChifaService.Instance.GetMedicObsAsync(row.NEnr!).ConfigureAwait(true);
     }
 
     private async void NomenclaturUc_Load(object sender, EventArgs e)
     {
-        await gridView1.LoadDataAsync(() => DataService.GetMedicamentsAsync());
+        await gridView1.LoadDataAsync(() => ChifaService.Instance.GetMedicamentsAsync());
     }
 }
  

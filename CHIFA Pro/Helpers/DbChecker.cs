@@ -6,7 +6,7 @@ namespace CHIFA.Pro.Helpers;
 public static class DbChecker
 {
     private static bool _isConnected;
-    private static readonly Func<bool> ChangeSettingsMsg = () => XtraMessageBox.Show("Cannot connect to database \n Do you want to Change Settings?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes;
+    //private static readonly Func<bool> ChangeSettingsMsg = () => XtraMessageBox.Show("Cannot connect to database \n Do you want to Change Settings?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes;
     public static async Task<bool> CheckDbConnectionAsync(string? server = null)
     {
         server ??= ChifaDb.Server;
@@ -41,7 +41,7 @@ public static class DbChecker
 
             if (!File.Exists(AppSettings.Default.ChifaPostgres))
             {
-                XtraMessageBox.Show("Server Postgres not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+              //  XtraMessageBox.Show("Server Postgres not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -49,7 +49,7 @@ public static class DbChecker
             {
                 StartInfo = new ProcessStartInfo(AppSettings.Default.ChifaLancerServeur)
                 {
-                    UseShellExecute = true,
+                    UseShellExecute = false,
                     WindowStyle = ProcessWindowStyle.Hidden,
                     CreateNoWindow = true,
                 }
@@ -57,8 +57,8 @@ public static class DbChecker
 
             process.Start();
             process.WaitForExit(1000);
-            process.Close();
-            process.Dispose();
+           // process.Close();
+            //process.Dispose();
         }
         catch (Exception ex)
         {
@@ -76,14 +76,14 @@ public static class DbChecker
         {
             if (!CheckOrDownloadServer())
             {
-                MessageBox.Show(@"Postgres SQL Server Not working! and cannot run it!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+             //   MessageBox.Show(@"Postgres SQL Server Not working! and cannot run it!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             _isConnected = await CheckDbConnectionAsync();
 
-            if (!_isConnected && ChangeSettingsMsg())
+            if (!_isConnected)
             {
-                ParametersUc.ShowAsForm();
+               // ParametersUc.ShowAsForm();
             }
         }
         catch (Exception ex)
@@ -92,7 +92,7 @@ public static class DbChecker
         }
     }
 
-    private static string BackupFileName => $"CHIFA_OFFICINE_{DateTime.Now:dd-MM-yyyy_HH-mm-ss}.backup";
+    private static string BackupFileName => $"CHIFA_OFFICINE_{DateTime.Now:dd-MM-yyyy__HH-mm-ss}.backup";
     public static async Task SaveBackup()
     {
         try
