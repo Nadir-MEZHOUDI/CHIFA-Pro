@@ -58,7 +58,6 @@ public partial class ParametersUc : XtraUserControl, INavigable
         {
             LoadNotificationSettings();
             await LoadChifaServerInfo();
-            tabbedControlGroup1.Selected = true;
         }
         catch (Exception ex)
         {

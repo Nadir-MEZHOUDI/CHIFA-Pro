@@ -118,7 +118,7 @@ public partial class FrmMain : XtraForm
             await Task.Delay(500);
             await LoadServerInfo();
             await UpdateAppAsync();
-         }
+        }
         catch (Exception ex)
         {
             ex.Log();
