@@ -90,9 +90,7 @@ public static class XtraHelper
     public static void Log(this Exception ex, bool showMessage = true, [CallerMemberName] string methodName = "",
         [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0)
     {
-
-
-
+        
         Serilog.Log.Error(ex, "An error occurred in method {MethodName}, file {FileName}, line {LineNumber}", methodName, fileName, lineNumber);
         var result = ex.Message;
 
@@ -143,8 +141,8 @@ public static class XtraHelper
             await Task.WhenAll(tasks);
         }
 
-        activeIPs.Add("127.0.0.1");
         activeIPs.Add("localhost");
+        activeIPs.Add("127.0.0.1");
         return activeIPs.ToArray();
     }
 

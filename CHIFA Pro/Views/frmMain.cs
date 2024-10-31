@@ -16,7 +16,6 @@ public partial class FrmMain : XtraForm
         InitializeComponent();
         ChangeTitle();
     }
-
     public static FrmMain Instance => (Application.OpenForms[nameof(FrmMain)] as FrmMain)!;
 
     public static Image Image(int index)
@@ -119,61 +118,13 @@ public partial class FrmMain : XtraForm
             await Task.Delay(500);
             await LoadServerInfo();
             await UpdateAppAsync();
-            await RunChifaMobileServer();
-        }
+         }
         catch (Exception ex)
         {
             ex.Log();
         }
     }
 
-
-
-    private async Task GetServerAddressAndForwardPort()
-    {
-        const int Port = 5432;
-        var natDiscoverer = new NatDiscoverer();
-        var cts = new CancellationTokenSource(10_000);
-        var device = await natDiscoverer.DiscoverDeviceAsync(PortMapper.Upnp, cts);
-        var Address = (await device.GetExternalIPAsync()).ToString();
-
-        await device.CreatePortMapAsync(new Mapping(Protocol.Tcp, Port, Port));
-        await device.CreatePortMapAsync(new Mapping(Protocol.Udp, Port, Port));
-        Log.Information($"Port: {Port} forwarded to this pc {Address}");
-
-
-    }
-
-
-    public static string Api => Debugger.IsAttached ? "https://localhost:7048/api/peers/" : "https://smartpharm.azurewebsites.net/api/peers/";
-    public BridgeService? Server { get; private set; }
-    public async Task RunChifaMobileServer()
-    {
-        try
-        {
-            await GetServerAddressAndForwardPort();
-
-            if (AppSettings.Default.UseChifaMobile)
-            {
-                ArgumentException.ThrowIfNullOrWhiteSpace(AppSettings.Default.ChifaMobilEmail);
-                ArgumentException.ThrowIfNullOrWhiteSpace(AppSettings.Default.ChifaMobilPassword);
-                Server?.Stop();
-
-                Server = new BridgeService(Log.Information)
-                {
-                    BaseUri = Api,
-                    Key = AppSettings.Default.ChifaMobilEmail + AppSettings.Default.ChifaMobilPassword,
-                };
-                Server.AddService(new ChifaService());
-                Server.AddService(new StatisticsService());
-                await Server.StartAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-    }
 
     public async Task UpdateAppAsync(bool showMessage = false)
     {

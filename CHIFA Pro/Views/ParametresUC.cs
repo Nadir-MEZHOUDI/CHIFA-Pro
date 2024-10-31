@@ -41,9 +41,6 @@ public partial class ParametersUc : XtraUserControl, INavigable
             AppSettings.Default.MaxMontant = Convert.ToInt32(txtMontant.EditValue);
             AppSettings.Default.MaxNmbr = Convert.ToInt32(txtFactures.EditValue);
 
-            AppSettings.Default.ChifaMobilEmail = txtEmail.Text;
-            AppSettings.Default.ChifaMobilPassword = txtPassword.Text;
-            AppSettings.Default.UseChifaMobile = chkUseChifaMobile.Checked;
 
             AppSettings.Default.Save();
             XtraMessageBox.Show("Configuration successfully Saved", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -60,7 +57,6 @@ public partial class ParametersUc : XtraUserControl, INavigable
         try
         {
             LoadNotificationSettings();
-            LoadChifaMobileInfo();
             await LoadChifaServerInfo();
             tabbedControlGroup1.Selected = true;
         }
@@ -70,20 +66,7 @@ public partial class ParametersUc : XtraUserControl, INavigable
         }
     }
 
-    private void LoadChifaMobileInfo()
-    {
-        try
-        {
-            chkUseChifaMobile.Checked = AppSettings.Default.UseChifaMobile;
-            txtEmail.Text = AppSettings.Default.ChifaMobilEmail;
-            txtPassword.Text = AppSettings.Default.ChifaMobilPassword;
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
 
-    }
 
     private async Task LoadChifaServerInfo()
     {
@@ -221,37 +204,7 @@ public partial class ParametersUc : XtraUserControl, INavigable
         }
     }
 
-    private void chkUseChifaMobile_CheckedChanged(object sender, EventArgs e)
-    {
-        try
-        {
-            AppSettings.Default.UseChifaMobile = chkUseChifaMobile.Checked;
-            AppSettings.Default.ChifaMobilPassword = txtPassword.Text;
-            AppSettings.Default.Save();
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
+  
 
-    }
-
-    private async void btnRunServerConnection_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            await FrmMain.Instance.RunChifaMobileServer();
-
-            XtraMessageBox.Show( "Connected" , "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-        finally
-        {
-            Cursor.Current = Cursors.Default;
-        }
-
-    }
+   
 }

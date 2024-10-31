@@ -1,4 +1,11 @@
-﻿namespace CHIFA.Pro.Helpers;
+﻿using System.Net.Http;
+using System.Net.Http.Json;
+using CHIFA.Contract.Helpers;
+using Grpc.Core;
+using Open.Nat;
+using ProtoBuf.Grpc.Server;
+
+namespace CHIFA.Server.Helpers;
 
 public class BridgeService(Action<string>? logger = default)
 {
@@ -59,10 +66,10 @@ public class BridgeService(Action<string>? logger = default)
     }
 
 
-    public Server? Server { get; private set; } = new();
+    public Grpc.Core.Server? Server { get; private set; } = new();
     public void AddService<T>(T service)
     {
-        Server ??= new Server();
+        Server ??= new Grpc.Core.Server();
 
         if (service != null)
             Server?.Services.AddCodeFirst(service);

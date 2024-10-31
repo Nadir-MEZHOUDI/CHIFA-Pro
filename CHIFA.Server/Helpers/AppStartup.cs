@@ -1,20 +1,15 @@
-﻿using Microsoft.Win32;
+﻿using System.Reflection;
+using Microsoft.Win32;
 
-namespace CHIFA.Pro.Helpers;
+namespace CHIFA.Server.Helpers;
 
-public static class AppStartup
+public class AppStartup
 {
-    
-    private static readonly Assembly Assembly =  Assembly.GetExecutingAssembly();
-    private static readonly string AppName = Assembly.GetName().Name!;
+    private static readonly string AppName = Assembly.GetExecutingAssembly().GetName().Name!;
 
     public static void AddApplicationToStartup()
     {
-        var appPath = Assembly.Location; // Path to the executable
-        if (appPath.EndsWith(".dll"))
-        {
-            appPath = appPath.Replace(".dll", ".exe");
-        }
+        var appPath = Assembly.GetExecutingAssembly().Location; // Path to the executable
 
         var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
 
