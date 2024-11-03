@@ -15,8 +15,6 @@ global using DevExpress.XtraEditors;
 global using DevExpress.XtraGrid.Views.Base;
 
 global using LinqToDB;
-global using LinqToDB.Data;
-
 global using Serilog;
 global using Serilog.Sinks.SystemConsole.Themes;
 
@@ -27,7 +25,7 @@ internal static partial class Program
     // Import AllocConsole from kernel32.dll to create a new console window
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool AllocConsole();
+    private static partial void AllocConsole();
 #endif
 
 

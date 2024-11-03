@@ -40,3 +40,91 @@ public static class SingleInstance
         return false;
     }
 }
+
+#region Usage
+
+//To use this class, simply call the AppIsRunning method in the App constructor like this:
+// if (SingleInstance.AppIsRunning()) return;
+
+//This will prevent the application from running multiple instances.
+
+//In WPF
+
+//To bring the single instance to the front, add the following code to the MainWindow.xaml.cs file:
+
+
+
+//#region Bring Single Instance To Front
+
+//protected override void OnSourceInitialized(EventArgs e)
+//{
+//    try
+//    {
+//        base.OnSourceInitialized(e);
+//        var source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+//        source?.AddHook(WndProc);
+//    }
+//    catch (Exception ex)
+//    {
+//        ex.Log();
+//    }
+//}
+
+//[DebuggerStepThrough]
+//private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+//{
+//    try
+//    {
+//        if (msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
+//        {
+//            if (WindowState == WindowState.Minimized)
+//                WindowState = WindowState.Maximized;
+//            Activate();
+//            handled = true;
+//        }
+//    }
+//    catch (Exception ex)
+//    {
+//        ex.Log();
+//    }
+
+//    return IntPtr.Zero;
+//}
+
+//#endregion
+
+
+
+//In WinForms Application To bring the single instance to the front, add the following code to the main form file:
+
+//#region Bring Single Instance To Front
+
+//protected override void WndProc(ref Message m)
+//{
+//    try
+//    {
+//        if (m.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
+//        {
+//            Show();
+
+//            Notification.Visible = false;
+
+//            if (WindowState == FormWindowState.Minimized)
+//                WindowState = FormWindowState.Maximized;
+
+//            Activate();
+//        }
+//    }
+//    catch (Exception)
+//    {
+//        //ignore
+//    }
+
+//    base.WndProc(ref m);
+//}
+
+//#endregion
+
+
+
+#endregion

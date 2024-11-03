@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel;
-using CHIFA.Server.Helpers;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
 
-namespace CHIFA.Pro.Helpers.Settings;
+namespace CHIFA.Server.Helpers.Settings;
 
-public class SettingsToRegistry<T> where T : class, new()
+public partial class SettingsToRegistry<T>:ObservableObject where T : class, new()
 {
     private static string KeyName =>
         $"SOFTWARE\\{typeof(SettingsToRegistry<>).Assembly.GetName().Name}\\{typeof(T).Name}";
@@ -37,7 +38,7 @@ public class SettingsToRegistry<T> where T : class, new()
     {
         Default = Deserialize();
     }
-
+    [RelayCommand]
     public void Save()
     {
         try

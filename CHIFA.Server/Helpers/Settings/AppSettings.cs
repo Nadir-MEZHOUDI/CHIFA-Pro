@@ -1,9 +1,10 @@
 ﻿using System.IO;
-using CHIFA.Pro.Helpers.Settings;
+
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CHIFA.Server.Helpers.Settings;
 
-public class AppSettings : SettingsToRegistry<AppSettings>
+public partial class AppSettings : SettingsToRegistry<AppSettings>
 {
     public bool IsServer { get; internal set; }
 
@@ -19,16 +20,10 @@ public class AppSettings : SettingsToRegistry<AppSettings>
 
     #region Notifications
 
-    public bool NotificationOnDays { get; set; }
-    public bool NotificationOnMontant { get; set; }
-    public bool NotificationOnNmbr { get; set; }
-
-    public int MaxDays { get; set; } = 7;
-    public int MaxMontant { get; set; } = 500_000;
-    public int MaxNmbr { get; set; } = 100;
-    public bool UseChifaMobile { get; set; }
-    public string? ChifaMobilEmail { get; set; }
-    public string? ChifaMobilPassword { get; set; }
+    [ObservableProperty] private bool _useChifaMobile;
+    [ObservableProperty] private string? _chifaMobilEmail;
+    [ObservableProperty] private string? _chifaMobilPassword;
+    [ObservableProperty] private bool _startWithWin;
 
     #endregion
 

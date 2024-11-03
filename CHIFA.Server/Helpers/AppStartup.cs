@@ -10,6 +10,8 @@ public class AppStartup
     public static void AddApplicationToStartup()
     {
         var appPath = Assembly.GetExecutingAssembly().Location; // Path to the executable
+        if(appPath.EndsWith(".dll",StringComparison.InvariantCultureIgnoreCase))
+            appPath = appPath.Replace(".dll", ".exe");
 
         var registryKey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
 
