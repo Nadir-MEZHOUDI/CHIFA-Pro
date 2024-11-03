@@ -1,5 +1,4 @@
 ﻿namespace CHIFA.Pro.Helpers.Settings;
-
 public class AppSettings : SettingsToRegistry<AppSettings>
 {
     public bool IsServer { get; internal set; }
@@ -23,7 +22,7 @@ public class AppSettings : SettingsToRegistry<AppSettings>
     public int MaxDays { get; set; } = 7;
     public int MaxMontant { get; set; } = 500_000;
     public int MaxNmbr { get; set; } = 100;
-
+    public bool StartupWithWindows { get; set; }
 
     #endregion
 

@@ -80,6 +80,8 @@ public partial class ParametersUc : XtraUserControl, INavigable
             rbtClient.Checked = !AppSettings.Default.IsServer;
             rbtClient.EditValue = !AppSettings.Default.IsServer;
 
+            chkStartup.Checked = AppSettings.Default.StartupWithWindows;
+
             var items = await Task.Run(XtraHelper.ListAllDevicesOnLocalNetwork);
 
             if (items is not { Length: > 0 }) return;
@@ -193,17 +195,27 @@ public partial class ParametersUc : XtraUserControl, INavigable
 
     private void chkStartup_CheckStateChanged(object sender, EventArgs e)
     {
-        if (chkStartup.Checked)
+        try
         {
-            AppStartup.AddApplicationToStartup();
+            if (chkStartup.Checked)
+            {
+                AppStartup.AddApplicationToStartup();
+            }
+            else
+            {
+                AppStartup.RemoveApplicationFromStartup();
+            }
+
+            AppSettings.Default.StartupWithWindows = chkStartup.Checked;
+            AppSettings.Default.Save();
         }
-        else
+        catch (Exception ex)
         {
-            AppStartup.RemoveApplicationFromStartup();
+            ex.Log();
         }
     }
 
-  
 
-   
+
+
 }
