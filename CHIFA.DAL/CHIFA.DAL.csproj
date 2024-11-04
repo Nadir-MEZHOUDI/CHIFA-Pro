@@ -4,10 +4,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CHIFA2.Data" Version="2.*" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\CHIFA.Contract\CHIFA.Contract.csproj" />
 	</ItemGroup>
 

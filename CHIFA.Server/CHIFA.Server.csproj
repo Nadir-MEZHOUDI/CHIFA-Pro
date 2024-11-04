@@ -7,6 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
 	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	  <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,12 +25,11 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
-    <PackageReference Include="Grpc.Core" Version="2.*" />
     <PackageReference Include="protobuf-net.Grpc.Native" Version="1.*" />
-    <PackageReference Include="ReusableTheme" Version="2.*" />
-    <PackageReference Include="Serilog" Version="4.*" />
+    <PackageReference Include="ReusableTheme" Version="2.*">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
     <PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
-    <PackageReference Include="Serilog.Sinks.Debug" Version="3.*" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.*" />
     <PackageReference Include="SmartApp.Bridge" Version="2.*" />
     <PackageReference Include="Velopack" Version="0.*" />

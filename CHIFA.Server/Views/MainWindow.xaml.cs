@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
+
 using CHIFA.DAL.DataServices;
 using CHIFA.Server.Helpers;
 using CHIFA.Server.Helpers.Settings;
@@ -18,6 +20,7 @@ namespace CHIFA.Server.Views;
 public partial class MainWindow
 {
     public static AppSettings AppSettings => AppSettings.Default;
+    public UpdateService UpdateService { get; } = new();
 
     [ObservableProperty] private BridgeServer? _server;
     [ObservableProperty] private BridgeClient? _client;
@@ -37,7 +40,7 @@ public partial class MainWindow
             Server = new BridgeServer(AppSettings.ChifaMobilEmail!, AppSettings.ChifaMobilPassword!, Log.Logger);
             Service?.Stop();
             Service = new GrpcServer(Log.Logger, Server);
- 
+
             await Service.StartAsync();
         }
         catch (Exception ex)
@@ -117,4 +120,23 @@ public partial class MainWindow
     {
         AppStartup.RemoveApplicationFromStartup();
     }
+
+    private void MainWindow_OnContentRendered(object? sender, EventArgs e)
+    {
+        try
+        {
+            Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "";
+            Status = "Ready";
+            _ = UpdateService.UpdateAppCommand.ExecuteAsync(null);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+
+    [ObservableProperty] private string _version;
+    [ObservableProperty] private string _status;
+
 }

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.ServiceModel.Primitives" Version="8.*" />
 		<PackageReference Include="protobuf-net.Grpc" Version="1.*" />
 		<PackageReference Include="CHIFA2.Data" Version="2.*" />
 	</ItemGroup>
