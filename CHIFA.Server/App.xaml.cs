@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 
 using CHIFA.Server.Helpers;
 
@@ -9,19 +10,24 @@ namespace CHIFA.Server;
 
 public partial class App
 {
+
+    public static StringWriter LogWriter { get;  } = new();
+
+
 #if DEBUG
     // Import AllocConsole from kernel32.dll to create a new console window
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool AllocConsole();
+    static partial void AllocConsole();
 #endif
 
     public App()
     {
-        if (SingleInstance.AppIsRunning()) return;
+        if (SingleInstance.CheckAndRunInstance()) return;
 
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
+            .WriteTo.TextWriter(LogWriter, outputTemplate: "[{Timestamp:HH:mm:ss}] {Level:u3}: {Message:lj}{NewLine}{Exception}")
 #if DEBUG
             .WriteTo.Console(theme: AnsiConsoleTheme.Code)
             //  .WriteTo.Debug()

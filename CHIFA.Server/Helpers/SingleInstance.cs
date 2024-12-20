@@ -1,50 +1,148 @@
-﻿// ReSharper disable InconsistentNaming
+// ReSharper disable InconsistentNaming
 // ReSharper disable IdentifierTypo
 // ReSharper disable NotAccessedField.Local
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Windows;
+using System.Windows.Interop;
+using Serilog;
 
 namespace CHIFA.Server.Helpers;
-public static class SingleInstance
+
+public sealed class SingleInstance : IDisposable
 {
     private static readonly string AppName = Assembly.GetExecutingAssembly().GetName().Name!;
-
     private const int HWND_BROADCAST = 0xffff;
+    public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage($"{AppName}_WM_SHOWFIRSTINSTANCE");
+    private static Mutex? _mutex;
+    private static readonly ILogger _logger = Log.ForContext<SingleInstance>();
+    private bool _disposed;
 
-    public static readonly int WM_SHOWFIRSTINSTANCE = RegisterWindowMessage(AppName + '_' + "WM_SHOWFIRSTINSTANCE");
+    [DllImport("user32.dll")]
+    private static extern int RegisterWindowMessage(string lpString);
 
-    [DllImport("user32.dll")] private static extern int RegisterWindowMessage(string lpString);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-    [DllImport("user32.dll")] private static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-    private static void ShowFirstInstance() => PostMessage(HWND_BROADCAST, WM_SHOWFIRSTINSTANCE, IntPtr.Zero, IntPtr.Zero);
-
-    private static Mutex _mutex = null!;
-
-    public static bool AppIsRunning()
+    private static void ShowFirstInstance()
     {
         try
         {
-            _mutex = new Mutex(true, AppName, out var createdNew);
-            if (createdNew) return false;
+            if (!PostMessage((IntPtr)HWND_BROADCAST, WM_SHOWFIRSTINSTANCE, IntPtr.Zero, IntPtr.Zero))
+            {
+                var error = Marshal.GetLastWin32Error();
+                _logger.Warning("Failed to show first instance. Error code: {ErrorCode}", error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error showing first instance");
+        }
+    }
+
+    public static bool CheckAndRunInstance()
+    {
+        try
+        {
+            bool createdNew;
+            _mutex = new Mutex(false, $"Global\\{AppName}", out createdNew);
+
+            if (createdNew)
+            {
+                try
+                {
+                    _mutex.WaitOne();
+                }
+                catch (AbandonedMutexException)
+                {
+                    // Previous instance crashed
+                    _logger.Warning("Previous instance crashed, continuing as new instance");
+                }
+                return false;
+            }
+
+            _logger.Information("Another instance is already running");
             ShowFirstInstance();
             Application.Current.Shutdown();
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            //Ignore
+            _logger.Error(ex, "Error checking single instance");
+            return false;
         }
-        return false;
+    }
+
+    public static void AttachInstanceCallback(Window window)
+    {
+        try
+        {
+            var source = HwndSource.FromHwnd(new WindowInteropHelper(window).Handle);
+            source?.AddHook(WndProc);
+            _logger.Debug("Successfully attached instance callback to window");
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error attaching instance callback");
+        }
+    }
+
+    private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        try
+        {
+            if (msg == WM_SHOWFIRSTINSTANCE)
+            {
+                var window = Application.Current.MainWindow;
+                if (window != null)
+                {
+                    if (window.WindowState == WindowState.Minimized)
+                    {
+                        window.WindowState = WindowState.Normal;
+                    }
+                    window.Activate();
+                    window.Topmost = true;
+                    window.Topmost = false;
+                    window.Focus();
+                }
+                handled = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Error in WndProc");
+        }
+        return IntPtr.Zero;
+    }
+
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            if (_mutex != null)
+            {
+                try
+                {
+                    _mutex.ReleaseMutex();
+                    _mutex.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, "Error disposing mutex");
+                }
+            }
+            _disposed = true;
+        }
     }
 }
 
 #region Usage
 
-//To use this class, simply call the AppIsRunning method in the App constructor like this:
-// if (SingleInstance.AppIsRunning()) return;
+//To use this class, simply call the CheckAndRunInstance method in the App constructor like this:
+// if (SingleInstance.CheckAndRunInstance()) return;
 
 //This will prevent the application from running multiple instances.
 

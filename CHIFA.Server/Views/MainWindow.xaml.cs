@@ -1,17 +1,12 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Interop;
-
-using CHIFA.DAL.DataServices;
 using CHIFA.Server.Helpers;
 using CHIFA.Server.Helpers.Settings;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
 using Serilog;
-
 using SmartApp.Bridge;
 
 namespace CHIFA.Server.Views;
@@ -19,16 +14,47 @@ namespace CHIFA.Server.Views;
 [ObservableObject]
 public partial class MainWindow
 {
-    public static AppSettings AppSettings => AppSettings.Default;
-    public UpdateService UpdateService { get; } = new();
-
-    [ObservableProperty] private BridgeServer? _server;
     [ObservableProperty] private BridgeClient? _client;
+    [ObservableProperty] private string _logMessages;
+    [ObservableProperty] private BridgeServer? _server;
     [ObservableProperty] private GrpcServer? _service;
+    [ObservableProperty] private string _status;
+
+    [ObservableProperty] private string _version;
+
     public MainWindow()
     {
         InitializeComponent();
+#if DEBUG
+        BridgeClient.BaseUri =
+            "https://smartappbridge.azurewebsites.net/api/GetInfo?code=hnI7cPto10N0CAhzU1WfAIOmycgMDDreFihcxMFu_lNiAzFuQbI2MQ%3D%3D";
+        BridgeServer.BaseUri =
+            "https://smartappbridge.azurewebsites.net/api/Register?code=p9Abe-0btlIvEw7KGhq29PyxzW1Nz5jp34JH4IjFBh6dAzFuI9wWEg%3D%3D";
+#endif
 
+        var logUpdaterThread = new Thread(UpdateLogMessages)
+        {
+            IsBackground = true
+        };
+        logUpdaterThread.Start();
+    }
+
+    public static AppSettings AppSettings => AppSettings.Default;
+    public UpdateService UpdateService { get; } = new();
+
+    private void UpdateLogMessages()
+    {
+        while (true)
+        {
+            // Read logs from the global StringWriter
+            var logs = App.LogWriter.ToString();
+
+            // Update the LogMessages property on the UI thread
+            Application.Current.Dispatcher.Invoke(() => { LogMessages = logs; });
+
+            // Wait before checking for updates again
+            Thread.Sleep(500); // Adjust as needed
+        }
     }
 
     [RelayCommand(AllowConcurrentExecutions = false)]
@@ -71,6 +97,43 @@ public partial class MainWindow
         _ = Service?.Stop();
     }
 
+    private void StartWithWin_OnChecked(object sender, RoutedEventArgs e)
+    {
+        AppStartup.AddApplicationToStartup();
+    }
+
+    private void StartWithWin_OnUnchecked(object sender, RoutedEventArgs e)
+    {
+        AppStartup.RemoveApplicationFromStartup();
+    }
+
+    private void MainWindow_OnContentRendered(object? sender, EventArgs e)
+    {
+        try
+        {
+            Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "";
+            Status = "Ready";
+            _ = UpdateService.UpdateAppCommand.ExecuteAsync(null);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+    private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (AppSettings.StartWithWin) 
+                await RunChifaMobileServerCommand.ExecuteAsync(null);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
 
     #region Bring Single Instance To Front
 
@@ -110,33 +173,4 @@ public partial class MainWindow
     }
 
     #endregion
-
-    private void StartWithWin_OnChecked(object sender, RoutedEventArgs e)
-    {
-        AppStartup.AddApplicationToStartup();
-    }
-
-    private void StartWithWin_OnUnchecked(object sender, RoutedEventArgs e)
-    {
-        AppStartup.RemoveApplicationFromStartup();
-    }
-
-    private void MainWindow_OnContentRendered(object? sender, EventArgs e)
-    {
-        try
-        {
-            Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "";
-            Status = "Ready";
-            _ = UpdateService.UpdateAppCommand.ExecuteAsync(null);
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-    }
-
-
-    [ObservableProperty] private string _version;
-    [ObservableProperty] private string _status;
-
 }

@@ -28,7 +28,7 @@ public class WeeklyStat
     public decimal? MontantFacture => (MontantOff / Factures).ToDecimal();
 
     public decimal? Marge => (MontantOff / 6).ToDecimal();
-    public decimal? Brute => (Marge + MontantMaj).ToDecimal();
+    public decimal? Brut => (Marge + MontantMaj).ToDecimal();
 
     public decimal? MontantGlobal => (MontantOff + MontantMaj + MontantFE).ToDecimal();
 

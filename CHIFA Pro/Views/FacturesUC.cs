@@ -61,10 +61,10 @@ public partial class FacturesUc : XtraUserControl, INavigable
         }
     }
 
-    private async void LastFacturesUC_Load(object sender, EventArgs e)
+    private  async void LastFacturesUC_Load(object sender, EventArgs e)
     {
         await LoadMaxAndMinDates();
-        await LoadFacturesAsync();
+        _= LoadFacturesAsync();
     }
 
     private async Task LoadMaxAndMinDates()

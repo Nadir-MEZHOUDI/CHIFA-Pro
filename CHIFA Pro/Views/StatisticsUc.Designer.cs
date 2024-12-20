@@ -32,114 +32,114 @@ namespace CHIFA.Pro.Views
         {
             components = new System.ComponentModel.Container();
             DevExpress.XtraGrid.Columns.GridColumn colPA;
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(StatisticsUc));
-            var chartCalculatedField1 = new ChartCalculatedField();
-            var xyDiagram1 = new XYDiagram();
-            var xyDiagramPane1 = new XYDiagramPane();
-            var xyDiagramPane2 = new XYDiagramPane();
-            var xyDiagramPane3 = new XYDiagramPane();
-            var secondaryAxisx1 = new SecondaryAxisX();
-            var secondaryAxisx2 = new SecondaryAxisX();
-            var secondaryAxisx3 = new SecondaryAxisX();
-            var secondaryAxisy1 = new SecondaryAxisY();
-            var secondaryAxisy2 = new SecondaryAxisY();
-            var secondaryAxisy3 = new SecondaryAxisY();
-            var series1 = new Series();
-            var sideBySideBarSeriesView1 = new SideBySideBarSeriesView();
-            var averageTrueRange1 = new AverageTrueRange();
-            var series2 = new Series();
-            var sideBySideBarSeriesView2 = new SideBySideBarSeriesView();
-            var series3 = new Series();
-            var sideBySideBarSeriesView3 = new SideBySideBarSeriesView();
-            var series4 = new Series();
-            var sideBySideBarSeriesView4 = new SideBySideBarSeriesView();
-            var xyDiagram2 = new XYDiagram();
-            var xyDiagramPane4 = new XYDiagramPane();
-            var xyDiagramPane5 = new XYDiagramPane();
-            var xyDiagramPane6 = new XYDiagramPane();
-            var secondaryAxisy4 = new SecondaryAxisY();
-            var secondaryAxisy5 = new SecondaryAxisY();
-            var series5 = new Series();
-            var series6 = new Series();
-            var sideBySideBarSeriesView5 = new SideBySideBarSeriesView();
-            var series7 = new Series();
-            var sideBySideBarSeriesView6 = new SideBySideBarSeriesView();
-            var series8 = new Series();
-            var sideBySideBarSeriesView7 = new SideBySideBarSeriesView();
-            var series9 = new Series();
-            var sideBySideBarSeriesView8 = new SideBySideBarSeriesView();
-            var series10 = new Series();
-            var sideBySideBarSeriesView9 = new SideBySideBarSeriesView();
-            var series11 = new Series();
-            var sideBySideBarSeriesView10 = new SideBySideBarSeriesView();
-            var series12 = new Series();
-            var sideBySideBarSeriesView11 = new SideBySideBarSeriesView();
-            var series13 = new Series();
-            var sideBySideBarSeriesView12 = new SideBySideBarSeriesView();
-            var xyDiagram3 = new XYDiagram();
-            var xyDiagramPane7 = new XYDiagramPane();
-            var secondaryAxisy6 = new SecondaryAxisY();
-            var series14 = new Series();
-            var series15 = new Series();
-            var series16 = new Series();
-            var sideBySideBarSeriesView13 = new SideBySideBarSeriesView();
-            var series17 = new Series();
-            var sideBySideBarSeriesView14 = new SideBySideBarSeriesView();
-            var xyDiagram4 = new XYDiagram();
-            var xyDiagramPane8 = new XYDiagramPane();
-            var secondaryAxisy7 = new SecondaryAxisY();
-            var secondaryAxisy8 = new SecondaryAxisY();
-            var secondaryAxisy9 = new SecondaryAxisY();
-            var series18 = new Series();
-            var series19 = new Series();
-            var sideBySideBarSeriesView15 = new SideBySideBarSeriesView();
-            var series20 = new Series();
-            var sideBySideBarSeriesView16 = new SideBySideBarSeriesView();
-            var series21 = new Series();
-            var sideBySideBarSeriesView17 = new SideBySideBarSeriesView();
-            var xyDiagram5 = new XYDiagram();
-            var xyDiagramPane9 = new XYDiagramPane();
-            var secondaryAxisy10 = new SecondaryAxisY();
-            var secondaryAxisy11 = new SecondaryAxisY();
-            var secondaryAxisy12 = new SecondaryAxisY();
-            var series22 = new Series();
-            var series23 = new Series();
-            var sideBySideBarSeriesView18 = new SideBySideBarSeriesView();
-            var series24 = new Series();
-            var sideBySideBarSeriesView19 = new SideBySideBarSeriesView();
-            var series25 = new Series();
-            var sideBySideBarSeriesView20 = new SideBySideBarSeriesView();
-            var xyDiagram6 = new XYDiagram();
-            var xyDiagramPane10 = new XYDiagramPane();
-            var secondaryAxisy13 = new SecondaryAxisY();
-            var secondaryAxisy14 = new SecondaryAxisY();
-            var series26 = new Series();
-            var series27 = new Series();
-            var sideBySideBarSeriesView21 = new SideBySideBarSeriesView();
-            var series28 = new Series();
-            var sideBySideBarSeriesView22 = new SideBySideBarSeriesView();
-            var xyDiagram7 = new XYDiagram();
-            var xyDiagramPane11 = new XYDiagramPane();
-            var xyDiagramPane12 = new XYDiagramPane();
-            var secondaryAxisx4 = new SecondaryAxisX();
-            var secondaryAxisx5 = new SecondaryAxisX();
-            var secondaryAxisy15 = new SecondaryAxisY();
-            var secondaryAxisy16 = new SecondaryAxisY();
-            var series29 = new Series();
-            var series30 = new Series();
-            var sideBySideBarSeriesView23 = new SideBySideBarSeriesView();
-            var series31 = new Series();
-            var sideBySideBarSeriesView24 = new SideBySideBarSeriesView();
-            var editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
-            var serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
-            var serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
-            var serializableAppearanceObject3 = new DevExpress.Utils.SerializableAppearanceObject();
-            var serializableAppearanceObject4 = new DevExpress.Utils.SerializableAppearanceObject();
-            var editorButtonImageOptions2 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
-            var serializableAppearanceObject5 = new DevExpress.Utils.SerializableAppearanceObject();
-            var serializableAppearanceObject6 = new DevExpress.Utils.SerializableAppearanceObject();
-            var serializableAppearanceObject7 = new DevExpress.Utils.SerializableAppearanceObject();
-            var serializableAppearanceObject8 = new DevExpress.Utils.SerializableAppearanceObject();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StatisticsUc));
+            ChartCalculatedField chartCalculatedField1 = new ChartCalculatedField();
+            XYDiagram xyDiagram1 = new XYDiagram();
+            XYDiagramPane xyDiagramPane1 = new XYDiagramPane();
+            XYDiagramPane xyDiagramPane2 = new XYDiagramPane();
+            XYDiagramPane xyDiagramPane3 = new XYDiagramPane();
+            SecondaryAxisX secondaryAxisx1 = new SecondaryAxisX();
+            SecondaryAxisX secondaryAxisx2 = new SecondaryAxisX();
+            SecondaryAxisX secondaryAxisx3 = new SecondaryAxisX();
+            SecondaryAxisY secondaryAxisy1 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy2 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy3 = new SecondaryAxisY();
+            Series series1 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView1 = new SideBySideBarSeriesView();
+            AverageTrueRange averageTrueRange1 = new AverageTrueRange();
+            Series series2 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView2 = new SideBySideBarSeriesView();
+            Series series3 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView3 = new SideBySideBarSeriesView();
+            Series series4 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView4 = new SideBySideBarSeriesView();
+            XYDiagram xyDiagram2 = new XYDiagram();
+            XYDiagramPane xyDiagramPane4 = new XYDiagramPane();
+            XYDiagramPane xyDiagramPane5 = new XYDiagramPane();
+            XYDiagramPane xyDiagramPane6 = new XYDiagramPane();
+            SecondaryAxisY secondaryAxisy4 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy5 = new SecondaryAxisY();
+            Series series5 = new Series();
+            Series series6 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView5 = new SideBySideBarSeriesView();
+            Series series7 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView6 = new SideBySideBarSeriesView();
+            Series series8 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView7 = new SideBySideBarSeriesView();
+            Series series9 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView8 = new SideBySideBarSeriesView();
+            Series series10 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView9 = new SideBySideBarSeriesView();
+            Series series11 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView10 = new SideBySideBarSeriesView();
+            Series series12 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView11 = new SideBySideBarSeriesView();
+            Series series13 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView12 = new SideBySideBarSeriesView();
+            XYDiagram xyDiagram3 = new XYDiagram();
+            XYDiagramPane xyDiagramPane7 = new XYDiagramPane();
+            SecondaryAxisY secondaryAxisy6 = new SecondaryAxisY();
+            Series series14 = new Series();
+            Series series15 = new Series();
+            Series series16 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView13 = new SideBySideBarSeriesView();
+            Series series17 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView14 = new SideBySideBarSeriesView();
+            XYDiagram xyDiagram4 = new XYDiagram();
+            XYDiagramPane xyDiagramPane8 = new XYDiagramPane();
+            SecondaryAxisY secondaryAxisy7 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy8 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy9 = new SecondaryAxisY();
+            Series series18 = new Series();
+            Series series19 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView15 = new SideBySideBarSeriesView();
+            Series series20 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView16 = new SideBySideBarSeriesView();
+            Series series21 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView17 = new SideBySideBarSeriesView();
+            XYDiagram xyDiagram5 = new XYDiagram();
+            XYDiagramPane xyDiagramPane9 = new XYDiagramPane();
+            SecondaryAxisY secondaryAxisy10 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy11 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy12 = new SecondaryAxisY();
+            Series series22 = new Series();
+            Series series23 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView18 = new SideBySideBarSeriesView();
+            Series series24 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView19 = new SideBySideBarSeriesView();
+            Series series25 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView20 = new SideBySideBarSeriesView();
+            XYDiagram xyDiagram6 = new XYDiagram();
+            XYDiagramPane xyDiagramPane10 = new XYDiagramPane();
+            SecondaryAxisY secondaryAxisy13 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy14 = new SecondaryAxisY();
+            Series series26 = new Series();
+            Series series27 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView21 = new SideBySideBarSeriesView();
+            Series series28 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView22 = new SideBySideBarSeriesView();
+            XYDiagram xyDiagram7 = new XYDiagram();
+            XYDiagramPane xyDiagramPane11 = new XYDiagramPane();
+            XYDiagramPane xyDiagramPane12 = new XYDiagramPane();
+            SecondaryAxisX secondaryAxisx4 = new SecondaryAxisX();
+            SecondaryAxisX secondaryAxisx5 = new SecondaryAxisX();
+            SecondaryAxisY secondaryAxisy15 = new SecondaryAxisY();
+            SecondaryAxisY secondaryAxisy16 = new SecondaryAxisY();
+            Series series29 = new Series();
+            Series series30 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView23 = new SideBySideBarSeriesView();
+            Series series31 = new Series();
+            SideBySideBarSeriesView sideBySideBarSeriesView24 = new SideBySideBarSeriesView();
+            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject3 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject4 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions2 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject5 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject6 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject7 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject8 = new DevExpress.Utils.SerializableAppearanceObject();
             weeklyStatBindingSource = new BindingSource(components);
             colTPa = new DevExpress.XtraGrid.Columns.GridColumn();
             colMontant1 = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -183,7 +183,7 @@ namespace CHIFA.Pro.Views
             colMontantGlobal = new DevExpress.XtraGrid.Columns.GridColumn();
             colVirement = new DevExpress.XtraGrid.Columns.GridColumn();
             colMarge1 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colBrute = new DevExpress.XtraGrid.Columns.GridColumn();
+            colBrut = new DevExpress.XtraGrid.Columns.GridColumn();
             colNet = new DevExpress.XtraGrid.Columns.GridColumn();
             colEcart = new DevExpress.XtraGrid.Columns.GridColumn();
             tabClientsTable = new DevExpress.XtraTab.XtraTabPage();
@@ -216,7 +216,7 @@ namespace CHIFA.Pro.Views
             colMontantFact1 = new DevExpress.XtraGrid.Columns.GridColumn();
             colMontantOff1 = new DevExpress.XtraGrid.Columns.GridColumn();
             colMarge2 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colBrute1 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colBrut1 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
             tabProductTable = new DevExpress.XtraTab.XtraTabPage();
@@ -253,7 +253,7 @@ namespace CHIFA.Pro.Views
             colMontantFacture4 = new DevExpress.XtraGrid.Columns.GridColumn();
             colMontantGlobal1 = new DevExpress.XtraGrid.Columns.GridColumn();
             colMarge5 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colBrute4 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colBrut4 = new DevExpress.XtraGrid.Columns.GridColumn();
             colAssureis = new DevExpress.XtraGrid.Columns.GridColumn();
             colBenificiaires = new DevExpress.XtraGrid.Columns.GridColumn();
             tabYearly = new DevExpress.XtraTab.XtraTabPage();
@@ -277,7 +277,7 @@ namespace CHIFA.Pro.Views
             colMontantFact2 = new DevExpress.XtraGrid.Columns.GridColumn();
             colMontantOff2 = new DevExpress.XtraGrid.Columns.GridColumn();
             colMarge3 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colBrute2 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colBrut2 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
             tabWeekly = new DevExpress.XtraTab.XtraTabPage();
@@ -297,7 +297,7 @@ namespace CHIFA.Pro.Views
             colMontantFact3 = new DevExpress.XtraGrid.Columns.GridColumn();
             colMontantOff3 = new DevExpress.XtraGrid.Columns.GridColumn();
             colMarge4 = new DevExpress.XtraGrid.Columns.GridColumn();
-            colBrute3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colBrut3 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
             tabDaily = new DevExpress.XtraTab.XtraTabPage();
@@ -707,7 +707,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewBord
             // 
-            viewBord.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDateDebut, colDateFin, colDate, colNum, colFactures2, colJours, colMontantJour, colFactureJour, colMontantFacture, colCenter, colMontantMaj, colMontantFact, colMontantOff, colMontantFE, colMontantGlobal, colVirement, colMarge1, colBrute, colNet, colEcart });
+            viewBord.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDateDebut, colDateFin, colDate, colNum, colFactures2, colJours, colMontantJour, colFactureJour, colMontantFacture, colCenter, colMontantMaj, colMontantFact, colMontantOff, colMontantFE, colMontantGlobal, colVirement, colMarge1, colBrut, colNet, colEcart });
             viewBord.GridControl = gridControl1;
             viewBord.Name = "viewBord";
             viewBord.OptionsView.ShowFooter = true;
@@ -891,17 +891,17 @@ namespace CHIFA.Pro.Views
             colMarge1.VisibleIndex = 13;
             colMarge1.Width = 60;
             // 
-            // colBrute
+            // colBrut
             // 
-            colBrute.DisplayFormat.FormatString = "N2";
-            colBrute.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute.FieldName = "Brut";
-            colBrute.Name = "colBrute";
-            colBrute.OptionsColumn.ReadOnly = true;
-            colBrute.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
-            colBrute.Visible = true;
-            colBrute.VisibleIndex = 15;
-            colBrute.Width = 60;
+            colBrut.DisplayFormat.FormatString = "N2";
+            colBrut.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colBrut.FieldName = "Brut";
+            colBrut.Name = "colBrut";
+            colBrut.OptionsColumn.ReadOnly = true;
+            colBrut.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
+            colBrut.Visible = true;
+            colBrut.VisibleIndex = 15;
+            colBrut.Width = 60;
             // 
             // colNet
             // 
@@ -933,7 +933,7 @@ namespace CHIFA.Pro.Views
             tabClientsTable.ImageOptions.Image = (Image)resources.GetObject("tabClientsTable.ImageOptions.Image");
             tabClientsTable.Margin = new Padding(4, 3, 4, 3);
             tabClientsTable.Name = "tabClientsTable";
-            tabClientsTable.Size = new Size(1214, 695);
+            tabClientsTable.Size = new Size(1241, 673);
             tabClientsTable.Text = "CLIENTS";
             // 
             // gridByClient
@@ -945,7 +945,7 @@ namespace CHIFA.Pro.Views
             gridByClient.MainView = viewClients;
             gridByClient.Margin = new Padding(4, 3, 4, 3);
             gridByClient.Name = "gridByClient";
-            gridByClient.Size = new Size(1214, 695);
+            gridByClient.Size = new Size(1241, 673);
             gridByClient.TabIndex = 0;
             gridByClient.ViewCollection.AddRange(new BaseView[] { viewClients, gridView2 });
             // 
@@ -1096,7 +1096,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewMonthly
             // 
-            viewMonthly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate2, colMonth, colYear, colFactures1, colJours1, colMontantJour1, colFactureJour1, colMontantFacture1, colMontantMaj1, colMontantFact1, colMontantOff1, colMarge2, colBrute1, gridColumn4, gridColumn5 });
+            viewMonthly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate2, colMonth, colYear, colFactures1, colJours1, colMontantJour1, colFactureJour1, colMontantFacture1, colMontantMaj1, colMontantFact1, colMontantOff1, colMarge2, colBrut1, gridColumn4, gridColumn5 });
             viewMonthly.GridControl = gridMonthly;
             viewMonthly.Name = "viewMonthly";
             viewMonthly.OptionsView.ShowFooter = true;
@@ -1222,17 +1222,17 @@ namespace CHIFA.Pro.Views
             colMarge2.VisibleIndex = 7;
             colMarge2.Width = 93;
             // 
-            // colBrute1
+            // colBrut1
             // 
-            colBrute1.DisplayFormat.FormatString = "n";
-            colBrute1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute1.FieldName = "Brut";
-            colBrute1.Name = "colBrute1";
-            colBrute1.OptionsColumn.ReadOnly = true;
-            colBrute1.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:N2}") });
-            colBrute1.Visible = true;
-            colBrute1.VisibleIndex = 9;
-            colBrute1.Width = 125;
+            colBrut1.DisplayFormat.FormatString = "n";
+            colBrut1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colBrut1.FieldName = "Brut";
+            colBrut1.Name = "colBrut1";
+            colBrut1.OptionsColumn.ReadOnly = true;
+            colBrut1.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:N2}") });
+            colBrut1.Visible = true;
+            colBrut1.VisibleIndex = 9;
+            colBrut1.Width = 125;
             // 
             // gridColumn4
             // 
@@ -1243,7 +1243,7 @@ namespace CHIFA.Pro.Views
             // 
             // gridColumn5
             // 
-            gridColumn5.FieldName = "Benificiaires";
+            gridColumn5.FieldName = "Beneficiaires";
             gridColumn5.Name = "gridColumn5";
             gridColumn5.Visible = true;
             gridColumn5.VisibleIndex = 11;
@@ -1254,7 +1254,7 @@ namespace CHIFA.Pro.Views
             tabProductTable.ImageOptions.Image = (Image)resources.GetObject("tabProductTable.ImageOptions.Image");
             tabProductTable.Margin = new Padding(4, 3, 4, 3);
             tabProductTable.Name = "tabProductTable";
-            tabProductTable.Size = new Size(1214, 695);
+            tabProductTable.Size = new Size(1241, 673);
             tabProductTable.Text = "PROUITS";
             // 
             // gridProducts
@@ -1266,7 +1266,7 @@ namespace CHIFA.Pro.Views
             gridProducts.MainView = viewProducts;
             gridProducts.Margin = new Padding(4, 3, 4, 3);
             gridProducts.Name = "gridProducts";
-            gridProducts.Size = new Size(1214, 695);
+            gridProducts.Size = new Size(1241, 673);
             gridProducts.TabIndex = 0;
             gridProducts.ViewCollection.AddRange(new BaseView[] { viewProducts });
             // 
@@ -1357,7 +1357,7 @@ namespace CHIFA.Pro.Views
             tabClients.Controls.Add(chartClients);
             tabClients.ImageOptions.Image = (Image)resources.GetObject("tabClients.ImageOptions.Image");
             tabClients.Name = "tabClients";
-            tabClients.Size = new Size(1214, 695);
+            tabClients.Size = new Size(1241, 673);
             tabClients.Text = "CLIENTS";
             // 
             // chartClients
@@ -1482,7 +1482,7 @@ namespace CHIFA.Pro.Views
     series4
     };
             chartClients.SeriesTemplate.ArgumentDataMember = "Malade";
-            chartClients.Size = new Size(1214, 695);
+            chartClients.Size = new Size(1241, 673);
             chartClients.TabIndex = 0;
             // 
             // tabControl
@@ -1504,7 +1504,7 @@ namespace CHIFA.Pro.Views
             tabBordereaux.Controls.Add(chartBordereaux);
             tabBordereaux.ImageOptions.Image = (Image)resources.GetObject("tabBordereaux.ImageOptions.Image");
             tabBordereaux.Name = "tabBordereaux";
-            tabBordereaux.Size = new Size(1214, 695);
+            tabBordereaux.Size = new Size(1241, 673);
             tabBordereaux.Text = "BORDEREAUX";
             // 
             // chartBordereaux
@@ -1621,7 +1621,7 @@ namespace CHIFA.Pro.Views
     series12,
     series13
     };
-            chartBordereaux.Size = new Size(1214, 695);
+            chartBordereaux.Size = new Size(1241, 673);
             chartBordereaux.TabIndex = 0;
             // 
             // tabYearlyTable
@@ -1629,7 +1629,7 @@ namespace CHIFA.Pro.Views
             tabYearlyTable.Controls.Add(gridYearly);
             tabYearlyTable.ImageOptions.Image = (Image)resources.GetObject("tabYearlyTable.ImageOptions.Image");
             tabYearlyTable.Name = "tabYearlyTable";
-            tabYearlyTable.Size = new Size(1214, 695);
+            tabYearlyTable.Size = new Size(1241, 673);
             tabYearlyTable.Text = "ANNUELLES";
             // 
             // gridYearly
@@ -1640,7 +1640,7 @@ namespace CHIFA.Pro.Views
             gridYearly.MainView = viewYearly;
             gridYearly.MenuManager = ribbonControl1;
             gridYearly.Name = "gridYearly";
-            gridYearly.Size = new Size(1214, 695);
+            gridYearly.Size = new Size(1241, 673);
             gridYearly.TabIndex = 0;
             gridYearly.ViewCollection.AddRange(new BaseView[] { viewYearly });
             // 
@@ -1650,7 +1650,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewYearly
             // 
-            viewYearly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate5, colDateDebut2, colDateFin2, colFactures5, colMontantMaj4, colMontantFE1, colMontantFact4, colMontantOff4, colJours3, colMontantJour3, colFactureJour3, colMontantFacture4, colMontantGlobal1, colMarge5, colBrute4, colAssureis, colBenificiaires });
+            viewYearly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate5, colDateDebut2, colDateFin2, colFactures5, colMontantMaj4, colMontantFE1, colMontantFact4, colMontantOff4, colJours3, colMontantJour3, colFactureJour3, colMontantFacture4, colMontantGlobal1, colMarge5, colBrut4, colAssureis, colBenificiaires });
             viewYearly.GridControl = gridYearly;
             viewYearly.Name = "viewYearly";
             viewYearly.OptionsView.ShowFooter = true;
@@ -1796,16 +1796,16 @@ namespace CHIFA.Pro.Views
             colMarge5.Visible = true;
             colMarge5.VisibleIndex = 15;
             // 
-            // colBrute4
+            // colBrut4
             // 
-            colBrute4.DisplayFormat.FormatString = "n2";
-            colBrute4.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute4.FieldName = "Brut";
-            colBrute4.Name = "colBrute4";
-            colBrute4.OptionsColumn.ReadOnly = true;
-            colBrute4.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
-            colBrute4.Visible = true;
-            colBrute4.VisibleIndex = 16;
+            colBrut4.DisplayFormat.FormatString = "n2";
+            colBrut4.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colBrut4.FieldName = "Brut";
+            colBrut4.Name = "colBrut4";
+            colBrut4.OptionsColumn.ReadOnly = true;
+            colBrut4.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
+            colBrut4.Visible = true;
+            colBrut4.VisibleIndex = 16;
             // 
             // colAssureis
             // 
@@ -1831,7 +1831,7 @@ namespace CHIFA.Pro.Views
             tabYearly.Controls.Add(chartYearly);
             tabYearly.ImageOptions.Image = (Image)resources.GetObject("tabYearly.ImageOptions.Image");
             tabYearly.Name = "tabYearly";
-            tabYearly.Size = new Size(1214, 695);
+            tabYearly.Size = new Size(1241, 673);
             tabYearly.Text = "ANNUELLES";
             // 
             // chartYearly
@@ -1880,7 +1880,7 @@ namespace CHIFA.Pro.Views
     series16,
     series17
     };
-            chartYearly.Size = new Size(1214, 695);
+            chartYearly.Size = new Size(1241, 673);
             chartYearly.TabIndex = 0;
             // 
             // tabMonthly
@@ -1888,7 +1888,7 @@ namespace CHIFA.Pro.Views
             tabMonthly.Controls.Add(chartMonthly);
             tabMonthly.ImageOptions.Image = (Image)resources.GetObject("tabMonthly.ImageOptions.Image");
             tabMonthly.Name = "tabMonthly";
-            tabMonthly.Size = new Size(1214, 695);
+            tabMonthly.Size = new Size(1241, 673);
             tabMonthly.Text = "MENSUELS";
             // 
             // chartMonthly
@@ -1950,7 +1950,7 @@ namespace CHIFA.Pro.Views
     series20,
     series21
     };
-            chartMonthly.Size = new Size(1214, 695);
+            chartMonthly.Size = new Size(1241, 673);
             chartMonthly.TabIndex = 0;
             // 
             // tabWeeklyTable
@@ -1958,7 +1958,7 @@ namespace CHIFA.Pro.Views
             tabWeeklyTable.Controls.Add(gridWeekly);
             tabWeeklyTable.ImageOptions.Image = (Image)resources.GetObject("tabWeeklyTable.ImageOptions.Image");
             tabWeeklyTable.Name = "tabWeeklyTable";
-            tabWeeklyTable.Size = new Size(1214, 695);
+            tabWeeklyTable.Size = new Size(1241, 673);
             tabWeeklyTable.Text = "HEBDOMADAIRES";
             // 
             // gridWeekly
@@ -1969,13 +1969,13 @@ namespace CHIFA.Pro.Views
             gridWeekly.MainView = viewWeekly;
             gridWeekly.MenuManager = ribbonControl1;
             gridWeekly.Name = "gridWeekly";
-            gridWeekly.Size = new Size(1214, 695);
+            gridWeekly.Size = new Size(1241, 673);
             gridWeekly.TabIndex = 0;
             gridWeekly.ViewCollection.AddRange(new BaseView[] { viewWeekly });
             // 
             // viewWeekly
             // 
-            viewWeekly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate3, colMonth1, colYear1, colDateDebut1, colDateFin1, colFactures3, colJours2, colMontantJour2, colFactureJour2, colMontantFacture2, colMontantMaj2, colMontantFact2, colMontantOff2, colMarge3, colBrute2, gridColumn6, gridColumn7 });
+            viewWeekly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate3, colMonth1, colYear1, colDateDebut1, colDateFin1, colFactures3, colJours2, colMontantJour2, colFactureJour2, colMontantFacture2, colMontantMaj2, colMontantFact2, colMontantOff2, colMarge3, colBrut2, gridColumn6, gridColumn7 });
             viewWeekly.GridControl = gridWeekly;
             viewWeekly.Name = "viewWeekly";
             viewWeekly.OptionsView.ShowFooter = true;
@@ -2107,16 +2107,16 @@ namespace CHIFA.Pro.Views
             colMarge3.Visible = true;
             colMarge3.VisibleIndex = 12;
             // 
-            // colBrute2
+            // colBrut2
             // 
-            colBrute2.DisplayFormat.FormatString = "n2";
-            colBrute2.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute2.FieldName = "Brut";
-            colBrute2.Name = "colBrute2";
-            colBrute2.OptionsColumn.ReadOnly = true;
-            colBrute2.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n}") });
-            colBrute2.Visible = true;
-            colBrute2.VisibleIndex = 13;
+            colBrut2.DisplayFormat.FormatString = "n2";
+            colBrut2.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colBrut2.FieldName = "Brut";
+            colBrut2.Name = "colBrut2";
+            colBrut2.OptionsColumn.ReadOnly = true;
+            colBrut2.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n}") });
+            colBrut2.Visible = true;
+            colBrut2.VisibleIndex = 13;
             // 
             // gridColumn6
             // 
@@ -2137,7 +2137,7 @@ namespace CHIFA.Pro.Views
             tabWeekly.Controls.Add(chartWeekly);
             tabWeekly.ImageOptions.Image = (Image)resources.GetObject("tabWeekly.ImageOptions.Image");
             tabWeekly.Name = "tabWeekly";
-            tabWeekly.Size = new Size(1214, 695);
+            tabWeekly.Size = new Size(1241, 673);
             tabWeekly.Text = "HEBDOMADAIRES";
             // 
             // chartWeekly
@@ -2202,7 +2202,7 @@ namespace CHIFA.Pro.Views
     series24,
     series25
     };
-            chartWeekly.Size = new Size(1214, 695);
+            chartWeekly.Size = new Size(1241, 673);
             chartWeekly.TabIndex = 0;
             // 
             // tabDailyTable
@@ -2210,7 +2210,7 @@ namespace CHIFA.Pro.Views
             tabDailyTable.Controls.Add(gridDaily);
             tabDailyTable.ImageOptions.Image = (Image)resources.GetObject("tabDailyTable.ImageOptions.Image");
             tabDailyTable.Name = "tabDailyTable";
-            tabDailyTable.Size = new Size(1214, 695);
+            tabDailyTable.Size = new Size(1241, 673);
             tabDailyTable.Text = "QUOTIDIENNES";
             // 
             // gridDaily
@@ -2221,7 +2221,7 @@ namespace CHIFA.Pro.Views
             gridDaily.MainView = viewDaily;
             gridDaily.MenuManager = ribbonControl1;
             gridDaily.Name = "gridDaily";
-            gridDaily.Size = new Size(1214, 695);
+            gridDaily.Size = new Size(1241, 673);
             gridDaily.TabIndex = 0;
             gridDaily.ViewCollection.AddRange(new BaseView[] { viewDaily });
             // 
@@ -2231,7 +2231,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewDaily
             // 
-            viewDaily.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate4, colDay, colMonth2, colYear2, colDateTime, colFactures4, colMontantFacture3, colMontantMaj3, colMontantFact3, colMontantOff3, colMarge4, colBrute3, gridColumn8, gridColumn9 });
+            viewDaily.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate4, colDay, colMonth2, colYear2, colDateTime, colFactures4, colMontantFacture3, colMontantMaj3, colMontantFact3, colMontantOff3, colMarge4, colBrut3, gridColumn8, gridColumn9 });
             viewDaily.GridControl = gridDaily;
             viewDaily.Name = "viewDaily";
             viewDaily.OptionsView.ShowFooter = true;
@@ -2329,16 +2329,16 @@ namespace CHIFA.Pro.Views
             colMarge4.Visible = true;
             colMarge4.VisibleIndex = 6;
             // 
-            // colBrute3
+            // colBrut3
             // 
-            colBrute3.DisplayFormat.FormatString = "n2";
-            colBrute3.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
-            colBrute3.FieldName = "Brut";
-            colBrute3.Name = "colBrute3";
-            colBrute3.OptionsColumn.ReadOnly = true;
-            colBrute3.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
-            colBrute3.Visible = true;
-            colBrute3.VisibleIndex = 8;
+            colBrut3.DisplayFormat.FormatString = "n2";
+            colBrut3.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colBrut3.FieldName = "Brut";
+            colBrut3.Name = "colBrut3";
+            colBrut3.OptionsColumn.ReadOnly = true;
+            colBrut3.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
+            colBrut3.Visible = true;
+            colBrut3.VisibleIndex = 8;
             // 
             // gridColumn8
             // 
@@ -2361,7 +2361,7 @@ namespace CHIFA.Pro.Views
             tabDaily.Controls.Add(chartDaily);
             tabDaily.ImageOptions.Image = (Image)resources.GetObject("tabDaily.ImageOptions.Image");
             tabDaily.Name = "tabDaily";
-            tabDaily.Size = new Size(1214, 695);
+            tabDaily.Size = new Size(1241, 673);
             tabDaily.Text = "QUOTIDIENNES";
             // 
             // chartDaily
@@ -2413,7 +2413,7 @@ namespace CHIFA.Pro.Views
     series27,
     series28
     };
-            chartDaily.Size = new Size(1214, 695);
+            chartDaily.Size = new Size(1241, 673);
             chartDaily.TabIndex = 0;
             // 
             // tabProducts2
@@ -2421,7 +2421,7 @@ namespace CHIFA.Pro.Views
             tabProducts2.Controls.Add(chartProducts);
             tabProducts2.ImageOptions.Image = (Image)resources.GetObject("tabProducts2.ImageOptions.Image");
             tabProducts2.Name = "tabProducts2";
-            tabProducts2.Size = new Size(1214, 695);
+            tabProducts2.Size = new Size(1241, 673);
             tabProducts2.Text = "PRODUITS";
             // 
             // chartProducts
@@ -2508,7 +2508,7 @@ namespace CHIFA.Pro.Views
     series30,
     series31
     };
-            chartProducts.Size = new Size(1214, 695);
+            chartProducts.Size = new Size(1241, 673);
             chartProducts.TabIndex = 14;
             // 
             // repositoryItemRibbonSearchEdit1
@@ -2773,7 +2773,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colMontantGlobal;
         private DevExpress.XtraGrid.Columns.GridColumn colVirement;
         private DevExpress.XtraGrid.Columns.GridColumn colMarge1;
-        private DevExpress.XtraGrid.Columns.GridColumn colBrute;
+        private DevExpress.XtraGrid.Columns.GridColumn colBrut;
         private DevExpress.XtraGrid.Columns.GridColumn colNet;
         private DevExpress.XtraGrid.Columns.GridColumn colEcart;
         private DevExpress.XtraTab.XtraTabPage tabWeeklyTable;
@@ -2797,7 +2797,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colMontantFact1;
         private DevExpress.XtraGrid.Columns.GridColumn colMontantOff1;
         private DevExpress.XtraGrid.Columns.GridColumn colMarge2;
-        private DevExpress.XtraGrid.Columns.GridColumn colBrute1;
+        private DevExpress.XtraGrid.Columns.GridColumn colBrut1;
         private BindingSource weeklyStatBindingSource;
         private DevExpress.XtraGrid.Columns.GridColumn colDate3;
         private DevExpress.XtraGrid.Columns.GridColumn colMonth1;
@@ -2813,7 +2813,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colMontantFact2;
         private DevExpress.XtraGrid.Columns.GridColumn colMontantOff2;
         private DevExpress.XtraGrid.Columns.GridColumn colMarge3;
-        private DevExpress.XtraGrid.Columns.GridColumn colBrute2;
+        private DevExpress.XtraGrid.Columns.GridColumn colBrut2;
         private BindingSource dailyStatBindingSource;
         private DevExpress.XtraGrid.Columns.GridColumn colDate4;
         private DevExpress.XtraGrid.Columns.GridColumn colDay;
@@ -2826,7 +2826,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colMontantFact3;
         private DevExpress.XtraGrid.Columns.GridColumn colMontantOff3;
         private DevExpress.XtraGrid.Columns.GridColumn colMarge4;
-        private DevExpress.XtraGrid.Columns.GridColumn colBrute3;
+        private DevExpress.XtraGrid.Columns.GridColumn colBrut3;
         private BindingSource byClientStatBindingSource;
         private BindingSource productStatBindingSource;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
@@ -2862,7 +2862,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colMontantFacture4;
         private DevExpress.XtraGrid.Columns.GridColumn colMontantGlobal1;
         private DevExpress.XtraGrid.Columns.GridColumn colMarge5;
-        private DevExpress.XtraGrid.Columns.GridColumn colBrute4;
+        private DevExpress.XtraGrid.Columns.GridColumn colBrut4;
         private DevExpress.XtraGrid.Columns.GridColumn colAssureis;
         private DevExpress.XtraGrid.Columns.GridColumn colBenificiaires;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;

@@ -19,7 +19,7 @@ public class MonthlyStat
     public decimal? MontantGlobal => (MontantOff + MontantMaj + MontantFE).ToDecimal();
 
     public decimal? Marge => (MontantOff / 6).ToDecimal();
-    public decimal? Brute => (Marge + MontantMaj).ToDecimal();
+    public decimal? Brut => (Marge + MontantMaj).ToDecimal();
 
     public int Assureis { get; init; }
     public int Beneficiaires { get; init; }

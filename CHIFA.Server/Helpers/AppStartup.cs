@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.Win32;
 
 namespace CHIFA.Server.Helpers;

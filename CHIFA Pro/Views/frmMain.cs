@@ -116,8 +116,8 @@ public partial class FrmMain : XtraForm
             this.NavigateTo<HomeUc>();
             Application.DoEvents();
             await Task.Delay(500);
-            await LoadServerInfo();
-            await UpdateAppAsync();
+            _ = LoadServerInfo();
+            _ = UpdateAppAsync();
         }
         catch (Exception ex)
         {

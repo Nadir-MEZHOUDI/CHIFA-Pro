@@ -121,12 +121,9 @@ public partial class HomeUc : XtraUserControl, INavigable
     {
         try
         {
-            Application.DoEvents();
-            await Task.Delay(1000);
-            Application.DoEvents();
-            await DbChecker.RunServerAsync();
-            await ReLoadDataAsync();
-            await FrmMain.Instance.ShowBordereauxNotifications();
+            _ = DbChecker.RunServerAsync();
+            _ = ReLoadDataAsync();
+            _ = FrmMain.Instance.ShowBordereauxNotifications();
         }
         catch (Exception ex)
         {
