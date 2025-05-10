@@ -1,9 +1,10 @@
-﻿namespace CHIFA.Pro.Views;
+namespace CHIFA.Pro.Views;
 
-public partial class OfficineUc : XtraUserControl,INavigable
+public partial class OfficineUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "OFFICINE";
     public Image Image => FrmMain.Image(13);
+
     public OfficineUc()
     {
         InitializeComponent();
@@ -11,7 +12,7 @@ public partial class OfficineUc : XtraUserControl,INavigable
 
     private async void OfficineUC_Load(object sender, EventArgs e)
     {
-        var officine = await ChifaService.Instance.GetFirstOfficineAsync().ConfigureAwait(true);
+        var officine = await ChifaService.Instance.GetFirstOfficineAsync();
         if (officine == null) return;
         dataLayoutControl1.DataSource = officine;
     }

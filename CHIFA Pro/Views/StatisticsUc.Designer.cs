@@ -1,4 +1,4 @@
-﻿using DevExpress.XtraCharts;
+using DevExpress.XtraCharts;
 
 namespace CHIFA.Pro.Views
 {
@@ -160,10 +160,12 @@ namespace CHIFA.Pro.Views
             btn6Months = new DevExpress.XtraBars.BarButtonItem();
             btnThisYear = new DevExpress.XtraBars.BarButtonItem();
             btnThisMonth = new DevExpress.XtraBars.BarButtonItem();
+            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            btnExportExcel = new DevExpress.XtraBars.BarButtonItem();
             ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
             repositoryItemDateEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemDateEdit();
             tabBordereauxTable = new DevExpress.XtraTab.XtraTabPage();
-            gridControl1 = new DevExpress.XtraGrid.GridControl();
+            gridBordereaux = new DevExpress.XtraGrid.GridControl();
             bordStatDtoBindingSource = new BindingSource(components);
             viewBord = new DevExpress.XtraGrid.Views.Grid.GridView();
             colDateDebut = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -187,7 +189,7 @@ namespace CHIFA.Pro.Views
             colNet = new DevExpress.XtraGrid.Columns.GridColumn();
             colEcart = new DevExpress.XtraGrid.Columns.GridColumn();
             tabClientsTable = new DevExpress.XtraTab.XtraTabPage();
-            gridByClient = new DevExpress.XtraGrid.GridControl();
+            gridClients = new DevExpress.XtraGrid.GridControl();
             byClientStatBindingSource = new BindingSource(components);
             viewClients = new DevExpress.XtraGrid.Views.Grid.GridView();
             colNumAssure = new DevExpress.XtraGrid.Columns.GridColumn();
@@ -307,6 +309,7 @@ namespace CHIFA.Pro.Views
             repositoryItemRibbonSearchEdit1 = new DevExpress.XtraBars.Ribbon.Internal.RepositoryItemRibbonSearchEdit();
             gridControl5 = new DevExpress.XtraGrid.GridControl();
             gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
+            btnPdf = new DevExpress.XtraBars.BarButtonItem();
             colPA = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)weeklyStatBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)statisticsBindingSource).BeginInit();
@@ -318,11 +321,11 @@ namespace CHIFA.Pro.Views
             ((System.ComponentModel.ISupportInitialize)repositoryItemDateEdit1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)repositoryItemDateEdit1.CalendarTimeProperties).BeginInit();
             tabBordereauxTable.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)gridControl1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)gridBordereaux).BeginInit();
             ((System.ComponentModel.ISupportInitialize)bordStatDtoBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)viewBord).BeginInit();
             tabClientsTable.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)gridByClient).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)gridClients).BeginInit();
             ((System.ComponentModel.ISupportInitialize)byClientStatBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)viewClients).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridView2).BeginInit();
@@ -465,7 +468,7 @@ namespace CHIFA.Pro.Views
             // colPA
             // 
             colPA.Caption = "PA";
-            colPA.DisplayFormat.FormatString = "N";
+            colPA.DisplayFormat.FormatString = "N2";
             colPA.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colPA.FieldName = "colPA";
             colPA.Name = "colPA";
@@ -484,7 +487,7 @@ namespace CHIFA.Pro.Views
             // colTPa
             // 
             colTPa.Caption = "T PA";
-            colTPa.DisplayFormat.FormatString = "N";
+            colTPa.DisplayFormat.FormatString = "N2";
             colTPa.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colTPa.FieldName = "colTPa";
             colTPa.Name = "colTPa";
@@ -499,12 +502,12 @@ namespace CHIFA.Pro.Views
             // 
             colMontant1.AppearanceCell.BackColor = Color.FromArgb(192, 255, 192);
             colMontant1.AppearanceCell.Options.UseBackColor = true;
-            colMontant1.DisplayFormat.FormatString = "n";
+            colMontant1.DisplayFormat.FormatString = "n2";
             colMontant1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colMontant1.FieldName = "Montant";
             colMontant1.Name = "colMontant1";
             colMontant1.OptionsColumn.ReadOnly = true;
-            colMontant1.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, DevExpress.Data.SummaryMode.Mixed, "Montant", "SUM={0:n}") });
+            colMontant1.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, DevExpress.Data.SummaryMode.Mixed, "Montant", "SUM={0:n2}") });
             colMontant1.Visible = true;
             colMontant1.VisibleIndex = 6;
             colMontant1.Width = 196;
@@ -532,7 +535,7 @@ namespace CHIFA.Pro.Views
             // 
             // ribbonPage1
             // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup2, PeriodRange });
+            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup2, PeriodRange, ribbonPageGroup1 });
             ribbonPage1.Name = "ribbonPage1";
             ribbonPage1.Text = "ribbonPage1";
             // 
@@ -647,6 +650,22 @@ namespace CHIFA.Pro.Views
             btnThisMonth.Name = "btnThisMonth";
             btnThisMonth.ItemClick += btnThisMonth_ItemClick;
             // 
+            // ribbonPageGroup1
+            // 
+            ribbonPageGroup1.ItemLinks.Add(btnExportExcel);
+            ribbonPageGroup1.ItemLinks.Add(btnPdf);
+            ribbonPageGroup1.Name = "ribbonPageGroup1";
+            ribbonPageGroup1.Text = "ribbonPageGroup1";
+            // 
+            // btnExportExcel
+            // 
+            btnExportExcel.Caption = "Excel";
+            btnExportExcel.Id = 24;
+            btnExportExcel.ImageOptions.LargeImage = (Image)resources.GetObject("btnExportExcel.ImageOptions.LargeImage");
+            btnExportExcel.Name = "btnExportExcel";
+            btnExportExcel.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            btnExportExcel.ItemClick += btnExportExcel_ItemClick;
+            // 
             // ribbonControl1
             // 
             ribbonControl1.AllowMinimizeRibbon = false;
@@ -655,9 +674,9 @@ namespace CHIFA.Pro.Views
             ribbonControl1.DrawGroupsBorderMode = DevExpress.Utils.DefaultBoolean.False;
             ribbonControl1.EmptyAreaImageOptions.ImagePadding = new Padding(24);
             ribbonControl1.ExpandCollapseItem.Id = 0;
-            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, btnRefresh, FromDate, ToDate, btnClearDates, btnLastYear, btnThisYear, btn6Months, btnThisMonth, btnAllPeriod });
+            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, btnRefresh, FromDate, ToDate, btnClearDates, btnLastYear, btnThisYear, btn6Months, btnThisMonth, btnAllPeriod, btnExportExcel, btnPdf });
             ribbonControl1.Location = new Point(0, 0);
-            ribbonControl1.MaxItemId = 24;
+            ribbonControl1.MaxItemId = 26;
             ribbonControl1.Name = "ribbonControl1";
             ribbonControl1.OptionsMenuMinWidth = 264;
             ribbonControl1.OptionsPageCategories.ShowCaptions = false;
@@ -682,24 +701,24 @@ namespace CHIFA.Pro.Views
             // 
             // tabBordereauxTable
             // 
-            tabBordereauxTable.Controls.Add(gridControl1);
+            tabBordereauxTable.Controls.Add(gridBordereaux);
             tabBordereauxTable.ImageOptions.Image = (Image)resources.GetObject("tabBordereauxTable.ImageOptions.Image");
             tabBordereauxTable.Margin = new Padding(4, 3, 4, 3);
             tabBordereauxTable.Name = "tabBordereauxTable";
             tabBordereauxTable.Size = new Size(1214, 695);
             tabBordereauxTable.Text = "BORDEREAUX";
             // 
-            // gridControl1
+            // gridBordereaux
             // 
-            gridControl1.DataSource = bordStatDtoBindingSource;
-            gridControl1.Dock = DockStyle.Fill;
-            gridControl1.Location = new Point(0, 0);
-            gridControl1.MainView = viewBord;
-            gridControl1.MenuManager = ribbonControl1;
-            gridControl1.Name = "gridControl1";
-            gridControl1.Size = new Size(1214, 695);
-            gridControl1.TabIndex = 0;
-            gridControl1.ViewCollection.AddRange(new BaseView[] { viewBord });
+            gridBordereaux.DataSource = bordStatDtoBindingSource;
+            gridBordereaux.Dock = DockStyle.Fill;
+            gridBordereaux.Location = new Point(0, 0);
+            gridBordereaux.MainView = viewBord;
+            gridBordereaux.MenuManager = ribbonControl1;
+            gridBordereaux.Name = "gridBordereaux";
+            gridBordereaux.Size = new Size(1214, 695);
+            gridBordereaux.TabIndex = 0;
+            gridBordereaux.ViewCollection.AddRange(new BaseView[] { viewBord });
             // 
             // bordStatDtoBindingSource
             // 
@@ -708,7 +727,7 @@ namespace CHIFA.Pro.Views
             // viewBord
             // 
             viewBord.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDateDebut, colDateFin, colDate, colNum, colFactures2, colJours, colMontantJour, colFactureJour, colMontantFacture, colCenter, colMontantMaj, colMontantFact, colMontantOff, colMontantFE, colMontantGlobal, colVirement, colMarge1, colBrut, colNet, colEcart });
-            viewBord.GridControl = gridControl1;
+            viewBord.GridControl = gridBordereaux;
             viewBord.Name = "viewBord";
             viewBord.OptionsView.ShowFooter = true;
             // 
@@ -929,25 +948,25 @@ namespace CHIFA.Pro.Views
             // 
             // tabClientsTable
             // 
-            tabClientsTable.Controls.Add(gridByClient);
+            tabClientsTable.Controls.Add(gridClients);
             tabClientsTable.ImageOptions.Image = (Image)resources.GetObject("tabClientsTable.ImageOptions.Image");
             tabClientsTable.Margin = new Padding(4, 3, 4, 3);
             tabClientsTable.Name = "tabClientsTable";
             tabClientsTable.Size = new Size(1241, 673);
             tabClientsTable.Text = "CLIENTS";
             // 
-            // gridByClient
+            // gridClients
             // 
-            gridByClient.DataSource = byClientStatBindingSource;
-            gridByClient.Dock = DockStyle.Fill;
-            gridByClient.EmbeddedNavigator.Margin = new Padding(4, 3, 4, 3);
-            gridByClient.Location = new Point(0, 0);
-            gridByClient.MainView = viewClients;
-            gridByClient.Margin = new Padding(4, 3, 4, 3);
-            gridByClient.Name = "gridByClient";
-            gridByClient.Size = new Size(1241, 673);
-            gridByClient.TabIndex = 0;
-            gridByClient.ViewCollection.AddRange(new BaseView[] { viewClients, gridView2 });
+            gridClients.DataSource = byClientStatBindingSource;
+            gridClients.Dock = DockStyle.Fill;
+            gridClients.EmbeddedNavigator.Margin = new Padding(4, 3, 4, 3);
+            gridClients.Location = new Point(0, 0);
+            gridClients.MainView = viewClients;
+            gridClients.Margin = new Padding(4, 3, 4, 3);
+            gridClients.Name = "gridClients";
+            gridClients.Size = new Size(1241, 673);
+            gridClients.TabIndex = 0;
+            gridClients.ViewCollection.AddRange(new BaseView[] { viewClients, gridView2 });
             // 
             // byClientStatBindingSource
             // 
@@ -957,7 +976,7 @@ namespace CHIFA.Pro.Views
             // 
             viewClients.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNumAssure, colAssure, colFactures, colMaj, colMantFact, colTR, colMarge, gridColumn1, gridColumn2 });
             viewClients.DetailHeight = 271;
-            viewClients.GridControl = gridByClient;
+            viewClients.GridControl = gridClients;
             viewClients.Name = "viewClients";
             viewClients.OptionsEditForm.PopupEditFormWidth = 581;
             viewClients.OptionsView.ShowFooter = true;
@@ -1065,7 +1084,7 @@ namespace CHIFA.Pro.Views
             // gridView2
             // 
             gridView2.DetailHeight = 271;
-            gridView2.GridControl = gridByClient;
+            gridView2.GridControl = gridClients;
             gridView2.Name = "gridView2";
             gridView2.OptionsEditForm.PopupEditFormWidth = 581;
             // 
@@ -1075,7 +1094,7 @@ namespace CHIFA.Pro.Views
             tabMonthlyTable.ImageOptions.Image = (Image)resources.GetObject("tabMonthlyTable.ImageOptions.Image");
             tabMonthlyTable.Margin = new Padding(4, 3, 4, 3);
             tabMonthlyTable.Name = "tabMonthlyTable";
-            tabMonthlyTable.Size = new Size(1214, 695);
+            tabMonthlyTable.Size = new Size(1241, 673);
             tabMonthlyTable.Text = "MENSUELS";
             // 
             // gridMonthly
@@ -1086,7 +1105,7 @@ namespace CHIFA.Pro.Views
             gridMonthly.MainView = viewMonthly;
             gridMonthly.MenuManager = ribbonControl1;
             gridMonthly.Name = "gridMonthly";
-            gridMonthly.Size = new Size(1214, 695);
+            gridMonthly.Size = new Size(1241, 673);
             gridMonthly.TabIndex = 0;
             gridMonthly.ViewCollection.AddRange(new BaseView[] { viewMonthly });
             // 
@@ -1311,7 +1330,7 @@ namespace CHIFA.Pro.Views
             // 
             // colPrix1
             // 
-            colPrix1.DisplayFormat.FormatString = "n";
+            colPrix1.DisplayFormat.FormatString = "N2";
             colPrix1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colPrix1.FieldName = "Prix";
             colPrix1.Name = "colPrix1";
@@ -2537,6 +2556,15 @@ namespace CHIFA.Pro.Views
             gridView1.GridControl = gridControl5;
             gridView1.Name = "gridView1";
             // 
+            // btnPdf
+            // 
+            btnPdf.Caption = "PDF";
+            btnPdf.Id = 25;
+            btnPdf.ImageOptions.LargeImage = (Image)resources.GetObject("barButtonItem1.ImageOptions.LargeImage");
+            btnPdf.Name = "btnPdf";
+            btnPdf.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large | DevExpress.XtraBars.Ribbon.RibbonItemStyles.SmallWithText | DevExpress.XtraBars.Ribbon.RibbonItemStyles.SmallWithoutText;
+            btnPdf.ItemClick += btnPdf_ItemClick;
+            // 
             // StatisticsUc
             // 
             AutoScaleDimensions = new SizeF(8F, 17F);
@@ -2557,11 +2585,11 @@ namespace CHIFA.Pro.Views
             ((System.ComponentModel.ISupportInitialize)repositoryItemDateEdit1.CalendarTimeProperties).EndInit();
             ((System.ComponentModel.ISupportInitialize)repositoryItemDateEdit1).EndInit();
             tabBordereauxTable.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)gridControl1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)gridBordereaux).EndInit();
             ((System.ComponentModel.ISupportInitialize)bordStatDtoBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)viewBord).EndInit();
             tabClientsTable.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)gridByClient).EndInit();
+            ((System.ComponentModel.ISupportInitialize)gridClients).EndInit();
             ((System.ComponentModel.ISupportInitialize)byClientStatBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)viewClients).EndInit();
             ((System.ComponentModel.ISupportInitialize)gridView2).EndInit();
@@ -2717,7 +2745,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraBars.Ribbon.RibbonControl ribbonControl1;
         private DevExpress.XtraTab.XtraTabPage tabBordereauxTable;
         private DevExpress.XtraTab.XtraTabPage tabClientsTable;
-        private DevExpress.XtraGrid.GridControl gridByClient;
+        private DevExpress.XtraGrid.GridControl gridClients;
         private DevExpress.XtraGrid.Views.Grid.GridView viewClients;
         private DevExpress.XtraGrid.Columns.GridColumn colNumAssure;
         private DevExpress.XtraGrid.Columns.GridColumn colAssure;
@@ -2754,7 +2782,7 @@ namespace CHIFA.Pro.Views
         private ChartControl chartMonthly;
         private ChartControl chartDaily;
         private BindingSource bordStatDtoBindingSource;
-        private DevExpress.XtraGrid.GridControl gridControl1;
+        private DevExpress.XtraGrid.GridControl gridBordereaux;
         private DevExpress.XtraGrid.Views.Grid.GridView viewBord;
         private DevExpress.XtraGrid.Columns.GridColumn colDateDebut;
         private DevExpress.XtraGrid.Columns.GridColumn colDateFin;
@@ -2871,5 +2899,8 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn7;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn8;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn9;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup1;
+        private DevExpress.XtraBars.BarButtonItem btnExportExcel;
+        private DevExpress.XtraBars.BarButtonItem btnPdf;
     }
 }

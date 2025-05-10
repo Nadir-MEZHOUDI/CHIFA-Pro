@@ -3,8 +3,6 @@ namespace CHIFA.Pro.Views;
 
 public partial class UsersUc : XtraUserControl, INavigable
 {
-
-
     public UsersUc()
     {
         InitializeComponent();

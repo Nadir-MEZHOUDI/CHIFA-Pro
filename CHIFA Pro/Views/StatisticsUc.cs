@@ -1,9 +1,13 @@
-﻿using DevExpress.XtraTab;
+using DevExpress.XtraGrid;
+using DevExpress.XtraTab;
+
 namespace CHIFA.Pro.Views;
+
 public partial class StatisticsUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "STATISTICS";
     public Image Image => FrmMain.Image(4);
+    public Parametre? Officine { get; set; }
 
     public StatisticsUc()
     {
@@ -21,26 +25,24 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         await ReloadSelectedTable(tabControl.SelectedTabPage);
     }
 
-
     private async void FromDate_EditValueChanged(object sender, EventArgs e)
     {
         StatisticsService.Instance.Period.From = (DateTime)FromDate.EditValue;
         await ReloadSelectedTable(tabControl.SelectedTabPage);
-
     }
+
     private async void ToDate_EditValueChanged(object sender, EventArgs e)
     {
         StatisticsService.Instance.Period.To = (DateTime)ToDate.EditValue;
         await ReloadSelectedTable(tabControl.SelectedTabPage);
     }
 
-
     private async Task LoadMaxAndMinDates()
     {
         try
         {
             await ChifaService.Instance.GetMinAndMaxDatesAsync();
- 
+
             var towYearsBefore = DateTime.Now.AddYears(-2);
 
             fromDateRepo.MaxValue = Period.MaxDate;
@@ -59,6 +61,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             ex.Log();
         }
     }
+
     private async void MovementsUc_Load(object sender, EventArgs e)
     {
         viewBord.SetOptions();
@@ -68,12 +71,27 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         viewDaily.SetOptions();
         viewClients.SetOptions();
         viewProducts.SetOptions();
+
         await LoadMaxAndMinDates();
 
         FromDate.EditValueChanged += FromDate_EditValueChanged!;
+
         ToDate.EditValueChanged += ToDate_EditValueChanged!;
 
         await ReloadSelectedTable(tabBordereaux);
+        await GetOfficineAsync();
+    }
+
+    private async Task GetOfficineAsync()
+    {
+        try
+        {
+            Officine = await ChifaService.Instance.GetFirstOfficineAsync();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private async Task ReloadSelectedTable(XtraTabPage tab)
@@ -109,7 +127,6 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             {
                 yearlyStatBindingSource.DataSource = await StatisticsService.Instance.YearlyAsync();
             }
-
         }
         catch (Exception ex)
         {
@@ -157,5 +174,97 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         StatisticsService.Instance.Period.To = to;
         FromDate.EditValue = StatisticsService.Instance.Period.From;
         ToDate.EditValue = StatisticsService.Instance.Period.To;
+    }
+
+    private void btnExportExcel_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+    {
+        try
+        {
+            ExportGrid("xlsx", "Excel files (*.xlsx)|*.xlsx", "Save Excel File", (grid, fileName) => grid.ExportToXlsx(fileName));
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+    private void btnPdf_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+    {
+        try
+        {
+               ExportGrid("pdf", "PDF files (*.pdf)|*.pdf", "Save PDF File", (grid, fileName) => grid.ExportToPdf(fileName));
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+    private void ExportGrid(string extension, string filter, string dialogTitle, Action<GridControl, string> exportAction)
+    {
+        var baseFileName = "Ph_" + Officine?.NomPharmacie + "_" +
+                          StatisticsService.Instance.Period.From?.ToString("dd-MM-yyyy") + "_" +
+                          StatisticsService.Instance.Period.To?.ToString("dd-MM-yyyy") + "." + extension;
+        GridControl? grid = null;
+
+        var tab = tabControl.SelectedTabPage;
+        string prefix = "";
+
+        if (tab.Name is nameof(tabBordereaux) or nameof(tabBordereauxTable))
+        {
+            prefix = "Bordereaux";
+            grid = gridBordereaux;
+        }
+        else if (tab.Name is nameof(tabYearly) or nameof(tabYearlyTable))
+        {
+            prefix = "Yearly";
+            grid = gridYearly;
+        }
+        else if (tab.Name is nameof(tabMonthly) or nameof(tabMonthlyTable))
+        {
+            prefix = "Monthly";
+            grid = gridMonthly;
+        }
+        else if (tab.Name is nameof(tabWeekly) or nameof(tabWeeklyTable))
+        {
+            prefix = "Weekly";
+            grid = gridWeekly;
+        }
+        else if (tab.Name is nameof(tabDaily) or nameof(tabDailyTable))
+        {
+            prefix = "Daily";
+            grid = gridDaily;
+        }
+        else if (tab.Name is nameof(tabClients) or nameof(tabClientsTable))
+        {
+            prefix = "Clients";
+            grid = gridClients;
+        }
+        else if (tab.Name is nameof(tabProducts2) or nameof(tabProductTable))
+        {
+            prefix = "Products";
+            grid = gridProducts;
+        }
+
+        if (grid == null)
+            return;
+
+        var fileName = string.IsNullOrEmpty(prefix) ? baseFileName : $"{prefix}_{baseFileName}";
+
+        var saveFileDialog = new SaveFileDialog
+        {
+            Filter = filter,
+            FileName = fileName,
+            Title = dialogTitle,
+            OverwritePrompt = true,
+            AddExtension = true,
+            DefaultExt = extension
+        };
+
+        if (saveFileDialog.ShowDialog() != DialogResult.OK)
+            return;
+
+        fileName = saveFileDialog.FileName;
+        exportAction?.Invoke(grid, fileName);
     }
 }

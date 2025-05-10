@@ -1,4 +1,4 @@
-ï»¿namespace CHIFA.DAL.DataServices;
+namespace CHIFA.DAL.DataServices;
 
 public class ChifaService : IChifaService
 {
@@ -8,10 +8,10 @@ public class ChifaService : IChifaService
     public Period Period { get; } = new();
     private DateTime YearAgo { get; } = DateTime.Now.AddYears(-1);
 
-    public async ValueTask<IEnumerable<BordereauDto>> GetAllBordereauxAsync(
-        Expression<Func<Bordereau, bool>>? predicate = default)
+    public async ValueTask<IEnumerable<BordereauDto>> GetAllBordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = default)
     {
         await using var db = new ChifaDb();
+
         var list = await db.Bordereaus
             .Where(predicate.SetPeriod(Period))
             .Select(x => new BordereauDto
@@ -23,6 +23,7 @@ public class ChifaService : IChifaService
                 Nmbr = x.Factures.Count(),
                 Virment = x.MontVir,
                 DateDepotFtp = x.DateDepotFtp,
+                //DateVirment=x.DateVirement,
                 DateCloture = x.DateCloture,
                 DateOuverture = x.DateOuverture,
                 State = x.Etat,
@@ -33,11 +34,11 @@ public class ChifaService : IChifaService
             .ThenByDescending(x => x.Num)
             .ToListAsync()
             .ConfigureAwait(false);
+
         return list;
     }
 
-    public async ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period = null,
-        Expression<Func<Facture, bool>>? predicate = default)
+    public async ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period = null, Expression<Func<Facture, bool>>? predicate = default)
     {
         predicate = predicate.SetPeriod(period);
 
@@ -90,7 +91,6 @@ public class ChifaService : IChifaService
         }).ToListAsync();
     }
 
-
     public async ValueTask<BeneficiareDto?> GetBeneficiareByIdAsync(string num, string rang)
     {
         await using var db = new ChifaDb();
@@ -132,13 +132,11 @@ public class ChifaService : IChifaService
             .ConfigureAwait(false);
     }
 
-
     public async ValueTask<Parametre?> GetFirstOfficineAsync()
     {
         await using var db = new ChifaDb();
         return await db.Parametres.FirstOrDefaultAsync()
-                .ConfigureAwait(false)
-            ;
+                .ConfigureAwait(false);
     }
 
     public async ValueTask<IEnumerable<Forme>> GetFormesAsync()
@@ -183,8 +181,6 @@ public class ChifaService : IChifaService
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);
     }
-
-
 
     public async ValueTask<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null,
         Expression<Func<DetailFact, bool>>? predicate = default)
@@ -295,7 +291,7 @@ public class ChifaService : IChifaService
                 Qt = d.Qte,
                 Prix = d.Ppa,
                 CodeDci = d.Medicament.CodeDci,
-                MÃ©decin = f.Specialite!.Libelle,
+                Médecin = f.Specialite!.Libelle,
                 NEnrg = d.NumEnr
             })
             .OrderByDescending(x => x.Date)
@@ -317,7 +313,7 @@ public class ChifaService : IChifaService
                 Prix = x.FirstOrDefault()?.Prix,
                 NEnrg = x.FirstOrDefault()?.NEnrg,
                 TS = x.FirstOrDefault()?.TS,
-                MÃ©decin = x.FirstOrDefault()?.MÃ©decin,
+                Médecin = x.FirstOrDefault()?.Médecin,
                 CodeDci = x.Key.CodeDci,
                 Historic = x.Count() <= 1
                     ? []
@@ -505,6 +501,7 @@ public class ChifaService : IChifaService
         await using var db = new ChifaDb();
         await db.UpdateAsync(center);
     }
+
     public async ValueTask GetMinAndMaxDatesAsync()
     {
         await using var db = new ChifaDb();

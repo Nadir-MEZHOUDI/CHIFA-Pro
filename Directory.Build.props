@@ -1,6 +1,5 @@
 <Project>
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
 		<LangVersion>preview</LangVersion>
 		<Authors>MEZHOUDI Hadj Nadir</Authors>
 		<Company>SmartApps</Company>
@@ -8,11 +7,9 @@
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<ImplicitUsings>true</ImplicitUsings>
 		<Nullable>enable</Nullable>
-
 		<SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
-		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	 
-
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<RuntimeIdentifier>win-x86</RuntimeIdentifier>
 	</PropertyGroup>
 	<PropertyGroup>
 		<CurrentDate>$([System.DateTime]::Now.ToString("yyyy.MM.dd"))</CurrentDate>

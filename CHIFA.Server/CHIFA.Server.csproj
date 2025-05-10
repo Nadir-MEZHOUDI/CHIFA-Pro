@@ -1,45 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	  <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+	</PropertyGroup>
 
-  </PropertyGroup>
+	<ItemGroup>
+		<None Remove="Assets\icon.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Assets\icon.ico" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="Assets\icon.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Assets\icon.ico" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CHIFA.DAL\CHIFA.DAL.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CHIFA.DAL\CHIFA.DAL.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
+		<PackageReference Include="protobuf-net.Grpc.Native" Version="1.*" />
+		<PackageReference Include="ReusableTheme" Version="2.*">
+			<TreatAsUsed>true</TreatAsUsed>
+		</PackageReference>
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
+		<PackageReference Include="Serilog.Sinks.File" Version="6.*" />
+		<PackageReference Include="Serilog.Sinks.TextWriter" Version="3.0.0" />
+		<PackageReference Include="SmartApp.Bridge" Version="2.*" />
+		<PackageReference Include="Velopack" Version="0.*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
-    <PackageReference Include="protobuf-net.Grpc.Native" Version="1.*" />
-    <PackageReference Include="ReusableTheme" Version="2.*">
-      <TreatAsUsed>true</TreatAsUsed>
-    </PackageReference>
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.*" />
-    <PackageReference Include="Serilog.Sinks.TextWriter" Version="3.0.0" />
-    <PackageReference Include="SmartApp.Bridge" Version="2.*" />
-    <PackageReference Include="Velopack" Version="0.*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="icon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="icon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
