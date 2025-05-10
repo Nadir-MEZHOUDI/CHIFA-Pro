@@ -9,7 +9,7 @@
 		<Nullable>enable</Nullable>
 		<SatelliteResourceLanguages>ar;fr;en</SatelliteResourceLanguages>
 		<TargetFramework>net8.0-windows</TargetFramework>
-		<RuntimeIdentifier>win-x86</RuntimeIdentifier>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
 	<PropertyGroup>
 		<CurrentDate>$([System.DateTime]::Now.ToString("yyyy.MM.dd"))</CurrentDate>

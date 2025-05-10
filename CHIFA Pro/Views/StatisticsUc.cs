@@ -140,7 +140,14 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private async void tabControl_SelectedPageChanged(object sender, TabPageChangedEventArgs e)
     {
-        await ReloadSelectedTable(e.Page);
+        try
+        {
+            await ReloadSelectedTable(e.Page);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private void btnAllPeriod_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -192,7 +199,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         try
         {
-               ExportGrid("pdf", "PDF files (*.pdf)|*.pdf", "Save PDF File", (grid, fileName) => grid.ExportToPdf(fileName));
+            ExportGrid("pdf", "PDF files (*.pdf)|*.pdf", "Save PDF File", (grid, fileName) => grid.ExportToPdf(fileName));
         }
         catch (Exception ex)
         {
