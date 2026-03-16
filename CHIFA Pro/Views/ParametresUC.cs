@@ -144,12 +144,19 @@ public partial class ParametersUc : XtraUserControl, INavigable
         try
         {
             Cursor.Current = Cursors.WaitCursor;
-            await DbChecker.CheckDbConnectionAsync(rbtServer.Checked ? "localhost" : txtServerName.Text);
-            XtraMessageBox.Show("Connected", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var isConnected = await DbChecker.CheckDbConnectionAsync(rbtServer.Checked ? "localhost" : txtServerName.Text);
+
+            if (isConnected)
+            {
+                XtraMessageBox.Show("Connected", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                XtraMessageBox.Show("Cannot connect to server", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         catch (Exception ex)
         {
-            XtraMessageBox.Show("Cannot connect ot server", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             ex.Log();
         }
         finally

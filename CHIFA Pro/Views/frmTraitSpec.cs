@@ -15,8 +15,15 @@ public partial class FrmTraitSpec : XtraForm
 
     private async void frmTraitSpec_Load(object sender, EventArgs e)
     {
-        await LoadData1();
-        await LoadData2();
+        try
+        {
+            await LoadData1();
+            await LoadData2();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private void GetHistoryOfSelectedPatient()
@@ -60,6 +67,7 @@ public partial class FrmTraitSpec : XtraForm
     private async Task LoadData2()
     {
         await gridViewTraitSpec2.LoadDataAsync(() => ChifaService.Instance.PatientsWithTraitSpec2Async());
+        if (gridViewTraitSpec2.SortInfo.Count == 0 || gridViewTraitSpec2.GroupSummary.Count <= 2) return;
         var firstGroupColumn = gridViewTraitSpec2.SortInfo[0].Column;
         GroupSummarySortInfo[] groupSummaryToSort = { new(gridViewTraitSpec2.GroupSummary[2], firstGroupColumn, ColumnSortOrder.Descending) };
         gridViewTraitSpec2.GroupSummarySortInfo.ClearAndAddRange(groupSummaryToSort);

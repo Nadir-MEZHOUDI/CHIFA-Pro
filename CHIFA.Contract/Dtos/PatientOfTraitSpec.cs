@@ -10,4 +10,5 @@ public class PatientOfTraitSpec
     public bool? TS { get; set; }
 
     public override bool Equals(object? obj) => NumAssure == (obj as PatientOfTraitSpec)?.NumAssure && Rang == (obj as PatientOfTraitSpec)?.Rang;
+    public override int GetHashCode() => HashCode.Combine(NumAssure, Rang);
 }

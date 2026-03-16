@@ -13,6 +13,7 @@
     FontFamily="Cascadia Code"
     FontSize="16"
     FontStyle="Italic"
+    Closed="MainWindow_OnClosed"
     Icon="../Assets/icon.ico"
     Loaded="MainWindow_OnLoaded"
     SizeToContent="WidthAndHeight"

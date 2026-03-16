@@ -1,13 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
+ 	<PropertyGroup>
+ 		<TargetFramework>net10.0-windows</TargetFramework>
  		<OutputType>WinExe</OutputType>
-		<UseWindowsForms>true</UseWindowsForms>
-		<RootNamespace>CHIFA.Pro</RootNamespace>
-  		<StartupObject>CHIFA.Pro.Program</StartupObject>
- 		<Product>CHIFA Pro</Product>
- 		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
- 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  	</PropertyGroup>
+ 		<UseWindowsForms>true</UseWindowsForms>
+ 		<RootNamespace>CHIFA.Pro</RootNamespace>
+   		<StartupObject>CHIFA.Pro.Program</StartupObject>
+  		<Product>CHIFA Pro</Product>
+  		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
+  		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+   	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="FodyWeavers.xml" />
 		<None Remove="FodyWeavers.xsd" />
@@ -22,7 +23,8 @@
 	</ItemGroup>
 	 
 	<ItemGroup>
-	  <PackageReference Include="DevExpress.Win.Design" Version="24.*" />
+	  <PackageReference Include="DevExpress.Win.Design" Version="25.*" />
+	  <PackageReference Include="Npgsql" Version="10.0.1" />
 	  <PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
 	  <PackageReference Include="Serilog.Sinks.File" Version="6.*" />
 	  <PackageReference Include="Velopack" Version="0.*" />

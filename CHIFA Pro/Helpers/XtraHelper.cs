@@ -148,6 +148,18 @@ public static class XtraHelper
 
     public static void SetServer(string server)
     {
+        Environment.SetEnvironmentVariable(ChifaDb.CHIFA_OFFICINE_SERVER, server, EnvironmentVariableTarget.Process);
         Environment.SetEnvironmentVariable(ChifaDb.CHIFA_OFFICINE_SERVER, server, EnvironmentVariableTarget.User);
+    }
+
+    public static void SetServerAndPort(string server, int port)
+    {
+        SetServer(server);
+
+        var dbPort = port > 0 ? port : DbChecker.DefaultDbPort;
+        var portValue = dbPort.ToString();
+
+        Environment.SetEnvironmentVariable("CHIFA_DB_PORT", portValue, EnvironmentVariableTarget.Process);
+        Environment.SetEnvironmentVariable("CHIFA_DB_PORT", portValue, EnvironmentVariableTarget.User);
     }
 }

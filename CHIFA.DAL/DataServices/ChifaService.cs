@@ -1,3 +1,5 @@
+ï»¿global using LinqToDB;
+using LinqToDB.Async;
 namespace CHIFA.DAL.DataServices;
 
 public class ChifaService : IChifaService
@@ -44,7 +46,7 @@ public class ChifaService : IChifaService
 
         if (ts == true)
             predicate = predicate.And(x =>
-                x.DetailFacts.Any(d => d.Ts == true || d.DureeTrait >= 30 || (d.Ppa >= 1000 && d.Qte >= 3)));
+                x.DetailFacts.Any(d => d.Ts == true || d.DureeTrait >= MedicalThresholds.MediumTreatmentDurationDays || (d.Ppa >= MedicalThresholds.HighPriceThreshold && d.Qte >= MedicalThresholds.HighQuantityThreshold)));
 
         if (last == true)
             predicate = predicate.And(x => x.DateFact > YearAgo);
@@ -68,7 +70,7 @@ public class ChifaService : IChifaService
                 Centre = f.Center!.Nom,
                 Rang = f.RangAd,
                 TS = f.DetailFacts.Any(m => m.Ts == true),
-                LongDuree = f.DetailFacts.Any(m => m.DureeTrait >= 60)
+                LongDuree = f.DetailFacts.Any(m => m.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays)
             })
             .OrderByDescending(x => x.DateFact)
             .ThenByDescending(x => x.NumFact)
@@ -186,7 +188,7 @@ public class ChifaService : IChifaService
         Expression<Func<DetailFact, bool>>? predicate = default)
     {
         predicate = predicate.SetPeriod(period)
-            .And(x => (x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60);
+            .And(x => (x.Ppa >= MedicalThresholds.HighPriceThreshold && x.Qte >= MedicalThresholds.HighQuantityThreshold) || x.Ts == true || x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays);
 
         await using var db = new ChifaDb();
         var list = await db.DetailFacts.Where(predicate).Select(a => new PatientOfTraitSpec
@@ -196,7 +198,7 @@ public class ChifaService : IChifaService
             Rang = a.Facture.RangAd,
             Malade = a.Facture.Beneficiaire.FullName,
             TS = a.Ts,
-            LongDuree = a.DureeTrait >= 60
+                LongDuree = a.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays
         }
             ).ToListAsync()
             .ConfigureAwait(false);
@@ -214,7 +216,7 @@ public class ChifaService : IChifaService
         var query = await db.DetailFacts
             .Where(predicate!.SetPeriod(Period))
             .Where(x => x.Facture.NumAssure == noAssure && x.Facture.RangAd == rang)
-            .Where(x => (x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60)
+            .Where(x => (x.Ppa >= MedicalThresholds.HighPriceThreshold && x.Qte >= MedicalThresholds.HighQuantityThreshold) || x.Ts == true || x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays)
             .SelectMany(a => db.Beneficiaires.Where(b => b.NumAssure == noAssure && b.RangAd == rang),
                 (x, a) => new
                 {
@@ -291,7 +293,7 @@ public class ChifaService : IChifaService
                 Qt = d.Qte,
                 Prix = d.Ppa,
                 CodeDci = d.Medicament.CodeDci,
-                Médecin = f.Specialite!.Libelle,
+                Medecin = f.Specialite!.Libelle,
                 NEnrg = d.NumEnr
             })
             .OrderByDescending(x => x.Date)
@@ -313,7 +315,7 @@ public class ChifaService : IChifaService
                 Prix = x.FirstOrDefault()?.Prix,
                 NEnrg = x.FirstOrDefault()?.NEnrg,
                 TS = x.FirstOrDefault()?.TS,
-                Médecin = x.FirstOrDefault()?.Médecin,
+                Medecin = x.FirstOrDefault()?.Medecin,
                 CodeDci = x.Key.CodeDci,
                 Historic = x.Count() <= 1
                     ? []
@@ -353,7 +355,7 @@ public class ChifaService : IChifaService
                 Bordereau = f.NumBord,
                 Specialite = f.Specialite!.Libelle,
                 TS = f.DetailFacts.Any(x => x.Ts == true),
-                LongDuree = f.DetailFacts.Any(x => x.DureeTrait >= 60),
+                LongDuree = f.DetailFacts.Any(x => x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays),
                 MontFact = f.MontFact,
                 Centre = f.Center!.Nom,
                 Majoration = f.MontMajFae,
@@ -383,7 +385,7 @@ public class ChifaService : IChifaService
                 d.Medicament.CodeDci,
                 Medicament = d.Medicament.FullName(),
                 d.Facture.DateFact,
-                Duree = d.DureeTrait == 1 && d.Qte >= 3 ? 80 : d.DureeTrait,
+                Duree = d.DureeTrait == 1 && d.Qte >= MedicalThresholds.HighQuantityThreshold ? MedicalThresholds.VeryLongTreatmentDurationDays : d.DureeTrait,
                 NEnrg = d.NumEnr,
                 Qt = d.Qte,
                 TS = d.Ts,
@@ -397,7 +399,7 @@ public class ChifaService : IChifaService
         var list = query
             .OrderByDescending(x => x.DateFact)
             .GroupBy(x => new { x.NumAssure, x.RangAd, x.CodeDci })
-            .Where(x => x.Any(d => d.TS == true || d.Duree > 30 || (d.Prix >= 1000 && d.Qt >= 3)))
+            .Where(x => x.Any(d => d.TS == true || d.Duree > MedicalThresholds.MediumTreatmentDurationDays || (d.Prix >= MedicalThresholds.HighPriceThreshold && d.Qt >= MedicalThresholds.HighQuantityThreshold)))
             .Select(x => new TraitSpec2
             {
                 NumFact = x.FirstOrDefault()?.NumFact,
@@ -414,7 +416,7 @@ public class ChifaService : IChifaService
                 Code = x.Key.CodeDci,
                 NumAssure = x.Key.NumAssure,
                 Rang = x.Key.RangAd!,
-                TC = x.Any(d => d.TS == true || d.Duree > 30 || (d.Prix >= 1000 && d.Qt >= 3)),
+                TC = x.Any(d => d.TS == true || d.Duree > MedicalThresholds.MediumTreatmentDurationDays || (d.Prix >= MedicalThresholds.HighPriceThreshold && d.Qt >= MedicalThresholds.HighQuantityThreshold)),
                 Historic = (x.Count() <= 1
                     ? null
                     : x.Select(m => new MedicHistory
@@ -438,7 +440,7 @@ public class ChifaService : IChifaService
     {
         predicate ??= _ => true;
         predicate = predicate.And(x =>
-            (x.Facture.DateFact > YearAgo && x.Ppa >= 1000 && x.Qte >= 3) || x.Ts == true || x.DureeTrait >= 60);
+            (x.Facture.DateFact > YearAgo && x.Ppa >= MedicalThresholds.HighPriceThreshold && x.Qte >= MedicalThresholds.HighQuantityThreshold) || x.Ts == true || x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays);
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
             .Where(predicate)

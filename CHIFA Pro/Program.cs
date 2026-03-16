@@ -32,33 +32,51 @@ internal static partial class Program
     [STAThread]
     private static void Main()
     {
-        if (SingleInstance.AppIsRunning()) return;
+        try
+        {
+            if (SingleInstance.AppIsRunning()) return;
 
-        Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
 #if DEBUG
                         .WriteTo.Console(theme: AnsiConsoleTheme.Code)
                       //  .WriteTo.Debug()
 #endif
-            .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
+                .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
 
 #if DEBUG
-        AllocConsole();
-        Console.WriteLine(@"Console is ready");
-     //   DataConnection.TurnTraceSwitchOn();
+            AllocConsole();
+            Console.WriteLine(@"Console is ready");
+      //   DataConnection.TurnTraceSwitchOn();
       //  DataConnection.WriteTraceLine = Log.Debug!;
 #endif
 
-        SetExceptionHandling();
+            SetExceptionHandling();
 
-        Velopack.VelopackApp.Build().Run();
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
-        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-        SetCulture();
+            Velopack.VelopackApp.Build().Run();
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+            SetCulture();
 
-        Application.Run(new FrmMain());
+            Application.Run(new FrmMain());
+        }
+        catch (Exception ex)
+        {
+            try
+            {
+                ex.Log();
+            }
+            catch
+            {
+                MessageBox.Show(ex.Message, "Fatal error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        finally
+        {
+            Log.CloseAndFlush();
+        }
     }
 
     private static void SetExceptionHandling()

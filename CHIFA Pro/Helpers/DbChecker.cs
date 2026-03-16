@@ -5,16 +5,23 @@ namespace CHIFA.Pro.Helpers;
 
 public static class DbChecker
 {
+    public const int DefaultDbPort = 5432;
     private static bool _isConnected;
     //private static readonly Func<bool> ChangeSettingsMsg = () => XtraMessageBox.Show("Cannot connect to database \n Do you want to Change Settings?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes;
-    public static async Task<bool> CheckDbConnectionAsync(string? server = null)
+    public static int GetDbPort(int? fallbackPort = null)
     {
-        server ??= ChifaDb.Server;
+        if (int.TryParse(Environment.GetEnvironmentVariable("CHIFA_DB_PORT"), out var port) && port > 0)
+            return port;
 
+        return fallbackPort is > 0 ? fallbackPort.Value : DefaultDbPort;
+    }
+
+    public static async Task<bool> CheckDbConnectionAsync(string? conStr = null)
+    {
+        var connectionString = BuildConnectionString(conStr);
         NpgsqlConnection? con = null;
         try
         {
-            var connectionString = $"Server={server}; Port=5432; User Id=pharm; Password=REDACTED; Database=CHIFA_OFFICINE;";
             con = new NpgsqlConnection(connectionString);
             await con.OpenAsync();
             return true;
@@ -31,6 +38,53 @@ public static class DbChecker
         }
     }
 
+    private static string BuildConnectionString(string? connectionOrHost)
+    {
+        if (string.IsNullOrWhiteSpace(connectionOrHost))
+            return ChifaDb.ConString;
+
+        var input = connectionOrHost.Trim();
+
+        try
+        {
+            _ = new NpgsqlConnectionStringBuilder(input);
+            return input;
+        }
+        catch (ArgumentException)
+        {
+            var baseConnection = new NpgsqlConnectionStringBuilder(ChifaDb.ConString);
+            var (host, port) = ParseHostAndPort(input);
+
+            if (!string.IsNullOrWhiteSpace(host))
+                baseConnection.Host = host;
+
+            if (port is > 0)
+                baseConnection.Port = port.Value;
+
+            return baseConnection.ConnectionString;
+        }
+    }
+
+    private static (string Host, int? Port) ParseHostAndPort(string value)
+    {
+        if (Uri.TryCreate($"tcp://{value}", UriKind.Absolute, out var uri) &&
+            !string.IsNullOrWhiteSpace(uri.Host))
+        {
+            return (uri.Host, uri.IsDefaultPort ? null : uri.Port);
+        }
+
+        var separatorIndex = value.LastIndexOf(':');
+        if (separatorIndex > 0 &&
+            separatorIndex < value.Length - 1 &&
+            int.TryParse(value[(separatorIndex + 1)..], out var parsedPort) &&
+            parsedPort > 0)
+        {
+            return (value[..separatorIndex], parsedPort);
+        }
+
+        return (value, null);
+    }
+
     private static bool CheckOrDownloadServer()
     {
         try
@@ -41,7 +95,7 @@ public static class DbChecker
 
             if (!File.Exists(AppSettings.Default.ChifaPostgres))
             {
-              //  XtraMessageBox.Show("Server Postgres not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //  XtraMessageBox.Show("Server Postgres not found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
@@ -57,7 +111,7 @@ public static class DbChecker
 
             process.Start();
             process.WaitForExit(1000);
-           // process.Close();
+            // process.Close();
             //process.Dispose();
         }
         catch (Exception ex)
@@ -76,14 +130,14 @@ public static class DbChecker
         {
             if (!CheckOrDownloadServer())
             {
-             //   MessageBox.Show(@"Postgres SQL Server Not working! and cannot run it!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //   MessageBox.Show(@"Postgres SQL Server Not working! and cannot run it!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             _isConnected = await CheckDbConnectionAsync();
 
             if (!_isConnected)
             {
-               // ParametersUc.ShowAsForm();
+                // ParametersUc.ShowAsForm();
             }
         }
         catch (Exception ex)
@@ -113,7 +167,7 @@ public static class DbChecker
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                Arguments = $"""-h "{ChifaDb.Server}" -p 5432 -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """
+                Arguments = $"""-h "{ChifaDb.Server}" -p {GetDbPort()} -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """
             };
 
             Process process = new() { StartInfo = startInfo };
@@ -150,7 +204,7 @@ public static class DbChecker
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-                Arguments = $"""-h "{ChifaDb.Server}" -c  -p 5432 -U pharm -d CHIFA_OFFICINE "{fileName}" """,
+                Arguments = $"""-h "{ChifaDb.Server}" -c  -p {GetDbPort()} -U pharm -d CHIFA_OFFICINE "{fileName}" """,
             };
 
             using Process process = new();

@@ -4,7 +4,7 @@
 public class WeeklyStat
 {
 
-    [DataMember(Order = 1)] public string StartDate { get; set; }
+    [DataMember(Order = 1)] public string StartDate { get; set; } = "";
     [DataMember(Order = 2)] public DateTime? DateDebut { get; init; }
     [DataMember(Order = 3)] public int Factures { get; init; }
     [DataMember(Order = 4)] public decimal? MontantMaj { get; init; }
@@ -21,7 +21,7 @@ public class WeeklyStat
     public int? Year => DateDebut?.Year;
 
     public DateTime? DateFin => DateDebut?.AddDays(6);
-    public int? Jours => (int)(DateFin?.Date - DateDebut?.Date)?.TotalDays + 1;
+    public int? Jours => DateFin.HasValue && DateDebut.HasValue ? (int)(DateFin.Value.Date - DateDebut.Value.Date).TotalDays + 1 : null;
 
     public decimal? MontantJour => (MontantOff / Jours).ToDecimal();
     public decimal? FactureJour => (Factures / Jours).ToDecimal();

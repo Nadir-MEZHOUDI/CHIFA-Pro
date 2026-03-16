@@ -19,8 +19,15 @@ public partial class FrmHistory : XtraForm
 
     private async void FrmHistory_Load(object sender, EventArgs e)
     {
-        await LoadHistory();
-        await LoadConsumption();
+        try
+        {
+            await LoadHistory();
+            await LoadConsumption();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private async Task GetSelectedDetails()
@@ -68,7 +75,14 @@ public partial class FrmHistory : XtraForm
 
     private async void gridHistory_FocusedRowChanged(object sender, FocusedRowChangedEventArgs e)
     {
-        await GetSelectedDetails();
+        try
+        {
+            await GetSelectedDetails();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private Task LoadConsumption() => gridConsomption.LoadDataAsync(() => ChifaService.Instance.LoadConsumptionAsync(_noAssure!, _rang!, _isStrict));
@@ -81,7 +95,14 @@ public partial class FrmHistory : XtraForm
 
     private async void xtraTabControl1_CustomHeaderButtonClick(object sender, DevExpress.XtraTab.ViewInfo.CustomHeaderButtonEventArgs e)
     {
-        _isStrict = !_isStrict;
-        await LoadConsumption();
+        try
+        {
+            _isStrict = !_isStrict;
+            await LoadConsumption();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 }

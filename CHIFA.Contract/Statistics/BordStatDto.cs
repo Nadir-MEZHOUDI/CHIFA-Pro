@@ -14,10 +14,10 @@ public class BordStatDto
     public decimal? Virement { get; init; }
     public int Assuries { get; init; }
     public int Beneficiaires { get; init; }
-    public DateOnly? Date => DateOnly.FromDateTime(DateFin.Value);
-    public int? Jours => (int)(DateFin.Value - DateDebut.Value).TotalDays + 1;
-    public decimal? MontantJour => (MontantOff / Jours).ToDecimal();
-    public decimal? FactureJour => (Factures / Jours).ToDecimal();
+    public DateOnly? Date => DateFin.HasValue ? DateOnly.FromDateTime(DateFin.Value) : null;
+    public int? Jours => DateFin.HasValue && DateDebut.HasValue ? (int)(DateFin.Value - DateDebut.Value).TotalDays + 1 : null;
+    public decimal? MontantJour => Jours.HasValue && Jours > 0 ? (MontantOff / Jours).ToDecimal() : null;
+    public decimal? FactureJour => Jours.HasValue && Jours > 0 ? (Factures / Jours).ToDecimal() : null;
     public decimal? MontantFacture => ((MontantOff / Factures)).ToDecimal();
     public decimal? MontantGlobal => MontantOff + MontantMaj + MontantFE;
 

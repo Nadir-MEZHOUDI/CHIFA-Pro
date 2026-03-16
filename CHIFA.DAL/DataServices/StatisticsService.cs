@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LinqToDB.Async;
+using System;
 
 namespace CHIFA.DAL.DataServices;
 
@@ -259,7 +260,7 @@ public static class PredicateExtensions
 
     public static Expression<Func<DetailFact, bool>> SetPeriod(this Expression<Func<DetailFact, bool>>? predicate, Period? period = default)
     {
-        period ??= period;
+        period ??= new Period();
         predicate ??= _ => true;
 
         predicate = predicate.And(x => x.Facture.DateFact.HasValue);
@@ -276,7 +277,7 @@ public static class PredicateExtensions
     public static Expression<Func<Bordereau, bool>> SetPeriod(this Expression<Func<Bordereau, bool>>? predicate,
         Period? period = default)
     {
-        period ??= period;
+        period ??= new Period();
 
         predicate ??= _ => true;
 

@@ -3,7 +3,7 @@
 public class FactureDetailDto
 {
     public bool? Ts{ get; set; }
-    public string Code { get; set; }
+    public string? Code { get; set; }
     public decimal? DureeTrait { get; set; }
     public decimal? MajLocal { get; set; }
     public decimal? MajSub { get; set; }

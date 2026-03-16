@@ -4,7 +4,7 @@ using CHIFA.Pro.Helpers.Settings;
 
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
-
+using LinqToDB.Async;
 using Velopack;
 
 namespace CHIFA.Pro.Views;
@@ -108,6 +108,9 @@ public partial class FrmMain : XtraForm
     {
         try
         {
+            if (!await EnsureDatabaseConnectionAsync())
+                return;
+
             if (Environment.GetCommandLineArgs().Contains("minimized"))
             {
                 _ = MinimizeApp();//to hide it only
@@ -123,6 +126,19 @@ public partial class FrmMain : XtraForm
         {
             ex.Log();
         }
+    }
+
+    private async Task<bool> EnsureDatabaseConnectionAsync()
+    {
+        
+        if (await DbChecker.CheckDbConnectionAsync())
+            return true;
+
+        using var dialog = new DatabaseConnectionPromptForm();
+        if (dialog.ShowDialog(this) != DialogResult.OK)
+            return false;
+
+        return await DbChecker.CheckDbConnectionAsync();
     }
 
 

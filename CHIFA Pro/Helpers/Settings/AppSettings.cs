@@ -28,9 +28,9 @@ public class AppSettings : SettingsToRegistry<AppSettings>
 
     #region CHIFA_PASS
 
-    internal readonly string DbName = "CHIFA_OFFICINE";
-    internal readonly string DbPassword = "REDACTED";
-    internal readonly string DbUser = "pharm";
+    internal string DbName => Environment.GetEnvironmentVariable("CHIFA_DB_NAME") ?? "CHIFA_OFFICINE";
+    internal string DbPassword => Environment.GetEnvironmentVariable("CHIFA_DB_PASSWORD") ?? "REDACTED";
+    internal string DbUser => Environment.GetEnvironmentVariable("CHIFA_DB_USER") ?? "pharm";
 
     #endregion
 

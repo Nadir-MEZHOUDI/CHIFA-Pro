@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-	  <TargetFramework>net8.0</TargetFramework>
-
-	  <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="protobuf-net.Grpc" Version="1.*" />
-		<PackageReference Include="CHIFA2.Data" Version="2.*" />
+		<PackageReference Include="protobuf-net.Grpc" Version="*" />
+		<PackageReference Include="CHIFA2.Data" Version="4.*" />
+		<PackageReference Include="Npgsql" Version="10.0.1" />
+
 	</ItemGroup>
 
 </Project>

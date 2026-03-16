@@ -12,8 +12,15 @@ public partial class OfficineUc : XtraUserControl, INavigable
 
     private async void OfficineUC_Load(object sender, EventArgs e)
     {
-        var officine = await ChifaService.Instance.GetFirstOfficineAsync();
-        if (officine == null) return;
-        dataLayoutControl1.DataSource = officine;
+        try
+        {
+            var officine = await ChifaService.Instance.GetFirstOfficineAsync();
+            if (officine == null) return;
+            dataLayoutControl1.DataSource = officine;
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 }

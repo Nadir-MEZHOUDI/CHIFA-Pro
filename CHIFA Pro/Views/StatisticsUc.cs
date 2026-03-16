@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using DevExpress.XtraGrid;
 using DevExpress.XtraTab;
 
@@ -7,6 +8,8 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "STATISTICS";
     public Image Image => FrmMain.Image(4);
+    
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Parametre? Officine { get; set; }
 
     public StatisticsUc()

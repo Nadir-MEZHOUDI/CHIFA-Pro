@@ -14,13 +14,15 @@ namespace CHIFA.Server.Views;
 [ObservableObject]
 public partial class MainWindow
 {
+    private readonly CancellationTokenSource _logUpdaterCancellation = new();
+
     [ObservableProperty] private BridgeClient? _client;
-    [ObservableProperty] private string _logMessages;
+    [ObservableProperty] private string _logMessages = "";
     [ObservableProperty] private BridgeServer? _server;
     [ObservableProperty] private GrpcServer? _service;
-    [ObservableProperty] private string _status;
+    [ObservableProperty] private string _status = "Ready";
 
-    [ObservableProperty] private string _version;
+    [ObservableProperty] private string _version = "";
 
     public MainWindow()
     {
@@ -32,28 +34,36 @@ public partial class MainWindow
             "https://smartappbridge.azurewebsites.net/api/Register?code=p9Abe-0btlIvEw7KGhq29PyxzW1Nz5jp34JH4IjFBh6dAzFuI9wWEg%3D%3D";
 #endif
 
-        var logUpdaterThread = new Thread(UpdateLogMessages)
-        {
-            IsBackground = true
-        };
-        logUpdaterThread.Start();
+        _ = Task.Run(() => UpdateLogMessagesAsync(_logUpdaterCancellation.Token));
     }
 
     public static AppSettings AppSettings => AppSettings.Default;
     public UpdateService UpdateService { get; } = new();
 
-    private void UpdateLogMessages()
+    private async Task UpdateLogMessagesAsync(CancellationToken cancellationToken)
     {
-        while (true)
+        while (!cancellationToken.IsCancellationRequested)
         {
-            // Read logs from the global StringWriter
-            var logs = App.LogWriter.ToString();
+            try
+            {
+                var logs = App.LogWriter.ToString();
+                var dispatcher = Application.Current?.Dispatcher;
+                if (dispatcher != null)
+                    _ = dispatcher.BeginInvoke(() => LogMessages = logs);
+            }
+            catch (Exception ex)
+            {
+                ex.Log(false);
+            }
 
-            // Update the LogMessages property on the UI thread
-            Application.Current.Dispatcher.Invoke(() => { LogMessages = logs; });
-
-            // Wait before checking for updates again
-            Thread.Sleep(500); // Adjust as needed
+            try
+            {
+                await Task.Delay(500, cancellationToken);
+            }
+            catch (TaskCanceledException)
+            {
+                break;
+            }
         }
     }
 
@@ -99,12 +109,44 @@ public partial class MainWindow
 
     private void StartWithWin_OnChecked(object sender, RoutedEventArgs e)
     {
-        AppStartup.AddApplicationToStartup();
+        try
+        {
+            AppStartup.AddApplicationToStartup();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private void StartWithWin_OnUnchecked(object sender, RoutedEventArgs e)
     {
-        AppStartup.RemoveApplicationFromStartup();
+        try
+        {
+            AppStartup.RemoveApplicationFromStartup();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+    private void MainWindow_OnClosed(object? sender, EventArgs e)
+    {
+        try
+        {
+            _logUpdaterCancellation.Cancel();
+            Server?.Stop();
+            _ = Service?.Stop();
+        }
+        catch (Exception ex)
+        {
+            ex.Log(false);
+        }
+        finally
+        {
+            _logUpdaterCancellation.Dispose();
+        }
     }
 
     private void MainWindow_OnContentRendered(object? sender, EventArgs e)

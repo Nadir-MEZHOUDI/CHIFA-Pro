@@ -12,7 +12,7 @@ public class MonthlyStat
     public decimal? MontantFE { get; init; }
     public decimal? MontantFact { get; init; }
     public decimal? MontantOff { get; init; }
-    public int? Jours => (int)(DateFin?.Date - DateDebut?.Date)?.TotalDays + 1;
+    public int? Jours => DateFin.HasValue && DateDebut.HasValue ? (int)(DateFin.Value.Date - DateDebut.Value.Date).TotalDays + 1 : null;
     public decimal? MontantJour => (MontantOff / Jours).ToDecimal();
     public decimal? FactureJour => (Factures / Jours).ToDecimal();
     public decimal? MontantFacture => (MontantOff / Factures).ToDecimal();
