@@ -12,21 +12,26 @@ public static class XtraHelper
 {
     public static async Task LoadDataAsync<T>(this GridView gridView, Func<ValueTask<IEnumerable<T>>> func)
     {
+        var gridControl = gridView.GridControl;
         try
         {
+            if (!CanUseControl(gridControl)) return;
+
             gridView.ShowLoadingPanel();
             gridView.OptionsView.BestFitMaxRowCount = 40;
 
-            if (gridView.GridControl != null)
-                gridView.GridControl.DataSource = new List<T>();
+            gridControl.DataSource = new List<T>();
 
             var data = await func.Invoke().ConfigureAwait(false);
-            gridView.GridControl?.Invoke(() =>
+
+            TryInvoke(gridControl, () =>
             {
-                if (gridView.GridControl.DataSource is BindingSource bindingSource)
+                if (!CanUseControl(gridControl)) return;
+
+                if (gridControl.DataSource is BindingSource bindingSource)
                     bindingSource.DataSource = data;
                 else
-                    gridView.GridControl.DataSource = data;
+                    gridControl.DataSource = data;
 
                 gridView.BestFitColumns();
             });
@@ -37,33 +42,33 @@ public static class XtraHelper
         }
         finally
         {
-            gridView.HideLoadingPanel();
+            TryInvoke(gridControl, () =>
+            {
+                if (CanUseControl(gridControl))
+                    gridView.HideLoadingPanel();
+            });
         }
     }
 
     public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
         Func<ValueTask<IEnumerable<T>>> func)
     {
+        var gridControl = gridView.GridControl;
         try
         {
+            if (!CanUseControl(gridControl)) return;
+
             gridView.ShowLoadingPanel();
             gridView.OptionsView.BestFitMaxRowCount = 40;
-            await Task.Run(async () =>
+
+            var data = await func.Invoke().ConfigureAwait(false);
+
+            TryInvoke(gridControl, () =>
             {
-                var data = await func.Invoke().ConfigureAwait(false);
-                if (gridView.GridControl.InvokeRequired)
-                {
-                    gridView.GridControl?.Invoke(() =>
-                    {
-                        bindingSource.DataSource = data;
-                        gridView.BestFitColumns();
-                    });
-                }
-                else
-                {
-                    bindingSource.DataSource = data;
-                    gridView.BestFitColumns();
-                }
+                if (!CanUseControl(gridControl)) return;
+
+                bindingSource.DataSource = data;
+                gridView.BestFitColumns();
             });
         }
         catch (Exception ex)
@@ -72,7 +77,33 @@ public static class XtraHelper
         }
         finally
         {
-            gridView.HideLoadingPanel();
+            TryInvoke(gridControl, () =>
+            {
+                if (CanUseControl(gridControl))
+                    gridView.HideLoadingPanel();
+            });
+        }
+    }
+
+    private static bool CanUseControl(Control? control)
+        => control is { IsDisposed: false, Disposing: false, IsHandleCreated: true };
+
+    private static void TryInvoke(Control? control, Action action)
+    {
+        if (!CanUseControl(control)) return;
+
+        try
+        {
+            if (control!.InvokeRequired)
+                control.Invoke(action);
+            else
+                action();
+        }
+        catch (ObjectDisposedException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
         }
     }
 
