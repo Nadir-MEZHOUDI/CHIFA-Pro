@@ -11,11 +11,15 @@ namespace CHIFA.Pro.Helpers;
 public static class XtraHelper
 {
     public static async Task LoadDataAsync<T>(this GridView gridView, Func<ValueTask<IEnumerable<T>>> func)
+        => await LoadDataAsync(gridView, func, CancellationToken.None);
+
+    public static async Task LoadDataAsync<T>(this GridView gridView, Func<ValueTask<IEnumerable<T>>> func,
+        CancellationToken cancellationToken)
     {
         var gridControl = gridView.GridControl;
         try
         {
-            if (!CanUseControl(gridControl)) return;
+            if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
 
             gridView.ShowLoadingPanel();
             gridView.OptionsView.BestFitMaxRowCount = 40;
@@ -24,14 +28,18 @@ public static class XtraHelper
 
             var data = await func.Invoke().ConfigureAwait(false);
 
+            if (cancellationToken.IsCancellationRequested) return;
+
             TryInvoke(gridControl, () =>
             {
-                if (!CanUseControl(gridControl)) return;
+                if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
 
                 if (gridControl.DataSource is BindingSource bindingSource)
                     bindingSource.DataSource = data;
                 else
                     gridControl.DataSource = data;
+
+                if (cancellationToken.IsCancellationRequested) return;
 
                 gridView.BestFitColumns();
             });
@@ -52,22 +60,31 @@ public static class XtraHelper
 
     public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
         Func<ValueTask<IEnumerable<T>>> func)
+        => await LoadDataAsync(bindingSource, gridView, func, CancellationToken.None);
+
+    public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
+        Func<ValueTask<IEnumerable<T>>> func, CancellationToken cancellationToken)
     {
         var gridControl = gridView.GridControl;
         try
         {
-            if (!CanUseControl(gridControl)) return;
+            if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
 
             gridView.ShowLoadingPanel();
             gridView.OptionsView.BestFitMaxRowCount = 40;
 
             var data = await func.Invoke().ConfigureAwait(false);
 
+            if (cancellationToken.IsCancellationRequested) return;
+
             TryInvoke(gridControl, () =>
             {
-                if (!CanUseControl(gridControl)) return;
+                if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
 
                 bindingSource.DataSource = data;
+
+                if (cancellationToken.IsCancellationRequested) return;
+
                 gridView.BestFitColumns();
             });
         }

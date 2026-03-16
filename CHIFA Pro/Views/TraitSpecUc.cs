@@ -2,6 +2,10 @@
 
 public partial class TraitSpecUc : XtraUserControl, INavigable
 {
+    private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
+    private readonly SemaphoreSlim _reloadLock = new(1, 1);
+    private CancellationTokenSource? _reloadCts;
+
     public string Caption { get; } = "TRAITEMENT SPECIFIQUE";
     public Image Image => FrmMain.Image(2);
 
@@ -9,6 +13,7 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     {
         InitializeComponent();
         viewFectures.SetOptions();
+        Disposed += TraitSpecUc_Disposed;
     }
 
     private void btnConsumption_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -24,8 +29,9 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     private async void facturesUC_Load(object sender, EventArgs e)
     {
         await LoadMaxAndMinDates();
-        await LoadData();
+        await ReloadDataImmediateAsync();
     }
+
     private async Task LoadMaxAndMinDates()
     {
         try
@@ -43,8 +49,8 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
             FromDate.EditValue = lastYear;
             ToDate.EditValue = toDateRepo.MaxValue;
 
-            FromDate.EditValueChanged += async (_, _) => await LoadData();
-            ToDate.EditValueChanged += async (_, _) => await LoadData();
+            FromDate.EditValueChanged += FromDate_EditValueChanged;
+            ToDate.EditValueChanged += ToDate_EditValueChanged;
         }
         catch (Exception ex)
         {
@@ -98,26 +104,82 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
         return viewDetails.LoadDataAsync(() => ChifaService.Instance.GetPatientTraitementAsync(row.NumAssure!, row.Rang!, procheOnly));
     }
 
-    private Task LoadData()
+    private async Task ScheduleReloadDataAsync()
     {
-        Expression<Func<DetailFact, bool>> predicate = f => true;
+        var cancellationToken = ResetReloadToken();
 
-        if (txtMedic.EditValue is string txt)
-            predicate = predicate.And(d => d.Medicament.FullName!.Contains(txt, StringComparison.InvariantCultureIgnoreCase));
+        try
+        {
+            await Task.Delay(ReloadDebounceDelay, cancellationToken);
+            await LoadDataAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
 
-        var period = new Period { From = (DateTime?)FromDate.EditValue, To = (DateTime?)ToDate.EditValue };
+    private async Task ReloadDataImmediateAsync()
+    {
+        var cancellationToken = ResetReloadToken();
+        await LoadDataAsync(cancellationToken);
+    }
 
-        return viewFectures.LoadDataAsync(() => ChifaService.Instance.GetPatientsOfTraitSpecAsync(period, predicate));
+    private CancellationToken ResetReloadToken()
+    {
+        var cts = new CancellationTokenSource();
+        var previous = Interlocked.Exchange(ref _reloadCts, cts);
+        previous?.Cancel();
+        previous?.Dispose();
+        return cts.Token;
+    }
+
+    private async Task LoadDataAsync(CancellationToken cancellationToken)
+    {
+        if (cancellationToken.IsCancellationRequested)
+            return;
+
+        var lockTaken = false;
+
+        try
+        {
+            await _reloadLock.WaitAsync(cancellationToken);
+            lockTaken = true;
+
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            Expression<Func<DetailFact, bool>> predicate = f => true;
+
+            if (txtMedic.EditValue is string txt)
+                predicate = predicate.And(d => d.Medicament.FullName!.Contains(txt, StringComparison.InvariantCultureIgnoreCase));
+
+            var period = new Period { From = (DateTime?)FromDate.EditValue, To = (DateTime?)ToDate.EditValue };
+
+            await viewFectures.LoadDataAsync(() => ChifaService.Instance.GetPatientsOfTraitSpecAsync(period, predicate),
+                cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+        finally
+        {
+            if (lockTaken)
+                _reloadLock.Release();
+        }
     }
 
     private async void swtchTimeOnly_EditValueChangedAsync(object sender, EventArgs e)
     {
-        await LoadData();
+        await ScheduleReloadDataAsync();
     }
 
     private async void txtMedic_EditValueChanged(object sender, EventArgs e)
     {
-        await LoadData();
+        await ScheduleReloadDataAsync();
     }
 
     private void viewFectures_DoubleClick(object sender, EventArgs e)
@@ -129,6 +191,18 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private async void btnRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        await LoadData();
+        await ReloadDataImmediateAsync();
+    }
+
+    private async void FromDate_EditValueChanged(object? sender, EventArgs e) => await ScheduleReloadDataAsync();
+
+    private async void ToDate_EditValueChanged(object? sender, EventArgs e) => await ScheduleReloadDataAsync();
+
+    private void TraitSpecUc_Disposed(object? sender, EventArgs e)
+    {
+        var previous = Interlocked.Exchange(ref _reloadCts, null);
+        previous?.Cancel();
+        previous?.Dispose();
+        _reloadLock.Dispose();
     }
 }

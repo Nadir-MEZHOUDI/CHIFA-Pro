@@ -6,6 +6,11 @@ namespace CHIFA.Pro.Views;
 
 public partial class StatisticsUc : XtraUserControl, INavigable
 {
+    private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
+    private readonly SemaphoreSlim _reloadLock = new(1, 1);
+    private CancellationTokenSource? _reloadCts;
+    private bool _suspendDateEvents;
+
     public string Caption { get; } = "STATISTICS";
     public Image Image => FrmMain.Image(4);
     
@@ -15,29 +20,36 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     public StatisticsUc()
     {
         InitializeComponent();
+        Disposed += StatisticsUc_Disposed;
     }
 
     private async void BtnClearDates_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
         await LoadMaxAndMinDates();
-        await ReloadSelectedTable(tabControl.SelectedTabPage);
+        await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
     }
 
     private async void BtnRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        await ReloadSelectedTable(tabControl.SelectedTabPage);
+        await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
     }
 
     private async void FromDate_EditValueChanged(object sender, EventArgs e)
     {
-        StatisticsService.Instance.Period.From = (DateTime)FromDate.EditValue;
-        await ReloadSelectedTable(tabControl.SelectedTabPage);
+        if (_suspendDateEvents)
+            return;
+
+        UpdatePeriodFromEditors();
+        await ScheduleSelectedTableReloadAsync(tabControl.SelectedTabPage);
     }
 
     private async void ToDate_EditValueChanged(object sender, EventArgs e)
     {
-        StatisticsService.Instance.Period.To = (DateTime)ToDate.EditValue;
-        await ReloadSelectedTable(tabControl.SelectedTabPage);
+        if (_suspendDateEvents)
+            return;
+
+        UpdatePeriodFromEditors();
+        await ScheduleSelectedTableReloadAsync(tabControl.SelectedTabPage);
     }
 
     private async Task LoadMaxAndMinDates()
@@ -56,12 +68,18 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             toDateRepo.MinValue = Period.MinDate;
             toDateRepo.TodayDate = Period.MaxDate;
 
+            _suspendDateEvents = true;
             FromDate.EditValue = fromDateRepo.TodayDate;
             ToDate.EditValue = toDateRepo.TodayDate;
+            UpdatePeriodFromEditors();
         }
         catch (Exception ex)
         {
             ex.Log();
+        }
+        finally
+        {
+            _suspendDateEvents = false;
         }
     }
 
@@ -81,7 +99,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
         ToDate.EditValueChanged += ToDate_EditValueChanged!;
 
-        await ReloadSelectedTable(tabBordereaux);
+        await ReloadSelectedTableImmediateAsync(tabBordereaux);
         await GetOfficineAsync();
     }
 
@@ -97,39 +115,119 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         }
     }
 
-    private async Task ReloadSelectedTable(XtraTabPage tab)
+    private async Task ScheduleSelectedTableReloadAsync(XtraTabPage? tab)
     {
+        var cancellationToken = ResetReloadToken();
+
         try
         {
+            await Task.Delay(ReloadDebounceDelay, cancellationToken);
+            await ReloadSelectedTableAsync(tab, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private async Task ReloadSelectedTableImmediateAsync(XtraTabPage? tab)
+    {
+        var cancellationToken = ResetReloadToken();
+        await ReloadSelectedTableAsync(tab, cancellationToken);
+    }
+
+    private CancellationToken ResetReloadToken()
+    {
+        var cts = new CancellationTokenSource();
+        var previous = Interlocked.Exchange(ref _reloadCts, cts);
+        previous?.Cancel();
+        previous?.Dispose();
+        return cts.Token;
+    }
+
+    private void UpdatePeriodFromEditors()
+    {
+        if (FromDate.EditValue is DateTime from)
+            StatisticsService.Instance.Period.From = from;
+
+        if (ToDate.EditValue is DateTime to)
+            StatisticsService.Instance.Period.To = to;
+    }
+
+    private async Task ReloadSelectedTableAsync(XtraTabPage? tab, CancellationToken cancellationToken)
+    {
+        if (tab is null || cancellationToken.IsCancellationRequested)
+            return;
+
+        var lockTaken = false;
+
+        try
+        {
+            await _reloadLock.WaitAsync(cancellationToken);
+            lockTaken = true;
+
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
             Cursor = Cursors.WaitCursor;
             if (tab.Name is nameof(tabBordereaux) or nameof(tabBordereauxTable))
             {
-                bordStatDtoBindingSource.DataSource = await StatisticsService.Instance.BordereauxAsync();
+                var data = await StatisticsService.Instance.BordereauxAsync();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                bordStatDtoBindingSource.DataSource = data;
             }
             if (tab.Name is nameof(tabMonthly) or nameof(tabMonthlyTable))
             {
-                monthlyStatBindingSource.DataSource = await StatisticsService.Instance.MonthlyAsync();
+                var data = await StatisticsService.Instance.MonthlyAsync();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                monthlyStatBindingSource.DataSource = data;
             }
             if (tab.Name is nameof(tabWeekly) or nameof(tabWeeklyTable))
             {
-                weeklyStatBindingSource.DataSource = await StatisticsService.Instance.WeeklyAsync();
+                var data = await StatisticsService.Instance.WeeklyAsync();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                weeklyStatBindingSource.DataSource = data;
             }
             if (tab.Name is nameof(tabDaily) or nameof(tabDailyTable))
             {
-                dailyStatBindingSource.DataSource = await StatisticsService.Instance.DailyAsync();
+                var data = await StatisticsService.Instance.DailyAsync();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                dailyStatBindingSource.DataSource = data;
             }
             if (tab.Name is nameof(tabClients) or nameof(tabClientsTable))
             {
-                byClientStatBindingSource.DataSource = await StatisticsService.Instance.ByClientAsync();
+                var data = await StatisticsService.Instance.ByClientAsync();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                byClientStatBindingSource.DataSource = data;
             }
             if (tab.Name is nameof(tabProducts2) or nameof(tabProductTable))
             {
-                productStatBindingSource.DataSource = await StatisticsService.Instance.ProductsAsync();
+                var data = await StatisticsService.Instance.ProductsAsync();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                productStatBindingSource.DataSource = data;
             }
             if (tab.Name is nameof(tabYearly) or nameof(tabYearlyTable))
             {
-                yearlyStatBindingSource.DataSource = await StatisticsService.Instance.YearlyAsync();
+                var data = await StatisticsService.Instance.YearlyAsync();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                yearlyStatBindingSource.DataSource = data;
             }
+        }
+        catch (OperationCanceledException)
+        {
         }
         catch (Exception ex)
         {
@@ -138,6 +236,8 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         finally
         {
             Cursor = Cursors.Default;
+            if (lockTaken)
+                _reloadLock.Release();
         }
     }
 
@@ -145,7 +245,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         try
         {
-            await ReloadSelectedTable(e.Page);
+            await ScheduleSelectedTableReloadAsync(e.Page);
         }
         catch (Exception ex)
         {
@@ -180,10 +280,20 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private void SetDates(DateTime from, DateTime to)
     {
-        StatisticsService.Instance.Period.From = from;
-        StatisticsService.Instance.Period.To = to;
-        FromDate.EditValue = StatisticsService.Instance.Period.From;
-        ToDate.EditValue = StatisticsService.Instance.Period.To;
+        try
+        {
+            _suspendDateEvents = true;
+            StatisticsService.Instance.Period.From = from;
+            StatisticsService.Instance.Period.To = to;
+            FromDate.EditValue = StatisticsService.Instance.Period.From;
+            ToDate.EditValue = StatisticsService.Instance.Period.To;
+        }
+        finally
+        {
+            _suspendDateEvents = false;
+        }
+
+        _ = ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
     }
 
     private void btnExportExcel_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -276,5 +386,13 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
         fileName = saveFileDialog.FileName;
         exportAction?.Invoke(grid, fileName);
+    }
+
+    private void StatisticsUc_Disposed(object? sender, EventArgs e)
+    {
+        var previous = Interlocked.Exchange(ref _reloadCts, null);
+        previous?.Cancel();
+        previous?.Dispose();
+        _reloadLock.Dispose();
     }
 }

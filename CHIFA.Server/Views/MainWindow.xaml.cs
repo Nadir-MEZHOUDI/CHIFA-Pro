@@ -14,7 +14,10 @@ namespace CHIFA.Server.Views;
 [ObservableObject]
 public partial class MainWindow
 {
+    private const int MaxDisplayedLogLength = 18000;
+
     private readonly CancellationTokenSource _logUpdaterCancellation = new();
+    private string _lastRenderedLogs = "";
 
     [ObservableProperty] private BridgeClient? _client;
     [ObservableProperty] private string _logMessages = "";
@@ -46,10 +49,18 @@ public partial class MainWindow
         {
             try
             {
-                var logs = App.LogWriter.ToString();
-                var dispatcher = Application.Current?.Dispatcher;
-                if (dispatcher != null)
-                    _ = dispatcher.BeginInvoke(() => LogMessages = logs);
+                var builder = App.LogWriter.GetStringBuilder();
+                var logsLength = builder.Length;
+                var tailStart = Math.Max(logsLength - MaxDisplayedLogLength, 0);
+                var displayedLogs = builder.ToString(tailStart, logsLength - tailStart);
+
+                if (!string.Equals(displayedLogs, _lastRenderedLogs, StringComparison.Ordinal))
+                {
+                    _lastRenderedLogs = displayedLogs;
+                    var dispatcher = Application.Current?.Dispatcher;
+                    if (dispatcher != null)
+                        _ = dispatcher.BeginInvoke(() => LogMessages = displayedLogs);
+                }
             }
             catch (Exception ex)
             {

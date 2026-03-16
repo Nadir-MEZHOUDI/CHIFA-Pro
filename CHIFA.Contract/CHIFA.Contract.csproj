@@ -9,7 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="protobuf-net.Grpc" Version="*" />
 		<PackageReference Include="CHIFA2.Data" Version="4.*" />
-		<PackageReference Include="Npgsql" Version="10.0.1" />
+		<PackageReference Include="Npgsql" Version="10.*" />
 
 	</ItemGroup>
 

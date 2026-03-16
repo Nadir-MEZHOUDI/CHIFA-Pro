@@ -117,7 +117,7 @@ public partial class FrmMain : XtraForm
             }
 
             this.NavigateTo<HomeUc>();
-            Application.DoEvents();
+            await Task.Yield();
             await Task.Delay(500);
             _ = LoadServerInfo();
             _ = UpdateAppAsync();
@@ -330,7 +330,7 @@ public partial class FrmMain : XtraForm
     private async Task ShowNotification(string message, string text, ToolTipIcon icon = ToolTipIcon.Info)
     {
         Notification.ShowBalloonTip(5, message, text, icon);
-        Application.DoEvents();
+        await Task.Yield();
         await Task.Delay(200);
     }
 

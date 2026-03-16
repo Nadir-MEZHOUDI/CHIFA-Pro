@@ -95,10 +95,10 @@ public class StatisticsService : IStatisticsService
     public async ValueTask<IEnumerable<MonthlyStat>> MonthlyAsync(Expression<Func<Facture, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
-        var list = await db.Factures
+        var monthlyRows = await db.Factures
             .Where(predicate.SetPeriod(Period))
-            .GroupBy(x => new { Year = $"{x.DateFact!.Value.Year}", Month = $"{x.DateFact.Value.Month}" })
-            .Select(x => new MonthlyStat
+            .GroupBy(x => new { Year = x.DateFact!.Value.Year, Month = x.DateFact.Value.Month })
+            .Select(x => new
             {
                 Year = x.Key.Year,
                 Month = x.Key.Month,
@@ -115,19 +115,36 @@ public class StatisticsService : IStatisticsService
             .OrderBy(x => x.DateDebut)
             .ToListAsync()
             .ConfigureAwait(false);
+
+        var list = monthlyRows
+            .Select(x => new MonthlyStat
+            {
+                Year = x.Year.ToString(),
+                Month = x.Month.ToString(),
+                MontantFact = x.MontantFact,
+                MontantOff = x.MontantOff,
+                MontantMaj = x.MontantMaj,
+                MontantFE = x.MontantFE,
+                Factures = x.Factures,
+                DateDebut = x.DateDebut,
+                DateFin = x.DateFin,
+                Assureis = x.Assureis,
+                Beneficiaires = x.Beneficiaires
+            })
+            .ToList();
+
         return list;
     }
 
     public async ValueTask<IEnumerable<WeeklyStat>> WeeklyAsync(Expression<Func<Facture, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
-        var query = await db.Factures
+        var weeklyRows = await db.Factures
             .Where(predicate.SetPeriod(Period))
-            .GroupBy(x => new { Start = $"{x.DateFact!.Value.Date.AddDays(-(int)x.DateFact.Value.Date.DayOfWeek)}" })
-            .Select(x => new WeeklyStat
+            .GroupBy(x => x.DateFact!.Value.Date.AddDays(-(int)x.DateFact.Value.Date.DayOfWeek))
+            .Select(x => new
             {
-                StartDate = x.Key.Start,
-                DateDebut = DateTime.Parse(x.Key.Start),
+                DateDebut = x.Key,
                 MontantFact = x.Sum(f => f.MontFact),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantOff = x.Sum(f => f.MontOff),
@@ -139,6 +156,23 @@ public class StatisticsService : IStatisticsService
             .OrderByDescending(x => x.DateDebut)
             .ToListAsync()
             .ConfigureAwait(false);
+
+        var query = weeklyRows
+            .Select(x => new WeeklyStat
+            {
+                DateDebut = x.DateDebut,
+                StartDate = x.DateDebut.ToString("yyyy-MM-dd"),
+                MontantFact = x.MontantFact,
+                MontantMaj = x.MontantMaj,
+                MontantOff = x.MontantOff,
+                MontantFE = x.MontantFE,
+                Factures = x.Factures,
+                Assureis = x.Assureis,
+                Beneficiaires = x.Beneficiaires
+            })
+            .OrderByDescending(x => x.DateDebut)
+            .ToList();
+
         return query;
     }
 
@@ -192,49 +226,28 @@ public class StatisticsService : IStatisticsService
     public async ValueTask<IEnumerable<ProductStat>> ProductsAsync(Expression<Func<DetailFact, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
-        var list = await db.DetailFacts
+        var query = await db.DetailFacts
             .Where(predicate.SetPeriod(Period))
-            .Select(
-                x => new
-                {
-                    x.NumEnr,
-                    x.Local,
-                    x.InfTr,
-                    x.MajLocal,
-                    x.MajSub,
-                    x.Medicament.Generic,
-                    x.Qte,
-                    x.Mont,
-                    x.Ppa,
-                    x.Medicament.Dosage,
-                    x.Medicament.Conditionnement,
-                    x.Medicament.NomCom,
-                    x.Medicament.CodeDci,
-                    x.Medicament.NomDci,
-                    x.Medicament.FullName
-                })
-            .ToListAsync();
-
-        var query = list
             .GroupBy(x => x.NumEnr)
             .Select(x => new ProductStat
             {
-                NomCom = x.FirstOrDefault()?.NomCom,
-                CodeDci = x.FirstOrDefault()?.CodeDci,
-                Dci = x.FirstOrDefault()?.NomDci,
-                Condition = x.FirstOrDefault()?.Conditionnement,
-                Dosage = x.FirstOrDefault()?.Dosage,
+                NomCom = x.Max(m => m.Medicament.NomCom),
+                CodeDci = x.Max(m => m.Medicament.CodeDci),
+                Dci = x.Max(m => m.Medicament.NomDci),
+                Condition = x.Max(m => m.Medicament.Conditionnement),
+                Dosage = x.Max(m => m.Medicament.Dosage),
                 Qt = x.Sum(m => m.Qte),
-                Prix = x.FirstOrDefault()?.Ppa ?? 0,
+                Prix = x.Max(m => m.Ppa),
                 Montant = x.Sum(m => m.Mont),
-                NumEnr = x.FirstOrDefault()!.NumEnr,
-                Local = x.FirstOrDefault()!.Local,
-                Generic = x.FirstOrDefault()!.Generic,
-                InfTr = x.FirstOrDefault()!.InfTr,
+                NumEnr = x.Key,
+                Local = x.Max(m => m.Local),
+                Generic = x.Max(m => m.Medicament.Generic),
+                InfTr = x.Max(m => m.InfTr),
                 Maj = x.Sum(m => m.MajLocal)
             })
             .OrderByDescending(x => x.Qt)
-            .ToList();
+            .ToListAsync()
+            .ConfigureAwait(false);
 
         return query;
     }

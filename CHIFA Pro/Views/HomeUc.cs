@@ -15,7 +15,7 @@ public partial class HomeUc : XtraUserControl, INavigable
         try
         {
             Cursor = Cursors.WaitCursor;
-            var data = await Task.Run(async () => await StatisticsService.Instance.GetThisWeekStatsAsync());
+            var data = await StatisticsService.Instance.GetThisWeekStatsAsync();
             weekStatBindingSource.DataSource = data;
             Cursor = Cursors.Default;
         }
