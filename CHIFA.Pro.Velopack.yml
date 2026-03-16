@@ -10,6 +10,23 @@ variables:
   # Automatically increment the version number with each build
 
 steps:
+- task: DownloadSecureFile@1
+  name: dxLicense
+  displayName: 'Download DevExpress license file'
+  inputs:
+    secureFile: 'DevExpress_License.txt'
+
+- task: PowerShell@2
+  displayName: 'Install DevExpress license file'
+  inputs:
+    targetType: 'inline'
+    pwsh: true
+    script: |
+      $destDir = Join-Path $env:APPDATA 'DevExpress'
+      New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+      Copy-Item '$(dxLicense.secureFilePath)' (Join-Path $destDir 'DevExpress_License.txt') -Force
+      Write-Host "DevExpress license file copied to $destDir"
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
   inputs:
