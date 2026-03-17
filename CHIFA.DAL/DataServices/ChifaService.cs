@@ -487,14 +487,15 @@ public class ChifaService : IChifaService
             .GroupBy(x => new { x.NumAssure, x.Rang })
             .Select(a =>
             {
-                var first = a.First();
+                var items = a.ToList();
+                var first = items[0];
                 return new PatientWithTraitSpec
                 {
                     NumAssure = a.Key.NumAssure,
                     Rang = a.Key.Rang,
                     Assure = first.Assure,
                     Malade = first.Malade,
-                    DetailsDtos = a.Select(m => new TraitDetailsDto
+                    DetailsDtos = items.Select(m => new TraitDetailsDto
                     {
                         Medicament = m.Medicament,
                         DateFact = m.DateFact,
