@@ -30,8 +30,8 @@ public class StatisticsService : IStatisticsService
 
         return Enumerable.Range(0, 8)
             .Select(x => DateTime.Today.AddDays(-x))
-            .Select(date => weekStats.Find(ws => ws.Date == date) ?? new ThisWeekStat(date))
-            // .GroupBy(x=>x.Center)
+            .ToDictionary(d => d, d => weekStats.Find(ws => ws.Date == d))
+            .Select(kv => kv.Value ?? new ThisWeekStat(kv.Key))
             .OrderByDescending(ws => ws.Date)
             .ToList();
     }
@@ -166,7 +166,6 @@ public class StatisticsService : IStatisticsService
                 Assureis = x.Assureis,
                 Beneficiaires = x.Beneficiaires
             })
-            .OrderByDescending(x => x.DateDebut)
             .ToList();
 
         return query;
