@@ -120,7 +120,7 @@ Acceptance criteria:
 
 ### Phase 3 - Data access optimization (2-4 days)
 - Move heavy grouping/aggregation from client memory to DB-side projections.
-- Reduce selected columns and introduce paging for heavy grids.
+- Reduce selected columns for heavy grids and statistics views.
 - Validate query count and execution time on realistic data volume.
 
 Acceptance criteria:

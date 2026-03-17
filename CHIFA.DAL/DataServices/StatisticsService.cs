@@ -22,8 +22,6 @@ public class StatisticsService : IStatisticsService
                     Count = g.Count(),
 
                     Montant = g.Sum(f => f.MontFact),
-                    MontantAs = g.Sum(f => f.MontAs),
-                    MontantOff = g.Sum(f => f.MontOff),
                     Maj = g.Sum(f => f.MontMaj)
                 })
                 .ToListAsync()
@@ -50,8 +48,6 @@ public class StatisticsService : IStatisticsService
                 MontantFact = x.Factures.Sum(f => f.MontFact),
                 MontantMaj = x.Factures.Sum(f => f.MontMaj),
                 MontantFE = x.Factures.Sum(f => f.MontMajFae),
-                Assuries = x.Factures.Select(f => f.NumAssure).Distinct().Count(),
-                Beneficiaires = x.Factures.Select(f => f.NumAssure + f.RangAd).Distinct().Count(),
                 Factures = x.Factures.Count(),
                 DateDebut = x.DateGen,
                 DateFin = x.DateExtract,
@@ -241,8 +237,6 @@ public class StatisticsService : IStatisticsService
                 Montant = x.Sum(m => m.Mont),
                 NumEnr = x.Key,
                 Local = x.Max(m => m.Local),
-                Generic = x.Max(m => m.Medicament.Generic),
-                InfTr = x.Max(m => m.InfTr),
                 Maj = x.Sum(m => m.MajLocal)
             })
             .OrderByDescending(x => x.Qt)
