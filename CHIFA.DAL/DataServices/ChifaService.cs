@@ -238,7 +238,8 @@ public class ChifaService : IChifaService
             .GroupBy(x => new { x.CodeDci })
             .Select(x =>
             {
-                var first = x.First();
+                var items = x.ToList();
+                var first = items[0];
                 return new TraitDetailsDto
                 {
                     DateFact = first.DateFact,
@@ -251,9 +252,9 @@ public class ChifaService : IChifaService
                     TS = first.TS ?? false,
                     Specialite = first.Specialite,
                     CodeDci = x.Key.CodeDci,
-                    Historic = x.Count() <= 1
+                    Historic = items.Count <= 1
                         ? []
-                        : x.Select(m => new MedicHistory
+                        : items.Select(m => new MedicHistory
                         {
                             Medicament = m.Medicament,
                             Duree = m.Duree,
@@ -310,7 +311,8 @@ public class ChifaService : IChifaService
             .GroupBy(x => new { x.CodeDci })
             .Select(x =>
             {
-                var first = x.First();
+                var items = x.ToList();
+                var first = items[0];
                 return new ConsumptionGroupedDto
                 {
                     Facture = first.Facture,
@@ -324,9 +326,9 @@ public class ChifaService : IChifaService
                     TS = first.TS ?? false,
                     Medecin = first.Medecin,
                     CodeDci = x.Key.CodeDci,
-                    Historic = x.Count() <= 1
+                    Historic = items.Count <= 1
                         ? []
-                        : x.Select(m => new MedicHistory
+                        : items.Select(m => new MedicHistory
                         {
                             Facture = m.Facture,
                             Bord = m.Bord,
@@ -411,7 +413,8 @@ public class ChifaService : IChifaService
             .GroupBy(x => new { x.NumAssure, x.RangAd, x.CodeDci })
             .Select(x =>
             {
-                var first = x.First();
+                var items = x.ToList();
+                var first = items[0];
                 return new TraitSpec2
                 {
                     NumFact = first.NumFact,
@@ -429,9 +432,9 @@ public class ChifaService : IChifaService
                     NumAssure = x.Key.NumAssure,
                     Rang = x.Key.RangAd!,
                     TC = true,
-                    Historic = (x.Count() <= 1
+                    Historic = (items.Count <= 1
                         ? null
-                        : x.Select(m => new MedicHistory
+                        : items.Select(m => new MedicHistory
                         {
                             Facture = m.NumFact,
                             Bord = m.NumBord,
@@ -482,27 +485,30 @@ public class ChifaService : IChifaService
         var list = query
             .OrderByDescending(x => x.DateFact)
             .GroupBy(x => new { x.NumAssure, x.Rang })
-            .Select(a => new PatientWithTraitSpec
+            .Select(a =>
             {
-                NumAssure = a.Key.NumAssure,
-                Rang = a.Key.Rang,
-                Assure = a.FirstOrDefault()!.Assure,
-                Malade = a.FirstOrDefault()!.Malade,
-                DetailsDtos = a.Select(m => new TraitDetailsDto
+                var first = a.First();
+                return new PatientWithTraitSpec
                 {
-                    Medicament = m.Medicament,
-                    DateFact = m.DateFact,
-                    Duree = m.Duree,
-                    NEnrg = m.NEnrg,
-                    Qt = m.Qt,
-                    TS = m.Ts,
-                    Prix = m.Ppa,
-                    Specialite = m.Specialite,
-                    CodeDci = m.CodeDci,
-                    DateSoin = m.DateSoin
-                })
-                    //.DistinctBy(x => x.NEnrg)
-                    .ToList()
+                    NumAssure = a.Key.NumAssure,
+                    Rang = a.Key.Rang,
+                    Assure = first.Assure,
+                    Malade = first.Malade,
+                    DetailsDtos = a.Select(m => new TraitDetailsDto
+                    {
+                        Medicament = m.Medicament,
+                        DateFact = m.DateFact,
+                        Duree = m.Duree,
+                        NEnrg = m.NEnrg,
+                        Qt = m.Qt,
+                        TS = m.Ts,
+                        Prix = m.Ppa,
+                        Specialite = m.Specialite,
+                        CodeDci = m.CodeDci,
+                        DateSoin = m.DateSoin
+                    })
+                        .ToList()
+                };
             }).ToList();
         return list;
     }
