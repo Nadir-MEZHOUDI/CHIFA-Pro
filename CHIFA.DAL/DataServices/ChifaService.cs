@@ -226,6 +226,7 @@ public class ChifaService : IChifaService
                 TS = x.Ts,
                 Qt = x.Qte,
                 Prix = x.Ppa,
+                Specialite = x.Facture.Specialite!.Libelle,
                 x.Facture.DateSoin,
                 x.Facture.DateFact
             })
@@ -235,27 +236,32 @@ public class ChifaService : IChifaService
         var list = query
             .OrderByDescending(x => x.DateFact)
             .GroupBy(x => new { x.CodeDci })
-            .Select(x => new TraitDetailsDto
+            .Select(x =>
             {
-                DateFact = x.FirstOrDefault()?.DateFact,
-                Duree = x.FirstOrDefault()?.Duree,
-                DateSoin = x.FirstOrDefault()?.DateSoin,
-                Qt = x.FirstOrDefault()?.Qt,
-                Medicament = x.FirstOrDefault()!.Medicament,
-                Prix = x.FirstOrDefault()!.Prix,
-                NEnrg = x.FirstOrDefault()!.NEnrg,
-                TS = x.FirstOrDefault()?.TS,
-                CodeDci = x.Key.CodeDci,
-                Historic = x.Count() <= 1
-                    ? []
-                    : x.Select(m => new MedicHistory
-                    {
-                        Medicament = m.Medicament,
-                        Duree = m.Duree,
-                        DateFact = m.DateFact,
-                        Qt = m.Qt,
-                        Prix = m.Prix
-                    }).ToList()
+                var first = x.First();
+                return new TraitDetailsDto
+                {
+                    DateFact = first.DateFact,
+                    Duree = first.Duree,
+                    DateSoin = first.DateSoin,
+                    Qt = first.Qt,
+                    Medicament = first.Medicament,
+                    Prix = first.Prix,
+                    NEnrg = first.NEnrg,
+                    TS = first.TS ?? false,
+                    Specialite = first.Specialite,
+                    CodeDci = x.Key.CodeDci,
+                    Historic = x.Count() <= 1
+                        ? []
+                        : x.Select(m => new MedicHistory
+                        {
+                            Medicament = m.Medicament,
+                            Duree = m.Duree,
+                            DateFact = m.DateFact,
+                            Qt = m.Qt,
+                            Prix = m.Prix
+                        }).ToList()
+                };
             });
 
         if (proche) list = list.Where(x => x.Prochain <= DateTime.Now);
@@ -302,31 +308,35 @@ public class ChifaService : IChifaService
 
         var list = query
             .GroupBy(x => new { x.CodeDci })
-            .Select(x => new ConsumptionGroupedDto
+            .Select(x =>
             {
-                Facture = x.FirstOrDefault()?.Facture,
-                Bord = x.FirstOrDefault()?.Bord,
-                Date = x.FirstOrDefault()?.Date,
-                Duree = x.FirstOrDefault()?.Duree,
-                Qt = x.FirstOrDefault()?.Qt,
-                Medicament = x.FirstOrDefault()!.Medicament,
-                Prix = x.FirstOrDefault()?.Prix,
-                NEnrg = x.FirstOrDefault()?.NEnrg,
-                TS = x.FirstOrDefault()?.TS,
-                Medecin = x.FirstOrDefault()?.Medecin,
-                CodeDci = x.Key.CodeDci,
-                Historic = x.Count() <= 1
-                    ? []
-                    : x.Select(m => new MedicHistory
-                    {
-                        Facture = m.Facture,
-                        Bord = m.Bord,
-                        Medicament = m.Medicament,
-                        Duree = m.Duree,
-                        DateFact = m.Date,
-                        Qt = m.Qt,
-                        Prix = m.Prix
-                    }).ToList()
+                var first = x.First();
+                return new ConsumptionGroupedDto
+                {
+                    Facture = first.Facture,
+                    Bord = first.Bord,
+                    Date = first.Date,
+                    Duree = first.Duree,
+                    Qt = first.Qt,
+                    Medicament = first.Medicament,
+                    Prix = first.Prix,
+                    NEnrg = first.NEnrg,
+                    TS = first.TS ?? false,
+                    Medecin = first.Medecin,
+                    CodeDci = x.Key.CodeDci,
+                    Historic = x.Count() <= 1
+                        ? []
+                        : x.Select(m => new MedicHistory
+                        {
+                            Facture = m.Facture,
+                            Bord = m.Bord,
+                            Medicament = m.Medicament,
+                            Duree = m.Duree,
+                            DateFact = m.Date,
+                            Qt = m.Qt,
+                            Prix = m.Prix
+                        }).ToList()
+                };
             }).ToList();
         return list;
     }
@@ -399,35 +409,39 @@ public class ChifaService : IChifaService
         var list = query
             .OrderByDescending(x => x.DateFact)
             .GroupBy(x => new { x.NumAssure, x.RangAd, x.CodeDci })
-            .Select(x => new TraitSpec2
+            .Select(x =>
             {
-                NumFact = x.FirstOrDefault()?.NumFact,
-                Bord = x.FirstOrDefault()?.NumBord,
-                Assure = x.FirstOrDefault()?.Assure!,
-                DateFact = x.FirstOrDefault()?.DateFact,
-                Duree = x.FirstOrDefault()?.Duree,
-                Qt = x.FirstOrDefault()?.Qt,
-                Medicament = x.FirstOrDefault()!.Medicament,
-                Malade = x.FirstOrDefault()?.Malade,
-                Prix = x.FirstOrDefault()?.Prix,
-                NEnrg = x.FirstOrDefault()?.NEnrg!,
-                TS = x.FirstOrDefault()?.TS ?? false,
-                Code = x.Key.CodeDci,
-                NumAssure = x.Key.NumAssure,
-                Rang = x.Key.RangAd!,
-                TC = true,
-                Historic = (x.Count() <= 1
-                    ? null
-                    : x.Select(m => new MedicHistory
-                    {
-                        Facture = m.NumFact,
-                        Bord = m.NumBord,
-                        Medicament = m.Medicament,
-                        Duree = m.Duree,
-                        DateFact = m.DateFact,
-                        Prix = m.Prix,
-                        Qt = m.Qt
-                    }).ToList())!
+                var first = x.First();
+                return new TraitSpec2
+                {
+                    NumFact = first.NumFact,
+                    Bord = first.NumBord,
+                    Assure = first.Assure,
+                    DateFact = first.DateFact,
+                    Duree = first.Duree,
+                    Qt = first.Qt,
+                    Medicament = first.Medicament,
+                    Malade = first.Malade,
+                    Prix = first.Prix,
+                    NEnrg = first.NEnrg,
+                    TS = first.TS == true,
+                    Code = x.Key.CodeDci,
+                    NumAssure = x.Key.NumAssure,
+                    Rang = x.Key.RangAd!,
+                    TC = true,
+                    Historic = (x.Count() <= 1
+                        ? null
+                        : x.Select(m => new MedicHistory
+                        {
+                            Facture = m.NumFact,
+                            Bord = m.NumBord,
+                            Medicament = m.Medicament,
+                            Duree = m.Duree,
+                            DateFact = m.DateFact,
+                            Prix = m.Prix,
+                            Qt = m.Qt
+                        }).ToList())!
+                };
             })
             .OrderByDescending(x => x.Montant)
             .ToList();
