@@ -204,8 +204,7 @@ public class StatisticsService : IStatisticsService
             .Select(x => new ClientsStat
             {
                 NumAssure = x.Key.NumAssure!,
-                Malade = db.Beneficiaires.Where(a => a.NumAssure == x.Key.NumAssure && a.RangAd == x.Key.RangAd)
-                    .Select(b => b.Nom + " " + b.Prenom).FirstOrDefault(),
+                Malade = x.Max(f => f.Beneficiaire.FullName),
                 MantFact = x.Sum(f => f.MontFact),
                 MontMaj = x.Sum(f => f.MontMaj),
                 MontAss = x.Sum(f => f.MontAs),

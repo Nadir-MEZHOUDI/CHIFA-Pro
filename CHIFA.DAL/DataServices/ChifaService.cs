@@ -226,7 +226,6 @@ public class ChifaService : IChifaService
                 TS = x.Ts,
                 Qt = x.Qte,
                 Prix = x.Ppa,
-                Specialite = x.Facture.Specialite!.Libelle,
                 x.Facture.DateSoin,
                 x.Facture.DateFact
             })
@@ -340,27 +339,22 @@ public class ChifaService : IChifaService
 
     public async ValueTask<IEnumerable<FactureDto>> LoadHistoryAsync(string noAssure, string rang)
     {
-        var db = new ChifaDb();
+        await using var db = new ChifaDb();
         var query = await db.Factures
             .Where(x => x.NumAssure == noAssure && x.RangAd == rang)
             .Select(f => new FactureDto
             {
-                NumAssure = f.NumAssure,
                 NumFact = f.NumFact,
                 DateSoin = f.DateSoin,
                 DateFact = f.DateFact,
-                Assure = f.Assure.FullName,
-                Malade = f.Beneficiaire.FullName,
                 Bordereau = f.NumBord,
                 Specialite = f.Specialite!.Libelle,
                 TS = f.DetailFacts.Any(x => x.Ts == true),
                 LongDuree = f.DetailFacts.Any(x => x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays),
                 MontFact = f.MontFact,
-                Centre = f.Center!.Nom,
                 Majoration = f.MontMajFae,
                 MontAss = f.MontAs,
-                MontOff = f.MontOff,
-                Rang = f.RangAd
+                MontOff = f.MontOff
             })
             .OrderByDescending(x => x.DateFact)
             .ToListAsync()
