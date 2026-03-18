@@ -1,6 +1,4 @@
-﻿using System.Windows.Threading;
-
-using CHIFA.Pro.Helpers.Settings;
+﻿using CHIFA.Pro.Helpers.Settings;
 
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
@@ -130,7 +128,7 @@ public partial class FrmMain : XtraForm
 
     private async Task<bool> EnsureDatabaseConnectionAsync()
     {
-        
+
         if (await DbChecker.CheckDbConnectionAsync())
             return true;
 
@@ -149,7 +147,12 @@ public partial class FrmMain : XtraForm
             progressBar.Visible = true;
             var mgr = new UpdateManager("https://nadirsmartapp.blob.core.windows.net/chifa-pro");
 
-            if (!mgr.IsInstalled) return;
+            if (!mgr.IsInstalled)
+            {
+                progressBar.Value = 50;
+                await Task.Delay(2000);
+                return;
+            }
 
             var newVersion = await mgr.CheckForUpdatesAsync();
             if (newVersion == null)
@@ -160,7 +163,7 @@ public partial class FrmMain : XtraForm
             else
             {
                 await mgr.DownloadUpdatesAsync(newVersion,
-                    i => Dispatcher.CurrentDispatcher.Invoke(() => progressBar.Value = i));
+                    i => Invoke(() => progressBar.Value = i));
 
                 mgr.ApplyUpdatesAndRestart(newVersion);
             }
@@ -197,13 +200,21 @@ public partial class FrmMain : XtraForm
 
     private void TabContainer_CloseButtonClick(object sender, EventArgs e)
     {
-        var index = tabContainer.SelectedTabPageIndex;
-        if (((ClosePageButtonEventArgs)e).Page is not XtraTabPage page ||
-            page.Text.Contains("Home", StringComparison.InvariantCultureIgnoreCase))
-            return;
+        try
+        {
+            var index = tabContainer.SelectedTabPageIndex;
+            if (((ClosePageButtonEventArgs)e).Page is not XtraTabPage page ||
+                page.Text.Contains("Home", StringComparison.InvariantCultureIgnoreCase))
+                return;
 
-        tabContainer.SelectedTabPageIndex = index > 1 ? index - 1 : index + 1;
-        tabContainer.TabPages.Remove(page, true);
+            tabContainer.SelectedTabPageIndex = index > 1 ? index - 1 : index + 1;
+            tabContainer.TabPages.Remove(page, true);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+
     }
 
 

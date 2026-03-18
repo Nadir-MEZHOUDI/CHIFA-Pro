@@ -194,9 +194,9 @@ public static class DbChecker
     }
     public static async Task Restore(string fileName)
     {
-        Environment.SetEnvironmentVariable("PGPASSWORD", AppSettings.Default.DbPassword);
         try
         {
+            Environment.SetEnvironmentVariable("PGPASSWORD", AppSettings.Default.DbPassword);
             ProcessStartInfo processStartInfo = new()
             {
                 FileName = AppSettings.Default.ChifaRestore,

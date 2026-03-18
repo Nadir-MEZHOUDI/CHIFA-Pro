@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            var splashScreenManager1 = new DevExpress.XtraSplashScreen.SplashScreenManager(this, null, true, true);
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
+            DevExpress.XtraSplashScreen.SplashScreenManager splashScreenManager1 = new DevExpress.XtraSplashScreen.SplashScreenManager(this, null, true, true);
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             accordionControl1 = new DevExpress.XtraBars.Navigation.AccordionControl();
             accordionControlSeparator3 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             acHome = new DevExpress.XtraBars.Navigation.AccordionControlElement();
@@ -85,11 +85,11 @@
             txtCodePs = new ToolStripStatusLabel();
             AppImages = new DevExpress.Utils.SharedImageCollection(components);
             Notification = new NotifyIcon(components);
-            timer = new System.Windows.Forms.Timer(components);
             contextMenu = new ContextMenuStrip(components);
             menuOpen = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             menuExit = new ToolStripMenuItem();
+            timer = new System.Windows.Forms.Timer(components);
             ((System.ComponentModel.ISupportInitialize)accordionControl1).BeginInit();
             container.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)tabContainer).BeginInit();
@@ -109,7 +109,7 @@
             accordionControl1.Name = "accordionControl1";
             accordionControl1.ScrollBarMode = DevExpress.XtraBars.Navigation.ScrollBarMode.Auto;
             accordionControl1.ShowFilterControl = DevExpress.XtraBars.Navigation.ShowFilterControl.Auto;
-            accordionControl1.Size = new Size(208, 747);
+            accordionControl1.Size = new Size(250, 726);
             accordionControl1.TabIndex = 1;
             accordionControl1.ViewType = DevExpress.XtraBars.Navigation.AccordionControlViewType.HamburgerMenu;
             // 
@@ -257,43 +257,37 @@
             // 
             barDockControlTop.CausesValidation = false;
             barDockControlTop.Dock = DockStyle.Top;
-            barDockControlTop.Location = new Point(208, 0);
-            barDockControlTop.Manager = null;
+            barDockControlTop.Location = new Point(250, 0);
             barDockControlTop.Margin = new Padding(5, 4, 5, 4);
-            barDockControlTop.Size = new Size(1534, 0);
+            barDockControlTop.Size = new Size(1032, 0);
             // 
             // barDockControlBottom
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = DockStyle.Bottom;
-            barDockControlBottom.Location = new Point(208, 747);
-            barDockControlBottom.Manager = null;
+            barDockControlBottom.Location = new Point(250, 726);
             barDockControlBottom.Margin = new Padding(5, 4, 5, 4);
-            barDockControlBottom.Size = new Size(1534, 0);
+            barDockControlBottom.Size = new Size(1032, 0);
             // 
             // barDockControlLeft
             // 
             barDockControlLeft.CausesValidation = false;
             barDockControlLeft.Dock = DockStyle.Left;
-            barDockControlLeft.Location = new Point(208, 0);
-            barDockControlLeft.Manager = null;
+            barDockControlLeft.Location = new Point(250, 0);
             barDockControlLeft.Margin = new Padding(5, 4, 5, 4);
-            barDockControlLeft.Size = new Size(0, 747);
+            barDockControlLeft.Size = new Size(0, 726);
             // 
             // barDockControlRight
             // 
             barDockControlRight.CausesValidation = false;
             barDockControlRight.Dock = DockStyle.Right;
-            barDockControlRight.Location = new Point(1742, 0);
-            barDockControlRight.Manager = null;
+            barDockControlRight.Location = new Point(1282, 0);
             barDockControlRight.Margin = new Padding(5, 4, 5, 4);
-            barDockControlRight.Size = new Size(0, 747);
+            barDockControlRight.Size = new Size(0, 726);
             // 
             // skinDropDownButtonItem2
             // 
-            skinDropDownButtonItem2.ActAsDropDown = true;
             skinDropDownButtonItem2.Alignment = DevExpress.XtraBars.BarItemLinkAlignment.Right;
-            skinDropDownButtonItem2.ButtonStyle = DevExpress.XtraBars.BarButtonStyle.DropDown;
             skinDropDownButtonItem2.Id = 0;
             skinDropDownButtonItem2.Name = "skinDropDownButtonItem2";
             // 
@@ -301,41 +295,37 @@
             // 
             barDockControl1.CausesValidation = false;
             barDockControl1.Dock = DockStyle.Top;
-            barDockControl1.Location = new Point(208, 0);
-            barDockControl1.Manager = null;
-            barDockControl1.Size = new Size(1534, 0);
+            barDockControl1.Location = new Point(250, 0);
+            barDockControl1.Size = new Size(1032, 0);
             // 
             // barDockControl2
             // 
             barDockControl2.CausesValidation = false;
             barDockControl2.Dock = DockStyle.Bottom;
-            barDockControl2.Location = new Point(208, 747);
-            barDockControl2.Manager = null;
-            barDockControl2.Size = new Size(1534, 0);
+            barDockControl2.Location = new Point(250, 726);
+            barDockControl2.Size = new Size(1032, 0);
             // 
             // barDockControl3
             // 
             barDockControl3.CausesValidation = false;
             barDockControl3.Dock = DockStyle.Left;
-            barDockControl3.Location = new Point(208, 0);
-            barDockControl3.Manager = null;
-            barDockControl3.Size = new Size(0, 747);
+            barDockControl3.Location = new Point(250, 0);
+            barDockControl3.Size = new Size(0, 726);
             // 
             // barDockControl4
             // 
             barDockControl4.CausesValidation = false;
             barDockControl4.Dock = DockStyle.Right;
-            barDockControl4.Location = new Point(1742, 0);
-            barDockControl4.Manager = null;
-            barDockControl4.Size = new Size(0, 747);
+            barDockControl4.Location = new Point(1282, 0);
+            barDockControl4.Size = new Size(0, 726);
             // 
             // container
             // 
             container.Controls.Add(tabContainer);
             container.Dock = DockStyle.Fill;
-            container.Location = new Point(208, 0);
+            container.Location = new Point(250, 0);
             container.Name = "container";
-            container.Size = new Size(1534, 747);
+            container.Size = new Size(1032, 726);
             container.TabIndex = 11;
             // 
             // tabContainer
@@ -347,15 +337,15 @@
             tabContainer.Location = new Point(0, 0);
             tabContainer.MultiLine = DevExpress.Utils.DefaultBoolean.False;
             tabContainer.Name = "tabContainer";
-            tabContainer.Size = new Size(1534, 747);
+            tabContainer.Size = new Size(1032, 726);
             tabContainer.TabIndex = 0;
             tabContainer.CloseButtonClick += TabContainer_CloseButtonClick;
             // 
             // toolbarFormControl1
             // 
-            toolbarFormControl1.Location = new Point(208, 0);
+            toolbarFormControl1.Location = new Point(250, 0);
             toolbarFormControl1.Name = "toolbarFormControl1";
-            toolbarFormControl1.Size = new Size(1534, 0);
+            toolbarFormControl1.Size = new Size(1032, 0);
             toolbarFormControl1.TabIndex = 23;
             toolbarFormControl1.TabStop = false;
             // 
@@ -370,17 +360,13 @@
             // 
             // skinDropDownButtonItem3
             // 
-            skinDropDownButtonItem3.ActAsDropDown = true;
             skinDropDownButtonItem3.Alignment = DevExpress.XtraBars.BarItemLinkAlignment.Right;
-            skinDropDownButtonItem3.ButtonStyle = DevExpress.XtraBars.BarButtonStyle.DropDown;
             skinDropDownButtonItem3.Id = 2;
             skinDropDownButtonItem3.Name = "skinDropDownButtonItem3";
             // 
             // skinDropDownButtonItem1
             // 
-            skinDropDownButtonItem1.ActAsDropDown = true;
             skinDropDownButtonItem1.Alignment = DevExpress.XtraBars.BarItemLinkAlignment.Right;
-            skinDropDownButtonItem1.ButtonStyle = DevExpress.XtraBars.BarButtonStyle.DropDown;
             skinDropDownButtonItem1.Id = 0;
             skinDropDownButtonItem1.Name = "skinDropDownButtonItem1";
             // 
@@ -399,9 +385,10 @@
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel7, txtIP, toolStripStatusLabel1, txtServer, toolStripStatusLabel2, txtDatabase, txtSpring, progressBar, toolStripStatusLabel3, txtPharmacie, toolStripStatusLabel4, txtCodePs });
-            statusStrip1.Location = new Point(0, 747);
+            statusStrip1.Location = new Point(0, 726);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(1742, 22);
+            statusStrip1.RenderMode = ToolStripRenderMode.Professional;
+            statusStrip1.Size = new Size(1282, 22);
             statusStrip1.TabIndex = 25;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -453,14 +440,14 @@
             txtSpring.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             txtSpring.ForeColor = Color.Black;
             txtSpring.Name = "txtSpring";
-            txtSpring.Size = new Size(1046, 17);
+            txtSpring.Size = new Size(586, 17);
             txtSpring.Spring = true;
             txtSpring.Text = "DateTime";
             // 
             // progressBar
             // 
             progressBar.Name = "progressBar";
-            progressBar.Size = new Size(400, 17);
+            progressBar.Size = new Size(400, 18);
             progressBar.Visible = false;
             // 
             // toolStripStatusLabel3
@@ -524,14 +511,9 @@
             Notification.Visible = true;
             Notification.MouseDoubleClick += Notification_MouseDoubleClick;
             // 
-            // timer
-            // 
-            timer.Enabled = true;
-            timer.Interval = 1000;
-            timer.Tick += timer_Tick;
-            // 
             // contextMenu
             // 
+            contextMenu.ImageScalingSize = new Size(20, 20);
             contextMenu.Items.AddRange(new ToolStripItem[] { menuOpen, toolStripSeparator1, menuExit });
             contextMenu.Name = "contextMenuStrip1";
             contextMenu.Size = new Size(104, 54);
@@ -556,12 +538,18 @@
             menuExit.Text = "Exit";
             menuExit.Click += menuExit_Click;
             // 
+            // timer
+            // 
+            timer.Enabled = true;
+            timer.Interval = 1000;
+            timer.Tick += timer_Tick;
+            // 
             // FrmMain
             // 
             Appearance.Options.UseFont = true;
             AutoScaleDimensions = new SizeF(9F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1742, 769);
+            ClientSize = new Size(1282, 748);
             Controls.Add(container);
             Controls.Add(barDockControlLeft);
             Controls.Add(barDockControlRight);

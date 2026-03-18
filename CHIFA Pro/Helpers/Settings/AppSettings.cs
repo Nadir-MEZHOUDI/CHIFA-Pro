@@ -1,4 +1,5 @@
 ﻿namespace CHIFA.Pro.Helpers.Settings;
+
 public class AppSettings : SettingsToRegistry<AppSettings>
 {
     public bool IsServer { get; internal set; }
@@ -28,9 +29,9 @@ public class AppSettings : SettingsToRegistry<AppSettings>
 
     #region CHIFA_PASS
 
-    internal string DbName => Environment.GetEnvironmentVariable("CHIFA_DB_NAME") ?? "CHIFA_OFFICINE";
-    internal string DbPassword => Environment.GetEnvironmentVariable("CHIFA_DB_PASSWORD") ?? "REDACTED";
-    internal string DbUser => Environment.GetEnvironmentVariable("CHIFA_DB_USER") ?? "pharm";
+    internal string DbName => "CHIFA_OFFICINE";
+    internal string DbPassword => "REDACTED";
+    internal string DbUser => "pharm";
 
     #endregion
 
