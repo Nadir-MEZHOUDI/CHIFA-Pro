@@ -365,6 +365,4 @@ FodyWeavers.xsd
 /_Archive/CHIFA Pro__2024-08-19 00-44-44.zip
 /_Archive/CHIFA Pro__2023-06-12 01-49-51.zip
 
-# Local publish scripts with embedded secrets
-/publish.bat
-/publish-local.bat
+nul
