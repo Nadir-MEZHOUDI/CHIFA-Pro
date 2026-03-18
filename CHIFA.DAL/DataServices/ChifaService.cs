@@ -147,8 +147,7 @@ public class ChifaService : IChifaService
         return await db.Formes.ToListAsync().ConfigureAwait(false);
     }
 
-    public async ValueTask<IEnumerable<MedicDto>> GetMedicamentsAsync(
-        Expression<Func<Medicament, bool>>? predicate = default)
+    public async ValueTask<IEnumerable<MedicDto>> GetMedicamentsAsync(Expression<Func<Medicament, bool>>? predicate = default)
     {
         await using var db = new ChifaDb();
         predicate ??= medic => true;
@@ -184,8 +183,7 @@ public class ChifaService : IChifaService
             .ConfigureAwait(false);
     }
 
-    public async ValueTask<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null,
-        Expression<Func<DetailFact, bool>>? predicate = default)
+    public async ValueTask<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = default)
     {
         predicate = predicate.SetPeriod(period)
             .And(x => (x.Ppa >= MedicalThresholds.HighPriceThreshold && x.Qte >= MedicalThresholds.HighQuantityThreshold) || x.Ts == true || x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays);

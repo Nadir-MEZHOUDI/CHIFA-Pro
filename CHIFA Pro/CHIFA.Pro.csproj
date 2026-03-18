@@ -5,7 +5,7 @@
  		<UseWindowsForms>true</UseWindowsForms>
  		<RootNamespace>CHIFA.Pro</RootNamespace>
    		<StartupObject>CHIFA.Pro.Program</StartupObject>
-  		<Product>CHIFA Pro</Product>
+  		<Product>CHIFA.Pro</Product>
   		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
   		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
    	</PropertyGroup>
