@@ -76,11 +76,11 @@ public class StatisticsService : IStatisticsService
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantFE = x.Sum(f => f.MontMajFae),
-                Assureis = x.GroupBy(f => f.NumAssure).Count(),
-                Beneficiaires = x.GroupBy(f => new { f.NumAssure, f.RangAd }).Count(),
                 Factures = x.Count(),
                 DateDebut = x.Min(f => f.DateFact),
-                DateFin = x.Max(f => f.DateFact)
+                DateFin = x.Max(f => f.DateFact),
+                Assureis = x.CountExt(f => f.NumAssure, Sql.AggregateModifier.Distinct),
+                Beneficiaires = x.CountExt(f => f.NumAssure + "|" + f.RangAd, Sql.AggregateModifier.Distinct)
             })
             .OrderBy(x => x.Year)
             .ToListAsync()
@@ -105,8 +105,8 @@ public class StatisticsService : IStatisticsService
                 Factures = x.Count(),
                 DateDebut = x.Min(f => f.DateFact),
                 DateFin = x.Max(f => f.DateFact),
-                Assureis = x.GroupBy(f => f.NumAssure).Count(),
-                Beneficiaires = x.GroupBy(f => new { f.NumAssure, f.RangAd }).Count()
+                Assureis = x.CountExt(f => f.NumAssure, Sql.AggregateModifier.Distinct),
+                Beneficiaires = x.CountExt(f => f.NumAssure + "|" + f.RangAd, Sql.AggregateModifier.Distinct)
             })
             .OrderBy(x => x.DateDebut)
             .ToListAsync()
@@ -146,8 +146,8 @@ public class StatisticsService : IStatisticsService
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantFE = x.Sum(f => f.MontMajFae),
                 Factures = x.Count(),
-                Assureis = x.GroupBy(f => f.NumAssure).Count(),
-                Beneficiaires = x.GroupBy(f => new { f.NumAssure, f.RangAd }).Count()
+                Assureis = x.CountExt(f => f.NumAssure, Sql.AggregateModifier.Distinct),
+                Beneficiaires = x.CountExt(f => f.NumAssure + "|" + f.RangAd, Sql.AggregateModifier.Distinct)
             })
             .OrderByDescending(x => x.DateDebut)
             .ToListAsync()
@@ -185,8 +185,8 @@ public class StatisticsService : IStatisticsService
                 MontantOff = g.Sum(f => f.MontOff),
                 MontantFE = g.Sum(f => f.MontMajFae),
                 Factures = g.Count(),
-                Assureis = g.GroupBy(f => f.NumAssure).Count(),
-                Beneficiaires = g.GroupBy(f => new { f.NumAssure, f.RangAd }).Count()
+                Assureis = g.CountExt(f => f.NumAssure, Sql.AggregateModifier.Distinct),
+                Beneficiaires = g.CountExt(f => f.NumAssure + "|" + f.RangAd, Sql.AggregateModifier.Distinct)
             })
             .OrderByDescending(x => x.DateTime)
             .ToListAsync()

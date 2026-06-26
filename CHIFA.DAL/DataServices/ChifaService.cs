@@ -14,28 +14,69 @@ public class ChifaService : IChifaService
     {
         await using var db = new ChifaDb();
 
-        var list = await db.Bordereaus
+        var periodFrom = Period.From;
+        var periodTo = Period.To;
+
+        var aggregates = await db.Factures
+            .Where(f => f.NumBord != null)
+            .Where(f => f.DateFact != null
+                && (periodFrom == null || f.DateFact > periodFrom)
+                && (periodTo == null || f.DateFact < periodTo))
+            .GroupBy(f => f.NumBord)
+            .Select(g => new
+            {
+                NumBord = g.Key,
+                Nmbr = g.Count(),
+                MontOff = g.Sum(m => m.MontOff),
+                Maj = g.Sum(m => m.MontMaj),
+                FirstFacture = g.Min(m => m.DateFact),
+                LastFacture = g.Max(m => m.DateFact)
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var aggByNum = aggregates.ToDictionary(a => a.NumBord!);
+
+        var bordereaux = await db.Bordereaus
             .Where(predicate.SetPeriod(Period))
-            .Select(x => new BordereauDto
+            .Select(x => new
+            {
+                x.NumBord,
+                Center = x.Center!.Nom,
+                x.MontVir,
+                x.DateDepotFtp,
+                x.DateCloture,
+                x.DateOuverture,
+                x.Etat
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var list = new List<BordereauDto>(bordereaux.Count);
+        foreach (var x in bordereaux)
+        {
+            aggByNum.TryGetValue(x.NumBord, out var a);
+            list.Add(new BordereauDto
             {
                 Num = x.NumBord,
-                Center = x.Center!.Nom,
-                FirstFacture = x.DateGen,
-                LastFacture = x.DateExtract,
-                Nmbr = x.Factures.Count(),
+                Center = x.Center,
+                FirstFacture = a?.FirstFacture,
+                LastFacture = a?.LastFacture,
+                Nmbr = a?.Nmbr ?? 0,
                 Virment = x.MontVir,
                 DateDepotFtp = x.DateDepotFtp,
-                //DateVirment=x.DateVirement,
                 DateCloture = x.DateCloture,
                 DateOuverture = x.DateOuverture,
                 State = x.Etat,
-                MontOff = x.Factures.Sum(m => m.MontOff),
-                Maj = x.Factures.Sum(m => m.MontMaj)
-            })
+                MontOff = a?.MontOff,
+                Maj = a?.Maj
+            });
+        }
+
+        list = list
             .OrderByDescending(x => x.FirstFacture)
             .ThenByDescending(x => x.Num)
-            .ToListAsync()
-            .ConfigureAwait(false);
+            .ToList();
 
         return list;
     }
@@ -83,14 +124,58 @@ public class ChifaService : IChifaService
     public async ValueTask<IEnumerable<BeneficiareDto>> GetBeneficiaresAsync()
     {
         await using var db = new ChifaDb();
-        return await db.Beneficiaires.Select(a => new BeneficiareDto
-        {
-            NumAssure = a.NumAssure,
-            Rang = a.RangAd,
-            Beneficiare = a.FullName,
-            Assure = a.Assure!.FullName,
-            Center = a.Factures.FirstOrDefault()!.Center!.Nom
-        }).ToListAsync();
+
+        var centerByBenef = await db.Factures
+            .Where(f => f.NumAssure != null && f.RangAd != null)
+            .GroupBy(f => new { f.NumAssure, f.RangAd })
+            .Select(g => new
+            {
+                g.Key.NumAssure,
+                g.Key.RangAd,
+                MinNumFact = g.Min(f => f.NumFact)
+            })
+            .ToListAsync();
+
+        var minFact = centerByBenef.Select(x => x.MinNumFact).Distinct().ToList();
+
+        var centers = await db.Factures
+            .Where(f => minFact.Contains(f.NumFact))
+            .Select(f => new { f.NumFact, Center = f.Center!.Nom })
+            .ToListAsync();
+
+        var centerByNumFact = centers.ToDictionary(c => c.NumFact, c => c.Center);
+        var centerByBenefDict = centerByBenef
+            .Where(x => x.MinNumFact != null && centerByNumFact.ContainsKey(x.MinNumFact))
+            .ToDictionary(x => (x.NumAssure, x.RangAd), x => centerByNumFact[x.MinNumFact!]);
+
+        return await db.Beneficiaires
+            .Select(a => new
+            {
+                NumAssure = a.NumAssure,
+                Rang = a.RangAd,
+                Beneficiare = a.FullName,
+                Assure = a.Assure!.FullName
+            })
+            .ToListAsync()
+            .ContinueWith(t =>
+            {
+                var rows = t.Result;
+                var list = new List<BeneficiareDto>(rows.Count);
+                foreach (var r in rows)
+                {
+                    list.Add(new BeneficiareDto
+                    {
+                        NumAssure = r.NumAssure,
+                        Rang = r.Rang,
+                        Beneficiare = r.Beneficiare,
+                        Assure = r.Assure,
+                        Center = (r.NumAssure != null && r.Rang != null
+                                  && centerByBenefDict.TryGetValue((r.NumAssure, r.Rang), out var nom))
+                            ? nom : ""
+                    });
+                }
+                return (IEnumerable<BeneficiareDto>)list;
+            });
     }
 
     public async ValueTask<BeneficiareDto?> GetBeneficiareByIdAsync(string num, string rang)

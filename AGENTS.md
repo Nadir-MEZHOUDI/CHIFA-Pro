@@ -2,61 +2,40 @@
 
 ## Project Overview
 
-CHIFA Pro is a healthcare management desktop application with the following architecture:
-- **CHIFA Pro**: WinForms client application
+CHIFA Pro is a healthcare management desktop application:- **CHIFA Pro**: WinForms client (DevExpress UI)
 - **CHIFA.Server**: WPF gRPC server
-- **CHIFA.DAL**: Data Access Layer using LinqToDB
-- **CHIFA.Contract**: DTOs, interfaces, and shared utilities
-
-**Tech Stack**: .NET 10, PostgreSQL, LinqToDB, gRPC (protobuf-net), DevExpress WinForms, Serilog, Velopack
+- **CHIFA.DAL**: Data Access Layer (LinqToDB, PostgreSQL)
+- **CHIFA.Contract**: DTOs, interfaces, shared utilities**Tech Stack**: .NET 10, PostgreSQL, LinqToDB, gRPC (protobuf-net), DevExpress WinForms, Serilog, Velopack
 
 ---
 
 ## Build Commands
 
 ```bash
-# Build entire solution
-dotnet build "CHIFA Pro.sln"
-
-# Build in Release mode
-dotnet build "CHIFA Pro.sln" -c Release
-
-# Build specific project
-dotnet build "CHIFA Pro/CHIFA.Pro.csproj"
-dotnet build "CHIFA.Server/CHIFA.Server.csproj"
-dotnet build "CHIFA.DAL/CHIFA.DAL.csproj"
-dotnet build "CHIFA.Contract/CHIFA.Contract.csproj"
-
-# Restore dependencies
-dotnet restore "CHIFA Pro.sln"
-
-# Clean build artifacts
-dotnet clean "CHIFA Pro.sln"
-
-# Publish for deployment
+dotnet build "CHIFA Pro.sln"                 # Build solution
+dotnet build "CHIFA Pro.sln" -c Release     # Release build
+dotnet restore "CHIFA Pro.sln"              # Restore dependencies
+dotnet clean "CHIFA Pro.sln"                 # Clean artifacts
 dotnet publish "CHIFA Pro/CHIFA.Pro.csproj" -c Release -r win-x64 --self-contained
-dotnet publish "CHIFA.Server/CHIFA.Server.csproj" -c Release -r win-x64 --self-contained
 ```
 
 ## Test Commands
 
 ```bash
-# No test project exists currently
-# When adding tests, follow this pattern:
-dotnet test                                    # Run all tests
-dotnet test --filter "FullyQualifiedName~TestName"  # Run specific test
-dotnet test -c Release                         # Run in Release mode
+dotnet test                                          # Run all tests
+dotnet test --filter "FullyQualifiedName~TestName" # Run single test
+dotnet test -c Release                               # Release mode tests
 ```
 
-## Lint/Analysis Commands
+**Note**: No test project exists yet. When adding tests, create a test project following xUnit/NUnit conventions.
+
+## Lint/Format Commands
 
 ```bash
-# .NET analyzers are enabled via EnableNETAnalyzers in Directory.Build.props
-# Build output includes analyzer warnings
-
-# Format code (if editorconfig is added)
-dotnet format "CHIFA Pro.sln"
+dotnet format "CHIFA Pro.sln"                # Format all files
+dotnet format "CHIFA Pro.sln" --verify-no-changes  # Check formatting
 ```
+.NET analyzers are enabled via `EnableNETAnalyzers` in Directory.Build.props.
 
 ---
 
@@ -64,39 +43,42 @@ dotnet format "CHIFA Pro.sln"
 
 ```
 CHIFA Pro/
-├── Directory.Build.props     # Global build settings (target framework, nullable, etc.)
-├── CHIFA Pro/                # WinForms client
-│   ├── Views/                # UserControls and Forms (UI layer)
-│   ├── Helpers/              # Navigation, logging extensions, settings
-│   └── GlobalUsings.cs       # Common imports for client
-├── CHIFA.Server/             # WPF gRPC server
-│   ├── Helpers/              # GrpcServer, SingleInstance, UpdateService
-│   └── Views/                # WPF MainWindow
-├── CHIFA.DAL/                # Data Access Layer
-│   └── DataServices/         # ChifaService, StatisticsService (Singleton pattern)
-├── CHIFA.Contract/           # Shared contracts
-│   ├── Dtos/                 # Data Transfer Objects
-│   ├── Grpc/                 # Service interfaces (IChifaService, IStatisticsService)
-│   ├── Helpers/              # PredicateBuilder, extension methods, thresholds
-│   └── Statistics/           # Statistics DTOs
+├── Directory.Build.props    # Global build settings
+├── CHIFA Pro/               # WinForms client
+│   ├── Views/               # UserControls (UI layer)
+│   ├── Helpers/             # NavigationService, XtraHelper, extensions
+│   └── GlobalUsings.cs
+├── CHIFA.Server/            # WPF gRPC server
+│   ├── Helpers/             # GrpcServer, SingleInstance, UpdateService
+│   └── Views/               # WPF MainWindow
+├── CHIFA.DAL/               # Data Access Layer
+│   └── DataServices/        # Singleton services (ChifaService, StatisticsService)
+└── CHIFA.Contract/          # Shared contracts
+    ├── Dtos/                # Data Transfer Objects
+    ├── Grpc/                # Service interfaces (IChifaService, IStatisticsService)
+    ├── Helpers/             # PredicateBuilder, MedicalThresholds, extensions
+    └── Statistics/          # Statistics DTOs
 ```
 
 ---
 
 ## Code Style Guidelines
 
-### Imports and Global Usings
+### Global Usings
 
-Each project has a `GlobalUsings.cs` file. Add commonly used imports there:
+Each project has `GlobalUsings.cs`. **Do NOT** duplicate imports in source files:
 
 ```csharp
-// Pattern used in GlobalUsings.cs
-global using System.Linq.Expressions;
+// CHIFA.Pro/GlobalUsings.cs
+global using System.Net.Http;
 global using CHIFA.Contract.Dtos;
 global using CHIFA.Contract.Helpers;
-```
 
-**Do NOT** add imports to individual files that are already in GlobalUsings.cs.
+// CHIFA.DAL/GlobalUsings.cs
+global using System.Linq.Expressions;
+global using LinqToDB;
+global using DataModel;
+```
 
 ### Naming Conventions
 
@@ -108,30 +90,32 @@ global using CHIFA.Contract.Helpers;
 | Properties | PascalCase | `NumFact`, `Montant` |
 | Private fields | _camelCase | `_instance`, `_server` |
 | Constants | PascalCase | `HighPriceThreshold` |
-| UserControls | PascalCase with `Uc` suffix | `HomeUc`, `FacturesUc` |
-
-**Note**: Some files have inconsistent naming (e.g., `assuresUC.cs`, `borderauxUC.Designer.cs`). New files should follow PascalCase consistently.
-
-### File Organization
-
-- One class per file
-- File name matches class name
-- Designer files for WinForms: `MyControl.cs` + `MyControl.Designer.cs`
+| UserControls | PascalCase + `Uc` suffix | `HomeUc`, `FacturesUc` |
 
 ### Async/Await Patterns
 
 ```csharp
-// CORRECT: Use ValueTask for async methods returning data
+// Use ValueTask for async methods returning data
 public async ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(...)
 
-// CORRECT: Use await using for IAsyncDisposable resources
+// Use await using for IAsyncDisposable resources
 await using var db = new ChifaDb();
 
-// CORRECT: Use ConfigureAwait(false) in library code
+// Use ConfigureAwait(false) in library code (DAL, Contract)
 await db.Factures.ToListAsync().ConfigureAwait(false);
 
-// CORRECT: Fire-and-forget with explicit discard (in UI event handlers only)
-_ = LoadDataAsync();
+// Fire-and-forget in UI event handlers only
+_ =LoadDataAsync();
+```
+
+### Error Handling
+
+```csharp
+// Always use the Log extension method in catch blocks
+catch (Exception ex)
+{
+    ex.Log();
+}
 
 // Event handlers should have try-catch
 private async void Button_Click(object sender, EventArgs e)
@@ -147,32 +131,15 @@ private async void Button_Click(object sender, EventArgs e)
 }
 ```
 
-### Service Pattern (Singleton)
-
-Services use the singleton pattern (to be refactored to DI later):
+### Singleton Service Pattern
 
 ```csharp
 public class ChifaService : IChifaService
 {
     private static ChifaService? _instance;
-    public static ChifaService Instance => _instance ??= new();
-    
-    // Instance properties
+    public static ChifaService Instance => _instance ??= new();    
     public Period Period { get; } = new();
 }
-```
-
-### Expression Predicates
-
-Use the `PredicateBuilder` for building complex queries:
-
-```csharp
-// Combine predicates with And/Or extensions
-predicate = predicate.And(x => x.DateFact > yearAgo);
-predicate = predicate.Or(x => x.Ts == true);
-
-// Set period using the extension method
-predicate = predicate.SetPeriod(period);
 ```
 
 ### DTOs
@@ -180,56 +147,44 @@ predicate = predicate.SetPeriod(period);
 ```csharp
 public class FactureDto
 {
-    public string? NumFact { get; init; }  // init for immutable properties
+    public string? NumFact { get; init; }    // init for immutable
     public DateTime? DateFact { get; set; }
-    public decimal? Montant { get; set; }
-    
-    // Computed properties are acceptable
-    public string? Time => DateFact.HasValue 
-        ? TimeOnly.FromDateTime(DateFact.Value).ToShortTimeString() 
-        : "";
+    public decimal? Montant { get; set; }    
+    public string? Time => DateFact?.ToShortTimeString() ?? "";
 }
 ```
 
-### Error Handling
+### Expression Predicates
 
 ```csharp
-// Use the Log extension method for exceptions
-catch (Exception ex)
-{
-    ex.Log();
-}
-
-// In Program.cs, set up global handlers:
-AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-Application.ThreadException += ThreadException_Handler;
-Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+// Use PredicateBuilder for complex queries
+predicate = predicate.And(x => x.DateFact > yearAgo);
+predicate = predicate.Or(x => x.Ts == true);
+predicate = predicate.SetPeriod(period);
 ```
 
 ### Business Constants
 
-Use `MedicalThresholds` class for magic numbers:
+Use `MedicalThresholds` for magic numbers:
 
 ```csharp
-// CHIFA.Contract/Helpers/MedicalThresholds.cs
+// Located in CHIFA.Contract/Helpers/MedicalThresholds.cs
 public static class MedicalThresholds
 {
     public const decimal HighPriceThreshold = 1000m;
     public const int HighQuantityThreshold = 3;
     public const int MediumTreatmentDurationDays = 30;
-    public const int LongTreatmentDurationDays = 60;
-    public const int VeryLongTreatmentDurationDays = 80;
 }
 ```
 
 ---
 
-## UI Patterns (WinForms)
+## UI Patterns (WinForms/DevExpress)
 
 ### Navigation
 
 ```csharp
-// UserControl must implement INavigable
+// UserControl implements INavigable
 public partial class HomeUc : XtraUserControl, INavigable
 {
     public string Caption { get; } = "HOME";
@@ -240,7 +195,7 @@ public partial class HomeUc : XtraUserControl, INavigable
 this.NavigateTo<FacturesUc>();
 ```
 
-### Data Loading
+### Data Loading Pattern
 
 ```csharp
 private async Task ReLoadDataAsync()
@@ -251,56 +206,16 @@ private async Task ReLoadDataAsync()
         var data = await Task.Run(async () => 
             await StatisticsService.Instance.GetThisWeekStatsAsync());
         bindingSource.DataSource = data;
-        Cursor = Cursors.Default;
     }
     catch (Exception ex)
     {
         ex.Log();
     }
-}
-```
-
----
-
-## gRPC Service Pattern
-
-```csharp
-// Interface in CHIFA.Contract/Grpc/
-public interface IChifaService
-{
-    ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(
-        bool? last = false, 
-        bool? ts = false, 
-        Period? period = null, 
-        Expression<Func<Facture, bool>>? predicate = default);
-}
-
-// Implementation in CHIFA.DAL/DataServices/
-public class ChifaService : IChifaService
-{
-    public async ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(...)
+    finally
     {
-        await using var db = new ChifaDb();
-        return await db.Factures.Where(predicate).ToListAsync();
+        Cursor = Cursors.Default;
     }
 }
-```
-
----
-
-## Logging
-
-Serilog is configured in Program.cs:
-
-```csharp
-Log.Logger = new LoggerConfiguration()
-    .Enrich.FromLogContext()
-    .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-// Usage
-Log.Information("Server started successfully");
-Log.Error(ex, "Failed to start server");
 ```
 
 ---
@@ -310,7 +225,6 @@ Log.Error(ex, "Failed to start server");
 ```csharp
 await using var db = new ChifaDb();
 
-// Query with projections to DTO
 var list = await db.Factures
     .Where(predicate)
     .Select(f => new FactureDto
@@ -326,9 +240,8 @@ var list = await db.Factures
 
 ## Important Notes
 
-1. **Target Framework**: .NET 10 Windows (configured in Directory.Build.props)
-2. **Nullable**: Enabled project-wide - use `?` for nullable types
-3. **Implicit Usings**: Enabled - common namespaces are auto-imported
-4. **No Tests**: Project currently has no test project
-5. **Culture**: Application uses `fr-FR` culture by default
-6. **Single Instance**: Both client and server enforce single instance via `SingleInstance` class
+1. **Nullable**: Enabled project-wide -use `?` for nullable types
+2. **Implicit Usings**: Enabled - common namespaces auto-imported
+3. **Culture**: Application uses `fr-FR` culture by default
+4. **Single Instance**: Both client/server enforce single instance via `SingleInstance` class
+5. **Target Framework**: .NET 10 Windows (`net10.0-windows`)

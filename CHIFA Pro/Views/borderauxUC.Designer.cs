@@ -244,8 +244,7 @@ namespace CHIFA.Pro.Views
             // 
             // gridColumn3
             // 
-            gridColumn3.DisplayFormat.FormatString = "dd/MM/yyyy";
-            gridColumn3.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            gridColumn3.DisplayFormat.FormatType = DevExpress.Utils.FormatType.None;
             gridColumn3.FieldName = "DepotFtp";
             gridColumn3.Name = "gridColumn3";
             gridColumn3.Visible = true;
