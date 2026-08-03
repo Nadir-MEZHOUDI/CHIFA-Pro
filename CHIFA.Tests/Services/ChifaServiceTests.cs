@@ -22,7 +22,7 @@ public class ChifaServiceTests : IDisposable
 
     public void Dispose() { }
 
-    private TimeWatch StartWatch() => new(_output: _output);
+    private TimeWatch StartWatch() => new(output: _output);
 
     [Fact]
     public async Task GetAllBordereauxAsync_ReturnsRowsWithComputedAggregates()
@@ -135,7 +135,7 @@ public class ChifaServiceTests : IDisposable
 
         var obs = await _svc.GetMedicObsAsync(sample!.NEnr!);
         // Observation may be null for some medicaments - just ensure the call returns without error.
-        obs.Should().BeNullOrNotNull();
+        obs.Should().BeNullOrEmpty();
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class ChifaServiceTests : IDisposable
     {
         using var w = StartWatch();
         var obs = await _svc.GetMedicObsAsync(string.Empty);
-        obs.Should().BeNullOrNotNull();
+        obs.Should().BeNullOrEmpty();
     }
 
     [Fact]

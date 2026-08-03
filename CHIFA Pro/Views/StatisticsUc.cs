@@ -7,8 +7,11 @@ namespace CHIFA.Pro.Views;
 public partial class StatisticsUc : XtraUserControl, INavigable
 {
     private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
+    private readonly HashSet<StatisticsSection> _loadedSections = [];
     private readonly SemaphoreSlim _reloadLock = new(1, 1);
     private CancellationTokenSource? _reloadCts;
+    private StatisticsSection _selectedSection = StatisticsSection.Bordereaux;
+    private StatisticsView _selectedView = StatisticsView.Table;
     private bool _suspendDateEvents;
 
     public string Caption { get; } = "STATISTICS";
@@ -23,15 +26,84 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         Disposed += StatisticsUc_Disposed;
     }
 
+    public void SelectSection(StatisticsSection section)
+    {
+        _selectedSection = section;
+        UpdateSectionCaption();
+        SelectCurrentPage();
+    }
+
+    private void UpdateSectionCaption()
+    {
+        if (Parent is XtraTabPage page)
+            page.Text = $"{Caption} — {GetSectionDisplayName(_selectedSection)}";
+    }
+
+    private static string GetSectionDisplayName(StatisticsSection section)
+    {
+        return section switch
+        {
+            StatisticsSection.Bordereaux => "BORDEREAUX",
+            StatisticsSection.Yearly => "ANNUELLES",
+            StatisticsSection.Monthly => "MENSUELLES",
+            StatisticsSection.Weekly => "HEBDOMADAIRES",
+            StatisticsSection.Daily => "QUOTIDIENNES",
+            StatisticsSection.Products => "PRODUITS",
+            StatisticsSection.Clients => "CLIENTS",
+            _ => "BORDEREAUX"
+        };
+    }
+
+    private void SelectView(StatisticsView view)
+    {
+        _selectedView = view;
+        btnTable.Checked = view == StatisticsView.Table;
+        btnChart.Checked = view == StatisticsView.Chart;
+        SelectCurrentPage();
+    }
+
+    private void SelectCurrentPage()
+    {
+        tabControl.SelectedTabPage = (_selectedSection, _selectedView) switch
+        {
+            (StatisticsSection.Bordereaux, StatisticsView.Table) => tabBordereauxTable,
+            (StatisticsSection.Bordereaux, StatisticsView.Chart) => tabBordereaux,
+            (StatisticsSection.Yearly, StatisticsView.Table) => tabYearlyTable,
+            (StatisticsSection.Yearly, StatisticsView.Chart) => tabYearly,
+            (StatisticsSection.Monthly, StatisticsView.Table) => tabMonthlyTable,
+            (StatisticsSection.Monthly, StatisticsView.Chart) => tabMonthly,
+            (StatisticsSection.Weekly, StatisticsView.Table) => tabWeeklyTable,
+            (StatisticsSection.Weekly, StatisticsView.Chart) => tabWeekly,
+            (StatisticsSection.Daily, StatisticsView.Table) => tabDailyTable,
+            (StatisticsSection.Daily, StatisticsView.Chart) => tabDaily,
+            (StatisticsSection.Products, StatisticsView.Table) => tabProductTable,
+            (StatisticsSection.Products, StatisticsView.Chart) => tabProducts2,
+            (StatisticsSection.Clients, StatisticsView.Table) => tabClientsTable,
+            (StatisticsSection.Clients, StatisticsView.Chart) => tabClients,
+            _ => tabBordereauxTable
+        };
+    }
+
+    private void btnTable_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+    {
+        SelectView(StatisticsView.Table);
+    }
+
+    private void btnChart_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+    {
+        SelectView(StatisticsView.Chart);
+    }
+
     private async void BtnClearDates_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
         await LoadMaxAndMinDates();
-        await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
+        InvalidateStatisticsData();
+        await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage, true);
     }
 
     private async void BtnRefresh_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
+        await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage, true);
     }
 
     private async void FromDate_EditValueChanged(object sender, EventArgs e)
@@ -40,6 +112,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             return;
 
         UpdatePeriodFromEditors();
+        InvalidateStatisticsData();
         await ScheduleSelectedTableReloadAsync(tabControl.SelectedTabPage);
     }
 
@@ -49,10 +122,11 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             return;
 
         UpdatePeriodFromEditors();
+        InvalidateStatisticsData();
         await ScheduleSelectedTableReloadAsync(tabControl.SelectedTabPage);
     }
 
-    private async Task LoadMaxAndMinDates()
+    private async Task LoadMaxAndMinDates(bool defaultToThisYear = false)
     {
         try
         {
@@ -69,8 +143,10 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             toDateRepo.TodayDate = Period.MaxDate;
 
             _suspendDateEvents = true;
-            FromDate.EditValue = fromDateRepo.TodayDate;
-            ToDate.EditValue = toDateRepo.TodayDate;
+            FromDate.EditValue = defaultToThisYear
+                ? new DateTime(DateTime.Now.Year, 1, 1)
+                : fromDateRepo.TodayDate;
+            ToDate.EditValue = defaultToThisYear ? DateTime.Now : toDateRepo.TodayDate;
             UpdatePeriodFromEditors();
         }
         catch (Exception ex)
@@ -93,13 +169,13 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         viewClients.SetOptions();
         viewProducts.SetOptions();
 
-        await LoadMaxAndMinDates();
+        await LoadMaxAndMinDates(defaultToThisYear: true);
 
         FromDate.EditValueChanged += FromDate_EditValueChanged!;
 
         ToDate.EditValueChanged += ToDate_EditValueChanged!;
 
-        await ReloadSelectedTableImmediateAsync(tabBordereaux);
+        await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
         await GetOfficineAsync();
     }
 
@@ -115,24 +191,24 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         }
     }
 
-    private async Task ScheduleSelectedTableReloadAsync(XtraTabPage? tab)
+    private async Task ScheduleSelectedTableReloadAsync(XtraTabPage? tab, bool forceReload = false)
     {
         var cancellationToken = ResetReloadToken();
 
         try
         {
             await Task.Delay(ReloadDebounceDelay, cancellationToken);
-            await ReloadSelectedTableAsync(tab, cancellationToken);
+            await ReloadSelectedTableAsync(tab, cancellationToken, forceReload);
         }
         catch (OperationCanceledException)
         {
         }
     }
 
-    private async Task ReloadSelectedTableImmediateAsync(XtraTabPage? tab)
+    private async Task ReloadSelectedTableImmediateAsync(XtraTabPage? tab, bool forceReload = false)
     {
         var cancellationToken = ResetReloadToken();
-        await ReloadSelectedTableAsync(tab, cancellationToken);
+        await ReloadSelectedTableAsync(tab, cancellationToken, forceReload);
     }
 
     private CancellationToken ResetReloadToken()
@@ -153,9 +229,18 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             StatisticsService.Instance.Period.To = to;
     }
 
-    private async Task ReloadSelectedTableAsync(XtraTabPage? tab, CancellationToken cancellationToken)
+    private void InvalidateStatisticsData()
+    {
+        _loadedSections.Clear();
+    }
+
+    private async Task ReloadSelectedTableAsync(XtraTabPage? tab, CancellationToken cancellationToken, bool forceReload)
     {
         if (tab is null || cancellationToken.IsCancellationRequested)
+            return;
+
+        var section = GetSection(tab);
+        if (section is null || !forceReload && _loadedSections.Contains(section.Value))
             return;
 
         var lockTaken = false;
@@ -168,7 +253,10 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            Cursor = Cursors.WaitCursor;
+            if (!forceReload && _loadedSections.Contains(section.Value))
+                return;
+
+            SetLoadingState(true);
             if (tab.Name is nameof(tabBordereaux) or nameof(tabBordereauxTable))
             {
                 var data = await StatisticsService.Instance.BordereauxAsync();
@@ -225,6 +313,9 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
                 yearlyStatBindingSource.DataSource = data;
             }
+
+            if (!cancellationToken.IsCancellationRequested)
+                _loadedSections.Add(section.Value);
         }
         catch (OperationCanceledException)
         {
@@ -235,10 +326,32 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         }
         finally
         {
-            Cursor = Cursors.Default;
+            SetLoadingState(false);
             if (lockTaken)
                 _reloadLock.Release();
         }
+    }
+
+    private static StatisticsSection? GetSection(XtraTabPage tab)
+    {
+        return tab.Name switch
+        {
+            nameof(tabBordereaux) or nameof(tabBordereauxTable) => StatisticsSection.Bordereaux,
+            nameof(tabYearly) or nameof(tabYearlyTable) => StatisticsSection.Yearly,
+            nameof(tabMonthly) or nameof(tabMonthlyTable) => StatisticsSection.Monthly,
+            nameof(tabWeekly) or nameof(tabWeeklyTable) => StatisticsSection.Weekly,
+            nameof(tabDaily) or nameof(tabDailyTable) => StatisticsSection.Daily,
+            nameof(tabProducts2) or nameof(tabProductTable) => StatisticsSection.Products,
+            nameof(tabClients) or nameof(tabClientsTable) => StatisticsSection.Clients,
+            _ => null
+        };
+    }
+
+    private void SetLoadingState(bool isLoading)
+    {
+        loadingIndicator.Visible = isLoading;
+        btnRefresh.Enabled = !isLoading;
+        Cursor = isLoading ? Cursors.WaitCursor : Cursors.Default;
     }
 
     private async void tabControl_SelectedPageChanged(object sender, TabPageChangedEventArgs e)
@@ -293,14 +406,18 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             _suspendDateEvents = false;
         }
 
-        _ = ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
+        InvalidateStatisticsData();
+        _ = ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage, true);
     }
 
     private void btnExportExcel_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
         try
         {
-            ExportGrid("xlsx", "Excel files (*.xlsx)|*.xlsx", "Save Excel File", (grid, fileName) => grid.ExportToXlsx(fileName));
+            var grid = GetSelectedGrid();
+            var fileName = ShowExportDialog("xlsx", "Excel files (*.xlsx)|*.xlsx", "Save Excel File", "Data");
+            if (fileName is not null)
+                grid.ExportToXlsx(fileName);
         }
         catch (Exception ex)
         {
@@ -312,7 +429,15 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         try
         {
-            ExportGrid("pdf", "PDF files (*.pdf)|*.pdf", "Save PDF File", (grid, fileName) => grid.ExportToPdf(fileName));
+            var viewName = _selectedView == StatisticsView.Chart ? "Chart" : "Table";
+            var fileName = ShowExportDialog("pdf", "PDF files (*.pdf)|*.pdf", "Save PDF File", viewName);
+            if (fileName is null)
+                return;
+
+            if (_selectedView == StatisticsView.Chart)
+                GetSelectedChart().ExportToPdf(fileName);
+            else
+                GetSelectedGrid().ExportToPdf(fileName);
         }
         catch (Exception ex)
         {
@@ -320,58 +445,45 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         }
     }
 
-    private void ExportGrid(string extension, string filter, string dialogTitle, Action<GridControl, string> exportAction)
+    private GridControl GetSelectedGrid()
     {
-        var baseFileName = "Ph_" + Officine?.NomPharmacie + "_" +
-                          StatisticsService.Instance.Period.From?.ToString("dd-MM-yyyy") + "_" +
-                          StatisticsService.Instance.Period.To?.ToString("dd-MM-yyyy") + "." + extension;
-        GridControl? grid = null;
+        return _selectedSection switch
+        {
+            StatisticsSection.Bordereaux => gridBordereaux,
+            StatisticsSection.Yearly => gridYearly,
+            StatisticsSection.Monthly => gridMonthly,
+            StatisticsSection.Weekly => gridWeekly,
+            StatisticsSection.Daily => gridDaily,
+            StatisticsSection.Products => gridProducts,
+            StatisticsSection.Clients => gridClients,
+            _ => gridBordereaux
+        };
+    }
 
-        var tab = tabControl.SelectedTabPage;
-        string prefix = "";
+    private DevExpress.XtraCharts.ChartControl GetSelectedChart()
+    {
+        return _selectedSection switch
+        {
+            StatisticsSection.Bordereaux => chartBordereaux,
+            StatisticsSection.Yearly => chartYearly,
+            StatisticsSection.Monthly => chartMonthly,
+            StatisticsSection.Weekly => chartWeekly,
+            StatisticsSection.Daily => chartDaily,
+            StatisticsSection.Products => chartProducts,
+            StatisticsSection.Clients => chartClients,
+            _ => chartBordereaux
+        };
+    }
 
-        if (tab.Name is nameof(tabBordereaux) or nameof(tabBordereauxTable))
-        {
-            prefix = "Bordereaux";
-            grid = gridBordereaux;
-        }
-        else if (tab.Name is nameof(tabYearly) or nameof(tabYearlyTable))
-        {
-            prefix = "Yearly";
-            grid = gridYearly;
-        }
-        else if (tab.Name is nameof(tabMonthly) or nameof(tabMonthlyTable))
-        {
-            prefix = "Monthly";
-            grid = gridMonthly;
-        }
-        else if (tab.Name is nameof(tabWeekly) or nameof(tabWeeklyTable))
-        {
-            prefix = "Weekly";
-            grid = gridWeekly;
-        }
-        else if (tab.Name is nameof(tabDaily) or nameof(tabDailyTable))
-        {
-            prefix = "Daily";
-            grid = gridDaily;
-        }
-        else if (tab.Name is nameof(tabClients) or nameof(tabClientsTable))
-        {
-            prefix = "Clients";
-            grid = gridClients;
-        }
-        else if (tab.Name is nameof(tabProducts2) or nameof(tabProductTable))
-        {
-            prefix = "Products";
-            grid = gridProducts;
-        }
+    private string? ShowExportDialog(string extension, string filter, string dialogTitle, string viewName)
+    {
+        var section = GetSectionDisplayName(_selectedSection);
+        var pharmacy = Officine?.NomPharmacie ?? "Officine";
+        var from = StatisticsService.Instance.Period.From?.ToString("dd-MM-yyyy") ?? "Min";
+        var to = StatisticsService.Instance.Period.To?.ToString("dd-MM-yyyy") ?? "Max";
+        var fileName = SanitizeFileName($"{section}_{viewName}_Ph_{pharmacy}_{from}_{to}.{extension}");
 
-        if (grid == null)
-            return;
-
-        var fileName = string.IsNullOrEmpty(prefix) ? baseFileName : $"{prefix}_{baseFileName}";
-
-        var saveFileDialog = new SaveFileDialog
+        using var saveFileDialog = new SaveFileDialog
         {
             Filter = filter,
             FileName = fileName,
@@ -382,10 +494,15 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         };
 
         if (saveFileDialog.ShowDialog() != DialogResult.OK)
-            return;
+            return null;
 
-        fileName = saveFileDialog.FileName;
-        exportAction?.Invoke(grid, fileName);
+        return saveFileDialog.FileName;
+    }
+
+    private static string SanitizeFileName(string fileName)
+    {
+        var invalidCharacters = Path.GetInvalidFileNameChars();
+        return new string(fileName.Select(character => invalidCharacters.Contains(character) ? '_' : character).ToArray());
     }
 
     private void StatisticsUc_Disposed(object? sender, EventArgs e)
@@ -395,4 +512,21 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         previous?.Dispose();
         _reloadLock.Dispose();
     }
+}
+
+public enum StatisticsSection
+{
+    Bordereaux,
+    Yearly,
+    Monthly,
+    Weekly,
+    Daily,
+    Products,
+    Clients
+}
+
+public enum StatisticsView
+{
+    Table,
+    Chart
 }

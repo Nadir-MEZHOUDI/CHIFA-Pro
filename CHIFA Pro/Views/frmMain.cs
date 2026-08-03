@@ -12,6 +12,7 @@ public partial class FrmMain : XtraForm
     public FrmMain()
     {
         InitializeComponent();
+        SetStatisticsAccordionImages();
         ChangeTitle();
     }
     public static FrmMain Instance => (Application.OpenForms[nameof(FrmMain)] as FrmMain)!;
@@ -81,9 +82,57 @@ public partial class FrmMain : XtraForm
         sender.NavigateTo<ParametersUc>();
     }
 
-    private void accStatistics_Click(object sender, EventArgs e)
+    private void NavigateToStatistics(object sender, StatisticsSection section)
     {
-        sender.NavigateTo<StatisticsUc>();
+        sender.NavigateTo<StatisticsUc>(statistics => statistics.SelectSection(section));
+    }
+
+    private void SetStatisticsAccordionImages()
+    {
+        var resources = new System.ComponentModel.ComponentResourceManager(typeof(StatisticsUc));
+
+        accStatisticsBordereaux.ImageOptions.Image = (Image)resources.GetObject("tabBordereauxTable.ImageOptions.Image")!;
+        accStatisticsYearly.ImageOptions.Image = (Image)resources.GetObject("tabYearlyTable.ImageOptions.Image")!;
+        accStatisticsMonthly.ImageOptions.Image = (Image)resources.GetObject("tabMonthlyTable.ImageOptions.Image")!;
+        accStatisticsWeekly.ImageOptions.Image = (Image)resources.GetObject("tabWeeklyTable.ImageOptions.Image")!;
+        accStatisticsDaily.ImageOptions.Image = (Image)resources.GetObject("tabDailyTable.ImageOptions.Image")!;
+        accStatisticsProducts.ImageOptions.Image = (Image)resources.GetObject("tabProductTable.ImageOptions.Image")!;
+        accStatisticsClients.ImageOptions.Image = (Image)resources.GetObject("tabClientsTable.ImageOptions.Image")!;
+    }
+
+    private void accStatisticsBordereaux_Click(object sender, EventArgs e)
+    {
+        NavigateToStatistics(sender, StatisticsSection.Bordereaux);
+    }
+
+    private void accStatisticsYearly_Click(object sender, EventArgs e)
+    {
+        NavigateToStatistics(sender, StatisticsSection.Yearly);
+    }
+
+    private void accStatisticsMonthly_Click(object sender, EventArgs e)
+    {
+        NavigateToStatistics(sender, StatisticsSection.Monthly);
+    }
+
+    private void accStatisticsWeekly_Click(object sender, EventArgs e)
+    {
+        NavigateToStatistics(sender, StatisticsSection.Weekly);
+    }
+
+    private void accStatisticsDaily_Click(object sender, EventArgs e)
+    {
+        NavigateToStatistics(sender, StatisticsSection.Daily);
+    }
+
+    private void accStatisticsProducts_Click(object sender, EventArgs e)
+    {
+        NavigateToStatistics(sender, StatisticsSection.Products);
+    }
+
+    private void accStatisticsClients_Click(object sender, EventArgs e)
+    {
+        NavigateToStatistics(sender, StatisticsSection.Clients);
     }
 
     private void accUsers_Click(object sender, EventArgs e)

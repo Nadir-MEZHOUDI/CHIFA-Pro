@@ -2,9 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Serilog;
 using System.Net.Http;
-using NuGet.Versioning;
 using Velopack;
-using Velopack.Sources;
 
 namespace CHIFA.Server.Helpers;
 
@@ -16,7 +14,6 @@ public partial class UpdateService : ObservableObject
     private readonly UpdateManager _updateManager;
     private bool _isChecking;
     private bool _isUpdating;
-    private DateTime _lastCheckTime;
 
     [ObservableProperty] private int _progress;
     [ObservableProperty] private string _status = "جاهز";
@@ -57,7 +54,6 @@ public partial class UpdateService : ObservableObject
             }
 
             var result = await _updateManager.CheckForUpdatesAsync();
-            _lastCheckTime = DateTime.Now;
 
             if (result == null)
             {

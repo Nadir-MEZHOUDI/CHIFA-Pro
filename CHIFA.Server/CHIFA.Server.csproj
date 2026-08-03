@@ -25,14 +25,14 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
 		<PackageReference Include="protobuf-net.Grpc.Native" Version="1.*" />
-		<PackageReference Include="ReusableTheme" Version="2.*">
+		<PackageReference Include="ReusableTheme" Version="4.4.26">
 			<TreatAsUsed>true</TreatAsUsed>
 		</PackageReference>
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
 		<PackageReference Include="Serilog.Sinks.File" Version="7.*" />
 		<PackageReference Include="Serilog.Sinks.TextWriter" Version="3.*" />
 		<PackageReference Include="SmartApp.Bridge" Version="2.*" />
-		<PackageReference Include="Velopack" Version="0.*" />
+		<PackageReference Include="Velopack" Version="1.2.0" />
 		<PackageReference Include="Npgsql" Version="10.*" />
 
 	</ItemGroup>

@@ -40,6 +40,13 @@
             accBordereaux = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accAssures = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accStatistics = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accStatisticsBordereaux = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accStatisticsYearly = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accStatisticsMonthly = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accStatisticsWeekly = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accStatisticsDaily = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accStatisticsProducts = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accStatisticsClients = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accordionControlSeparator5 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             accLN = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accCM = new DevExpress.XtraBars.Navigation.AccordionControlElement();
@@ -163,11 +170,60 @@
             // 
             // accStatistics
             // 
+            accStatistics.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accStatisticsBordereaux, accStatisticsYearly, accStatisticsMonthly, accStatisticsWeekly, accStatisticsDaily, accStatisticsProducts, accStatisticsClients });
             accStatistics.ImageOptions.Image = (Image)resources.GetObject("accStatistics.ImageOptions.Image");
             accStatistics.Name = "accStatistics";
-            accStatistics.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatistics.Style = DevExpress.XtraBars.Navigation.ElementStyle.Group;
             accStatistics.Text = "STATISTICS";
-            accStatistics.Click += accStatistics_Click;
+            //
+            // accStatisticsBordereaux
+            //
+            accStatisticsBordereaux.Name = "accStatisticsBordereaux";
+            accStatisticsBordereaux.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatisticsBordereaux.Text = "BORDEREAUX";
+            accStatisticsBordereaux.Click += accStatisticsBordereaux_Click;
+            //
+            // accStatisticsYearly
+            //
+            accStatisticsYearly.Name = "accStatisticsYearly";
+            accStatisticsYearly.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatisticsYearly.Text = "ANNUELLES";
+            accStatisticsYearly.Click += accStatisticsYearly_Click;
+            //
+            // accStatisticsMonthly
+            //
+            accStatisticsMonthly.Name = "accStatisticsMonthly";
+            accStatisticsMonthly.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatisticsMonthly.Text = "MENSUELLES";
+            accStatisticsMonthly.Click += accStatisticsMonthly_Click;
+            //
+            // accStatisticsWeekly
+            //
+            accStatisticsWeekly.Name = "accStatisticsWeekly";
+            accStatisticsWeekly.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatisticsWeekly.Text = "HEBDOMADAIRES";
+            accStatisticsWeekly.Click += accStatisticsWeekly_Click;
+            //
+            // accStatisticsDaily
+            //
+            accStatisticsDaily.Name = "accStatisticsDaily";
+            accStatisticsDaily.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatisticsDaily.Text = "QUOTIDIENNES";
+            accStatisticsDaily.Click += accStatisticsDaily_Click;
+            //
+            // accStatisticsProducts
+            //
+            accStatisticsProducts.Name = "accStatisticsProducts";
+            accStatisticsProducts.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatisticsProducts.Text = "PRODUITS";
+            accStatisticsProducts.Click += accStatisticsProducts_Click;
+            //
+            // accStatisticsClients
+            //
+            accStatisticsClients.Name = "accStatisticsClients";
+            accStatisticsClients.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accStatisticsClients.Text = "CLIENTS";
+            accStatisticsClients.Click += accStatisticsClients_Click;
             // 
             // accordionControlSeparator5
             // 
@@ -618,6 +674,13 @@
         private DevExpress.XtraBars.Navigation.AccordionControlSeparator accordionControlSeparator4;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accParametres;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accStatistics;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsBordereaux;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsYearly;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsMonthly;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsWeekly;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsDaily;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsProducts;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsClients;
         private DevExpress.XtraBars.Navigation.AccordionControlSeparator accordionControlSeparator5;
         private DevExpress.XtraBars.SkinPaletteDropDownButtonItem skinPaletteDropDownButtonItem1;
         private DevExpress.XtraBars.SkinDropDownButtonItem skinDropDownButtonItem3;
