@@ -21,6 +21,8 @@ global using Serilog.Sinks.SystemConsole.Themes;
 namespace CHIFA.Pro;
 internal static partial class Program
 {
+    private static TelemetrySession? _telemetry;
+
 #if DEBUG
     // Import AllocConsole from kernel32.dll to create a new console window
     [LibraryImport("kernel32.dll", SetLastError = true)]
@@ -53,6 +55,7 @@ internal static partial class Program
 #endif
 
             SetExceptionHandling();
+            SetTelemetry();
 
             Velopack.VelopackApp.Build().Run();
             Application.EnableVisualStyles();
@@ -75,7 +78,56 @@ internal static partial class Program
         }
         finally
         {
+            DisposeTelemetry();
             Log.CloseAndFlush();
+        }
+    }
+
+    private static void SetTelemetry()
+    {
+        try
+        {
+            _telemetry = TelemetryFactory.Create(options =>
+            {
+                options.Application = "chifa-pro";
+#if DEBUG
+                options.Endpoint = "http://localhost:5000";
+#else
+                options.Endpoint = "https://telemetry.smartappdz.org";
+#endif
+                options.Version = Application.ProductVersion.Split("+")[0];
+            });
+
+            TelemetryExceptionHooks.AttachProcessWide(_telemetry);
+            _telemetry.TrackAppStarted();
+
+            Application.ApplicationExit += (_, _) =>
+            {
+                _telemetry.TrackAppClosed();
+                DisposeTelemetry();
+            };
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+    private static void DisposeTelemetry()
+    {
+        if (_telemetry is null) return;
+
+        try
+        {
+            _telemetry.DisposeAsync().AsTask().GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+        finally
+        {
+            _telemetry = null;
         }
     }
 
@@ -95,6 +147,7 @@ internal static partial class Program
     private static void ThreadException_Handler(object sender, ThreadExceptionEventArgs e)
     {
         e.Exception.Log();
+        _telemetry?.TrackException(e.Exception);
     }
 
     private static void SetCulture()
@@ -108,6 +161,7 @@ internal static partial class Program
     {
         var ex = (Exception)e.ExceptionObject;
         ex.Log();
+        _telemetry?.TrackException(ex);
         if (ex is Npgsql.NpgsqlException)
             MessageBox.Show(@"Cannot connect to Database, Check Your Server");
     }
