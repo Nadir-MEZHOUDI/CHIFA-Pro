@@ -1,4 +1,4 @@
-﻿
+
 namespace CHIFA.Pro.Views;
 
 public partial class ListNoirUc : XtraUserControl,INavigable
@@ -9,7 +9,7 @@ public partial class ListNoirUc : XtraUserControl,INavigable
         gridView1.SetOptions();
     }
 
-    public string Caption { get; }= "LISTE NOIR";
+    public string Caption { get; } = "LISTE NOIRE";
     public Image Image => FrmMain.Image(9);
 
     private async void ListNoirUc_Load(object sender, EventArgs e)

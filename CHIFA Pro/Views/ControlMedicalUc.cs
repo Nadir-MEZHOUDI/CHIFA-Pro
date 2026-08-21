@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views;
+namespace CHIFA.Pro.Views;
 
 public partial class ControlMedicalUc : XtraUserControl,INavigable
 {
@@ -11,6 +11,6 @@ public partial class ControlMedicalUc : XtraUserControl,INavigable
         Load += async (_, _) => await gridView1.LoadDataAsync(ChifaService.Instance.LoadControlsMedicalAsync);
     }
 
-    public string Caption { get; } = "CONTROL MEDICAL";
+    public string Caption { get; } = "CONTRÔLE MÉDICAL";
     public Image Image => FrmMain.Image(10);
 }

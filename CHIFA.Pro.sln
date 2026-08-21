@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.4.11519.219
@@ -14,7 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		AUDIT_PLAN_ERRORS_PERFORMANCE_TRYCATCH.md = AUDIT_PLAN_ERRORS_PERFORMANCE_TRYCATCH.md
 		azure-pipelines-2.yml = azure-pipelines-2.yml
 		CHIFA.Pro.Velopack.yml = CHIFA.Pro.Velopack.yml
-		CHIFA.Server.yml = CHIFA.Server.yml
 		Directory.Build.props = Directory.Build.props
 		NuGet.Config = NuGet.Config
 		publish-local.bat = publish-local.bat
@@ -25,8 +24,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHIFA.Contract", "CHIFA.Contract\CHIFA.Contract.csproj", "{5293447B-C54E-4DD2-A1EE-C8BE9D0A4330}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHIFA.Server", "CHIFA.Server\CHIFA.Server.csproj", "{49939655-B005-4A67-820B-4A6E68DDA503}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CHIFA.Tests", "CHIFA.Tests\CHIFA.Tests.csproj", "{29B6DD70-573E-4A72-837E-40007C46D6E8}"
 EndProject
@@ -141,36 +138,6 @@ Global
 		{5293447B-C54E-4DD2-A1EE-C8BE9D0A4330}.TestFolder|x64.Build.0 = Debug|Any CPU
 		{5293447B-C54E-4DD2-A1EE-C8BE9D0A4330}.TestFolder|x86.ActiveCfg = Debug|Any CPU
 		{5293447B-C54E-4DD2-A1EE-C8BE9D0A4330}.TestFolder|x86.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|ARM.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|x64.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Debug|x86.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|Any CPU.Build.0 = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|ARM.ActiveCfg = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|ARM.Build.0 = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|ARM64.Build.0 = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|x64.ActiveCfg = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|x64.Build.0 = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|x86.ActiveCfg = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.Release|x86.Build.0 = Release|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|Any CPU.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|Any CPU.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|ARM.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|ARM.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|ARM64.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|ARM64.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|x64.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|x64.Build.0 = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|x86.ActiveCfg = Debug|Any CPU
-		{49939655-B005-4A67-820B-4A6E68DDA503}.TestFolder|x86.Build.0 = Debug|Any CPU
 		{29B6DD70-573E-4A72-837E-40007C46D6E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{29B6DD70-573E-4A72-837E-40007C46D6E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{29B6DD70-573E-4A72-837E-40007C46D6E8}.Debug|ARM.ActiveCfg = Debug|Any CPU

@@ -1,11 +1,11 @@
-﻿using CHIFA.Pro.Helpers.Settings;
+using CHIFA.Pro.Helpers.Settings;
 
 namespace CHIFA.Pro.Views;
 
 public partial class ParametersUc : XtraUserControl, INavigable
 {
     private Action? _closer;
-    public string Caption { get; } = "PARAMETERS";
+    public string Caption { get; } = "PARAMÈTRES";
     public Image Image => FrmMain.Image(14);
 
     public ParametersUc()
@@ -18,7 +18,7 @@ public partial class ParametersUc : XtraUserControl, INavigable
         var frm = new XtraForm
         {
             StartPosition = FormStartPosition.CenterScreen,
-            Text = @"Parameters",
+            Text = @"Paramètres",
             Size = new Size(600, 300)
         };
         frm.Controls.Add(new ParametersUc { Dock = DockStyle.Fill, _closer = frm.Close });
@@ -43,7 +43,7 @@ public partial class ParametersUc : XtraUserControl, INavigable
 
 
             AppSettings.Default.Save();
-            XtraMessageBox.Show("Configuration successfully Saved", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            XtraMessageBox.Show("Configuration enregistrée avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
             _closer?.Invoke();
         }
         catch (Exception ex)
@@ -113,10 +113,10 @@ public partial class ParametersUc : XtraUserControl, INavigable
         {
             var dialog = new OpenFileDialog()
             {
-                Title = @"Select Backup File",
+                Title = @"Sélectionner le fichier de sauvegarde",
                 DefaultExt = "backup",
                 InitialDirectory = AppSettings.Default.ChifaBackup,
-                Filter = @"Backup Files (*.backup)|*.backup",
+                Filter = @"Fichiers de sauvegarde (*.backup)|*.backup",
             };
 
             if (dialog.ShowDialog() == DialogResult.OK)
@@ -148,11 +148,11 @@ public partial class ParametersUc : XtraUserControl, INavigable
 
             if (isConnected)
             {
-                XtraMessageBox.Show("Connected", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                XtraMessageBox.Show("Connexion réussie.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                XtraMessageBox.Show("Cannot connect to server", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                XtraMessageBox.Show("Impossible de se connecter au serveur.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         catch (Exception ex)

@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class HomeUc
     {
@@ -164,7 +164,7 @@
             tileItemElement2.ImageOptions.Image = (Image)resources.GetObject("resource.Image1");
             tileItemElement2.ImageOptions.ImageAlignment = TileItemContentAlignment.MiddleCenter;
             tileItemElement2.ImageOptions.ImageScaleMode = TileItemImageScaleMode.NoScale;
-            tileItemElement2.Text = "ASSURES";
+            tileItemElement2.Text = "ASSURÉS";
             itmAssures.Elements.Add(tileItemElement2);
             itmAssures.Id = 2;
             itmAssures.ItemSize = TileItemSize.Medium;
@@ -188,7 +188,7 @@
             tileItemElement4.ImageOptions.Image = (Image)resources.GetObject("resource.Image3");
             tileItemElement4.ImageOptions.ImageAlignment = TileItemContentAlignment.MiddleCenter;
             tileItemElement4.ImageOptions.ImageScaleMode = TileItemImageScaleMode.NoScale;
-            tileItemElement4.Text = "STATISTICS";
+            tileItemElement4.Text = "STATISTIQUES";
             itmStatistics.Elements.Add(tileItemElement4);
             itmStatistics.Id = 5;
             itmStatistics.ItemSize = TileItemSize.Medium;
@@ -200,7 +200,7 @@
             tileItemElement5.ImageOptions.Image = (Image)resources.GetObject("resource.Image4");
             tileItemElement5.ImageOptions.ImageAlignment = TileItemContentAlignment.MiddleCenter;
             tileItemElement5.ImageOptions.ImageScaleMode = TileItemImageScaleMode.NoScale;
-            tileItemElement5.Text = "TRAIT SPEC";
+            tileItemElement5.Text = "TRAITEMENT SPÉCIFIQUE";
             itmTraitSpec.Elements.Add(tileItemElement5);
             itmTraitSpec.Id = 0;
             itmTraitSpec.ItemSize = TileItemSize.Medium;
@@ -210,7 +210,7 @@
             // itemSpecialetes
             // 
             tileItemElement6.ImageOptions.Image = (Image)resources.GetObject("resource.Image5");
-            tileItemElement6.Text = "SPECIALETES";
+            tileItemElement6.Text = "SPÉCIALITÉS";
             itemSpecialetes.Elements.Add(tileItemElement6);
             itemSpecialetes.Id = 8;
             itemSpecialetes.ItemSize = TileItemSize.Medium;
@@ -222,7 +222,7 @@
             tileItemElement7.ImageOptions.Image = (Image)resources.GetObject("resource.Image6");
             tileItemElement7.ImageOptions.ImageAlignment = TileItemContentAlignment.MiddleCenter;
             tileItemElement7.ImageOptions.ImageScaleMode = TileItemImageScaleMode.NoScale;
-            tileItemElement7.Text = "MEDICAMENTS";
+            tileItemElement7.Text = "MÉDICAMENTS";
             itmMedicaments.Elements.Add(tileItemElement7);
             itmMedicaments.Id = 3;
             itmMedicaments.ItemSize = TileItemSize.Medium;
@@ -242,7 +242,7 @@
             // itemControlMedical
             // 
             tileItemElement9.ImageOptions.Image = (Image)resources.GetObject("resource.Image8");
-            tileItemElement9.Text = "CONTROL MEDICAL";
+            tileItemElement9.Text = "CONTRÔLE MÉDICAL";
             itemControlMedical.Elements.Add(tileItemElement9);
             itemControlMedical.Id = 10;
             itemControlMedical.ItemSize = TileItemSize.Medium;
@@ -252,7 +252,7 @@
             // itemListNoir
             // 
             tileItemElement10.ImageOptions.Image = (Image)resources.GetObject("resource.Image9");
-            tileItemElement10.Text = "LIST NOIR";
+            tileItemElement10.Text = "LISTE NOIRE";
             itemListNoir.Elements.Add(tileItemElement10);
             itemListNoir.Id = 9;
             itemListNoir.ItemSize = TileItemSize.Medium;
@@ -262,7 +262,7 @@
             // itemUsers
             // 
             tileItemElement11.ImageOptions.Image = (Image)resources.GetObject("resource.Image10");
-            tileItemElement11.Text = "USERS";
+            tileItemElement11.Text = "UTILISATEURS";
             itemUsers.Elements.Add(tileItemElement11);
             itemUsers.Id = 11;
             itemUsers.ItemSize = TileItemSize.Medium;
@@ -272,7 +272,7 @@
             // itemCenters
             // 
             tileItemElement12.ImageOptions.Image = (Image)resources.GetObject("resource.Image11");
-            tileItemElement12.Text = "CENTERS";
+            tileItemElement12.Text = "CENTRES";
             itemCenters.Elements.Add(tileItemElement12);
             itemCenters.Id = 12;
             itemCenters.ItemSize = TileItemSize.Medium;
@@ -292,7 +292,7 @@
             // itemUpdate
             // 
             tileItemElement14.ImageOptions.Image = (Image)resources.GetObject("resource.Image13");
-            tileItemElement14.Text = "MISE A JOUR";
+            tileItemElement14.Text = "MISE À JOUR";
             itemUpdate.Elements.Add(tileItemElement14);
             itemUpdate.Id = 14;
             itemUpdate.ItemSize = TileItemSize.Medium;
@@ -302,7 +302,7 @@
             // itemRefresh
             // 
             tileItemElement15.ImageOptions.Image = (Image)resources.GetObject("resource.Image14");
-            tileItemElement15.Text = "RECHARGE";
+            tileItemElement15.Text = "ACTUALISER";
             itemRefresh.Elements.Add(tileItemElement15);
             itemRefresh.Id = 15;
             itemRefresh.ItemSize = TileItemSize.Medium;
@@ -321,7 +321,7 @@
             xyDiagram1.DefaultPane.Title.Text = "Montant par jour";
             xyDiagramPane1.Name = "Pane 1";
             xyDiagramPane1.PaneID = 0;
-            xyDiagramPane1.Title.Text = "Nomber des Factures par Jour";
+            xyDiagramPane1.Title.Text = "Nombre de factures par jour";
             xyDiagramPane2.Name = "Pane 2";
             xyDiagramPane2.PaneID = 1;
             xyDiagramPane2.Title.Text = "Majoration par Jour";

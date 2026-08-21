@@ -1,4 +1,4 @@
-﻿using CHIFA.Pro.Helpers.Settings;
+using CHIFA.Pro.Helpers.Settings;
 using Npgsql;
 
 namespace CHIFA.Pro.Helpers;
@@ -180,11 +180,11 @@ public static class DbChecker
 
             if (process.ExitCode == 0)
             {
-                MessageBox.Show(@"Backup completed successfully.");
+                MessageBox.Show(@"Sauvegarde effectuée avec succès.", @"Sauvegarde", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show(@"Database restore failed. Error: " + error);
+                MessageBox.Show(@"Échec de la sauvegarde. Erreur : " + error, @"Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         catch (Exception ex)
@@ -217,11 +217,11 @@ public static class DbChecker
 
             if (process.ExitCode == 0)
             {
-                MessageBox.Show(@"Database restore completed successfully.");
+                MessageBox.Show(@"Restauration de la base de données effectuée avec succès.", @"Restauration", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show(@"Database restore failed. Error: " + error);
+                MessageBox.Show(@"Échec de la restauration de la base de données. Erreur : " + error, @"Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         catch (Exception ex)

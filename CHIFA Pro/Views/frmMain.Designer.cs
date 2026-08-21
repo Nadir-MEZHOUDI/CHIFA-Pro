@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class FrmMain
     {
@@ -133,7 +133,7 @@
             acHome.ImageOptions.Image = (Image)resources.GetObject("acHome.ImageOptions.Image");
             acHome.Name = "acHome";
             acHome.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            acHome.Text = "HOME";
+            acHome.Text = "ACCUEIL";
             acHome.Click += acHome_Click;
             // 
             // accordionControlSeparator1
@@ -153,7 +153,7 @@
             accTrtSps.ImageOptions.Image = (Image)resources.GetObject("accTrtSps.ImageOptions.Image");
             accTrtSps.Name = "accTrtSps";
             accTrtSps.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accTrtSps.Text = "TRAIT SPEC";
+            accTrtSps.Text = "TRAITEMENT SPÉCIFIQUE";
             accTrtSps.Click += accFactures_Click;
             // 
             // accBordereaux
@@ -169,7 +169,7 @@
             accAssures.ImageOptions.Image = (Image)resources.GetObject("accAssures.ImageOptions.Image");
             accAssures.Name = "accAssures";
             accAssures.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accAssures.Text = "ASSURES";
+            accAssures.Text = "ASSURÉS";
             accAssures.Click += accAssures_Click;
             // 
             // accStatistics
@@ -178,7 +178,7 @@
             accStatistics.Expanded = true;
             accStatistics.ImageOptions.Image = (Image)resources.GetObject("accStatistics.ImageOptions.Image");
             accStatistics.Name = "accStatistics";
-            accStatistics.Text = "STATISTICS";
+            accStatistics.Text = "STATISTIQUES";
             // 
             // accStatisticsBordereaux
             // 
@@ -238,7 +238,7 @@
             accLN.ImageOptions.Image = (Image)resources.GetObject("accLN.ImageOptions.Image");
             accLN.Name = "accLN";
             accLN.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accLN.Text = "LISTE NOIR";
+            accLN.Text = "LISTE NOIRE";
             accLN.Click += accLN_Click;
             // 
             // accCM
@@ -246,7 +246,7 @@
             accCM.ImageOptions.Image = (Image)resources.GetObject("accCM.ImageOptions.Image");
             accCM.Name = "accCM";
             accCM.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accCM.Text = "CONTROL MEDICAL";
+            accCM.Text = "CONTRÔLE MÉDICAL";
             accCM.Click += accCM_Click;
             // 
             // accordionControlSeparator2
@@ -258,7 +258,7 @@
             accMedicaments.ImageOptions.Image = (Image)resources.GetObject("accMedicaments.ImageOptions.Image");
             accMedicaments.Name = "accMedicaments";
             accMedicaments.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accMedicaments.Text = "MEDICAMENTS";
+            accMedicaments.Text = "MÉDICAMENTS";
             accMedicaments.Click += accMedicaments_Click;
             // 
             // accFormes
@@ -274,7 +274,7 @@
             accActes.ImageOptions.Image = (Image)resources.GetObject("accActes.ImageOptions.Image");
             accActes.Name = "accActes";
             accActes.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accActes.Text = "SPECIALETES";
+            accActes.Text = "SPÉCIALITÉS";
             accActes.Click += accSpecialists_Click;
             // 
             // accordionControlSeparator4
@@ -286,7 +286,7 @@
             accUsers.ImageOptions.Image = (Image)resources.GetObject("accUsers.ImageOptions.Image");
             accUsers.Name = "accUsers";
             accUsers.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accUsers.Text = "USERS";
+            accUsers.Text = "UTILISATEURS";
             accUsers.Click += accUsers_Click;
             // 
             // accCenters
@@ -294,7 +294,7 @@
             accCenters.ImageOptions.Image = (Image)resources.GetObject("accCenters.ImageOptions.Image");
             accCenters.Name = "accCenters";
             accCenters.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accCenters.Text = "CENTERS";
+            accCenters.Text = "CENTRES";
             accCenters.Click += accCenters_Click;
             // 
             // accOfficine
@@ -310,7 +310,7 @@
             accParametres.ImageOptions.Image = (Image)resources.GetObject("accParametres.ImageOptions.Image");
             accParametres.Name = "accParametres";
             accParametres.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accParametres.Text = "PARAMETRES";
+            accParametres.Text = "PARAMÈTRES";
             accParametres.Click += accParametres_Click;
             // 
             // barDockControlTop
@@ -471,7 +471,7 @@
             // 
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             toolStripStatusLabel1.Size = new Size(53, 20);
-            toolStripStatusLabel1.Text = "Server:";
+            toolStripStatusLabel1.Text = "Serveur : ";
             // 
             // txtServer
             // 
@@ -486,7 +486,7 @@
             // 
             toolStripStatusLabel2.Name = "toolStripStatusLabel2";
             toolStripStatusLabel2.Size = new Size(75, 20);
-            toolStripStatusLabel2.Text = "Database:";
+            toolStripStatusLabel2.Text = "Base : ";
             // 
             // txtDatabase
             // 
@@ -514,7 +514,7 @@
             // 
             toolStripStatusLabel3.Name = "toolStripStatusLabel3";
             toolStripStatusLabel3.Size = new Size(81, 20);
-            toolStripStatusLabel3.Text = "Pharmacie:";
+            toolStripStatusLabel3.Text = "Pharmacie : ";
             // 
             // txtPharmacie
             // 
@@ -528,7 +528,7 @@
             // 
             toolStripStatusLabel4.Name = "toolStripStatusLabel4";
             toolStripStatusLabel4.Size = new Size(103, 20);
-            toolStripStatusLabel4.Text = "Code Officine:";
+            toolStripStatusLabel4.Text = "Code Officine : ";
             // 
             // txtCodePs
             // 
@@ -583,7 +583,7 @@
             // 
             menuOpen.Name = "menuOpen";
             menuOpen.Size = new Size(114, 24);
-            menuOpen.Text = "Open";
+            menuOpen.Text = "Ouvrir";
             menuOpen.Click += menuOpen_Click;
             // 
             // toolStripSeparator1
@@ -595,7 +595,7 @@
             // 
             menuExit.Name = "menuExit";
             menuExit.Size = new Size(114, 24);
-            menuExit.Text = "Exit";
+            menuExit.Text = "Quitter";
             menuExit.Click += menuExit_Click;
             // 
             // timer

@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class ParametersUc
     {
@@ -163,7 +163,6 @@
             txtChifaPath.Size = new Size(655, 24);
             txtChifaPath.StyleController = layoutControl2;
             txtChifaPath.TabIndex = 1;
-            txtChifaPath.EditValueChanged += txtChifaPath_EditValueChanged;
             // 
             // btnSave
             // 
@@ -174,7 +173,7 @@
             btnSave.Size = new Size(512, 38);
             btnSave.StyleController = layoutControl2;
             btnSave.TabIndex = 1;
-            btnSave.Text = "Save Settings";
+            btnSave.Text = "Enregistrer";
             btnSave.Click += btnSave_Click;
             // 
             // txtServerName
@@ -199,7 +198,7 @@
             btnBackup.Size = new Size(1004, 38);
             btnBackup.StyleController = layoutControl2;
             btnBackup.TabIndex = 0;
-            btnBackup.Text = "Backup";
+            btnBackup.Text = "Sauvegarder";
             btnBackup.Click += btnBackup_Click;
             // 
             // btnRestor
@@ -211,7 +210,7 @@
             btnRestor.Size = new Size(1004, 38);
             btnRestor.StyleController = layoutControl2;
             btnRestor.TabIndex = 2;
-            btnRestor.Text = "Restore";
+            btnRestor.Text = "Restaurer";
             btnRestor.Click += btnRestore_Click;
             // 
             // simpleButton1
@@ -235,7 +234,7 @@
             btnTest.Size = new Size(501, 38);
             btnTest.StyleController = layoutControl2;
             btnTest.TabIndex = 1;
-            btnTest.Text = "Test Connection";
+            btnTest.Text = "Tester la connexion";
             btnTest.Click += btnTest_Click;
             // 
             // rbtServer
@@ -244,7 +243,7 @@
             rbtServer.Location = new Point(24, 64);
             rbtServer.Margin = new Padding(2);
             rbtServer.Name = "rbtServer";
-            rbtServer.Properties.Caption = "Server:";
+            rbtServer.Properties.Caption = "Serveur : ";
             rbtServer.Properties.CheckBoxOptions.Style = DevExpress.XtraEditors.Controls.CheckBoxStyle.Radio;
             rbtServer.Properties.RadioGroupIndex = 0;
             rbtServer.Size = new Size(186, 21);
@@ -257,7 +256,7 @@
             rbtClient.Location = new Point(24, 92);
             rbtClient.Margin = new Padding(2);
             rbtClient.Name = "rbtClient";
-            rbtClient.Properties.Caption = "Client:";
+            rbtClient.Properties.Caption = "Client : ";
             rbtClient.Properties.CheckBoxOptions.Style = DevExpress.XtraEditors.Controls.CheckBoxStyle.Radio;
             rbtClient.Properties.RadioGroupIndex = 0;
             rbtClient.Size = new Size(186, 21);
@@ -271,7 +270,7 @@
             chkMontant.Location = new Point(24, 251);
             chkMontant.Margin = new Padding(2);
             chkMontant.Name = "chkMontant";
-            chkMontant.Properties.Caption = "Notification On Montant :";
+            chkMontant.Properties.Caption = "Notification sur montant : ";
             chkMontant.Size = new Size(1004, 21);
             chkMontant.StyleController = layoutControl2;
             chkMontant.TabIndex = 4;
@@ -281,7 +280,7 @@
             chkNmbr.Location = new Point(24, 304);
             chkNmbr.Margin = new Padding(2);
             chkNmbr.Name = "chkNmbr";
-            chkNmbr.Properties.Caption = "Notification On Nmbr Factures :";
+            chkNmbr.Properties.Caption = "Notification sur nombre de factures : ";
             chkNmbr.Size = new Size(1004, 21);
             chkNmbr.StyleController = layoutControl2;
             chkNmbr.TabIndex = 6;
@@ -305,7 +304,7 @@
             chkDays.Location = new Point(24, 357);
             chkDays.Margin = new Padding(2);
             chkDays.Name = "chkDays";
-            chkDays.Properties.Caption = "Notification On Jours";
+            chkDays.Properties.Caption = "Notification sur jours : ";
             chkDays.Size = new Size(1004, 21);
             chkDays.StyleController = layoutControl2;
             chkDays.TabIndex = 8;
@@ -346,7 +345,7 @@
             chkStartup.Location = new Point(24, 162);
             chkStartup.Margin = new Padding(2);
             chkStartup.Name = "chkStartup";
-            chkStartup.Properties.Caption = "Start with Windows";
+            chkStartup.Properties.Caption = "Démarrer avec Windows";
             chkStartup.Size = new Size(1004, 21);
             chkStartup.StyleController = layoutControl2;
             chkStartup.TabIndex = 10;
@@ -440,7 +439,7 @@
             layoutControlGroup4.Location = new Point(0, 410);
             layoutControlGroup4.Name = "layoutControlGroup4";
             layoutControlGroup4.Size = new Size(1032, 148);
-            layoutControlGroup4.Text = "BACKUP RESTORE";
+            layoutControlGroup4.Text = "SAUVEGARDE & RESTAURATION";
             // 
             // layoutControlItem6
             // 
@@ -467,7 +466,7 @@
             layoutControlGroup3.Location = new Point(0, 0);
             layoutControlGroup3.Name = "layoutControlGroup3";
             layoutControlGroup3.Size = new Size(1032, 187);
-            layoutControlGroup3.Text = "CHIFA SERVER";
+            layoutControlGroup3.Text = "SERVEUR CHIFA";
             // 
             // layoutControlItem4
             // 
@@ -493,7 +492,7 @@
             layoutControlItem5.Location = new Point(190, 28);
             layoutControlItem5.Name = "layoutControlItem5";
             layoutControlItem5.Size = new Size(818, 28);
-            layoutControlItem5.Text = "Server Name:";
+            layoutControlItem5.Text = "Nom du serveur : ";
             layoutControlItem5.TextSize = new Size(84, 17);
             // 
             // layoutControlItem1
@@ -502,7 +501,7 @@
             layoutControlItem1.Location = new Point(190, 0);
             layoutControlItem1.Name = "layoutControlItem1";
             layoutControlItem1.Size = new Size(747, 28);
-            layoutControlItem1.Text = "CHIFA Path:";
+            layoutControlItem1.Text = "Chemin CHIFA : ";
             layoutControlItem1.TextSize = new Size(84, 17);
             // 
             // btnBrowse

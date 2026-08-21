@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class TraitSpecUc
     {
@@ -250,7 +250,7 @@
             // 
             // FromDate
             // 
-            FromDate.Caption = "From: ";
+            FromDate.Caption = "Du : ";
             FromDate.Edit = fromDateRepo;
             FromDate.EditWidth = 120;
             FromDate.Id = 8;
@@ -267,7 +267,7 @@
             // 
             // ToDate
             // 
-            ToDate.Caption = "To:";
+            ToDate.Caption = "Au : ";
             ToDate.Edit = toDateRepo;
             ToDate.EditWidth = 120;
             ToDate.Id = 9;
@@ -285,7 +285,7 @@
             // 
             // txtMedic
             // 
-            txtMedic.Caption = "Medicament:";
+            txtMedic.Caption = "Médicament : ";
             txtMedic.Edit = repositoryItemTextEdit1;
             txtMedic.EditWidth = 150;
             txtMedic.Id = 12;
@@ -302,7 +302,7 @@
             // 
             // btnConsumption
             // 
-            btnConsumption.Caption = "Consumption";
+            btnConsumption.Caption = "Consommation";
             btnConsumption.Id = 13;
             btnConsumption.ImageOptions.Image = (Image)resources.GetObject("btnConsumption.ImageOptions.Image");
             btnConsumption.ImageOptions.LargeImage = (Image)resources.GetObject("btnConsumption.ImageOptions.LargeImage");
@@ -311,7 +311,7 @@
             // 
             // btnHistory
             // 
-            btnHistory.Caption = "History";
+            btnHistory.Caption = "Historique";
             btnHistory.Id = 14;
             btnHistory.ImageOptions.Image = (Image)resources.GetObject("btnHistory.ImageOptions.Image");
             btnHistory.ImageOptions.LargeImage = (Image)resources.GetObject("btnHistory.ImageOptions.LargeImage");
@@ -331,12 +331,12 @@
             repositoryItemToggleSwitch2.AutoHeight = false;
             repositoryItemToggleSwitch2.GlyphAlignment = DevExpress.Utils.HorzAlignment.Far;
             repositoryItemToggleSwitch2.Name = "repositoryItemToggleSwitch2";
-            repositoryItemToggleSwitch2.OffText = "Off";
-            repositoryItemToggleSwitch2.OnText = "On";
+            repositoryItemToggleSwitch2.OffText = "Non";
+            repositoryItemToggleSwitch2.OnText = "Oui";
             // 
             // btnRefresh
             // 
-            btnRefresh.Caption = "Refresh";
+            btnRefresh.Caption = "Actualiser";
             btnRefresh.Id = 18;
             btnRefresh.ImageOptions.Image = (Image)resources.GetObject("btnRefresh.ImageOptions.Image");
             btnRefresh.ImageOptions.LargeImage = (Image)resources.GetObject("btnRefresh.ImageOptions.LargeImage");
@@ -450,7 +450,7 @@
             dockPanel1.Name = "dockPanel1";
             dockPanel1.OriginalSize = new Size(200, 236);
             dockPanel1.Size = new Size(1019, 236);
-            dockPanel1.Text = "Details";
+            dockPanel1.Text = "Détails";
             // 
             // controlContainer1
             // 

@@ -553,12 +553,12 @@ namespace CHIFA.Pro.Views
             ribbonPageGroupView.ItemLinks.Add(btnTable);
             ribbonPageGroupView.ItemLinks.Add(btnChart);
             ribbonPageGroupView.Name = "ribbonPageGroupView";
-            ribbonPageGroupView.Text = "View";
+            ribbonPageGroupView.Text = "Affichage";
             //
             // btnTable
             //
             btnTable.BindableChecked = true;
-            btnTable.Caption = "Table";
+            btnTable.Caption = "Tableau";
             btnTable.Checked = true;
             btnTable.GroupIndex = 1;
             btnTable.Id = 26;
@@ -569,7 +569,7 @@ namespace CHIFA.Pro.Views
             //
             // btnChart
             //
-            btnChart.Caption = "Chart";
+            btnChart.Caption = "Graphique";
             btnChart.GroupIndex = 1;
             btnChart.Id = 27;
             btnChart.ImageOptions.LargeImage = (Image)resources.GetObject("btnChart.ImageOptions.LargeImage");
@@ -584,11 +584,11 @@ namespace CHIFA.Pro.Views
             ribbonPageGroup2.ItemLinks.Add(ToDate);
             ribbonPageGroup2.ItemLinks.Add(btnClearDates);
             ribbonPageGroup2.Name = "ribbonPageGroup2";
-            ribbonPageGroup2.Text = "Range";
+            ribbonPageGroup2.Text = "Période";
             // 
             // btnRefresh
             // 
-            btnRefresh.Caption = "Refresh";
+            btnRefresh.Caption = "Actualiser";
             btnRefresh.Id = 6;
             btnRefresh.ImageOptions.Image = (Image)resources.GetObject("btnRefresh.ImageOptions.Image");
             btnRefresh.ImageOptions.LargeImage = (Image)resources.GetObject("btnRefresh.ImageOptions.LargeImage");
@@ -598,7 +598,7 @@ namespace CHIFA.Pro.Views
             // 
             // FromDate
             // 
-            FromDate.Caption = "From:";
+            FromDate.Caption = "Du : ";
             FromDate.Edit = fromDateRepo;
             FromDate.EditWidth = 150;
             FromDate.Id = 15;
@@ -614,7 +614,7 @@ namespace CHIFA.Pro.Views
             // 
             // ToDate
             // 
-            ToDate.Caption = "To:";
+            ToDate.Caption = "Au : ";
             ToDate.Edit = toDateRepo;
             ToDate.EditWidth = 150;
             ToDate.Id = 16;
@@ -630,7 +630,7 @@ namespace CHIFA.Pro.Views
             // 
             // btnClearDates
             // 
-            btnClearDates.Caption = "Reset";
+            btnClearDates.Caption = "Réinitialiser";
             btnClearDates.Id = 17;
             btnClearDates.ImageOptions.Image = (Image)resources.GetObject("btnClearDates.ImageOptions.Image");
             btnClearDates.ImageOptions.LargeImage = (Image)resources.GetObject("btnClearDates.ImageOptions.LargeImage");
@@ -645,11 +645,11 @@ namespace CHIFA.Pro.Views
             PeriodRange.ItemLinks.Add(btnThisYear);
             PeriodRange.ItemLinks.Add(btnThisMonth);
             PeriodRange.Name = "PeriodRange";
-            PeriodRange.Text = "PeriodRange";
+            PeriodRange.Text = "Périodes";
             // 
             // btnAllPeriod
             // 
-            btnAllPeriod.Caption = "All";
+            btnAllPeriod.Caption = "Toutes";
             btnAllPeriod.Id = 23;
             btnAllPeriod.ImageOptions.LargeImage = (Image)resources.GetObject("btnAllPeriod.ImageOptions.LargeImage");
             btnAllPeriod.Name = "btnAllPeriod";
@@ -657,7 +657,7 @@ namespace CHIFA.Pro.Views
             // 
             // btnLastYear
             // 
-            btnLastYear.Caption = "Last Year";
+            btnLastYear.Caption = "1 An";
             btnLastYear.Id = 19;
             btnLastYear.ImageOptions.LargeImage = (Image)resources.GetObject("btnLastYear.ImageOptions.LargeImage");
             btnLastYear.Name = "btnLastYear";
@@ -665,7 +665,7 @@ namespace CHIFA.Pro.Views
             // 
             // btn6Months
             // 
-            btn6Months.Caption = "6 Months";
+            btn6Months.Caption = "6 Mois";
             btn6Months.Id = 21;
             btn6Months.ImageOptions.LargeImage = (Image)resources.GetObject("btn6Months.ImageOptions.LargeImage");
             btn6Months.Name = "btn6Months";
@@ -673,7 +673,7 @@ namespace CHIFA.Pro.Views
             // 
             // btnThisYear
             // 
-            btnThisYear.Caption = "This Year";
+            btnThisYear.Caption = "Cette Année";
             btnThisYear.Id = 20;
             btnThisYear.ImageOptions.LargeImage = (Image)resources.GetObject("btnThisYear.ImageOptions.LargeImage");
             btnThisYear.Name = "btnThisYear";
@@ -682,7 +682,7 @@ namespace CHIFA.Pro.Views
             // 
             // btnThisMonth
             // 
-            btnThisMonth.Caption = "This Month";
+            btnThisMonth.Caption = "Ce Mois";
             btnThisMonth.Id = 22;
             btnThisMonth.ImageOptions.LargeImage = (Image)resources.GetObject("btnThisMonth.ImageOptions.LargeImage");
             btnThisMonth.Name = "btnThisMonth";
@@ -1179,7 +1179,7 @@ namespace CHIFA.Pro.Views
             tabMonthlyTable.Margin = new Padding(4, 4, 4, 4);
             tabMonthlyTable.Name = "tabMonthlyTable";
             tabMonthlyTable.Size = new Size(1544, 859);
-            tabMonthlyTable.Text = "MENSUELS";
+            tabMonthlyTable.Text = "MENSUELLES";
             // 
             // gridMonthly
             // 
@@ -1379,7 +1379,7 @@ namespace CHIFA.Pro.Views
             tabProductTable.Margin = new Padding(4, 4, 4, 4);
             tabProductTable.Name = "tabProductTable";
             tabProductTable.Size = new Size(1544, 859);
-            tabProductTable.Text = "PROUITS";
+            tabProductTable.Text = "PRODUITS";
             // 
             // gridProducts
             // 
@@ -1675,7 +1675,7 @@ namespace CHIFA.Pro.Views
             secondaryAxisy4.Alignment = AxisAlignment.Near;
             secondaryAxisy4.AxisID = 0;
             secondaryAxisy4.Name = "Secondary AxisY 1";
-            secondaryAxisy4.Title.Text = "Nomb Factures";
+            secondaryAxisy4.Title.Text = "Nombre de factures";
             secondaryAxisy4.Title.Visibility = DevExpress.Utils.DefaultBoolean.Default;
             secondaryAxisy4.VisibleInPanesSerializable = "0";
             secondaryAxisy5.Alignment = AxisAlignment.Near;
@@ -2069,7 +2069,7 @@ namespace CHIFA.Pro.Views
             tabMonthly.Margin = new Padding(3, 4, 3, 4);
             tabMonthly.Name = "tabMonthly";
             tabMonthly.Size = new Size(1544, 859);
-            tabMonthly.Text = "MENSUELS";
+            tabMonthly.Text = "MENSUELLES";
             // 
             // chartMonthly
             // 

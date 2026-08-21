@@ -37,7 +37,6 @@ modern stack: **.NET 10**, **PostgreSQL**, **LinqToDB**, and **gRPC** between a 
 | Layer     | Technology                                        |
 |-----------|---------------------------------------------------|
 | Client    | WinForms + DevExpress (26.1+)                     |
-| Server    | WPF + gRPC (protobuf-net), CommunityToolkit.Mvvm  |
 | Data      | LinqToDB, Npgsql (PostgreSQL)                     |
 | Logging   | Serilog                                           |
 | Updates   | Velopack                                          |
@@ -48,9 +47,8 @@ modern stack: **.NET 10**, **PostgreSQL**, **LinqToDB**, and **gRPC** between a 
 ```text
 CHIFA.Pro/
 ├── CHIFA Pro/         # WinForms client (UI)
-├── CHIFA.Server/      # WPF gRPC server
 ├── CHIFA.DAL/         # Data access layer (LinqToDB)
-├── CHIFA.Contract/    # Shared DTOs, gRPC service contracts, helpers
+├── CHIFA.Contract/    # Shared DTOs, service contracts, helpers
 ├── CHIFA.Tests/       # xUnit tests (unit + DB functional + perf)
 └── CHIFA.Benchmarks/  # BenchmarkDotNet benchmarks
 ```

@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class FrmHistory
     {
@@ -316,7 +316,7 @@
             ItemForNumAssure.Location = new Point(0, 0);
             ItemForNumAssure.Name = "ItemForNumAssure";
             ItemForNumAssure.Size = new Size(656, 24);
-            ItemForNumAssure.Text = "No Assure";
+            ItemForNumAssure.Text = "N° Assuré";
             ItemForNumAssure.TextSize = new Size(63, 13);
             // 
             // ItemForAssureName
@@ -325,7 +325,7 @@
             ItemForAssureName.Location = new Point(656, 0);
             ItemForAssureName.Name = "ItemForAssureName";
             ItemForAssureName.Size = new Size(656, 24);
-            ItemForAssureName.Text = "Assure Name";
+            ItemForAssureName.Text = "Nom de l'assuré";
             ItemForAssureName.TextSize = new Size(63, 13);
             // 
             // ItemForMalade
@@ -334,7 +334,7 @@
             ItemForMalade.Location = new Point(0, 24);
             ItemForMalade.Name = "ItemForMalade";
             ItemForMalade.Size = new Size(656, 58);
-            ItemForMalade.Text = "Malade";
+            ItemForMalade.Text = "Malade / Bénéficiaire";
             ItemForMalade.TextSize = new Size(63, 13);
             // 
             // ItemForRang
@@ -592,7 +592,7 @@
             tabHistory.ImageOptions.Image = (Image)resources.GetObject("tabHistory.ImageOptions.Image");
             tabHistory.Name = "tabHistory";
             tabHistory.Size = new Size(1306, 510);
-            tabHistory.Text = "History";
+            tabHistory.Text = "Historique";
             // 
             // FrmHistory
             // 

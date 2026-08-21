@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class FrmTraitSpec
     {
@@ -93,7 +93,7 @@
             xtraTabPage1.Controls.Add(gridControl1);
             xtraTabPage1.Name = "xtraTabPage1";
             xtraTabPage1.Size = new Size(1366, 627);
-            xtraTabPage1.Text = "Page2";
+            xtraTabPage1.Text = "Par Patient";
             // 
             // gridControl1
             // 
@@ -153,7 +153,7 @@
             xtraTabPage2.Controls.Add(gridControl2);
             xtraTabPage2.Name = "xtraTabPage2";
             xtraTabPage2.Size = new Size(1366, 627);
-            xtraTabPage2.Text = "Page1";
+            xtraTabPage2.Text = "Par Médicament";
             // 
             // gridControl2
             // 

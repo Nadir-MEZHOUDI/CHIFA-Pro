@@ -17,7 +17,6 @@ public partial class FrmMain : XtraForm
         _instance = this;
         InitializeComponent();
         SetStatisticsAccordionImages();
-        InitializeChifaScopeMenu();
         ChangeTitle();
     }
 
@@ -33,70 +32,7 @@ public partial class FrmMain : XtraForm
         return new Bitmap(16, 16);
     }
 
-    private void InitializeChifaScopeMenu()
-    {
-        try
-        {
-            var grpScope = new DevExpress.XtraBars.Navigation.AccordionControlElement
-            {
-                Text = "CHIFA AUDIT",
-                Expanded = true
-            };
-
-            var itemDashboard = new DevExpress.XtraBars.Navigation.AccordionControlElement
-            {
-                Text = "TOUR DE CONTRÔLE",
-                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
-                ImageOptions = { Image = Image(4) }
-            };
-            itemDashboard.Click += (s, e) => this.NavigateTo<ScopeDashboardUc>();
-
-            var itemPsychotropes = new DevExpress.XtraBars.Navigation.AccordionControlElement
-            {
-                Text = "PSYCHOTROPES",
-                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
-                ImageOptions = { Image = Image(8) }
-            };
-            itemPsychotropes.Click += (s, e) => this.NavigateTo<PsychotropesUc>();
-
-            var itemRejets = new DevExpress.XtraBars.Navigation.AccordionControlElement
-            {
-                Text = "REJETS & RECOUVREMENT",
-                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
-                ImageOptions = { Image = Image(9) }
-            };
-            itemRejets.Click += (s, e) => this.NavigateTo<RejetsUc>();
-
-            var itemPrevision = new DevExpress.XtraBars.Navigation.AccordionControlElement
-            {
-                Text = "PRÉVISION CHRONIQUES",
-                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
-                ImageOptions = { Image = Image(6) }
-            };
-            itemPrevision.Click += (s, e) => this.NavigateTo<PrevisionChroniquesUc>();
-
-            var itemAudit = new DevExpress.XtraBars.Navigation.AccordionControlElement
-            {
-                Text = "AUDIT PRÉ-BORDEREAU",
-                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
-                ImageOptions = { Image = Image(10) }
-            };
-            itemAudit.Click += (s, e) => this.NavigateTo<AuditBordereauUc>();
-
-            grpScope.Elements.AddRange([itemDashboard, itemPsychotropes, itemRejets, itemPrevision, itemAudit]);
-
-            var homeIndex = accordionControl1.Elements.IndexOf(acHome);
-            if (homeIndex >= 0 && homeIndex + 1 < accordionControl1.Elements.Count)
-                accordionControl1.Elements.Insert(homeIndex + 1, grpScope);
-            else
-                accordionControl1.Elements.Add(grpScope);
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-    }
-
+    
     private void accSpecialists_Click(object sender, EventArgs e)
     {
         sender.NavigateTo<SpecialitesUc>();
@@ -282,7 +218,7 @@ public partial class FrmMain : XtraForm
             if (newVersion == null)
             {
                 if (showMessage)
-                    await ShowNotification("This is the latest Version", "Update");
+                    await ShowNotification("Vous disposez de la dernière version", "Mise à jour");
             }
             else
             {
@@ -307,10 +243,10 @@ public partial class FrmMain : XtraForm
     {
         try
         {
-
+            txtServer.Text = ChifaDb.Server;
             txtDatabase.Text = @"CHIFA_OFFICINE";
             txtIP.Text = XtraHelper.GetThis_PC_IP_Address();
-            txtServer.Text = ChifaDb.Server;
+
             var officine = await ChifaService.Instance.GetFirstOfficineAsync();
             txtCodePs.Text = officine?.CodePs ?? "";
             txtPharmacie.Text = officine?.Nom + @" " + officine?.Prenom;
@@ -328,6 +264,8 @@ public partial class FrmMain : XtraForm
         {
             var index = tabContainer.SelectedTabPageIndex;
             if (((ClosePageButtonEventArgs)e).Page is not XtraTabPage page ||
+                page.Controls.OfType<HomeUc>().Any() ||
+                page.Text.Contains("ACCUEIL", StringComparison.InvariantCultureIgnoreCase) ||
                 page.Text.Contains("Home", StringComparison.InvariantCultureIgnoreCase))
                 return;
 
@@ -399,7 +337,7 @@ public partial class FrmMain : XtraForm
     {
         Hide();
         Notification.Visible = true;
-        await ShowNotification("Application Minimized but still running.");
+        await ShowNotification("Application réduite dans la zone de notification.");
     }
 
     private void Notification_MouseDoubleClick(object sender, MouseEventArgs e)

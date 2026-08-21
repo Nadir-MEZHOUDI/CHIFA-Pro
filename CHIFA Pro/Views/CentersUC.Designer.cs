@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class CentersUc
     {
@@ -185,7 +185,7 @@
             dockPanel1.Options.ShowCloseButton = false;
             dockPanel1.OriginalSize = new Size(352, 200);
             dockPanel1.Size = new Size(352, 614);
-            dockPanel1.Text = "Details";
+            dockPanel1.Text = "Détails";
             // 
             // dockPanel1_Container
             // 
@@ -225,7 +225,7 @@
             // 
             // LibelleTextEdit
             // 
-            LibelleTextEdit.DataBindings.Add(new Binding("EditValue", cENTREBindingSource, "Nom", true));
+            LibelleTextEdit.DataBindings.Add(new Binding("EditValue", cENTREBindingSource, "Libelle", true));
             LibelleTextEdit.Location = new Point(11, 78);
             LibelleTextEdit.Margin = new Padding(3, 2, 3, 2);
             LibelleTextEdit.Name = "LibelleTextEdit";
@@ -252,7 +252,7 @@
             btnSave.Size = new Size(321, 38);
             btnSave.StyleController = dataLayoutControl1;
             btnSave.TabIndex = 7;
-            btnSave.Text = "Save";
+            btnSave.Text = "Enregistrer";
             btnSave.Click += btnSave_Click;
             // 
             // btnCancel
@@ -265,7 +265,7 @@
             btnCancel.Size = new Size(321, 38);
             btnCancel.StyleController = dataLayoutControl1;
             btnCancel.TabIndex = 8;
-            btnCancel.Text = "Cancel";
+            btnCancel.Text = "Annuler";
             btnCancel.Click += btnCancel_Click;
             // 
             // Root
@@ -292,7 +292,7 @@
             ItemForCodeCp.Location = new Point(0, 0);
             ItemForCodeCp.Name = "ItemForCodeCp";
             ItemForCodeCp.Size = new Size(325, 48);
-            ItemForCodeCp.Text = "Code Cp";
+            ItemForCodeCp.Text = "Code Centre";
             ItemForCodeCp.TextLocation = DevExpress.Utils.Locations.Top;
             ItemForCodeCp.TextSize = new Size(59, 17);
             // 
@@ -302,7 +302,7 @@
             ItemForLibelle.Location = new Point(0, 48);
             ItemForLibelle.Name = "ItemForLibelle";
             ItemForLibelle.Size = new Size(325, 48);
-            ItemForLibelle.Text = "Libelle";
+            ItemForLibelle.Text = "Libellé";
             ItemForLibelle.TextLocation = DevExpress.Utils.Locations.Top;
             ItemForLibelle.TextSize = new Size(59, 17);
             // 
@@ -312,7 +312,7 @@
             ItemForADRESSE.Location = new Point(0, 96);
             ItemForADRESSE.Name = "ItemForADRESSE";
             ItemForADRESSE.Size = new Size(325, 48);
-            ItemForADRESSE.Text = "ADRESSE";
+            ItemForADRESSE.Text = "Adresse";
             ItemForADRESSE.TextLocation = DevExpress.Utils.Locations.Top;
             ItemForADRESSE.TextSize = new Size(59, 17);
             // 

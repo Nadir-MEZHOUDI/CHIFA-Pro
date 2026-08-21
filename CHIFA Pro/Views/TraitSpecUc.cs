@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views;
+namespace CHIFA.Pro.Views;
 
 public partial class TraitSpecUc : XtraUserControl, INavigable
 {
@@ -6,7 +6,7 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     private readonly SemaphoreSlim _reloadLock = new(1, 1);
     private CancellationTokenSource? _reloadCts;
 
-    public string Caption { get; } = "TRAITEMENT SPECIFIQUE";
+    public string Caption { get; } = "TRAITEMENT SPÉCIFIQUE";
     public Image Image => FrmMain.Image(2);
 
     public TraitSpecUc()

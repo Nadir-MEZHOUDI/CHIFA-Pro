@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class AssuresUc
     {
@@ -193,7 +193,7 @@
             // 
             // barEditItem1
             // 
-            barEditItem1.Caption = "From:";
+            barEditItem1.Caption = "Du : ";
             barEditItem1.Edit = null;
             barEditItem1.EditWidth = 100;
             barEditItem1.Id = 4;
@@ -201,7 +201,7 @@
             // 
             // barEditItem2
             // 
-            barEditItem2.Caption = "To   :";
+            barEditItem2.Caption = "Au : ";
             barEditItem2.Edit = null;
             barEditItem2.EditWidth = 100;
             barEditItem2.Id = 5;
@@ -217,7 +217,7 @@
             // 
             // txtDateFrom
             // 
-            txtDateFrom.Caption = "From: ";
+            txtDateFrom.Caption = "Du : ";
             txtDateFrom.Edit = null;
             txtDateFrom.EditWidth = 120;
             txtDateFrom.Id = 8;
@@ -225,7 +225,7 @@
             // 
             // txtDateTo
             // 
-            txtDateTo.Caption = "To:";
+            txtDateTo.Caption = "Au : ";
             txtDateTo.Edit = null;
             txtDateTo.EditWidth = 120;
             txtDateTo.Id = 9;
@@ -234,7 +234,7 @@
             // 
             // txtMedic
             // 
-            txtMedic.Caption = "Medicament:";
+            txtMedic.Caption = "Médicament : ";
             txtMedic.Edit = null;
             txtMedic.EditWidth = 150;
             txtMedic.Id = 12;
@@ -242,7 +242,7 @@
             // 
             // btnConsumption
             // 
-            btnConsumption.Caption = "Consumption";
+            btnConsumption.Caption = "Consommation";
             btnConsumption.Id = 13;
             btnConsumption.ImageOptions.Image = (Image)resources.GetObject("btnConsumption.ImageOptions.Image");
             btnConsumption.ImageOptions.LargeImage = (Image)resources.GetObject("btnConsumption.ImageOptions.LargeImage");
@@ -251,7 +251,7 @@
             // 
             // btnHistory
             // 
-            btnHistory.Caption = "History";
+            btnHistory.Caption = "Historique";
             btnHistory.Id = 14;
             btnHistory.ImageOptions.Image = (Image)resources.GetObject("btnHistory.ImageOptions.Image");
             btnHistory.ImageOptions.LargeImage = (Image)resources.GetObject("btnHistory.ImageOptions.LargeImage");

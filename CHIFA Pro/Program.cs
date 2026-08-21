@@ -1,4 +1,4 @@
-﻿global using System.Diagnostics;
+global using System.Diagnostics;
 global using System.Globalization;
 global using System.IO;
 global using System.Linq.Expressions;
@@ -73,7 +73,7 @@ internal static partial class Program
             }
             catch
             {
-                MessageBox.Show(ex.Message, "Fatal error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Erreur fatale", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         finally
@@ -163,6 +163,6 @@ internal static partial class Program
         ex.Log();
         _telemetry?.TrackException(ex);
         if (ex is Npgsql.NpgsqlException)
-            MessageBox.Show(@"Cannot connect to Database, Check Your Server");
+            MessageBox.Show(@"Impossible de se connecter à la base de données. Vérifiez votre serveur.", @"Erreur de connexion", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }

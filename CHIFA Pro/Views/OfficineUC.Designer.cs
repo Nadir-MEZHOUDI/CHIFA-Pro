@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class OfficineUc
     {
@@ -501,7 +501,7 @@
             ItemForNomPharmacie.Location = new Point(0, 32);
             ItemForNomPharmacie.Name = "ItemForNomPharmacie";
             ItemForNomPharmacie.Size = new Size(469, 32);
-            ItemForNomPharmacie.Text = "Nom Pharmacie";
+            ItemForNomPharmacie.Text = "Nom de la pharmacie";
             ItemForNomPharmacie.TextSize = new Size(123, 21);
             // 
             // ItemForCODE
@@ -510,7 +510,7 @@
             ItemForCODE.Location = new Point(0, 0);
             ItemForCODE.Name = "ItemForCODE";
             ItemForCODE.Size = new Size(469, 32);
-            ItemForCODE.Text = "CODE";
+            ItemForCODE.Text = "Code";
             ItemForCODE.TextSize = new Size(123, 21);
             // 
             // ItemForPRENOM
@@ -519,7 +519,7 @@
             ItemForPRENOM.Location = new Point(241, 64);
             ItemForPRENOM.Name = "ItemForPRENOM";
             ItemForPRENOM.Size = new Size(228, 32);
-            ItemForPRENOM.Text = "PRENOM";
+            ItemForPRENOM.Text = "Prénom";
             ItemForPRENOM.TextSize = new Size(123, 21);
             // 
             // tabbedControlGroup5
@@ -536,7 +536,7 @@
             layoutControlGroup8.Location = new Point(0, 0);
             layoutControlGroup8.Name = "layoutControlGroup8";
             layoutControlGroup8.Size = new Size(469, 96);
-            layoutControlGroup8.Text = "Autre";
+            layoutControlGroup8.Text = "Autres";
             // 
             // ItemForIP
             // 
@@ -553,7 +553,7 @@
             ItemForMAXI.Location = new Point(0, 32);
             ItemForMAXI.Name = "ItemForMAXI";
             ItemForMAXI.Size = new Size(469, 32);
-            ItemForMAXI.Text = "MAXI";
+            ItemForMAXI.Text = "Maximum";
             ItemForMAXI.TextSize = new Size(123, 21);
             // 
             // ItemForPWD
@@ -562,7 +562,7 @@
             ItemForPWD.Location = new Point(0, 0);
             ItemForPWD.Name = "ItemForPWD";
             ItemForPWD.Size = new Size(469, 32);
-            ItemForPWD.Text = "PWD";
+            ItemForPWD.Text = "Mot de passe";
             ItemForPWD.TextSize = new Size(123, 21);
             // 
             // layoutControlGroup7
@@ -606,7 +606,7 @@
             layoutControlGroup5.Location = new Point(0, 491);
             layoutControlGroup5.Name = "layoutControlGroup5";
             layoutControlGroup5.Size = new Size(494, 116);
-            layoutControlGroup5.Text = "Bor";
+            layoutControlGroup5.Text = "Bordereaux";
             // 
             // ItemForNextFact
             // 
@@ -614,7 +614,7 @@
             ItemForNextFact.Location = new Point(0, 32);
             ItemForNextFact.Name = "ItemForNextFact";
             ItemForNextFact.Size = new Size(470, 32);
-            ItemForNextFact.Text = "Next Fact";
+            ItemForNextFact.Text = "Prochaine Facture";
             ItemForNextFact.TextSize = new Size(123, 21);
             // 
             // ItemForNextBor
@@ -623,7 +623,7 @@
             ItemForNextBor.Location = new Point(0, 0);
             ItemForNextBor.Name = "ItemForNextBor";
             ItemForNextBor.Size = new Size(470, 32);
-            ItemForNextBor.Text = "Next Bor";
+            ItemForNextBor.Text = "Prochain Bordereau";
             ItemForNextBor.TextSize = new Size(123, 21);
             // 
             // tabbedControlGroup3
@@ -648,7 +648,7 @@
             ItemForRefConvention.Location = new Point(256, 64);
             ItemForRefConvention.Name = "ItemForRefConvention";
             ItemForRefConvention.Size = new Size(213, 64);
-            ItemForRefConvention.Text = "Ref Convention";
+            ItemForRefConvention.Text = "Réf Convention";
             ItemForRefConvention.TextSize = new Size(123, 21);
             // 
             // ItemForCONVENTION
@@ -684,7 +684,7 @@
             ItemForSpecialite.Location = new Point(0, 0);
             ItemForSpecialite.Name = "ItemForSpecialite";
             ItemForSpecialite.Size = new Size(469, 32);
-            ItemForSpecialite.Text = "Specialite";
+            ItemForSpecialite.Text = "Spécialité";
             ItemForSpecialite.TextSize = new Size(123, 21);
             // 
             // ItemForRefBancaire
@@ -693,7 +693,7 @@
             ItemForRefBancaire.Location = new Point(0, 96);
             ItemForRefBancaire.Name = "ItemForRefBancaire";
             ItemForRefBancaire.Size = new Size(256, 32);
-            ItemForRefBancaire.Text = "Ref Bancaire";
+            ItemForRefBancaire.Text = "Réf Bancaire";
             ItemForRefBancaire.TextSize = new Size(123, 21);
             // 
             // layoutControlGroup3
@@ -711,7 +711,7 @@
             ItemForEMAIL.Location = new Point(0, 64);
             ItemForEMAIL.Name = "ItemForEMAIL";
             ItemForEMAIL.Size = new Size(469, 32);
-            ItemForEMAIL.Text = "EMAIL";
+            ItemForEMAIL.Text = "Email";
             ItemForEMAIL.TextSize = new Size(123, 21);
             // 
             // ItemForTEL
@@ -720,7 +720,7 @@
             ItemForTEL.Location = new Point(0, 32);
             ItemForTEL.Name = "ItemForTEL";
             ItemForTEL.Size = new Size(469, 32);
-            ItemForTEL.Text = "TEL";
+            ItemForTEL.Text = "Téléphone";
             ItemForTEL.TextSize = new Size(123, 21);
             // 
             // ItemForFAX
@@ -729,7 +729,7 @@
             ItemForFAX.Location = new Point(0, 96);
             ItemForFAX.Name = "ItemForFAX";
             ItemForFAX.Size = new Size(469, 32);
-            ItemForFAX.Text = "FAX";
+            ItemForFAX.Text = "Fax";
             ItemForFAX.TextSize = new Size(123, 21);
             // 
             // ItemForADRESSE
@@ -738,7 +738,7 @@
             ItemForADRESSE.Location = new Point(0, 0);
             ItemForADRESSE.Name = "ItemForADRESSE";
             ItemForADRESSE.Size = new Size(469, 32);
-            ItemForADRESSE.Text = "ADRESSE";
+            ItemForADRESSE.Text = "Adresse";
             ItemForADRESSE.TextSize = new Size(123, 21);
             // 
             // OfficineUc

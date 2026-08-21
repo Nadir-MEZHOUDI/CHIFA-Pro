@@ -1,4 +1,4 @@
-﻿using DevExpress.Utils;
+using DevExpress.Utils;
 using DevExpress.XtraTab;
 
 namespace CHIFA.Pro.Helpers;
@@ -18,7 +18,7 @@ internal static class NavigationService
             control = new T { Dock = DockStyle.Fill };
             tab = new XtraTabPage { Text = control.Caption, Image = control.Image };
             tab.Controls.Add(control);
-            if (tab.Text.Contains("HOME",StringComparison.InvariantCultureIgnoreCase))
+            if (control is HomeUc || tab.Text.Contains("ACCUEIL", StringComparison.InvariantCultureIgnoreCase) || tab.Text.Contains("HOME", StringComparison.InvariantCultureIgnoreCase))
                 tab.ShowCloseButton = DefaultBoolean.False;
             Main.tabContainer.TabPages.Add(tab);
         }

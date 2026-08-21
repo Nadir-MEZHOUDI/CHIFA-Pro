@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class FacturesUc
     {
@@ -339,7 +339,7 @@
             dockPanel2.Options.ShowCloseButton = false;
             dockPanel2.OriginalSize = new Size(200, 257);
             dockPanel2.Size = new Size(1381, 257);
-            dockPanel2.Text = "Details";
+            dockPanel2.Text = "Détails";
             // 
             // dockPanel2_Container
             // 
@@ -504,7 +504,7 @@
             // 
             // btnRefresh
             // 
-            btnRefresh.Caption = "Refresh";
+            btnRefresh.Caption = "Actualiser";
             btnRefresh.Id = 6;
             btnRefresh.ImageOptions.Image = (Image)resources.GetObject("btnRefresh.ImageOptions.Image");
             btnRefresh.ImageOptions.LargeImage = (Image)resources.GetObject("btnRefresh.ImageOptions.LargeImage");
@@ -514,7 +514,7 @@
             // 
             // txtDateFrom
             // 
-            txtDateFrom.Caption = "From: ";
+            txtDateFrom.Caption = "Du : ";
             txtDateFrom.Edit = fromDateRepo;
             txtDateFrom.EditWidth = 120;
             txtDateFrom.Id = 8;
@@ -522,7 +522,7 @@
             // 
             // swtchTS
             // 
-            swtchTS.Caption = "TS:";
+            swtchTS.Caption = "TS : ";
             swtchTS.Edit = repositoryItemToggleSwitch2;
             swtchTS.EditValue = false;
             swtchTS.Id = 16;
@@ -536,12 +536,12 @@
             repositoryItemToggleSwitch2.AutoHeight = false;
             repositoryItemToggleSwitch2.GlyphAlignment = DevExpress.Utils.HorzAlignment.Far;
             repositoryItemToggleSwitch2.Name = "repositoryItemToggleSwitch2";
-            repositoryItemToggleSwitch2.OffText = "No";
-            repositoryItemToggleSwitch2.OnText = "Yes";
+            repositoryItemToggleSwitch2.OffText = "Non";
+            repositoryItemToggleSwitch2.OnText = "Oui";
             // 
             // btnHistory
             // 
-            btnHistory.Caption = "History";
+            btnHistory.Caption = "Historique";
             btnHistory.Id = 17;
             btnHistory.ImageOptions.Image = (Image)resources.GetObject("btnHistory.ImageOptions.Image");
             btnHistory.ImageOptions.LargeImage = (Image)resources.GetObject("btnHistory.ImageOptions.LargeImage");
@@ -550,7 +550,7 @@
             // 
             // btnTraitSpec
             // 
-            btnTraitSpec.Caption = "Trait Spec";
+            btnTraitSpec.Caption = "Traitement Spécifique";
             btnTraitSpec.Id = 18;
             btnTraitSpec.ImageOptions.Image = (Image)resources.GetObject("btnTraitSpec.ImageOptions.Image");
             btnTraitSpec.ImageOptions.LargeImage = (Image)resources.GetObject("btnTraitSpec.ImageOptions.LargeImage");
@@ -572,12 +572,12 @@
             repositoryItemToggleSwitch3.AutoHeight = false;
             repositoryItemToggleSwitch3.GlyphAlignment = DevExpress.Utils.HorzAlignment.Far;
             repositoryItemToggleSwitch3.Name = "repositoryItemToggleSwitch3";
-            repositoryItemToggleSwitch3.OffText = "All Factures";
-            repositoryItemToggleSwitch3.OnText = "Last Factures";
+            repositoryItemToggleSwitch3.OffText = "Toutes les factures";
+            repositoryItemToggleSwitch3.OnText = "Dernières factures";
             // 
             // txtMedic
             // 
-            txtMedic.Caption = "Medicament:";
+            txtMedic.Caption = "Médicament : ";
             txtMedic.Edit = repositoryItemTextEdit1;
             txtMedic.EditWidth = 150;
             txtMedic.Id = 21;
@@ -591,7 +591,7 @@
             // 
             // btnClearDate
             // 
-            btnClearDate.Caption = "Clear";
+            btnClearDate.Caption = "Toutes";
             btnClearDate.Id = 22;
             btnClearDate.ImageOptions.Image = (Image)resources.GetObject("btnClearDate.ImageOptions.Image");
             btnClearDate.ImageOptions.LargeImage = (Image)resources.GetObject("btnClearDate.ImageOptions.LargeImage");
@@ -600,7 +600,7 @@
             // 
             // txtDateTo
             // 
-            txtDateTo.Caption = "To:";
+            txtDateTo.Caption = "Au : ";
             txtDateTo.Edit = toDateRepo;
             txtDateTo.EditWidth = 120;
             txtDateTo.Id = 23;
@@ -648,12 +648,12 @@
             repositoryItemToggleSwitch1.AutoHeight = false;
             repositoryItemToggleSwitch1.GlyphAlignment = DevExpress.Utils.HorzAlignment.Far;
             repositoryItemToggleSwitch1.Name = "repositoryItemToggleSwitch1";
-            repositoryItemToggleSwitch1.OffText = "All";
-            repositoryItemToggleSwitch1.OnText = "Last";
+            repositoryItemToggleSwitch1.OffText = "Toutes";
+            repositoryItemToggleSwitch1.OnText = "Dernières";
             // 
             // barEditItem6
             // 
-            barEditItem6.Caption = "Factures:";
+            barEditItem6.Caption = "Factures : ";
             barEditItem6.Edit = null;
             barEditItem6.Id = 11;
             barEditItem6.ImageOptions.Image = (Image)resources.GetObject("barEditItem6.ImageOptions.Image");
@@ -671,7 +671,7 @@
             // 
             // barEditItem3
             // 
-            barEditItem3.Caption = "From:";
+            barEditItem3.Caption = "Du : ";
             barEditItem3.Edit = null;
             barEditItem3.EditWidth = 100;
             barEditItem3.Id = 4;
@@ -679,7 +679,7 @@
             // 
             // barEditItem4
             // 
-            barEditItem4.Caption = "To   :";
+            barEditItem4.Caption = "Au : ";
             barEditItem4.Edit = null;
             barEditItem4.EditWidth = 100;
             barEditItem4.Id = 5;

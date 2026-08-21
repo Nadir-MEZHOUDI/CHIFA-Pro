@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class NomenclaturUc
     {
@@ -209,7 +209,7 @@
             dockPanel1.Options.ShowCloseButton = false;
             dockPanel1.OriginalSize = new Size(250, 156);
             dockPanel1.Size = new Size(1259, 156);
-            dockPanel1.Text = "Obs";
+            dockPanel1.Text = "Observations";
             // 
             // dockPanel1_Container
             // 

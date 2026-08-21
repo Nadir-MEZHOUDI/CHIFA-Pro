@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views;
+namespace CHIFA.Pro.Views;
 
 public partial class CentersUc : XtraUserControl, INavigable
 {
@@ -8,7 +8,7 @@ public partial class CentersUc : XtraUserControl, INavigable
         gridView1.SetOptions();
     }
 
-    public string Caption { get; } = "CENTERS";
+    public string Caption { get; } = "CENTRES";
     public Image Image => FrmMain.Image(12);
 
     private void btnCancel_Click(object sender, EventArgs e)

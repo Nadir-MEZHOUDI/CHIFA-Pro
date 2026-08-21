@@ -14,7 +14,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     private StatisticsView _selectedView = StatisticsView.Table;
     private bool _suspendDateEvents;
 
-    public string Caption { get; } = "STATISTICS";
+    public string Caption { get; } = "STATISTIQUES";
     public Image Image => FrmMain.Image(4);
     
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -415,7 +415,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         try
         {
             var grid = GetSelectedGrid();
-            var fileName = ShowExportDialog("xlsx", "Excel files (*.xlsx)|*.xlsx", "Save Excel File", "Data");
+            var fileName = ShowExportDialog("xlsx", "Fichiers Excel (*.xlsx)|*.xlsx", "Enregistrer le fichier Excel", "Données");
             if (fileName is not null)
                 grid.ExportToXlsx(fileName);
         }
@@ -429,8 +429,8 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         try
         {
-            var viewName = _selectedView == StatisticsView.Chart ? "Chart" : "Table";
-            var fileName = ShowExportDialog("pdf", "PDF files (*.pdf)|*.pdf", "Save PDF File", viewName);
+            var viewName = _selectedView == StatisticsView.Chart ? "Graphique" : "Tableau";
+            var fileName = ShowExportDialog("pdf", "Fichiers PDF (*.pdf)|*.pdf", "Enregistrer le fichier PDF", viewName);
             if (fileName is null)
                 return;
 

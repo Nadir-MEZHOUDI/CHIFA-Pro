@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Pro.Views
+namespace CHIFA.Pro.Views
 {
     partial class UsersUc
     {
@@ -170,7 +170,7 @@
             dockPanel2.Name = "dockPanel2";
             dockPanel2.OriginalSize = new Size(300, 200);
             dockPanel2.Size = new Size(233, 505);
-            dockPanel2.Text = "Details";
+            dockPanel2.Text = "Détails";
             // 
             // dockPanel2_Container
             // 
@@ -227,8 +227,8 @@
             LASTCHANGEDateEdit.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.Default;
             LASTCHANGEDateEdit.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
             LASTCHANGEDateEdit.Properties.EditFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
-            LASTCHANGEDateEdit.Properties.OffText = "User";
-            LASTCHANGEDateEdit.Properties.OnText = "Admin";
+            LASTCHANGEDateEdit.Properties.OffText = "Utilisateur";
+            LASTCHANGEDateEdit.Properties.OnText = "Administrateur";
             LASTCHANGEDateEdit.Size = new Size(203, 24);
             LASTCHANGEDateEdit.StyleController = dataLayoutControl1;
             LASTCHANGEDateEdit.TabIndex = 6;
@@ -257,7 +257,7 @@
             ItemForNOM.Location = new Point(0, 0);
             ItemForNOM.Name = "ItemForNOM";
             ItemForNOM.Size = new Size(207, 44);
-            ItemForNOM.Text = "NOM";
+            ItemForNOM.Text = "Nom d'utilisateur";
             ItemForNOM.TextLocation = DevExpress.Utils.Locations.Top;
             ItemForNOM.TextSize = new Size(36, 16);
             // 
@@ -267,7 +267,7 @@
             ItemForPASS.Location = new Point(0, 44);
             ItemForPASS.Name = "ItemForPASS";
             ItemForPASS.Size = new Size(207, 44);
-            ItemForPASS.Text = "PASS:";
+            ItemForPASS.Text = "Mot de passe : ";
             ItemForPASS.TextLocation = DevExpress.Utils.Locations.Top;
             ItemForPASS.TextSize = new Size(36, 16);
             // 
@@ -277,7 +277,7 @@
             ItemForLASTCHANGE.Location = new Point(0, 88);
             ItemForLASTCHANGE.Name = "ItemForLASTCHANGE";
             ItemForLASTCHANGE.Size = new Size(207, 365);
-            ItemForLASTCHANGE.Text = "Role:";
+            ItemForLASTCHANGE.Text = "Rôle : ";
             ItemForLASTCHANGE.TextLocation = DevExpress.Utils.Locations.Top;
             ItemForLASTCHANGE.TextSize = new Size(36, 16);
             // 

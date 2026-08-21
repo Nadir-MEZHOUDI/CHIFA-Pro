@@ -1,4 +1,4 @@
-﻿
+
 namespace CHIFA.Pro.Views
 {
     partial class BordereauxUc
@@ -154,7 +154,7 @@ namespace CHIFA.Pro.Views
             // 
             colDateExtraction.AppearanceCell.BackColor = Color.FromArgb(255, 255, 192);
             colDateExtraction.AppearanceCell.Options.UseBackColor = true;
-            colDateExtraction.Caption = "Cloture";
+            colDateExtraction.Caption = "Clôture";
             colDateExtraction.DisplayFormat.FormatString = "dd/MM/yyyy";
             colDateExtraction.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
             colDateExtraction.FieldName = "LastFacture";

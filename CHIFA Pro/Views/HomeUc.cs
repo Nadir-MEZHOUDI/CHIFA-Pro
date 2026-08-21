@@ -1,8 +1,8 @@
-﻿namespace CHIFA.Pro.Views;
+namespace CHIFA.Pro.Views;
 
 public partial class HomeUc : XtraUserControl, INavigable
 {
-    public string Caption { get; } = "HOME";
+    public string Caption { get; } = "ACCUEIL";
     public Image Image => FrmMain.Image(0);
 
     public HomeUc()

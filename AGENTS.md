@@ -2,20 +2,22 @@
 
 ## Project Overview
 
-CHIFA Pro is a healthcare management desktop application:- **CHIFA Pro**: WinForms client (DevExpress UI)
-- **CHIFA.Server**: WPF gRPC server
+CHIFA Pro is a healthcare management desktop application:
+- **CHIFA Pro**: WinForms client (DevExpress UI)
 - **CHIFA.DAL**: Data Access Layer (LinqToDB, PostgreSQL)
-- **CHIFA.Contract**: DTOs, interfaces, shared utilities**Tech Stack**: .NET 10, PostgreSQL, LinqToDB, gRPC (protobuf-net), DevExpress WinForms, Serilog, Velopack
+- **CHIFA.Contract**: DTOs, interfaces, shared utilities
+
+**Tech Stack**: .NET 10, PostgreSQL, LinqToDB, DevExpress WinForms, Serilog, Velopack
 
 ---
 
 ## Build Commands
 
 ```bash
-dotnet build "CHIFA Pro.sln"                 # Build solution
-dotnet build "CHIFA Pro.sln" -c Release     # Release build
-dotnet restore "CHIFA Pro.sln"              # Restore dependencies
-dotnet clean "CHIFA Pro.sln"                 # Clean artifacts
+dotnet build "CHIFA.Pro.sln"                 # Build solution
+dotnet build "CHIFA.Pro.sln" -c Release     # Release build
+dotnet restore "CHIFA.Pro.sln"              # Restore dependencies
+dotnet clean "CHIFA.Pro.sln"                 # Clean artifacts
 dotnet publish "CHIFA Pro/CHIFA.Pro.csproj" -c Release -r win-x64 --self-contained
 ```
 
@@ -23,17 +25,15 @@ dotnet publish "CHIFA Pro/CHIFA.Pro.csproj" -c Release -r win-x64 --self-contain
 
 ```bash
 dotnet test                                          # Run all tests
-dotnet test --filter "FullyQualifiedName~TestName" # Run single test
+dotnet test --filter "Category!=DbFunctional&Category!=Perf" # Run single test
 dotnet test -c Release                               # Release mode tests
 ```
-
-**Note**: No test project exists yet. When adding tests, create a test project following xUnit/NUnit conventions.
 
 ## Lint/Format Commands
 
 ```bash
-dotnet format "CHIFA Pro.sln"                # Format all files
-dotnet format "CHIFA Pro.sln" --verify-no-changes  # Check formatting
+dotnet format "CHIFA.Pro.sln"                # Format all files
+dotnet format "CHIFA.Pro.sln" --verify-no-changes  # Check formatting
 ```
 .NET analyzers are enabled via `EnableNETAnalyzers` in Directory.Build.props.
 
@@ -48,9 +48,6 @@ CHIFA Pro/
 │   ├── Views/               # UserControls (UI layer)
 │   ├── Helpers/             # NavigationService, XtraHelper, extensions
 │   └── GlobalUsings.cs
-├── CHIFA.Server/            # WPF gRPC server
-│   ├── Helpers/             # GrpcServer, SingleInstance, UpdateService
-│   └── Views/               # WPF MainWindow
 ├── CHIFA.DAL/               # Data Access Layer
 │   └── DataServices/        # Singleton services (ChifaService, StatisticsService)
 └── CHIFA.Contract/          # Shared contracts
