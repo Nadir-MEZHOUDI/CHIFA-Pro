@@ -1,6 +1,7 @@
+using System.Drawing;
 using DevExpress.XtraBars;
+using DevExpress.XtraCharts;
 using DevExpress.XtraEditors;
-using DevExpress.XtraGrid.Views.Grid;
 
 namespace CHIFA.Pro.Views;
 
@@ -11,17 +12,109 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
     private CancellationTokenSource? _reloadCts;
     private readonly Period _period = new();
 
-    public string Caption { get; } = "CHIFA SCOPE";
+    public string Caption { get; } = "TOUR DE CONTRÔLE";
     public Image Image => FrmMain.Image(4);
 
     public ScopeDashboardUc()
     {
         InitializeComponent();
-        viewHourly.SetOptions();
-        viewTopProducts.SetOptions();
+        SetupCharts();
 
         Load += ScopeDashboardUc_Load;
         Disposed += ScopeDashboardUc_Disposed;
+    }
+
+    private void SetupCharts()
+    {
+        // 1. Setup Hourly Distribution Horizontal Bar Chart
+        chartHourly.Legend.Visibility = DevExpress.Utils.DefaultBoolean.False;
+        chartHourly.Titles.Clear();
+        var titleHourly = new ChartTitle
+        {
+            Text = "Distribution Horaire & Heures de Pointe (Nombre de Factures)",
+            Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+            TextColor = Color.DarkSlateBlue
+        };
+        chartHourly.Titles.Add(titleHourly);
+
+        var seriesHourly = new Series("Activité Horaire", ViewType.Bar)
+        {
+            ArgumentDataMember = "TrancheHoraire",
+            ValueDataMembersSerializable = "NombreFactures",
+            LabelsVisibility = DevExpress.Utils.DefaultBoolean.True
+        };
+
+        if (seriesHourly.View is SideBySideBarSeriesView hourlyBarView)
+        {
+            hourlyBarView.ColorEach = true;
+            hourlyBarView.FillStyle.FillMode = FillMode.Gradient;
+        }
+
+        if (seriesHourly.Label is SideBySideBarSeriesLabel hourlyLabel)
+        {
+            hourlyLabel.TextPattern = "{V:N0}";
+            hourlyLabel.Position = BarSeriesLabelPosition.Top;
+        }
+
+        chartHourly.Series.Clear();
+        chartHourly.Series.Add(seriesHourly);
+
+        if (chartHourly.Diagram is XYDiagram diagHourly)
+        {
+            diagHourly.Rotated = true;
+            diagHourly.AxisX.Reverse = true;
+            diagHourly.AxisX.Label.Angle = 0;
+            diagHourly.AxisX.Label.Font = new Font("Segoe UI", 8.25F);
+            diagHourly.AxisX.Title.Text = "Tranche Horaire";
+            diagHourly.AxisX.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+            diagHourly.AxisY.Title.Text = "Nombre de Factures";
+            diagHourly.AxisY.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+        }
+
+        // 2. Setup Top 10 Products Horizontal Bar Chart
+        chartTopProducts.Legend.Visibility = DevExpress.Utils.DefaultBoolean.False;
+        chartTopProducts.Titles.Clear();
+        var titleProducts = new ChartTitle
+        {
+            Text = "Top 10 Médicaments Dispensés (Quantité en Boîtes)",
+            Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+            TextColor = Color.DarkSlateBlue
+        };
+        chartTopProducts.Titles.Add(titleProducts);
+
+        var seriesProducts = new Series("Top Médicaments", ViewType.Bar)
+        {
+            ArgumentDataMember = "Designation",
+            ValueDataMembersSerializable = "QuantiteTotale",
+            LabelsVisibility = DevExpress.Utils.DefaultBoolean.True
+        };
+
+        if (seriesProducts.View is SideBySideBarSeriesView prodBarView)
+        {
+            prodBarView.ColorEach = true;
+            prodBarView.FillStyle.FillMode = FillMode.Gradient;
+        }
+
+        if (seriesProducts.Label is SideBySideBarSeriesLabel prodLabel)
+        {
+            prodLabel.TextPattern = "{V:N0} btes";
+            prodLabel.Position = BarSeriesLabelPosition.Top;
+        }
+
+        chartTopProducts.Series.Clear();
+        chartTopProducts.Series.Add(seriesProducts);
+
+        if (chartTopProducts.Diagram is XYDiagram diagProducts)
+        {
+            diagProducts.Rotated = true;
+            diagProducts.AxisX.Reverse = true;
+            diagProducts.AxisX.Label.Angle = 0;
+            diagProducts.AxisX.Label.Font = new Font("Segoe UI", 8.25F);
+            diagProducts.AxisX.Title.Text = "Médicaments";
+            diagProducts.AxisX.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+            diagProducts.AxisY.Title.Text = "Nombre de Boîtes";
+            diagProducts.AxisY.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+        }
     }
 
     private async void ScopeDashboardUc_Load(object? sender, EventArgs e)
@@ -98,22 +191,31 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
 
             if (cancellationToken.IsCancellationRequested) return;
 
-            // 1. Top KPI Summary Cards
+            // 1. Concise KPIs
             lblCaVal.Text = $"{dashboard.MontantTotalFact:N2} DA";
             lblFactVal.Text = $"{dashboard.NombreFactures:N0}";
             lblBoitesVal.Text = $"{dashboard.NombreBoites:N0}";
-            lblMajVal.Text = $"{dashboard.MontantTotalMajoration:N2} DA";
 
-            // 2. Hourly Activity Grid
-            gridHourly.DataSource = dashboard.ActiviteHoraire;
-            viewHourly.BestFitColumns();
+            var cnasList = dashboard.RepartitionParCaisse.Where(c => IsCnas(c.Centre)).ToList();
+            var casnosList = dashboard.RepartitionParCaisse.Where(c => IsCasnos(c.Centre)).ToList();
 
-            // 3. Top 10 Products Grid
-            gridTopProducts.DataSource = dashboard.TopMedicaments;
-            viewTopProducts.BestFitColumns();
+            var cnasMontant = cnasList.Sum(c => c.MontantTotal);
+            var cnasPct = dashboard.MontantTotalFact > 0 ? (cnasMontant / dashboard.MontantTotalFact) * 100m : 0m;
+            lblCnasVal.Text = $"{cnasMontant:N0} DA ({cnasPct:N1}%)";
 
-            // 4. Center KPIs Dashboard
-            PopulateCenterKpis(dashboard.RepartitionParCaisse, dashboard.MontantTotalFact);
+            var casnosMontant = casnosList.Sum(c => c.MontantTotal);
+            var casnosPct = dashboard.MontantTotalFact > 0 ? (casnosMontant / dashboard.MontantTotalFact) * 100m : 0m;
+            lblCasnosVal.Text = $"{casnosMontant:N0} DA ({casnosPct:N1}%)";
+
+            var totalCaisse = dashboard.RepartitionParCaisse.Sum(c => c.MontantCaisse);
+            var totalAssure = dashboard.RepartitionParCaisse.Sum(c => c.MontantAssure);
+            var totalGeneral = totalCaisse + totalAssure;
+            var tauxCouverture = totalGeneral > 0 ? (totalCaisse / totalGeneral) * 100m : 0m;
+            lblTauxPriseEnChargeVal.Text = $"{tauxCouverture:N1} %";
+
+            // 2. Bind Horizontal Charts
+            chartHourly.DataSource = dashboard.ActiviteHoraire;
+            chartTopProducts.DataSource = dashboard.TopMedicaments;
         }
         catch (Exception ex)
         {
@@ -124,71 +226,6 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
             Cursor = Cursors.Default;
             _reloadLock.Release();
         }
-    }
-
-    private void PopulateCenterKpis(List<CenterSummaryDto> centers, decimal montantTotalGlobal)
-    {
-        if (centers == null || centers.Count == 0)
-        {
-            ResetCenterKpis();
-            return;
-        }
-
-        // Segment Centers into CNAS, CASNOS, and Others
-        var cnasList = centers.Where(c => IsCnas(c.Centre)).ToList();
-        var casnosList = centers.Where(c => IsCasnos(c.Centre)).ToList();
-        var autresList = centers.Where(c => !IsCnas(c.Centre) && !IsCasnos(c.Centre)).ToList();
-
-        // 1. CNAS KPI Card
-        var cnasMontant = cnasList.Sum(c => c.MontantTotal);
-        var cnasFactures = cnasList.Sum(c => c.NombreFactures);
-        var cnasPartCaisse = cnasList.Sum(c => c.MontantCaisse);
-        var cnasPartAssure = cnasList.Sum(c => c.MontantAssure);
-        var cnasPct = montantTotalGlobal > 0 ? (cnasMontant / montantTotalGlobal) * 100m : 0m;
-
-        lblCnasMontant.Text = $"{cnasMontant:N2} DA";
-        lblCnasFactures.Text = $"Nombre de factures : {cnasFactures:N0}";
-        lblCnasPartCaisse.Text = $"Part Caisse (Tiers Payant) : {cnasPartCaisse:N2} DA";
-        lblCnasPartAssure.Text = $"Part Assuré / Reste : {cnasPartAssure:N2} DA";
-        lblCnasPct.Text = $"Part d'Activité : {cnasPct:N1} %";
-
-        // 2. CASNOS KPI Card
-        var casnosMontant = casnosList.Sum(c => c.MontantTotal);
-        var casnosFactures = casnosList.Sum(c => c.NombreFactures);
-        var casnosPartCaisse = casnosList.Sum(c => c.MontantCaisse);
-        var casnosPartAssure = casnosList.Sum(c => c.MontantAssure);
-        var casnosPct = montantTotalGlobal > 0 ? (casnosMontant / montantTotalGlobal) * 100m : 0m;
-
-        lblCasnosMontant.Text = $"{casnosMontant:N2} DA";
-        lblCasnosFactures.Text = $"Nombre de factures : {casnosFactures:N0}";
-        lblCasnosPartCaisse.Text = $"Part Caisse (Tiers Payant) : {casnosPartCaisse:N2} DA";
-        lblCasnosPartAssure.Text = $"Part Assuré / Reste : {casnosPartAssure:N2} DA";
-        lblCasnosPct.Text = $"Part d'Activité : {casnosPct:N1} %";
-
-        // 3. Autres Caisses KPI Card
-        var autresMontant = autresList.Sum(c => c.MontantTotal);
-        var autresFactures = autresList.Sum(c => c.NombreFactures);
-        var autresPartCaisse = autresList.Sum(c => c.MontantCaisse);
-        var autresPartAssure = autresList.Sum(c => c.MontantAssure);
-        var autresPct = montantTotalGlobal > 0 ? (autresMontant / montantTotalGlobal) * 100m : 0m;
-
-        lblAutresMontant.Text = $"{autresMontant:N2} DA";
-        lblAutresFactures.Text = $"Nombre de factures : {autresFactures:N0}";
-        lblAutresPartCaisse.Text = $"Part Caisse (Tiers Payant) : {autresPartCaisse:N2} DA";
-        lblAutresPartAssure.Text = $"Part Assuré / Reste : {autresPartAssure:N2} DA";
-        lblAutresPct.Text = $"Part d'Activité : {autresPct:N1} %";
-
-        // 4. Global Shares Synthesis
-        var totalPartCaisse = centers.Sum(c => c.MontantCaisse);
-        var totalPartAssure = centers.Sum(c => c.MontantAssure);
-        var totalMontant = totalPartCaisse + totalPartAssure;
-        var tauxCouverture = totalMontant > 0 ? (totalPartCaisse / totalMontant) * 100m : 0m;
-        var pctPartCaisse = totalMontant > 0 ? (totalPartCaisse / totalMontant) * 100m : 0m;
-        var pctPartAssure = totalMontant > 0 ? (totalPartAssure / totalMontant) * 100m : 0m;
-
-        lblTotalPartCaisseVal.Text = $"Total Part Caisses (Tiers Payant) : {totalPartCaisse:N2} DA ({pctPartCaisse:N1} %)";
-        lblTotalPartAssureVal.Text = $"Total Part Assurés (Ticket Modérateur) : {totalPartAssure:N2} DA ({pctPartAssure:N1} %)";
-        lblTauxCouvertureVal.Text = $"Taux global de prise en charge par les caisses : {tauxCouverture:N1} %";
     }
 
     private static bool IsCnas(string? center)
@@ -202,31 +239,6 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
     {
         if (string.IsNullOrWhiteSpace(center)) return false;
         return center.Trim().ToUpperInvariant().Contains("CASNOS");
-    }
-
-    private void ResetCenterKpis()
-    {
-        lblCnasMontant.Text = "0.00 DA";
-        lblCnasFactures.Text = "Nombre de factures : 0";
-        lblCnasPartCaisse.Text = "Part Caisse : 0.00 DA";
-        lblCnasPartAssure.Text = "Part Assuré : 0.00 DA";
-        lblCnasPct.Text = "Part d'Activité : 0.0 %";
-
-        lblCasnosMontant.Text = "0.00 DA";
-        lblCasnosFactures.Text = "Nombre de factures : 0";
-        lblCasnosPartCaisse.Text = "Part Caisse : 0.00 DA";
-        lblCasnosPartAssure.Text = "Part Assuré : 0.00 DA";
-        lblCasnosPct.Text = "Part d'Activité : 0.0 %";
-
-        lblAutresMontant.Text = "0.00 DA";
-        lblAutresFactures.Text = "Nombre de factures : 0";
-        lblAutresPartCaisse.Text = "Part Caisse : 0.00 DA";
-        lblAutresPartAssure.Text = "Part Assuré : 0.00 DA";
-        lblAutresPct.Text = "Part d'Activité : 0.0 %";
-
-        lblTotalPartCaisseVal.Text = "Total Part Caisses : 0.00 DA (0 %)";
-        lblTotalPartAssureVal.Text = "Total Part Assurés : 0.00 DA (0 %)";
-        lblTauxCouvertureVal.Text = "Taux global de prise en charge : 0 %";
     }
 
     private async void BtnRefresh_ItemClick(object sender, ItemClickEventArgs e)
