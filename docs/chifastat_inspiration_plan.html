@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Stratégique d'Inspiration ChifaStat & ChifaScope pour CHIFA Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-card: #1a2234;
+            --bg-card-hover: #222d42;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #1e293b;
+            --border-light: #334155;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --shadow-glow: 0 0 25px rgba(59, 130, 246, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 24px 100px 24px;
+        }
+
+        /* Hero Header */
+        header.hero {
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.8) 0%, rgba(11, 15, 25, 1) 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 60px 0 40px 0;
+            position: relative;
+        }
+
+        .badge-version {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        h1.title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 30%, #93c5fd 70%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 850px;
+            line-height: 1.6;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 12px;
+            margin-top: 35px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 10px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--accent-blue);
+            color: #ffffff;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Section Layouts */
+        section {
+            margin-top: 50px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Cards Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-light);
+            box-shadow: var(--shadow-glow);
+            background: var(--bg-card-hover);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 18px;
+        }
+
+        .icon-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .icon-purple { background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .icon-emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .icon-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .icon-rose { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+        .icon-cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); }
+
+        .card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .card-tag {
+            display: inline-block;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .feature-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-emerald);
+            font-weight: 800;
+        }
+
+        /* Architecture block */
+        .arch-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            color: #94a3b8;
+            overflow-x: auto;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .arch-highlight {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .arch-new {
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        /* Comparison Table */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-top: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.92rem;
+        }
+
+        thead th {
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            color: var(--text-primary);
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-keep { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-new { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-priority-high { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+        /* KPI Mockup */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px;
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .kpi-val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .kpi-trend {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .trend-up { color: #34d399; }
+        .trend-down { color: #fb7185; }
+
+        .callout {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .callout-icon {
+            font-size: 1.5rem;
+        }
+
+        .callout-text h4 {
+            color: #60a5fa;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .callout-text p {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 80px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 30px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .kpi-row { grid-template-columns: 1fr 1fr; }
+            h1.title { font-size: 2.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <div class="container" style="padding-top: 0; padding-bottom: 0;">
+            <div class="badge-version">⚡ CHIFA PRO • Feuille de Route d'Évolution 2026</div>
+            <h1 class="title">Plan Stratégique d'Inspiration ChifaStat & ChifaScope</h1>
+            <p class="subtitle">
+                Spécifications fonctionnelles et techniques complètes pour enrichir <strong>CHIFA Pro</strong> avec les meilleures innovations de 
+                <a href="https://www.chifastat.com/" target="_blank" style="color: #60a5fa; text-decoration: underline;">chifastat.com</a> (Tour de contrôle prédictive, Registre des Psychotropes, Gestion des Rejets, et Audit pré-bordereau).
+            </p>
+
+            <div class="callout" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.25);">
+                <div class="callout-icon">🔒</div>
+                <div class="callout-text">
+                    <h4 style="color: #34d399;">Règle d'Or & Préservation de l'Existant</h4>
+                    <p>
+                        Toutes les fonctionnalités, vues, DTOs et services existants sont conservés à 100%. 
+                        Le UserControl <code>HomeUc</code> reste <strong>strictement inchangé</strong>. 
+                        Les nouvelles capacités sont ajoutées sous forme de <strong>nouveaux services et nouveaux UserControls</strong> indépendants.
+                    </p>
+                </div>
+            </div>
+
+            <div class="nav-tabs">
+                <a class="nav-tab active" href="#dashboard">1. Tour de Contrôle Scope</a>
+                <a class="nav-tab" href="#rejets">2. Gestion des Rejets</a>
+                <a class="nav-tab" href="#psychotropes">3. Registre Psychotropes</a>
+                <a class="nav-tab" href="#prevision">4. Moteur Prédictif Chroniques</a>
+                <a class="nav-tab" href="#audit">5. Audit Pré-Bordereau</a>
+                <a class="nav-tab" href="#architecture">6. Architecture & Implémentation</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- SECTION 1: Tour de Contrôle ChifaScope -->
+        <section id="dashboard">
+            <div class="section-header">
+                <div>
+                    <h2>1. Tour de Contrôle & Dashboard Exécutif (ScopeDashboardUc)</h2>
+                    <p>Inspiré du concept « Tour de Contrôle » de ChifaScope pour offrir une vision à 360° en temps réel.</p>
+                </div>
+                <span class="status-badge badge-new">Nouveau UserControl</span>
+            </div>
+
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">CA Global Quinzaine</div>
+                    <div class="kpi-val">2,485,300.00 DA</div>
+                    <div class="kpi-trend trend-up">▲ +8.5% vs Q-1</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Factures & Ordonnances</div>
+                    <div class="kpi-val">1,248</div>
+                    <div class="kpi-trend trend-up">▲ 156 aujourd'hui</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Boîtes Dispensées</div>
+                    <div class="kpi-val">3,892</div>
+                    <div class="kpi-trend trend-up">▲ Moyenne 3.1 btes/fact</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Majorations FAE / Local</div>
+                    <div class="kpi-val">184,200.00 DA</div>
+                    <div class="kpi-trend trend-up">▲ +12.3%</div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon icon-purple">📊</div>
+                    <h3>Indicateurs Clés & Visualisations</h3>
+                    <p>Synthèse graphique immédiate des métriques vitales de l'officine sur la période sélectionnée.</p>
+                    <span class="card-tag">DevExpress ChartControl</span>
+                    <span class="card-tag">Temps Réel</span>
+                    <span class="card-tag">Multi-Centres CNAS/CASNOS</span>
+                    <ul class="feature-list">
+                        <li>Ventilation du CA : Part Caisse (CNAS/CASNOS) vs Part Assuré vs Majorations.</li>
+                        <li>Analyse de la fréquentation par heure (Heures de pointe au comptoir).</li>
+                        <li>Top 10 des DCI et spécialités les plus dispensées en volume et valeur.</li>
+                        <li>Indicateur de délai moyen de remboursement par centre payeur.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon icon-cyan">⚡</div>
+                    <h3>Flux d'Activité en Direct (Live Feed)</h3>
+                    <p>Surveillance active des dernières factures émises et alertes sur les ordonnances sensibles.</p>
+                    <span class="card-tag">Background Refresh</span>
+                    <span class="card-tag">Alertes Instantanées</span>
+                    <ul class="feature-list">
+                        <li>Défilement interactif des dernières factures enregistrées.</li>
+                        <li>Badges visuels immédiats pour les ordonnances TS (Traitement Spécial) et Haute Valeur (> 10,000 DA).</li>
+                        <li>Accès instantané par double-clic au détail complet de la facture et à l'historique de l'assuré.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: Rejets & Recouvrement -->
+        <section id="rejets">
+            <div class="section-header">
+                <div>
+                    <h2>2. Module de Suivi & Recouvrement des Rejets (RejetsUc)</h2>
+                    <p>Inspiré du module de gestion des rejets de ChifaStat 2.0 pour combler le manque à gagner de la pharmacie.</p>
+                </div>
+                <span class="status-badge badge-priority-high">Priorité Élevée</span>
+            </div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon icon-rose">⚠️</div>
+                    <h3>Identification des Rejets</h3>
+                    <p>Rapprochement automatique entre montants facturés sur le bordereau et virements CNAS/CASNOS réels.</p>
+                    <ul class="feature-list">
+                        <li>Calcul automatique de l'écart : <code>Montant Facturé - Montant Virement = Montant Rejeté</code>.</li>
+                        <li>Classification par motif de rejet officiel (dépassement plafond, carte bloquée, rejet médical).</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon icon-amber">🔄</div>
+                    <h3>Cycle de Vie du Rejet</h3>
+                    <p>Gestion du workflow de régularisation pour ne laisser aucun montant sans traitement.</p>
+                    <ul class="feature-list">
+                        <li>Statuts de suivi : <code>Nouveau Rejet</code> ➔ <code>En Justification</code> ➔ <code>Ré-émis</code> ➔ <code>Régularisé</code>.</li>
+                        <li>Journalisation des actions et justificatifs fournis par l'assuré.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon icon-emerald">💰</div>
+                    <h3>Bilan Financier & Recouvrement</h3>
+                    <p>Visibilité financière sur les sommes récupérées et le solde restant à recouvrer.</p>
+                    <ul class="feature-list">
+                        <li>Taux de recouvrement des rejets par année et par caisse.</li>
+                        <li>Export Excel / PDF du tableau des rejets pour transmission au médecin conseil.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Registre des Psychotropes -->
+        <section id="psychotropes">
+            <div class="section-header">
+                <div>
+                    <h2>3. Registre Réglementaire des Psychotropes (PsychotropesUc)</h2>
+                    <p>Inspiré du module Psychotropes de ChifaStat pour une conformité légale totale selon la réglementation algérienne.</p>
+                </div>
+                <span class="status-badge badge-new">Conformité Légale</span>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-icon icon-blue">📋</div>
+                    <h3>Registre Numérique Automatisé</h3>
+                    <p>Génération automatique du registre des substances psychotropes et ordonnances sécurisées.</p>
+                    <span class="card-tag">Législation Algérienne</span>
+                    <span class="card-tag">Carnet à Souche</span>
+                    <ul class="feature-list">
+                        <li>Extraction en temps réel des délivrances de molécules psychotropes (Tableaux A, B, C).</li>
+                        <li>Colonnes officielles : Date, N° Facture, Nom & Prénom Assuré/Bénéficiaire, Médecin prescripteur, Spécialité, Quantité prescrite vs délivrée, Posologie.</li>
+                        <li>Impression normalisée conforme aux exigences de l'inspection de santé et de la CNAS.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon icon-rose">🛡️</div>
+                    <h3>Contrôles & Alertes de Sécurité</h3>
+                    <p>Détection des prescriptions abusives ou non conformes.</p>
+                    <span class="card-tag">Anti-Abus</span>
+                    <span class="card-tag">Sécurité Sanitaire</span>
+                    <ul class="feature-list">
+                        <li>Alerte sur les renouvellements précoces avant terme (ex: délivrance avant 28 jours).</li>
+                        <li>Détection du chevauchement d'ordonnances psychotropes prescrites par des médecins différents.</li>
+                        <li>Bilan de consommation par molécule et par prescripteur.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Moteur Prédictif -->
+        <section id="prevision">
+            <div class="section-header">
+                <div>
+                    <h2>4. Moteur Prédictif des Renouvellements & CA à Venir (PrevisionChroniquesUc)</h2>
+                    <p>Inspiré de l'Analyse Prédictive de ChifaScope pour anticiper les flux de patients chroniques et la trésorerie.</p>
+                </div>
+                <span class="status-badge badge-new">Algorithme IA / Stat</span>
+            </div>
+
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon icon-purple">🔮</div>
+                    <h3>Anticipation des Passages</h3>
+                    <p>Calcul des dates prévisionnelles de retour des patients chroniques selon la durée de traitement délivrée.</p>
+                    <ul class="feature-list">
+                        <li>Formule : <code>Date Retour Estimée = Date Dernière Facture + Durée Traitement (Jours)</code>.</li>
+                        <li>Calendrier hebdomadaire des patients attendus avec coordonnées et traitements réguliers.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon icon-emerald">📈</div>
+                    <h3>Estimation du Chiffre d'Affaires Prévisionnel</h3>
+                    <p>Projection financière du CA attendu pour la prochaine quinzaine.</p>
+                    <ul class="feature-list">
+                        <li>Somme des paniers moyens récurrents des patients dont le retour est prévu dans les 15 prochains jours.</li>
+                        <li>Aide à la planification des commandes de stock auprès des grossistes-répartiteurs.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon icon-amber">🔔</div>
+                    <h3>Détection des Ruptures d'Observance</h3>
+                    <p>Repérage des patients n'ayant pas renouvelé leur traitement vital.</p>
+                    <ul class="feature-list">
+                        <li>Liste des patients avec retard de renouvellement supérieur à 7 jours.</li>
+                        <li>Possibilité d'appel ou de rappel pharmaceutique personnalisé.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: Audit Pré-Bordereau -->
+        <section id="audit">
+            <div class="section-header">
+                <div>
+                    <h2>5. Audit Pré-Bordereau & Détecteur d'Anomalies (AuditBordereauUc)</h2>
+                    <p>Contrôle de conformité préventif avant la télétransmission des lots de factures.</p>
+                </div>
+                <span class="status-badge badge-new">Sécurité Financière</span>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type d'Anomalie</th>
+                            <th>Description & Règle de Détection</th>
+                            <th>Impact si non corrigé</th>
+                            <th>Action Proposée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tarif de Référence (TR) Nul ou Erroné</strong></td>
+                            <td>Médicament facturé avec un TR égal à 0 ou différent de la nomenclature officielle</td>
+                            <td>Rejet total de la ligne par le centre payeur</td>
+                            <td>Mise à jour automatique du TR depuis la nomenclature</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Dépassement Durée / Quantité</strong></td>
+                            <td>Quantité délivrée supérieure au standard de la durée prescrite (ex: > 3 boîtes / 30j)</td>
+                            <td>Rejet au contrôle médical CNAS</td>
+                            <td>Notification pour justification médicale (TS)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Bénéficiaire Expiré / Incohérent</strong></td>
+                            <td>Ayant-droit ou rang non reconnu dans l'historique de la carte de l'assuré</td>
+                            <td>Blocage du bordereau</td>
+                            <td>Correction de l'assuré ou du rang</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Facture Sans Lignes de Médicament</strong></td>
+                            <td>Facture enregistrée sans détail de produits (détail vide)</td>
+                            <td>Anomalie bloquante de télétransmission</td>
+                            <td>Suppression ou réaffectation de la facture</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SECTION 6: Architecture Technique -->
+        <section id="architecture">
+            <div class="section-header">
+                <div>
+                    <h2>6. Architecture & Plan d'Intégration dans CHIFA Pro</h2>
+                    <p>Déploiement propre, modulaire et sans rupture dans le respect des standards du projet (.NET 10 / LinqToDB / DevExpress).</p>
+                </div>
+                <span class="status-badge badge-keep">Non-Breaking Architecture</span>
+            </div>
+
+            <div class="arch-box">
+<span class="arch-highlight">CHIFA Pro Solution/</span>
+├── <span class="arch-highlight">CHIFA.Contract/</span> (Contrats partagés)
+│   ├── Dtos/
+│   │   ├── <span class="arch-keep">FactureDto.cs, BordereauDto.cs, etc. (Conservés)</span>
+│   │   ├── <span class="arch-new">ScopeDashboardDto.cs</span>       (KPIs, flux d'activité, distribution horaire)
+│   │   ├── <span class="arch-new">RejetDto.cs</span>                (Rejets, motifs, montants récupérés)
+│   │   ├── <span class="arch-new">PsychotropeDto.cs</span>          (Registre officiel, prescripteur, posologie)
+│   │   ├── <span class="arch-new">ForecastRefillDto.cs</span>       (Prévisions de renouvellement des chroniques)
+│   │   └── <span class="arch-new">AuditAnomalyDto.cs</span>        (Anomalies pré-bordereau détectées)
+│   └── Grpc/
+│       ├── <span class="arch-keep">IChifaService.cs, IStatisticsService.cs (Conservés)</span>
+│       └── <span class="arch-new">IScopeService.cs</span>            (Interface du service Tour de Contrôle & Nouveaux modules)
+│
+├── <span class="arch-highlight">CHIFA.DAL/</span> (Accès Données LinqToDB)
+│   └── DataServices/
+│       ├── <span class="arch-keep">ChifaService.cs, StatisticsService.cs (Conservés)</span>
+│       └── <span class="arch-new">ScopeService.cs</span>             (Agrégations KPIs, calculs prédictifs, requêtes rejets & psychotropes)
+│
+└── <span class="arch-highlight">CHIFA Pro/</span> (Client WinForms DevExpress)
+    ├── Views/
+    │   ├── <span class="arch-keep">HomeUc.cs</span>                    <strong style="color: #f59e0b;">(STRICTEMENT INCHANGÉ - 100% Préservé)</strong>
+    │   ├── <span class="arch-keep">FacturesUC.cs, BordereauxUC.cs, StatisticsUc.cs, etc. (Conservés)</span>
+    │   ├── <span class="arch-new">ScopeDashboardUc.cs</span>        (Nouvelle vue Tour de Contrôle visuelle & KPIs ChifaScope)
+    │   ├── <span class="arch-new">RejetsUc.cs</span>                (Nouvelle vue Gestion & Recouvrement des Rejets)
+    │   ├── <span class="arch-new">PsychotropesUc.cs</span>          (Nouvelle vue Registre officiel des Psychotropes)
+    │   ├── <span class="arch-new">PrevisionChroniquesUc.cs</span>    (Nouvelle vue Planning de renouvellement & CA prévisionnel)
+    │   └── <span class="arch-new">AuditBordereauUc.cs</span>        (Nouvelle vue Audit & Détecteur d'anomalies)
+    └── Helpers/
+        └── <span class="arch-keep">NavigationService.cs</span>       (Navigation par onglets sans fermer HomeUc)
+            </div>
+
+            <div class="table-container" style="margin-top: 30px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Phase</th>
+                            <th>Composant / Vue</th>
+                            <th>Responsabilité</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Étape 0</strong></td>
+                            <td><code>ChifaServiceTests.cs</code></td>
+                            <td>Correction de la coquille FluentAssertions pour validation de la suite de tests</td>
+                            <td><span class="status-badge badge-keep">Pré-requis</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Étape 1</strong></td>
+                            <td><code>CHIFA.Contract</code> (DTOs & Interface)</td>
+                            <td>Création des modèles de données (ScopeDashboardDto, RejetDto, PsychotropeDto, ForecastRefillDto, AuditAnomalyDto)</td>
+                            <td><span class="status-badge badge-new">Nouveau</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Étape 2</strong></td>
+                            <td><code>CHIFA.DAL</code> (ScopeService.cs)</td>
+                            <td>Implémentation des requêtes optimisées LinqToDB (KPIs, prédictions, rejets, psychotropes)</td>
+                            <td><span class="status-badge badge-new">Nouveau</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Étape 3</strong></td>
+                            <td><code>ScopeDashboardUc.cs</code></td>
+                            <td>Nouvelle vue Tour de Contrôle ChifaScope avec KPIs modernes, graphiques DevExpress et flux en direct</td>
+                            <td><span class="status-badge badge-new">Nouveau</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Étape 4</strong></td>
+                            <td><code>PsychotropesUc.cs</code> & <code>RejetsUc.cs</code></td>
+                            <td>Vues Registre officiel des psychotropes et Gestion des rejets CNAS/CASNOS</td>
+                            <td><span class="status-badge badge-new">Nouveau</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Étape 5</strong></td>
+                            <td><code>PrevisionChroniquesUc.cs</code> & <code>AuditBordereauUc.cs</code></td>
+                            <td>Vues Moteur prédictif des renouvellements et Audit pré-bordereau</td>
+                            <td><span class="status-badge badge-new">Nouveau</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Étape 6</strong></td>
+                            <td><code>FrmMain</code> Accordion / Menu</td>
+                            <td>Ajout des entrées de navigation vers les nouveaux modules sans impacter HomeUc</td>
+                            <td><span class="status-badge badge-new">Extension</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            <p>CHIFA Pro • Document de Spécification et d'Inspiration ChifaStat • .NET 10 / DevExpress / LinqToDB</p>
+            <p>© 2026 CHIFA Pro. Tous droits réservés.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

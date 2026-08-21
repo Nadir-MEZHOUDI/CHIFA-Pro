@@ -16,7 +16,7 @@ public abstract class DbPerfTestBase : IDisposable
         var host = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_HOST");
         var port = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_PORT") ?? "5432";
         var user = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_USER") ?? "pharm";
-        var pwd = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_PWD") ?? "REDACTED";
+        var pwd = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_PWD") ?? "";
         var db = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_NAME") ?? "CHIFA_OFFICINE";
 
         if (!string.IsNullOrEmpty(host))

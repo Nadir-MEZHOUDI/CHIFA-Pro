@@ -201,7 +201,7 @@ public class ChifaServiceTests : IDisposable
         using var w = StartWatch();
         await _svc.GetMinAndMaxDatesAsync();
         Period.MinDate.Year.Should().BeGreaterThan(2000);
-        Period.MaxDate.Year.Should().BeGreaterOrEqualTo(Period.MinDate.Year);
+        Period.MaxDate.Year.Should().BeGreaterThanOrEqualTo(Period.MinDate.Year);
     }
 
     [Fact]

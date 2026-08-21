@@ -30,7 +30,7 @@ public class AppSettings : SettingsToRegistry<AppSettings>
     #region CHIFA_PASS
 
     internal string DbName => "CHIFA_OFFICINE";
-    internal string DbPassword => "REDACTED";
+    internal string DbPassword => Environment.GetEnvironmentVariable("CHIFA_DB_PASSWORD") ?? "";
     internal string DbUser => "pharm";
 
     #endregion

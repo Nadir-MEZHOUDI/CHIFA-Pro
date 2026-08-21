@@ -1,4 +1,4 @@
-﻿using CHIFA.Pro.Helpers.Settings;
+using CHIFA.Pro.Helpers.Settings;
 
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
@@ -9,17 +9,92 @@ namespace CHIFA.Pro.Views;
 
 public partial class FrmMain : XtraForm
 {
+    private static FrmMain? _instance;
+    public static FrmMain Instance => _instance ??= (Application.OpenForms[nameof(FrmMain)] as FrmMain)!;
+
     public FrmMain()
     {
+        _instance = this;
         InitializeComponent();
         SetStatisticsAccordionImages();
+        InitializeChifaScopeMenu();
         ChangeTitle();
     }
-    public static FrmMain Instance => (Application.OpenForms[nameof(FrmMain)] as FrmMain)!;
 
     public static Image Image(int index)
     {
-        return Instance.AppImages.ImageSource.Images[index];
+        try
+        {
+            var inst = _instance ?? (Application.OpenForms[nameof(FrmMain)] as FrmMain);
+            if (inst?.AppImages?.ImageSource?.Images != null && index >= 0 && index < inst.AppImages.ImageSource.Images.Count)
+                return inst.AppImages.ImageSource.Images[index];
+        }
+        catch { }
+        return new Bitmap(16, 16);
+    }
+
+    private void InitializeChifaScopeMenu()
+    {
+        try
+        {
+            var grpScope = new DevExpress.XtraBars.Navigation.AccordionControlElement
+            {
+                Text = "CHIFA AUDIT",
+                Expanded = true
+            };
+
+            var itemDashboard = new DevExpress.XtraBars.Navigation.AccordionControlElement
+            {
+                Text = "TOUR DE CONTRÔLE",
+                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
+                ImageOptions = { Image = Image(4) }
+            };
+            itemDashboard.Click += (s, e) => this.NavigateTo<ScopeDashboardUc>();
+
+            var itemPsychotropes = new DevExpress.XtraBars.Navigation.AccordionControlElement
+            {
+                Text = "PSYCHOTROPES",
+                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
+                ImageOptions = { Image = Image(8) }
+            };
+            itemPsychotropes.Click += (s, e) => this.NavigateTo<PsychotropesUc>();
+
+            var itemRejets = new DevExpress.XtraBars.Navigation.AccordionControlElement
+            {
+                Text = "REJETS & RECOUVREMENT",
+                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
+                ImageOptions = { Image = Image(9) }
+            };
+            itemRejets.Click += (s, e) => this.NavigateTo<RejetsUc>();
+
+            var itemPrevision = new DevExpress.XtraBars.Navigation.AccordionControlElement
+            {
+                Text = "PRÉVISION CHRONIQUES",
+                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
+                ImageOptions = { Image = Image(6) }
+            };
+            itemPrevision.Click += (s, e) => this.NavigateTo<PrevisionChroniquesUc>();
+
+            var itemAudit = new DevExpress.XtraBars.Navigation.AccordionControlElement
+            {
+                Text = "AUDIT PRÉ-BORDEREAU",
+                Style = DevExpress.XtraBars.Navigation.ElementStyle.Item,
+                ImageOptions = { Image = Image(10) }
+            };
+            itemAudit.Click += (s, e) => this.NavigateTo<AuditBordereauUc>();
+
+            grpScope.Elements.AddRange([itemDashboard, itemPsychotropes, itemRejets, itemPrevision, itemAudit]);
+
+            var homeIndex = accordionControl1.Elements.IndexOf(acHome);
+            if (homeIndex >= 0 && homeIndex + 1 < accordionControl1.Elements.Count)
+                accordionControl1.Elements.Insert(homeIndex + 1, grpScope);
+            else
+                accordionControl1.Elements.Add(grpScope);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     private void accSpecialists_Click(object sender, EventArgs e)

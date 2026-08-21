@@ -97,6 +97,10 @@
             toolStripSeparator1 = new ToolStripSeparator();
             menuExit = new ToolStripMenuItem();
             timer = new System.Windows.Forms.Timer(components);
+            accordionControlElement1 = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accordionControlElement2 = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accordionControlElement3 = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accordionControlElement4 = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             ((System.ComponentModel.ISupportInitialize)accordionControl1).BeginInit();
             container.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)tabContainer).BeginInit();
@@ -110,13 +114,13 @@
             // accordionControl1
             // 
             accordionControl1.Dock = DockStyle.Left;
-            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accAssures, accStatistics, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres });
+            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accordionControlElement3, accTrtSps, accordionControlElement2, accBordereaux, accAssures, accordionControlElement1, accordionControlElement4, accStatistics, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres });
             accordionControl1.Location = new Point(0, 0);
             accordionControl1.Margin = new Padding(5, 6, 5, 6);
             accordionControl1.Name = "accordionControl1";
             accordionControl1.ScrollBarMode = DevExpress.XtraBars.Navigation.ScrollBarMode.Auto;
             accordionControl1.ShowFilterControl = DevExpress.XtraBars.Navigation.ShowFilterControl.Auto;
-            accordionControl1.Size = new Size(250, 726);
+            accordionControl1.Size = new Size(250, 722);
             accordionControl1.TabIndex = 1;
             accordionControl1.ViewType = DevExpress.XtraBars.Navigation.AccordionControlViewType.HamburgerMenu;
             // 
@@ -171,55 +175,55 @@
             // accStatistics
             // 
             accStatistics.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accStatisticsBordereaux, accStatisticsYearly, accStatisticsMonthly, accStatisticsWeekly, accStatisticsDaily, accStatisticsProducts, accStatisticsClients });
+            accStatistics.Expanded = true;
             accStatistics.ImageOptions.Image = (Image)resources.GetObject("accStatistics.ImageOptions.Image");
             accStatistics.Name = "accStatistics";
-            accStatistics.Style = DevExpress.XtraBars.Navigation.ElementStyle.Group;
             accStatistics.Text = "STATISTICS";
-            //
+            // 
             // accStatisticsBordereaux
-            //
+            // 
             accStatisticsBordereaux.Name = "accStatisticsBordereaux";
             accStatisticsBordereaux.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accStatisticsBordereaux.Text = "BORDEREAUX";
             accStatisticsBordereaux.Click += accStatisticsBordereaux_Click;
-            //
+            // 
             // accStatisticsYearly
-            //
+            // 
             accStatisticsYearly.Name = "accStatisticsYearly";
             accStatisticsYearly.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accStatisticsYearly.Text = "ANNUELLES";
             accStatisticsYearly.Click += accStatisticsYearly_Click;
-            //
+            // 
             // accStatisticsMonthly
-            //
+            // 
             accStatisticsMonthly.Name = "accStatisticsMonthly";
             accStatisticsMonthly.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accStatisticsMonthly.Text = "MENSUELLES";
             accStatisticsMonthly.Click += accStatisticsMonthly_Click;
-            //
+            // 
             // accStatisticsWeekly
-            //
+            // 
             accStatisticsWeekly.Name = "accStatisticsWeekly";
             accStatisticsWeekly.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accStatisticsWeekly.Text = "HEBDOMADAIRES";
             accStatisticsWeekly.Click += accStatisticsWeekly_Click;
-            //
+            // 
             // accStatisticsDaily
-            //
+            // 
             accStatisticsDaily.Name = "accStatisticsDaily";
             accStatisticsDaily.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accStatisticsDaily.Text = "QUOTIDIENNES";
             accStatisticsDaily.Click += accStatisticsDaily_Click;
-            //
+            // 
             // accStatisticsProducts
-            //
+            // 
             accStatisticsProducts.Name = "accStatisticsProducts";
             accStatisticsProducts.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accStatisticsProducts.Text = "PRODUITS";
             accStatisticsProducts.Click += accStatisticsProducts_Click;
-            //
+            // 
             // accStatisticsClients
-            //
+            // 
             accStatisticsClients.Name = "accStatisticsClients";
             accStatisticsClients.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accStatisticsClients.Text = "CLIENTS";
@@ -321,7 +325,7 @@
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = DockStyle.Bottom;
-            barDockControlBottom.Location = new Point(250, 726);
+            barDockControlBottom.Location = new Point(250, 722);
             barDockControlBottom.Margin = new Padding(5, 4, 5, 4);
             barDockControlBottom.Size = new Size(1032, 0);
             // 
@@ -331,7 +335,7 @@
             barDockControlLeft.Dock = DockStyle.Left;
             barDockControlLeft.Location = new Point(250, 0);
             barDockControlLeft.Margin = new Padding(5, 4, 5, 4);
-            barDockControlLeft.Size = new Size(0, 726);
+            barDockControlLeft.Size = new Size(0, 722);
             // 
             // barDockControlRight
             // 
@@ -339,7 +343,7 @@
             barDockControlRight.Dock = DockStyle.Right;
             barDockControlRight.Location = new Point(1282, 0);
             barDockControlRight.Margin = new Padding(5, 4, 5, 4);
-            barDockControlRight.Size = new Size(0, 726);
+            barDockControlRight.Size = new Size(0, 722);
             // 
             // skinDropDownButtonItem2
             // 
@@ -358,7 +362,7 @@
             // 
             barDockControl2.CausesValidation = false;
             barDockControl2.Dock = DockStyle.Bottom;
-            barDockControl2.Location = new Point(250, 726);
+            barDockControl2.Location = new Point(250, 722);
             barDockControl2.Size = new Size(1032, 0);
             // 
             // barDockControl3
@@ -366,14 +370,14 @@
             barDockControl3.CausesValidation = false;
             barDockControl3.Dock = DockStyle.Left;
             barDockControl3.Location = new Point(250, 0);
-            barDockControl3.Size = new Size(0, 726);
+            barDockControl3.Size = new Size(0, 722);
             // 
             // barDockControl4
             // 
             barDockControl4.CausesValidation = false;
             barDockControl4.Dock = DockStyle.Right;
             barDockControl4.Location = new Point(1282, 0);
-            barDockControl4.Size = new Size(0, 726);
+            barDockControl4.Size = new Size(0, 722);
             // 
             // container
             // 
@@ -381,7 +385,7 @@
             container.Dock = DockStyle.Fill;
             container.Location = new Point(250, 0);
             container.Name = "container";
-            container.Size = new Size(1032, 726);
+            container.Size = new Size(1032, 722);
             container.TabIndex = 11;
             // 
             // tabContainer
@@ -393,7 +397,7 @@
             tabContainer.Location = new Point(0, 0);
             tabContainer.MultiLine = DevExpress.Utils.DefaultBoolean.False;
             tabContainer.Name = "tabContainer";
-            tabContainer.Size = new Size(1032, 726);
+            tabContainer.Size = new Size(1032, 722);
             tabContainer.TabIndex = 0;
             tabContainer.CloseButtonClick += TabContainer_CloseButtonClick;
             // 
@@ -441,17 +445,17 @@
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel7, txtIP, toolStripStatusLabel1, txtServer, toolStripStatusLabel2, txtDatabase, txtSpring, progressBar, toolStripStatusLabel3, txtPharmacie, toolStripStatusLabel4, txtCodePs });
-            statusStrip1.Location = new Point(0, 726);
+            statusStrip1.Location = new Point(0, 722);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.RenderMode = ToolStripRenderMode.Professional;
-            statusStrip1.Size = new Size(1282, 22);
+            statusStrip1.Size = new Size(1282, 26);
             statusStrip1.TabIndex = 25;
             statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel7
             // 
             toolStripStatusLabel7.Name = "toolStripStatusLabel7";
-            toolStripStatusLabel7.Size = new Size(55, 17);
+            toolStripStatusLabel7.Size = new Size(68, 20);
             toolStripStatusLabel7.Text = "AdressIP:";
             // 
             // txtIP
@@ -460,13 +464,13 @@
             txtIP.ForeColor = Color.Green;
             txtIP.Margin = new Padding(0, 3, 50, 2);
             txtIP.Name = "txtIP";
-            txtIP.Size = new Size(16, 17);
+            txtIP.Size = new Size(21, 21);
             txtIP.Text = "...";
             // 
             // toolStripStatusLabel1
             // 
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(42, 17);
+            toolStripStatusLabel1.Size = new Size(53, 20);
             toolStripStatusLabel1.Text = "Server:";
             // 
             // txtServer
@@ -475,20 +479,20 @@
             txtServer.ForeColor = Color.Red;
             txtServer.Margin = new Padding(0, 3, 50, 2);
             txtServer.Name = "txtServer";
-            txtServer.Size = new Size(59, 17);
+            txtServer.Size = new Size(75, 21);
             txtServer.Text = "localhost";
             // 
             // toolStripStatusLabel2
             // 
             toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            toolStripStatusLabel2.Size = new Size(58, 17);
+            toolStripStatusLabel2.Size = new Size(75, 20);
             toolStripStatusLabel2.Text = "Database:";
             // 
             // txtDatabase
             // 
             txtDatabase.Font = new Font("Segoe UI", 9F, FontStyle.Bold | FontStyle.Italic);
             txtDatabase.Name = "txtDatabase";
-            txtDatabase.Size = new Size(100, 17);
+            txtDatabase.Size = new Size(127, 20);
             txtDatabase.Text = "CHIFA_OFFICINE";
             // 
             // txtSpring
@@ -496,7 +500,7 @@
             txtSpring.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             txtSpring.ForeColor = Color.Black;
             txtSpring.Name = "txtSpring";
-            txtSpring.Size = new Size(586, 17);
+            txtSpring.Size = new Size(452, 20);
             txtSpring.Spring = true;
             txtSpring.Text = "DateTime";
             // 
@@ -509,7 +513,7 @@
             // toolStripStatusLabel3
             // 
             toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            toolStripStatusLabel3.Size = new Size(66, 17);
+            toolStripStatusLabel3.Size = new Size(81, 20);
             toolStripStatusLabel3.Text = "Pharmacie:";
             // 
             // txtPharmacie
@@ -517,13 +521,13 @@
             txtPharmacie.Font = new Font("Segoe UI", 9F, FontStyle.Bold | FontStyle.Italic);
             txtPharmacie.Margin = new Padding(0, 3, 50, 2);
             txtPharmacie.Name = "txtPharmacie";
-            txtPharmacie.Size = new Size(16, 17);
+            txtPharmacie.Size = new Size(21, 21);
             txtPharmacie.Text = "...";
             // 
             // toolStripStatusLabel4
             // 
             toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            toolStripStatusLabel4.Size = new Size(83, 17);
+            toolStripStatusLabel4.Size = new Size(103, 20);
             toolStripStatusLabel4.Text = "Code Officine:";
             // 
             // txtCodePs
@@ -532,7 +536,7 @@
             txtCodePs.ForeColor = Color.FromArgb(0, 192, 192);
             txtCodePs.Margin = new Padding(0, 3, 20, 2);
             txtCodePs.Name = "txtCodePs";
-            txtCodePs.Size = new Size(16, 17);
+            txtCodePs.Size = new Size(21, 21);
             txtCodePs.Text = "...";
             // 
             // AppImages
@@ -572,25 +576,25 @@
             contextMenu.ImageScalingSize = new Size(20, 20);
             contextMenu.Items.AddRange(new ToolStripItem[] { menuOpen, toolStripSeparator1, menuExit });
             contextMenu.Name = "contextMenuStrip1";
-            contextMenu.Size = new Size(104, 54);
+            contextMenu.Size = new Size(115, 58);
             contextMenu.Text = "CHIFA Pro";
             // 
             // menuOpen
             // 
             menuOpen.Name = "menuOpen";
-            menuOpen.Size = new Size(103, 22);
+            menuOpen.Size = new Size(114, 24);
             menuOpen.Text = "Open";
             menuOpen.Click += menuOpen_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(100, 6);
+            toolStripSeparator1.Size = new Size(111, 6);
             // 
             // menuExit
             // 
             menuExit.Name = "menuExit";
-            menuExit.Size = new Size(103, 22);
+            menuExit.Size = new Size(114, 24);
             menuExit.Text = "Exit";
             menuExit.Click += menuExit_Click;
             // 
@@ -600,10 +604,35 @@
             timer.Interval = 1000;
             timer.Tick += timer_Tick;
             // 
+            // accordionControlElement1
+            // 
+            accordionControlElement1.Name = "accordionControlElement1";
+            accordionControlElement1.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accordionControlElement1.Text = "PSYCHOTROPES";
+            // 
+            // accordionControlElement2
+            // 
+            accordionControlElement2.Name = "accordionControlElement2";
+            accordionControlElement2.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accordionControlElement2.Text = "AUDIT PRÉ-BORDEREAU";
+            // 
+            // accordionControlElement3
+            // 
+            accordionControlElement3.Name = "accordionControlElement3";
+            accordionControlElement3.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accordionControlElement3.Text = "TOUR DE CONTRÔLE";
+            accordionControlElement3.HeaderTemplate.AddRange(new DevExpress.XtraBars.Navigation.HeaderElementInfo[] { new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.Image), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.Text), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.ContextButtons), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.HeaderControl) });
+            // 
+            // accordionControlElement4
+            // 
+            accordionControlElement4.Name = "accordionControlElement4";
+            accordionControlElement4.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accordionControlElement4.Text = "REJETS & RECOUVREMENT";
+            // 
             // FrmMain
             // 
             Appearance.Options.UseFont = true;
-            AutoScaleDimensions = new SizeF(9F, 19F);
+            AutoScaleDimensions = new SizeF(11F, 24F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1282, 748);
             Controls.Add(container);
@@ -708,5 +737,9 @@
         private ToolStripMenuItem menuOpen;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem menuExit;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accordionControlElement4;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accordionControlElement2;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accordionControlElement3;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accordionControlElement1;
     }
 }

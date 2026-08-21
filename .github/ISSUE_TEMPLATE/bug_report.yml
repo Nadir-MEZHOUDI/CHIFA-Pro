@@ -1,0 +1,44 @@
+name: Bug report
+description: Report a problem with CHIFA Pro
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please fill the details below.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+      placeholder: "e.g. The statistics view shows incorrect totals for this week."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the app
+        2. Go to Statistics...
+        3. See error
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: App version or commit hash
+      placeholder: "e.g. 1.2.3 or abc1234"
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, .NET version, PostgreSQL version, DevExpress version
+      placeholder: "Windows 11, .NET 10, PostgreSQL 15, DevExpress 26.1"
+  - type: markdown
+    attributes:
+      value: "Security issues must be reported via private advisory — see SECURITY.md."

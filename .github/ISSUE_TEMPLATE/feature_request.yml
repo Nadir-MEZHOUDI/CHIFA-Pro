@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an idea or improvement for CHIFA Pro
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Describe your idea
+      description: What should the feature do, and why is it useful?
+    validations:
+      required: true
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Who benefits?
+      description: Explain the impact on pharmacies / users / the community.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Related area
+      options:
+        - Client UI (WinForms)
+        - Server (gRPC)
+        - Data layer (DAL)
+        - Stats & reporting
+        - Updates / packaging
+        - Documentation
+        - Other

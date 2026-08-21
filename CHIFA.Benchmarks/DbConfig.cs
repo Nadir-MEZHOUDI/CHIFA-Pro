@@ -19,7 +19,7 @@ public static class DbConfig
         var host = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_HOST") ?? "localhost";
         var port = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_PORT") ?? "5432";
         var user = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_USER") ?? "pharm";
-        var pwd = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_PWD") ?? "REDACTED";
+        var pwd = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_PWD") ?? "";
         var db = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_NAME") ?? "CHIFA_OFFICINE";
         return $"Server={host};Port={port};User Id={user};Password={pwd};Database={db};Timeout=15;Command Timeout=120;Pooling=true;Maximum Pool Size=20;";
     }
