@@ -97,10 +97,10 @@ namespace CHIFA.Pro.Views
             toolStripSeparator1 = new ToolStripSeparator();
             menuExit = new ToolStripMenuItem();
             timer = new System.Windows.Forms.Timer(components);
-            accordionControlElement1 = new DevExpress.XtraBars.Navigation.AccordionControlElement();
-            accordionControlElement2 = new DevExpress.XtraBars.Navigation.AccordionControlElement();
-            accordionControlElement3 = new DevExpress.XtraBars.Navigation.AccordionControlElement();
-            accordionControlElement4 = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accPsychotropes = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accAuditBordereau = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accTourDeControle = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accRejets = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             ((System.ComponentModel.ISupportInitialize)accordionControl1).BeginInit();
             container.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)tabContainer).BeginInit();
@@ -114,13 +114,13 @@ namespace CHIFA.Pro.Views
             // accordionControl1
             // 
             accordionControl1.Dock = DockStyle.Left;
-            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accordionControlElement3, accTrtSps, accordionControlElement2, accBordereaux, accAssures, accordionControlElement1, accordionControlElement4, accStatistics, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres });
+            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accTourDeControle, accFactures, accTrtSps, accAuditBordereau, accBordereaux, accAssures, accPsychotropes, accRejets, accStatistics, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres });
             accordionControl1.Location = new Point(0, 0);
             accordionControl1.Margin = new Padding(5, 6, 5, 6);
             accordionControl1.Name = "accordionControl1";
             accordionControl1.ScrollBarMode = DevExpress.XtraBars.Navigation.ScrollBarMode.Auto;
             accordionControl1.ShowFilterControl = DevExpress.XtraBars.Navigation.ShowFilterControl.Auto;
-            accordionControl1.Size = new Size(250, 722);
+            accordionControl1.Size = new Size(270, 722);
             accordionControl1.TabIndex = 1;
             accordionControl1.ViewType = DevExpress.XtraBars.Navigation.AccordionControlViewType.HamburgerMenu;
             // 
@@ -604,30 +604,34 @@ namespace CHIFA.Pro.Views
             timer.Interval = 1000;
             timer.Tick += timer_Tick;
             // 
-            // accordionControlElement1
+            // accPsychotropes
             // 
-            accordionControlElement1.Name = "accordionControlElement1";
-            accordionControlElement1.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accordionControlElement1.Text = "PSYCHOTROPES";
+            accPsychotropes.Name = "accPsychotropes";
+            accPsychotropes.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accPsychotropes.Text = "PSYCHOTROPES";
+            accPsychotropes.Click += accPsychotropes_Click;
             // 
-            // accordionControlElement2
+            // accAuditBordereau
             // 
-            accordionControlElement2.Name = "accordionControlElement2";
-            accordionControlElement2.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accordionControlElement2.Text = "AUDIT PRÉ-BORDEREAU";
+            accAuditBordereau.Name = "accAuditBordereau";
+            accAuditBordereau.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accAuditBordereau.Text = "AUDIT PRÉ-BORDEREAU";
+            accAuditBordereau.Click += accAuditBordereau_Click;
             // 
-            // accordionControlElement3
+            // accTourDeControle
             // 
-            accordionControlElement3.Name = "accordionControlElement3";
-            accordionControlElement3.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accordionControlElement3.Text = "TOUR DE CONTRÔLE";
-            accordionControlElement3.HeaderTemplate.AddRange(new DevExpress.XtraBars.Navigation.HeaderElementInfo[] { new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.Image), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.Text), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.ContextButtons), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.HeaderControl) });
+            accTourDeControle.Name = "accTourDeControle";
+            accTourDeControle.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accTourDeControle.Text = "TOUR DE CONTRÔLE";
+            accTourDeControle.HeaderTemplate.AddRange(new DevExpress.XtraBars.Navigation.HeaderElementInfo[] { new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.Image), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.Text), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.ContextButtons), new DevExpress.XtraBars.Navigation.HeaderElementInfo(DevExpress.XtraBars.Navigation.HeaderElementType.HeaderControl) });
+            accTourDeControle.Click += accTourDeControle_Click;
             // 
-            // accordionControlElement4
+            // accRejets
             // 
-            accordionControlElement4.Name = "accordionControlElement4";
-            accordionControlElement4.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accordionControlElement4.Text = "REJETS & RECOUVREMENT";
+            accRejets.Name = "accRejets";
+            accRejets.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accRejets.Text = "REJETS & RECOUVREMENT";
+            accRejets.Click += accRejets_Click;
             // 
             // FrmMain
             // 
@@ -737,9 +741,9 @@ namespace CHIFA.Pro.Views
         private ToolStripMenuItem menuOpen;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem menuExit;
-        private DevExpress.XtraBars.Navigation.AccordionControlElement accordionControlElement4;
-        private DevExpress.XtraBars.Navigation.AccordionControlElement accordionControlElement2;
-        private DevExpress.XtraBars.Navigation.AccordionControlElement accordionControlElement3;
-        private DevExpress.XtraBars.Navigation.AccordionControlElement accordionControlElement1;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accRejets;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accAuditBordereau;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accTourDeControle;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accPsychotropes;
     }
 }

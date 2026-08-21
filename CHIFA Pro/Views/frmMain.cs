@@ -32,7 +32,26 @@ public partial class FrmMain : XtraForm
         return new Bitmap(16, 16);
     }
 
-    
+    private void accTourDeControle_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<ScopeDashboardUc>();
+    }
+
+    private void accAuditBordereau_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<AuditBordereauUc>();
+    }
+
+    private void accPsychotropes_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<PsychotropesUc>();
+    }
+
+    private void accRejets_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<RejetsUc>();
+    }
+
     private void accSpecialists_Click(object sender, EventArgs e)
     {
         sender.NavigateTo<SpecialitesUc>();
