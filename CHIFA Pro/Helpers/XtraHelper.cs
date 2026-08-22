@@ -59,10 +59,6 @@ public static class XtraHelper
     }
 
     public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
-        Func<ValueTask<IEnumerable<T>>> func)
-        => await LoadDataAsync(bindingSource, gridView, func, CancellationToken.None);
-
-    public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
         Func<ValueTask<IEnumerable<T>>> func, CancellationToken cancellationToken)
     {
         var gridControl = gridView.GridControl;
@@ -136,15 +132,19 @@ public static class XtraHelper
     }
 
     public static void Log(this Exception ex, bool showMessage = true, [CallerMemberName] string methodName = "",
-        [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0)
+        [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, bool reportToTelemetry = true)
     {
-        
         Serilog.Log.Error(ex, "An error occurred in method {MethodName}, file {FileName}, line {LineNumber}", methodName, fileName, lineNumber);
+
+        if (reportToTelemetry)
+        {
+            LogTelemetry(ex, methodName, fileName, lineNumber);
+        }
+
         var result = ex.Message;
 
         if (ex is Npgsql.NpgsqlException pg && pg.Message.Contains("Failed to connect"))
         {
-            //    XtraMessageBox.Show("Cannot connect to Server Run Server Or Check Settings", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
 
@@ -152,6 +152,23 @@ public static class XtraHelper
             result = $"Method: {methodName}\nFile:{fileName}\nLine:{lineNumber}\n{ex}";
         if (showMessage)
             XtraMessageBox.Show(result, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+
+    private static void LogTelemetry(Exception ex, string methodName, string fileName, int lineNumber)
+    {
+        try
+        {
+            Program.Telemetry?.TrackException(ex, new
+            {
+                methodName,
+                fileName = Path.GetFileName(fileName),
+                lineNumber
+            });
+        }
+        catch
+        {
+            // Telemetry is fire-and-forget: never let it break the UI/logging path.
+        }
     }
 
     public static string GetThis_PC_IP_Address()
@@ -205,9 +222,8 @@ public static class XtraHelper
         SetServer(server);
 
         var dbPort = port > 0 ? port : DbChecker.DefaultDbPort;
-        var portValue = dbPort.ToString();
 
-        Environment.SetEnvironmentVariable("CHIFA_DB_PORT", portValue, EnvironmentVariableTarget.Process);
-        Environment.SetEnvironmentVariable("CHIFA_DB_PORT", portValue, EnvironmentVariableTarget.User);
+        Environment.SetEnvironmentVariable("CHIFA_DB_PORT", dbPort.ToString(), EnvironmentVariableTarget.Process);
+        Environment.SetEnvironmentVariable("CHIFA_DB_PORT", dbPort.ToString(), EnvironmentVariableTarget.User);
     }
 }

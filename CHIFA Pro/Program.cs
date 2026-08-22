@@ -23,6 +23,8 @@ internal static partial class Program
 {
     private static TelemetrySession? _telemetry;
 
+    internal static TelemetrySession? Telemetry => _telemetry;
+
 #if DEBUG
     // Import AllocConsole from kernel32.dll to create a new console window
     [LibraryImport("kernel32.dll", SetLastError = true)]
@@ -41,12 +43,11 @@ internal static partial class Program
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
 #if DEBUG
-                        .WriteTo.Console(theme: AnsiConsoleTheme.Code)
+                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
                       //  .WriteTo.Debug()
 #endif
                 .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
-
 #if DEBUG
             AllocConsole();
             Console.WriteLine(@"Console is ready");
@@ -146,8 +147,9 @@ internal static partial class Program
 
     private static void ThreadException_Handler(object sender, ThreadExceptionEventArgs e)
     {
+        // Application.ThreadException is NOT covered by TelemetryExceptionHooks.AttachProcessWide,
+        // so ex.Log() must report to telemetry (reportToTelemetry: true via default).
         e.Exception.Log();
-        _telemetry?.TrackException(e.Exception);
     }
 
     private static void SetCulture()
@@ -160,8 +162,8 @@ internal static partial class Program
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         var ex = (Exception)e.ExceptionObject;
-        ex.Log();
-        _telemetry?.TrackException(ex);
+        // AppDomain.UnhandledException IS covered by TelemetryExceptionHooks.AttachProcessWide -> avoid double-report.
+        ex.Log(reportToTelemetry: false);
         if (ex is Npgsql.NpgsqlException)
             MessageBox.Show(@"Impossible de se connecter à la base de données. Vérifiez votre serveur.", @"Erreur de connexion", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }

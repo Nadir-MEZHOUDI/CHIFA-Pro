@@ -191,22 +191,7 @@ public partial class RejetsUc : XtraUserControl, INavigable
 
     private void BtnExport_ItemClick(object sender, ItemClickEventArgs e)
     {
-        using var saveDialog = new SaveFileDialog
-        {
-            Filter = "Fichier Excel (*.xlsx)|*.xlsx|Fichier PDF (*.pdf)|*.pdf",
-            Title = "Exporter le Suivi des Rejets",
-            FileName = $"Suivi_Rejets_Chifa_{DateTime.Today:yyyyMMdd}.xlsx"
-        };
-
-        if (saveDialog.ShowDialog() == DialogResult.OK)
-        {
-            if (saveDialog.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                gridRejets.ExportToPdf(saveDialog.FileName);
-            else
-                gridRejets.ExportToXlsx(saveDialog.FileName);
-
-            XtraMessageBox.Show("Exportation terminée avec succès !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        gridRejets.Export("Exporter le Suivi des Rejets", $"Suivi_Rejets_Chifa_{DateTime.Today:yyyyMMdd}");
     }
 
     private void RejetsUc_Disposed(object? sender, EventArgs e)

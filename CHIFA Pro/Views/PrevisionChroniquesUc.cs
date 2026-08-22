@@ -120,17 +120,6 @@ public partial class PrevisionChroniquesUc : XtraUserControl, INavigable
 
     private void BtnExport_ItemClick(object sender, ItemClickEventArgs e)
     {
-        using var saveDialog = new SaveFileDialog
-        {
-            Filter = "Fichier Excel (*.xlsx)|*.xlsx",
-            Title = "Exporter le Planning Prévisionnel des Chroniques",
-            FileName = $"Planning_Chroniques_Chifa_{DateTime.Today:yyyyMMdd}.xlsx"
-        };
-
-        if (saveDialog.ShowDialog() == DialogResult.OK)
-        {
-            gridForecast.ExportToXlsx(saveDialog.FileName);
-            XtraMessageBox.Show("Exportation terminée avec succès !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        gridForecast.Export("Exporter le Planning Prévisionnel des Chroniques", $"Planning_Chroniques_Chifa_{DateTime.Today:yyyyMMdd}");
     }
 }

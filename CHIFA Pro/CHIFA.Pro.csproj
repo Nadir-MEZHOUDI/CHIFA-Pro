@@ -29,12 +29,16 @@
 	  <PackageReference Include="Npgsql" Version="10.*" />
 	  <PackageReference Include="Serilog.Sinks.Console" Version="6.*" />
 	  <PackageReference Include="Serilog.Sinks.File" Version="7.*" />
-	  <PackageReference Include="SmartApp.Telemetry.Client" Version="4.*" />
+	  <PackageReference Include="SmartApp.Telemetry.Client" Version="1.*" />
 	  <PackageReference Include="Velopack" Version="1.2.0" />
  	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\CHIFA.DAL\CHIFA.DAL.csproj" />
  	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Reports\" />
+	</ItemGroup>
 
 </Project>

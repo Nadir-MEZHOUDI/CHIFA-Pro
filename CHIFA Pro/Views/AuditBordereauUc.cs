@@ -199,22 +199,8 @@ public partial class AuditBordereauUc : XtraUserControl, INavigable
 
     private void BtnExport_ItemClick(object sender, ItemClickEventArgs e)
     {
-        using var saveDialog = new SaveFileDialog
-        {
-            Filter = "Fichier Excel (*.xlsx)|*.xlsx|Fichier PDF (*.pdf)|*.pdf",
-            Title = "Exporter le Rapport d'Audit Pré-Bordereau",
-            FileName = $"Rapport_Audit_Chifa_{DateTime.Today:yyyyMMdd}.xlsx"
-        };
-
-        if (saveDialog.ShowDialog() == DialogResult.OK)
-        {
-            if (saveDialog.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                gridAnomalies.ExportToPdf(saveDialog.FileName);
-            else
-                gridAnomalies.ExportToXlsx(saveDialog.FileName);
-
-            XtraMessageBox.Show("Exportation du rapport terminée avec succès !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        gridAnomalies.Export("Exporter le Rapport d'Audit Pré-Bordereau",
+            $"Rapport_Audit_Chifa_{DateTime.Today:yyyyMMdd}", "Exportation du rapport terminée avec succès !");
     }
 
     private void AuditBordereauUc_Disposed(object? sender, EventArgs e)

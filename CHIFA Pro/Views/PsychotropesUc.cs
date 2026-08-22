@@ -211,22 +211,7 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
 
     private void BtnExport_ItemClick(object sender, ItemClickEventArgs e)
     {
-        using var saveDialog = new SaveFileDialog
-        {
-            Filter = "Fichier Excel (*.xlsx)|*.xlsx|Fichier PDF (*.pdf)|*.pdf",
-            Title = "Exporter le Registre des Psychotropes",
-            FileName = $"Registre_Psychotropes_{DateTime.Today:yyyyMMdd}.xlsx"
-        };
-
-        if (saveDialog.ShowDialog() == DialogResult.OK)
-        {
-            if (saveDialog.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                gridPsychotropes.ExportToPdf(saveDialog.FileName);
-            else
-                gridPsychotropes.ExportToXlsx(saveDialog.FileName);
-
-            XtraMessageBox.Show("Exportation terminée avec succès !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        gridPsychotropes.Export("Exporter le Registre des Psychotropes", $"Registre_Psychotropes_{DateTime.Today:yyyyMMdd}");
     }
 
     private void PsychotropesUc_Disposed(object? sender, EventArgs e)

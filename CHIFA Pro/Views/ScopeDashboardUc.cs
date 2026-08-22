@@ -11,6 +11,7 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
     private readonly SemaphoreSlim _reloadLock = new(1, 1);
     private CancellationTokenSource? _reloadCts;
     private readonly Period _period = new();
+    private bool _suspendDateEvents;
 
     public string Caption { get; } = "TOUR DE CONTRÔLE";
     public Image Image => FrmMain.Image(4);
@@ -149,7 +150,51 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
 
     private void TxtDate_EditValueChanged(object? sender, EventArgs e)
     {
+        if (_suspendDateEvents) return;
         ScheduleReload();
+    }
+
+    private void SetDates(DateTime from, DateTime to)
+    {
+        try
+        {
+            _suspendDateEvents = true;
+            _period.From = from;
+            _period.To = to;
+            txtDateFrom.EditValue = from;
+            txtDateTo.EditValue = to;
+        }
+        finally
+        {
+            _suspendDateEvents = false;
+        }
+
+        ScheduleReload();
+    }
+
+    private void BtnAllPeriod_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        SetDates(Period.MinDate, Period.MaxDate);
+    }
+
+    private void BtnLastYear_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        SetDates(DateTime.Now.AddYears(-1), DateTime.Now);
+    }
+
+    private void Btn6Months_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        SetDates(DateTime.Now.AddMonths(-6), DateTime.Now);
+    }
+
+    private void BtnThisYear_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        SetDates(new DateTime(DateTime.Now.Year, 1, 1), DateTime.Now);
+    }
+
+    private void BtnThisMonth_ItemClick(object sender, ItemClickEventArgs e)
+    {
+        SetDates(new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1), DateTime.Now);
     }
 
     private void ScheduleReload()
@@ -248,8 +293,7 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
 
     private void BtnClearDates_ItemClick(object sender, ItemClickEventArgs e)
     {
-        txtDateFrom.EditValue = Period.MinDate;
-        txtDateTo.EditValue = Period.MaxDate;
+        SetDates(Period.MinDate, Period.MaxDate);
     }
 
     private void ScopeDashboardUc_Disposed(object? sender, EventArgs e)
