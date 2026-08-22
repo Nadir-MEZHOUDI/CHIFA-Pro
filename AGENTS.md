@@ -4,8 +4,7 @@
 
 CHIFA Pro is a healthcare management desktop application:
 - **CHIFA Pro**: WinForms client (DevExpress UI)
-- **CHIFA.DAL**: Data Access Layer (LinqToDB, PostgreSQL)
-- **CHIFA.Contract**: DTOs, interfaces, shared utilities
+- **CHIFA.Services**: Services layer (DTOs, interfaces, DataServices, LinqToDB, PostgreSQL)
 
 **Tech Stack**: .NET 10, PostgreSQL, LinqToDB, DevExpress WinForms, Serilog, Velopack
 
@@ -48,9 +47,8 @@ CHIFA Pro/
 │   ├── Views/               # UserControls (UI layer)
 │   ├── Helpers/             # NavigationService, XtraHelper, extensions
 │   └── GlobalUsings.cs
-├── CHIFA.DAL/               # Data Access Layer
-│   └── DataServices/        # Singleton services (ChifaService, StatisticsService)
-└── CHIFA.Contract/          # Shared contracts
+└── CHIFA.Services/          # Services layer (merged DAL + Contract)
+    ├── DataServices/        # Singleton services (ChifaService, StatisticsService)
     ├── Dtos/                # Data Transfer Objects
     ├── Grpc/                # Service interfaces (IChifaService, IStatisticsService)
     ├── Helpers/             # PredicateBuilder, MedicalThresholds, extensions
@@ -71,7 +69,7 @@ global using System.Net.Http;
 global using CHIFA.Contract.Dtos;
 global using CHIFA.Contract.Helpers;
 
-// CHIFA.DAL/GlobalUsings.cs
+// CHIFA.Services/GlobalUsings.cs
 global using System.Linq.Expressions;
 global using LinqToDB;
 global using DataModel;
@@ -165,7 +163,7 @@ predicate = predicate.SetPeriod(period);
 Use `MedicalThresholds` for magic numbers:
 
 ```csharp
-// Located in CHIFA.Contract/Helpers/MedicalThresholds.cs
+// Located in CHIFA.Services/Helpers/MedicalThresholds.cs
 public static class MedicalThresholds
 {
     public const decimal HighPriceThreshold = 1000m;

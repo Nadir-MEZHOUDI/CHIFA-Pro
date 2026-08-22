@@ -18,8 +18,7 @@
 </ItemGroup>
 
 <ItemGroup>
-	<ProjectReference Include="..\CHIFA.Contract\CHIFA.Contract.csproj" />
-	<ProjectReference Include="..\CHIFA.DAL\CHIFA.DAL.csproj" />
+  <ProjectReference Include="..\CHIFA.Services\CHIFA.Services.csproj" />
 </ItemGroup>
 
 </Project>

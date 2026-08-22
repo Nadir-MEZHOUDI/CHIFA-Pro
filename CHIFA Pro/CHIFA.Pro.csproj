@@ -34,11 +34,11 @@
  	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\CHIFA.DAL\CHIFA.DAL.csproj" />
- 	</ItemGroup>
+	  <Folder Include="Reports\" />
+	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Reports\" />
+	  <ProjectReference Include="..\CHIFA.Services\CHIFA.Services.csproj" />
 	</ItemGroup>
 
 </Project>

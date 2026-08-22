@@ -47,10 +47,8 @@ modern stack: **.NET 10**, **PostgreSQL**, **LinqToDB**, and **gRPC** between a 
 ```text
 CHIFA.Pro/
 ├── CHIFA Pro/         # WinForms client (UI)
-├── CHIFA.DAL/         # Data access layer (LinqToDB)
-├── CHIFA.Contract/    # Shared DTOs, service contracts, helpers
+├── CHIFA.Services/    # Services layer (DTOs, interfaces, DataServices, LinqToDB)
 ├── CHIFA.Tests/       # xUnit tests (unit + DB functional + perf)
-└── CHIFA.Benchmarks/  # BenchmarkDotNet benchmarks
 ```
 
 ## ⚠️ Important licensing notice
