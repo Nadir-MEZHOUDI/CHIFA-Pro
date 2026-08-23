@@ -225,7 +225,7 @@ namespace CHIFA.Pro.Views
             // 
             // LibelleTextEdit
             // 
-            LibelleTextEdit.DataBindings.Add(new Binding("EditValue", cENTREBindingSource, "Libelle", true));
+            LibelleTextEdit.DataBindings.Add(new Binding("EditValue", cENTREBindingSource, "Nom", true));
             LibelleTextEdit.Location = new Point(11, 78);
             LibelleTextEdit.Margin = new Padding(3, 2, 3, 2);
             LibelleTextEdit.Name = "LibelleTextEdit";

@@ -265,7 +265,7 @@ namespace CHIFA.Pro.Views
             // 
             // EMAILTextEdit
             // 
-            EMAILTextEdit.DataBindings.Add(new Binding("EditValue", oFFICINEBindingSource, "ChifaMobilEmail", true));
+            EMAILTextEdit.DataBindings.Add(new Binding("EditValue", oFFICINEBindingSource, "Email", true));
             EMAILTextEdit.Location = new Point(151, 273);
             EMAILTextEdit.Margin = new Padding(2, 3, 2, 3);
             EMAILTextEdit.Name = "EMAILTextEdit";
@@ -331,7 +331,7 @@ namespace CHIFA.Pro.Views
             // 
             // CONVENTIONTextEdit
             // 
-            CONVENTIONTextEdit.DataBindings.Add(new Binding("EditValue", oFFICINEBindingSource, "CONVENTION", true));
+            CONVENTIONTextEdit.DataBindings.Add(new Binding("EditValue", oFFICINEBindingSource, "Convention", true));
             CONVENTIONTextEdit.Location = new Point(407, 241);
             CONVENTIONTextEdit.Margin = new Padding(2, 3, 2, 3);
             CONVENTIONTextEdit.Name = "CONVENTIONTextEdit";

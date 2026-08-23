@@ -17,6 +17,7 @@ public partial class FrmMain : XtraForm
         _instance = this;
         InitializeComponent();
         SetStatisticsAccordionImages();
+        accordionControl1.Width = 270;
         ChangeTitle();
     }
 
