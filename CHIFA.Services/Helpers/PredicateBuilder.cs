@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Contract.Helpers;
+﻿namespace CHIFA.Services.Helpers;
 public static class PredicateBuilder
 {
     public static Expression<Func<T, bool>> True<T>() => f => true;

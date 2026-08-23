@@ -2,8 +2,7 @@
 
 global using System.Net.Http;
 global using System.Net.Http.Json;
-global using CHIFA.Contract.Dtos;
-global using CHIFA.Contract.Helpers;
-global using CHIFA.DAL.DataServices;
-global using Grpc.Core;
+global using CHIFA.Services.Dtos;
+global using CHIFA.Services.Helpers;
+global using CHIFA.Services.DataServices;
 global using SmartApp.Telemetry.Client;

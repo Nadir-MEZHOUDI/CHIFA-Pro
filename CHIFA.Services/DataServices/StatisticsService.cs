@@ -1,9 +1,9 @@
 ﻿using LinqToDB.Async;
 using System;
 
-namespace CHIFA.DAL.DataServices;
+namespace CHIFA.Services.DataServices;
 
-public class StatisticsService : IStatisticsService
+public class StatisticsService
 {
     private static StatisticsService? _instance;
     public static StatisticsService Instance => _instance ??= new StatisticsService();

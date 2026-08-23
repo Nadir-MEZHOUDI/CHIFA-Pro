@@ -689,7 +689,7 @@
 
             <div class="arch-box">
 <span class="arch-highlight">CHIFA Pro Solution/</span>
-├── <span class="arch-highlight">CHIFA.Contract/</span> (Contrats partagés)
+├── <span class="arch-highlight">CHIFA.Services/</span> (Services & Données LinqToDB)
 │   ├── Dtos/
 │   │   ├── <span class="arch-keep">FactureDto.cs, BordereauDto.cs, etc. (Conservés)</span>
 │   │   ├── <span class="arch-new">ScopeDashboardDto.cs</span>       (KPIs, flux d'activité, distribution horaire)
@@ -697,14 +697,13 @@
 │   │   ├── <span class="arch-new">PsychotropeDto.cs</span>          (Registre officiel, prescripteur, posologie)
 │   │   ├── <span class="arch-new">ForecastRefillDto.cs</span>       (Prévisions de renouvellement des chroniques)
 │   │   └── <span class="arch-new">AuditAnomalyDto.cs</span>        (Anomalies pré-bordereau détectées)
-│   └── Grpc/
-│       ├── <span class="arch-keep">IChifaService.cs, IStatisticsService.cs (Conservés)</span>
-│       └── <span class="arch-new">IScopeService.cs</span>            (Interface du service Tour de Contrôle & Nouveaux modules)
-│
-├── <span class="arch-highlight">CHIFA.DAL/</span> (Accès Données LinqToDB)
-│   └── DataServices/
-│       ├── <span class="arch-keep">ChifaService.cs, StatisticsService.cs (Conservés)</span>
-│       └── <span class="arch-new">ScopeService.cs</span>             (Agrégations KPIs, calculs prédictifs, requêtes rejets & psychotropes)
+│   ├── DataServices/
+│   │   ├── <span class="arch-keep">ChifaService.cs, StatisticsService.cs (Conservés)</span>
+│   │   └── <span class="arch-new">ScopeService.cs</span>             (Agrégations KPIs, calculs prédictifs, requêtes rejets & psychotropes)
+│   ├── Helpers/
+│   │   └── <span class="arch-keep">MedicalThresholds.cs, PredicateBuilder.cs (Conservés)</span>
+│   └── Statistics/
+│       └── <span class="arch-keep">BordStatDto.cs, etc. (Conservés)</span>
 │
 └── <span class="arch-highlight">CHIFA Pro/</span> (Client WinForms DevExpress)
     ├── Views/
@@ -738,13 +737,13 @@
                         </tr>
                         <tr>
                             <td><strong>Étape 1</strong></td>
-                            <td><code>CHIFA.Contract</code> (DTOs & Interface)</td>
+                            <td><code>CHIFA.Services</code> (DTOs & Services)</td>
                             <td>Création des modèles de données (ScopeDashboardDto, RejetDto, PsychotropeDto, ForecastRefillDto, AuditAnomalyDto)</td>
                             <td><span class="status-badge badge-new">Nouveau</span></td>
                         </tr>
                         <tr>
                             <td><strong>Étape 2</strong></td>
-                            <td><code>CHIFA.DAL</code> (ScopeService.cs)</td>
+                            <td><code>CHIFA.Services</code> (ScopeService.cs)</td>
                             <td>Implémentation des requêtes optimisées LinqToDB (KPIs, prédictions, rejets, psychotropes)</td>
                             <td><span class="status-badge badge-new">Nouveau</span></td>
                         </tr>

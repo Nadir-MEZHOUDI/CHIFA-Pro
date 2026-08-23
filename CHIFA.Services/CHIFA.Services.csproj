@@ -8,7 +8,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="linq2db" Version="6.*" />
-		<PackageReference Include="protobuf-net.Grpc" Version="*" />
 		<PackageReference Include="CHIFA2.Data" Version="4.*" />
 		<PackageReference Include="Npgsql" Version="10.*" />
 	</ItemGroup>

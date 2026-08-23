@@ -106,7 +106,7 @@ namespace CHIFA.Pro.Views
             // 
             // weekStatBindingSource
             // 
-            weekStatBindingSource.DataSource = typeof(Contract.Statistics.ThisWeekStat);
+            weekStatBindingSource.DataSource = typeof(CHIFA.Services.Statistics.ThisWeekStat);
             // 
             // tileControl1
             // 

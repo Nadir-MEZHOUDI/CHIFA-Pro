@@ -1,5 +1,5 @@
-using CHIFA.Contract.Helpers;
-using CHIFA.Contract.Dtos;
+using CHIFA.Services.Helpers;
+using CHIFA.Services.Dtos;
 
 namespace CHIFA.Tests.Helpers;
 

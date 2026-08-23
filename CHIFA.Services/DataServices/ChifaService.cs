@@ -1,8 +1,8 @@
 ﻿global using LinqToDB;
 using LinqToDB.Async;
-namespace CHIFA.DAL.DataServices;
+namespace CHIFA.Services.DataServices;
 
-public class ChifaService : IChifaService
+public class ChifaService
 {
     private static ChifaService? _instance;
     public static ChifaService Instance => _instance ??= new();

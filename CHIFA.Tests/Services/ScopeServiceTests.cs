@@ -1,5 +1,5 @@
-using CHIFA.Contract.Dtos;
-using CHIFA.DAL.DataServices;
+using CHIFA.Services.Dtos;
+using CHIFA.Services.DataServices;
 using Xunit.Abstractions;
 
 namespace CHIFA.Tests.Services;

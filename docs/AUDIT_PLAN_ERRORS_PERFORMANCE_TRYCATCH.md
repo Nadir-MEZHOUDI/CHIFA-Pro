@@ -53,8 +53,8 @@ Phase 2 execution: Completed on 2026-03-16 (debounce/cancellation quick wins + U
 
 ### C) Heavy data materialization before aggregation
 
-6) `CHIFA.DAL/DataServices/ChifaService.cs:377`, `:396`, `:399`, `:445`, `:464`
-7) `CHIFA.DAL/DataServices/StatisticsService.cs:195`, `:216`
+6) `CHIFA.Services/DataServices/ChifaService.cs:377`, `:396`, `:399`, `:445`, `:464`
+7) `CHIFA.Services/DataServices/StatisticsService.cs:195`, `:216`
 - Large datasets are materialized and grouped in memory in multiple paths.
 - Risk: high CPU/RAM usage and slow response on larger databases.
 
@@ -62,7 +62,7 @@ Phase 2 execution: Completed on 2026-03-16 (debounce/cancellation quick wins + U
 
 1) Startup and disposal resilience
 - `CHIFA Pro/Program.cs:35`, `CHIFA.Server/App.xaml.cs:24`: bootstrap paths need stronger top-level fault containment.
-- `CHIFA.Server/Helpers/GrpcServer.cs:86`: disposal order may race with async stop path.
+- `CHIFA.Server/Helpers/Service.cs:86`: disposal order may race with async stop path.
 
 2) Query storms from UI events
 - `CHIFA Pro/Views/FacturesUC.cs:87`, `:88`, `:136`
@@ -75,7 +75,7 @@ Phase 2 execution: Completed on 2026-03-16 (debounce/cancellation quick wins + U
 - Risk: startup delay/freeze due to process wait and synchronous work before first await.
 
 4) Resource lifecycle hygiene
-- `CHIFA.DAL/DataServices/ChifaService.cs:344`
+- `CHIFA.Services/DataServices/ChifaService.cs:344`
 - `CHIFA Pro/Views/frmMain.cs:290`
 - `CHIFA Pro/Helpers/DbChecker.cs:31`, `:132`
 - `CHIFA Pro/Helpers/XtraHelper.cs:129`
@@ -128,7 +128,7 @@ Acceptance criteria:
 
 ### Phase 4 - Resource and disposal hardening (1 day)
 - Normalize `using/await using` for DB connections, process, and ping objects.
-- Fix stop/dispose sequencing in gRPC server lifecycle.
+- Fix stop/dispose sequencing in service server lifecycle.
 
 Acceptance criteria:
 - Stable long-session behavior without progressive handle/connection pressure.

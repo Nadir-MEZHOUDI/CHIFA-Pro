@@ -4,7 +4,7 @@
 
 CHIFA Pro is a healthcare management desktop application:
 - **CHIFA Pro**: WinForms client (DevExpress UI)
-- **CHIFA.Services**: Services layer (DTOs, interfaces, DataServices, LinqToDB, PostgreSQL)
+- **CHIFA.Services**: Services layer (DTOs, DataServices, LinqToDB, PostgreSQL)
 
 **Tech Stack**: .NET 10, PostgreSQL, LinqToDB, DevExpress WinForms, Serilog, Velopack
 
@@ -48,9 +48,8 @@ CHIFA Pro/
 │   ├── Helpers/             # NavigationService, XtraHelper, extensions
 │   └── GlobalUsings.cs
 └── CHIFA.Services/          # Services layer (merged DAL + Contract)
-    ├── DataServices/        # Singleton services (ChifaService, StatisticsService)
+    ├── DataServices/        # Singleton services (ChifaService, StatisticsService, ScopeService)
     ├── Dtos/                # Data Transfer Objects
-    ├── Grpc/                # Service interfaces (IChifaService, IStatisticsService)
     ├── Helpers/             # PredicateBuilder, MedicalThresholds, extensions
     └── Statistics/          # Statistics DTOs
 ```
@@ -66,8 +65,8 @@ Each project has `GlobalUsings.cs`. **Do NOT** duplicate imports in source files
 ```csharp
 // CHIFA.Pro/GlobalUsings.cs
 global using System.Net.Http;
-global using CHIFA.Contract.Dtos;
-global using CHIFA.Contract.Helpers;
+global using CHIFA.Services.Dtos;
+global using CHIFA.Services.Helpers;
 
 // CHIFA.Services/GlobalUsings.cs
 global using System.Linq.Expressions;
@@ -80,7 +79,7 @@ global using DataModel;
 | Type | Convention | Example |
 |------|------------|---------|
 | Classes | PascalCase | `ChifaService`, `FactureDto` |
-| Interfaces | IPascalCase | `IChifaService`, `INavigable` |
+| Interfaces | IPascalCase | `INavigable` |
 | Methods | PascalCase | `GetAllFacturesAsync` |
 | Properties | PascalCase | `NumFact`, `Montant` |
 | Private fields | _camelCase | `_instance`, `_server` |
@@ -96,7 +95,7 @@ public async ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(...)
 // Use await using for IAsyncDisposable resources
 await using var db = new ChifaDb();
 
-// Use ConfigureAwait(false) in library code (DAL, Contract)
+// Use ConfigureAwait(false) in library code (CHIFA.Services)
 await db.Factures.ToListAsync().ConfigureAwait(false);
 
 // Fire-and-forget in UI event handlers only
@@ -129,7 +128,7 @@ private async void Button_Click(object sender, EventArgs e)
 ### Singleton Service Pattern
 
 ```csharp
-public class ChifaService : IChifaService
+public class ChifaService
 {
     private static ChifaService? _instance;
     public static ChifaService Instance => _instance ??= new();    

@@ -1,4 +1,4 @@
-namespace CHIFA.Contract.Helpers;
+namespace CHIFA.Services.Helpers;
 
 public static class MedicalThresholds
 {

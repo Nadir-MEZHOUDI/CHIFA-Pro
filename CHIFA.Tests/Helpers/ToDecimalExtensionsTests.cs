@@ -1,4 +1,4 @@
-using CHIFA.Contract.Helpers;
+using CHIFA.Services.Helpers;
 
 namespace CHIFA.Tests.Helpers;
 

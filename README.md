@@ -14,14 +14,14 @@
 
 CHIFA Pro is a healthcare / pharmacy management desktop application. It keeps the familiar CHIFA officine
 workflow (factures, bordereaux, patients, CNAS transactions, psychotropes tracking) while being rebuilt on a
-modern stack: **.NET 10**, **PostgreSQL**, **LinqToDB**, and **gRPC** between a WinForms client and a WPF server.
+modern stack: **.NET 10**, **PostgreSQL**, and **LinqToDB**.
 
-> **عربي:** مشروع مفتوح المصدر لإدارة الصيدليات على ويندوز — واجهة WinForms مع خادم محلي gRPC وقاعدة بيانات PostgreSQL.
+> **عربي:** مشروع مفتوح المصدر لإدارة الصيدليات على ويندوز — واجهة WinForms مع خدمات مباشرة وقاعدة بيانات PostgreSQL.
 > يهدف لمواصلة تطوير المشاركة المجتمعية وإبقاء العملية سهلة قدر الإمكان.
 
 ## ✨ Features
 
-- **Client – Server architecture**: WinForms client + WPF gRPC server (protobuf-net)
+- **Direct service architecture**: WinForms client with direct service layer (CHIFA.Services via LinqToDB)
 - **Complete officine workflow**: factures, bordereaux, patients, bénéficiaires, CNAS transactions
 - **Psychotropes tracking** and controlled-substance reports
 - **Rejects (rejets)** and anomalies audit view
@@ -47,7 +47,7 @@ modern stack: **.NET 10**, **PostgreSQL**, **LinqToDB**, and **gRPC** between a 
 ```text
 CHIFA.Pro/
 ├── CHIFA Pro/         # WinForms client (UI)
-├── CHIFA.Services/    # Services layer (DTOs, interfaces, DataServices, LinqToDB)
+├── CHIFA.Services/    # Services layer (DTOs, DataServices, LinqToDB)
 ├── CHIFA.Tests/       # xUnit tests (unit + DB functional + perf)
 ```
 
@@ -62,7 +62,7 @@ CHIFA.Pro/
 
 - **Windows 10/11 (x64)**
 - **.NET 10 SDK** (or the .NET 10 runtime for running published builds)
-- **PostgreSQL 14+** (a bundled install layout under `CHIFA_OFFICINE_DB` is used by `CHIFA.Server`)
+- **PostgreSQL 14+** (local instance, connection configured via environment variables)
 - Optional: **DevExpress** subscription for building the client
 
 ## 🚀 Getting started
@@ -87,8 +87,7 @@ CHIFA.Pro/
    dotnet build "CHIFA Pro.sln"
    ```
 
-4. Run the server first (it hosts gRPC + local PostgreSQL plumbing), then the client.
-   The client shows a connection prompt on first launch.
+4. Run the client. The client shows a connection prompt on first launch.
 
 ## 🧪 Tests
 

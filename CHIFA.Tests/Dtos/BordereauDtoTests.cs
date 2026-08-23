@@ -1,4 +1,4 @@
-using CHIFA.Contract.Dtos;
+using CHIFA.Services.Dtos;
 
 namespace CHIFA.Tests.Dtos;
 

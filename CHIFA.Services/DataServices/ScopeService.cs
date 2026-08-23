@@ -1,8 +1,8 @@
 using LinqToDB.Async;
 
-namespace CHIFA.DAL.DataServices;
+namespace CHIFA.Services.DataServices;
 
-public class ScopeService : IScopeService
+public class ScopeService
 {
     private static ScopeService? _instance;
     public static ScopeService Instance => _instance ??= new ScopeService();

@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Contract.Dtos;
+﻿namespace CHIFA.Services.Dtos;
 
 [DataContract]
 public class BordereauDto

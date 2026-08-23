@@ -59,7 +59,7 @@ public static class XtraHelper
     }
 
     public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
-        Func<ValueTask<IEnumerable<T>>> func, CancellationToken cancellationToken)
+        Func<ValueTask<IEnumerable<T>>> func, CancellationToken cancellationToken = default)
     {
         var gridControl = gridView.GridControl;
         try

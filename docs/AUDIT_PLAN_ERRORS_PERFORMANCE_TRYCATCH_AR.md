@@ -50,8 +50,8 @@
 
 ### ج) تحميل كميات كبيرة في الذاكرة قبل التجميع
 
-6) `CHIFA.DAL/DataServices/ChifaService.cs:377`, `:396`, `:399`, `:445`, `:464`
-7) `CHIFA.DAL/DataServices/StatisticsService.cs:195`, `:216`
+6) `CHIFA.Services/DataServices/ChifaService.cs:377`, `:396`, `:399`, `:445`, `:464`
+7) `CHIFA.Services/DataServices/StatisticsService.cs:195`, `:216`
 - يتم تحميل بيانات كبيرة ثم تطبيق التجميع داخل الذاكرة في عدة مسارات.
 - الخطر: استهلاك CPU/RAM مرتفع وبطء ملحوظ مع قواعد بيانات أكبر.
 
@@ -59,7 +59,7 @@
 
 1) صلابة الإقلاع والإنهاء
 - `CHIFA Pro/Program.cs:35`, `CHIFA.Server/App.xaml.cs:24`: مسارات الإقلاع تحتاج حاوية أعطال أعلى مستوى.
-- `CHIFA.Server/Helpers/GrpcServer.cs:86`: ترتيب dispose قد يتسابق مع مسار stop غير المتزامن.
+- `CHIFA.Server/Helpers/Service.cs:86`: ترتيب dispose قد يتسابق مع مسار stop غير المتزامن.
 
 2) عواصف استعلامات من أحداث الواجهة
 - `CHIFA Pro/Views/FacturesUC.cs:87`, `:88`, `:136`
@@ -72,7 +72,7 @@
 - الخطر: تأخير/تجميد عند الإقلاع بسبب انتظار عمليات متزامن قبل أول `await`.
 
 4) نظافة دورة حياة الموارد
-- `CHIFA.DAL/DataServices/ChifaService.cs:344`
+- `CHIFA.Services/DataServices/ChifaService.cs:344`
 - `CHIFA Pro/Views/frmMain.cs:290`
 - `CHIFA Pro/Helpers/DbChecker.cs:31`, `:132`
 - `CHIFA Pro/Helpers/XtraHelper.cs:129`
@@ -125,7 +125,7 @@
 
 ### المرحلة 4 - تقوية الموارد والإنهاء (يوم)
 - توحيد `using/await using` لاتصالات DB و`Process` و`Ping`.
-- إصلاح ترتيب stop/dispose في دورة حياة gRPC server.
+- إصلاح ترتيب stop/dispose في دورة حياة الخدمة server.
 
 معيار القبول:
 - استقرار في الجلسات الطويلة بدون ضغط متزايد على المقابض/الاتصالات.

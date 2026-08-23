@@ -28,7 +28,7 @@ internal static class NavigationService
         }
 
         configure?.Invoke(control);
-        Main.tabContainer.SelectedTabPage = tab;
+        Main.tabContainer?.SelectedTabPage = tab;
         return control;
     }
 }

@@ -1,5 +1,5 @@
-using CHIFA.Contract.Dtos;
-using CHIFA.DAL.DataServices;
+using CHIFA.Services.Dtos;
+using CHIFA.Services.DataServices;
 using DataModel;
 using LinqToDB;
 using Xunit.Abstractions;

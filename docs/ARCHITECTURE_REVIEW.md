@@ -3,13 +3,13 @@
 **Date:** March 17, 2026  
 **Reviewer:** Senior .NET Architect  
 **Project:** CHIFA Pro Healthcare Management System  
-**Tech Stack:** .NET 10, WinForms, WPF, PostgreSQL, LinqToDB, gRPC (protobuf-net)
+**Tech Stack:** .NET 10, WinForms, PostgreSQL, LinqToDB
 
 ---
 
 ## Executive Summary
 
-CHIFA Pro is a **4-project solution** implementing a client-server desktop application for healthcare management. The architecture follows a **3-tier pattern** with a gRPC-based communication layer. The codebase is well-structured for a desktop application but shows signs of **rapid growth** with some architectural debt that can be addressed incrementally.
+CHIFA Pro is a **3-project solution** implementing a desktop application for healthcare management. The architecture follows a **2-tier pattern** with a direct service layer. The codebase is well-structured for a desktop application but shows signs of **rapid growth** with some architectural debt that can be addressed incrementally.
 
 **Overall Assessment:** **6.5/10**
 
@@ -27,7 +27,7 @@ CHIFA Pro is a **4-project solution** implementing a client-server desktop appli
 - Business logic scattered between UI and data services
 - No validation layer
 - No test coverage
-- gRPC service interface mixed with domain models
+- Service interface mixed with domain models
 - Period state is both instance and static (confusion)
 
 ---
@@ -43,20 +43,14 @@ CHIFA Pro Solution/
 │   ├── Helpers/                          - Navigation, Settings, Extensions
 │   └── Program.cs                        - Entry point, logging, culture setup
 │
-├── CHIFA.Server (WPF gRPC Server)       - 9 files
-│   ├── Helpers/GrpcServer.cs            - gRPC hosting
-│   ├── Helpers/UpdateService.cs         - Velopack updates
-│   └── Views/MainWindow.xaml            - Server UI
+├── CHIFA.Services (Service Layer)            - Direct service access
 │
-├── CHIFA.DAL (Data Access Layer)        - 3 files
-│   ├── ChifaService.cs                  - Main data operations (535 lines)
-│   └── StatisticsService.cs             - Statistics queries (304 lines)
+├── CHIFA.Services (Service Layer)            - DataServices + DTOs + Helpers
 │
-└── CHIFA.Contract (Shared DTOs/Interfaces)
-    ├── Dtos/                             - 13 DTO files
-    ├── Grpc/                             - IChifaService, IStatisticsService
+    ├── Dtos/                             - DTO files
+    ├── DataServices/                     - ChifaService, StatisticsService, ScopeService
     ├── Helpers/                          - PredicateBuilder, MedicalThresholds
-    └── Statistics/                       - 7 statistics DTOs
+    └── Statistics/                       - Statistics DTOs
 ```
 
 ### 1.2 Entry Points
@@ -83,7 +77,7 @@ public App()
     - Serilog configuration (file + console + TextWriter)
     - Velopack update check
     - WPF MainWindow startup
-    - GrpcServer instantiation and hosting
+    - Direct service instantiation (static Instance)
 }
 ```
 
@@ -121,7 +115,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
    - Threshold-based UI coloring (lines 40-46, 53-59 in FacturesUC.cs)
    - Business rule interpretation
 
-2. **In Data Services (CHIFA.DAL/DataServices/):**
+2. **In Data Services (CHIFA.Services/DataServices/):**
    - Complex LINQ projections (ChifaService.cs lines 377-452)
    - Medical threshold application (lines 49, 73, 191, 219)
    - Grouping and transformation logic
@@ -195,12 +189,12 @@ public async ValueTask<IEnumerable<BordereauDto>> GetAllBordereauxAsync(...)
 
 **Dependency Graph:**
 ```
-CHIFA.Pro ──────────► CHIFA.DAL ──────► CHIFA.Contract ──────► CHIFA2.Data (external)
+CHIFA.Pro ──────────► CHIFA.Services ──────► CHIFA.Services ──────► CHIFA2.Data (external)
                │                              │                        │
                │                              │                        ▼
                └─────────────────────────────►│                   DataModel
                                               │                   (Facture, Bordereau, etc.)
-CHIFA.Server ───────► CHIFA.DAL
+CHIFA.Server ───────► CHIFA.Services
 ```
 
 **Key Issues:**
@@ -234,16 +228,16 @@ CHIFA.Server ───────► CHIFA.DAL
    - MinDate/MaxDate set once at startup, shared globally
    - **Impact:** Confusing, error-prone
 
-5. **gRPC Interface Pollution (IChifaService.cs:6-42)**
+5. **Service Interface Pollution (ChifaService.cs:6-42)**
    - Interface methods accept `DataModel` entities (Facture, Bordereau, etc.)
    - Interface methods accept `Expression<Func<Facture, bool>>`
-   - **Impact:** gRPC layer tightly coupled to database schema
+   - **Impact:** direct service layer tightly coupled to database schema
 
 ### 1.8 Coupling Hotspots
 
 **Priority Hotspots:**
 
-1. **ChifaService.Instance** (CHIFA.DAL/DataServices/ChifaService.cs:7-8)
+1. **ChifaService.Instance** (CHIFA.Services/DataServices/ChifaService.cs:7-8)
    - 535-line god class
    - Static singleton pattern
    - **Used in:** 46 locations across Views/
@@ -260,7 +254,7 @@ CHIFA.Server ───────► CHIFA.DAL
    - Database schema knowledge in views
    - **Risk Level:** HIGH
 
-3. **Period as Service State** (ChifaService.cs:10, IChifaService.cs:8)
+3. **Period as Service State** (ChifaService.cs:10)
    ```csharp
    public Period Period { get; } = new();  // Instance property on singleton
    ```
@@ -289,7 +283,7 @@ CHIFA.Server ───────► CHIFA.DAL
 **Root Cause:**
 - Legacy singleton pattern: `public static ChifaService Instance => _instance ??= new();`
 - No DI container configured in Program.cs
-- Services created manually in GrpcServer.cs (line 30-31)
+- Services accessed via static Instance pattern
 
 **Risk Level:** HIGH  
 **Impact:** Testing, Maintenance, Extensibility
@@ -603,11 +597,11 @@ predicate = patterns.Aggregate(predicate,
 
 ---
 
-#### Issue #10: gRPC Interface Couples to Database Schema
+#### Issue #10: Service Interface Couples to Database Schema
 
 **Symptom:**
-- IChifaService methods accept `Expression<Func<Facture, bool>>`
-- gRPC clients must reference DataModel
+- ChifaService methods accept `Expression<Func<Facture, bool>>`
+- Callers must reference DataModel
 - Cannot serialize expressions over wire (unused in client-server scenario?)
 
 **Root Cause:**
@@ -617,16 +611,16 @@ predicate = patterns.Aggregate(predicate,
 **Risk Level:** MEDIUM  
 **Impact:** Coupling, Maintainability
 
-**Note:** Code review suggests gRPC is configured but possibly unused. GrpcServer.cs instantiates services, but client views call singletons directly.
+**Note:** Services are accessed directly via singleton instances.
 
 **Suggested Fix:**
 
-1. **Option A: Remove gRPC (If Unused)**
+1. **Option A: Keep Direct Access (Current Design)**
    - Remove CHIFA.Server project
    - Keep direct singleton access
    - **Effort:** S
 
-2. **Option B: Fix gRPC Design**
+2. **Option B: Fix Service Design**
    - Create request/response DTOs
    - Remove Expression parameters
    - Use filter objects instead
@@ -641,7 +635,7 @@ predicate = patterns.Aggregate(predicate,
 **Current Pattern:**
 ```csharp
 // ChifaService.cs
-public class ChifaService : IChifaService
+public class ChifaService
 {
     private static ChifaService? _instance;
     public static ChifaService Instance => _instance ??= new();
@@ -655,12 +649,12 @@ await ChifaService.Instance.GetAllFacturesAsync(...)
 ```csharp
 // Program.cs
 var services = new ServiceCollection();
-services.AddSingleton<IChifaService, ChifaService>();
+services.AddSingleton<ChifaService>();
 var provider = services.BuildServiceProvider();
 
 // FacturesUC.cs
-private readonly IChifaService _chifaService;
-public FacturesUC(IChifaService chifaService)
+private readonly ChifaService _chifaService;
+public FacturesUC(ChifaService chifaService)
 {
     _chifaService = chifaService;
 }
@@ -676,7 +670,7 @@ public static class ServiceLocator
 }
 
 // In view
-_chifaService = ServiceLocator.Provider.GetRequiredService<IChifaService>();
+_chifaService = ServiceLocator.Provider.GetRequiredService<ChifaService>();
 ```
 
 ---
@@ -772,7 +766,7 @@ _chifaService = ServiceLocator.Provider.GetRequiredService<IChifaService>();
 ### Immediate (Phase A - 1-2 days)
 1. Add test project infrastructure
 2. Extract Period static state to configuration
-3. Document gRPC usage (is it actually used?)
+3. Document service usage
 
 ### Short Term (Phase B - 1-2 weeks)
 4. Introduce DI container (Microsoft.Extensions.DependencyInjection)
@@ -788,7 +782,7 @@ _chifaService = ServiceLocator.Provider.GetRequiredService<IChifaService>();
 
 ### Long Term (Future)
 12. Consider Vertical Slice Architecture for new features
-13. Evaluate gRPC vs direct singleton pattern
+13. Evaluate service access patterns
 14. Migrate to feature folders
 
 ---

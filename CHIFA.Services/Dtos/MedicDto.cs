@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Contract.Dtos;
+﻿namespace CHIFA.Services.Dtos;
 
 //Resharper Disable All
 public class MedicDto

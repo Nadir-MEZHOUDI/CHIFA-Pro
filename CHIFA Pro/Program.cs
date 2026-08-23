@@ -5,7 +5,7 @@ global using System.Linq.Expressions;
 global using System.Reflection;
 global using System.Runtime.InteropServices;
 
-global using CHIFA.DAL.DataServices;
+global using CHIFA.Services.DataServices;
 global using CHIFA.Pro.Helpers;
 global using CHIFA.Pro.Views;
 

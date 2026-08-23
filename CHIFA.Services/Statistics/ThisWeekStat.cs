@@ -1,4 +1,4 @@
-﻿namespace CHIFA.Contract.Statistics;
+﻿namespace CHIFA.Services.Statistics;
 
 [DataContract]
 public class ThisWeekStat

@@ -5,6 +5,6 @@
     Renaming the file extension or editing the content of this file may
     cause the file to be unrecognizable by the program.
 -->
-<GenericObjectDataSource DisplayName="YearlyStat" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-  <TypeInfo>CHIFA.DAL.Statistics.YearlyStat, CHIFA.DAL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
+<GenericObjectDataSource DisplayName="DailyStat" Version="1.0" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+  <TypeInfo>CHIFA.Services.Statistics.DailyStat, CHIFA.Services, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</TypeInfo>
 </GenericObjectDataSource>
