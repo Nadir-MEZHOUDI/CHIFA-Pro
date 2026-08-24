@@ -8,7 +8,6 @@ namespace CHIFA.Pro.Views;
 public partial class ScopeDashboardUc : XtraUserControl, INavigable
 {
     private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
-    private readonly SemaphoreSlim _reloadLock = new(1, 1);
     private CancellationTokenSource? _reloadCts;
     private readonly Period _period = new();
     private bool _suspendDateEvents;
@@ -121,7 +120,7 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
     private async void ScopeDashboardUc_Load(object? sender, EventArgs e)
     {
         await LoadDateFiltersAsync();
-        await ReloadDataAsync();
+        await ReloadDataAsync(ResetReloadToken());
     }
 
     private async Task LoadDateFiltersAsync()
@@ -199,10 +198,7 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
 
     private void ScheduleReload()
     {
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = new CancellationTokenSource();
-        var token = _reloadCts.Token;
+        var token = ResetReloadToken();
 
         _ = Task.Run(async () =>
         {
@@ -221,12 +217,20 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
         }, token);
     }
 
-    private async Task ReloadDataAsync(CancellationToken cancellationToken = default)
+    private CancellationToken ResetReloadToken()
     {
-        if (!await _reloadLock.WaitAsync(0, cancellationToken)) return;
+        _reloadCts?.Cancel();
+        _reloadCts?.Dispose();
+        _reloadCts = new CancellationTokenSource();
+        return _reloadCts.Token;
+    }
 
+    private async Task ReloadDataAsync(CancellationToken cancellationToken)
+    {
         try
         {
+            if (cancellationToken.IsCancellationRequested) return;
+
             _period.From = txtDateFrom.EditValue as DateTime?;
             _period.To = txtDateTo.EditValue as DateTime?;
 
@@ -269,7 +273,6 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
         finally
         {
             Cursor = Cursors.Default;
-            _reloadLock.Release();
         }
     }
 
@@ -288,7 +291,7 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
 
     private async void BtnRefresh_ItemClick(object sender, ItemClickEventArgs e)
     {
-        await ReloadDataAsync();
+        await ReloadDataAsync(ResetReloadToken());
     }
 
     private void BtnClearDates_ItemClick(object sender, ItemClickEventArgs e)
@@ -300,6 +303,6 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
     {
         _reloadCts?.Cancel();
         _reloadCts?.Dispose();
-        _reloadLock.Dispose();
+        _reloadCts = null;
     }
 }

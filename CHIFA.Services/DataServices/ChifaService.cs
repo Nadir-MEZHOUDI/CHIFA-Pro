@@ -615,4 +615,52 @@ public class ChifaService
         Period.MinDate = await db.Factures.MinAsync(x => x.DateFact) ?? new DateTime(2000, 1, 1);
         Period.MaxDate = await db.Factures.MaxAsync(x => x.DateFact) ?? DateTime.Now;
     }
+
+    public async ValueTask<Facture?> GetFactureForPrintAsync(string numFact)
+    {
+        await using var db = new ChifaDb();
+        return await db.Factures
+            .LoadWith(x => x.Beneficiaire)
+            .LoadWith(x => x.Assure)
+            .LoadWith(x => x.Center)
+            .LoadWith(x => x.DetailFacts)
+            .ThenLoad(x => x.Medicament)
+            .FirstOrDefaultAsync(x => x.NumFact == numFact)
+            .ConfigureAwait(false);
+    }
+
+    public Facture? GetFactureForPrint(string numFact)
+    {
+        using var db = new ChifaDb();
+        return db.Factures
+            .LoadWith(x => x.Beneficiaire)
+            .LoadWith(x => x.Assure)
+            .LoadWith(x => x.Center)
+            .LoadWith(x => x.DetailFacts)
+            .ThenLoad(x => x.Medicament)
+            .FirstOrDefault(x => x.NumFact == numFact);
+    }
+
+    public async ValueTask DeleteFactureAsync(string numFact)
+    {
+        await using var db = new ChifaDb();
+        await db.BeginTransactionAsync().ConfigureAwait(false);
+        try
+        {
+            var fact = await db.Factures.FirstOrDefaultAsync(x => x.NumFact == numFact).ConfigureAwait(false);
+            if (fact is not null)
+            {
+                await db.GetTable<Signature>().Where(x => x.NumFact == numFact).DeleteAsync().ConfigureAwait(false);
+                await db.GetTable<DetailFact>().Where(x => x.NumFact == numFact).DeleteAsync().ConfigureAwait(false);
+                await db.DeleteAsync(fact).ConfigureAwait(false);
+            }
+
+            await db.CommitTransactionAsync().ConfigureAwait(false);
+        }
+        catch
+        {
+            await db.RollbackTransactionAsync().ConfigureAwait(false);
+            throw;
+        }
+    }
 }

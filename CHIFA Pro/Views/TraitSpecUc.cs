@@ -3,7 +3,6 @@ namespace CHIFA.Pro.Views;
 public partial class TraitSpecUc : XtraUserControl, INavigable
 {
     private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
-    private readonly SemaphoreSlim _reloadLock = new(1, 1);
     private CancellationTokenSource? _reloadCts;
 
     public string Caption { get; } = "TRAITEMENT SPÉCIFIQUE";
@@ -126,11 +125,10 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private CancellationToken ResetReloadToken()
     {
-        var cts = new CancellationTokenSource();
-        var previous = Interlocked.Exchange(ref _reloadCts, cts);
-        previous?.Cancel();
-        previous?.Dispose();
-        return cts.Token;
+        _reloadCts?.Cancel();
+        _reloadCts?.Dispose();
+        _reloadCts = new CancellationTokenSource();
+        return _reloadCts.Token;
     }
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
@@ -138,16 +136,8 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
         if (cancellationToken.IsCancellationRequested)
             return;
 
-        var lockTaken = false;
-
         try
         {
-            await _reloadLock.WaitAsync(cancellationToken);
-            lockTaken = true;
-
-            if (cancellationToken.IsCancellationRequested)
-                return;
-
             Expression<Func<DetailFact, bool>> predicate = f => true;
 
             if (txtMedic.EditValue is string txt)
@@ -164,11 +154,6 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
         catch (Exception ex)
         {
             ex.Log();
-        }
-        finally
-        {
-            if (lockTaken)
-                _reloadLock.Release();
         }
     }
 
@@ -200,9 +185,8 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private void TraitSpecUc_Disposed(object? sender, EventArgs e)
     {
-        var previous = Interlocked.Exchange(ref _reloadCts, null);
-        previous?.Cancel();
-        previous?.Dispose();
-        _reloadLock.Dispose();
+        _reloadCts?.Cancel();
+        _reloadCts?.Dispose();
+        _reloadCts = null;
     }
 }

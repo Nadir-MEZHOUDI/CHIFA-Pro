@@ -29,7 +29,7 @@ namespace CHIFA.Pro.Views
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FacturesUc));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FacturesUc));
             fromDateRepo = new DevExpress.XtraEditors.Repository.RepositoryItemDateEdit();
             gridFactures = new DevExpress.XtraGrid.GridControl();
             factureDtoBindingSource = new BindingSource(components);
@@ -81,10 +81,15 @@ namespace CHIFA.Pro.Views
             btnClearDate = new DevExpress.XtraBars.BarButtonItem();
             txtDateTo = new DevExpress.XtraBars.BarEditItem();
             toDateRepo = new DevExpress.XtraEditors.Repository.RepositoryItemDateEdit();
+            btnPrintFacture = new DevExpress.XtraBars.BarButtonItem();
+            btnPrintVerso = new DevExpress.XtraBars.BarButtonItem();
+            btnDeleteFacture = new DevExpress.XtraBars.BarButtonItem();
+            btnViewFacture = new DevExpress.XtraBars.BarButtonItem();
             ribbonPage2 = new DevExpress.XtraBars.Ribbon.RibbonPage();
             ribbonPageGroup2 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup4 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            ribbonPageGroup5 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             repositoryItemToggleSwitch1 = new DevExpress.XtraEditors.Repository.RepositoryItemToggleSwitch();
             barEditItem6 = new DevExpress.XtraBars.BarEditItem();
             ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -94,6 +99,7 @@ namespace CHIFA.Pro.Views
             barEditItem5 = new DevExpress.XtraBars.BarEditItem();
             gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
+            ribbonPageGroup6 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)fromDateRepo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)fromDateRepo.CalendarTimeProperties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridFactures).BeginInit();
@@ -128,12 +134,12 @@ namespace CHIFA.Pro.Views
             gridFactures.DataSource = factureDtoBindingSource;
             gridFactures.Dock = DockStyle.Fill;
             gridFactures.EmbeddedNavigator.Margin = new Padding(5, 4, 5, 4);
-            gridFactures.Location = new Point(0, 66);
+            gridFactures.Location = new Point(0, 113);
             gridFactures.MainView = viewFactures;
             gridFactures.Margin = new Padding(5, 4, 5, 4);
             gridFactures.Name = "gridFactures";
             gridFactures.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { repositoryItemDateEdit1 });
-            gridFactures.Size = new Size(1381, 326);
+            gridFactures.Size = new Size(1381, 279);
             gridFactures.TabIndex = 0;
             gridFactures.ViewCollection.AddRange(new BaseView[] { viewFactures });
             // 
@@ -344,10 +350,10 @@ namespace CHIFA.Pro.Views
             // dockPanel2_Container
             // 
             dockPanel2_Container.Controls.Add(gridDetails);
-            dockPanel2_Container.Location = new Point(4, 26);
+            dockPanel2_Container.Location = new Point(5, 32);
             dockPanel2_Container.Margin = new Padding(2);
             dockPanel2_Container.Name = "dockPanel2_Container";
-            dockPanel2_Container.Size = new Size(1373, 227);
+            dockPanel2_Container.Size = new Size(1371, 220);
             dockPanel2_Container.TabIndex = 0;
             // 
             // gridDetails
@@ -358,7 +364,7 @@ namespace CHIFA.Pro.Views
             gridDetails.MainView = viewDetails;
             gridDetails.MenuManager = ribbonControl1;
             gridDetails.Name = "gridDetails";
-            gridDetails.Size = new Size(1373, 227);
+            gridDetails.Size = new Size(1371, 220);
             gridDetails.TabIndex = 0;
             gridDetails.ViewCollection.AddRange(new BaseView[] { viewDetails });
             // 
@@ -482,10 +488,10 @@ namespace CHIFA.Pro.Views
             ribbonControl1.DrawGroupCaptions = DevExpress.Utils.DefaultBoolean.False;
             ribbonControl1.DrawGroupsBorderMode = DevExpress.Utils.DefaultBoolean.False;
             ribbonControl1.ExpandCollapseItem.Id = 0;
-            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, btnRefresh, txtDateFrom, swtchTS, btnHistory, btnTraitSpec, swtchFactures, txtMedic, btnClearDate, txtDateTo });
+            ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] { ribbonControl1.ExpandCollapseItem, btnRefresh, txtDateFrom, swtchTS, btnHistory, btnTraitSpec, swtchFactures, txtMedic, btnClearDate, txtDateTo, btnPrintFacture, btnPrintVerso, btnDeleteFacture, btnViewFacture });
             ribbonControl1.Location = new Point(0, 0);
             ribbonControl1.Margin = new Padding(2);
-            ribbonControl1.MaxItemId = 24;
+            ribbonControl1.MaxItemId = 28;
             ribbonControl1.Name = "ribbonControl1";
             ribbonControl1.OptionsMenuMinWidth = 254;
             ribbonControl1.OptionsPageCategories.ShowCaptions = false;
@@ -498,7 +504,7 @@ namespace CHIFA.Pro.Views
             ribbonControl1.ShowPageHeadersMode = DevExpress.XtraBars.Ribbon.ShowPageHeadersMode.Hide;
             ribbonControl1.ShowQatLocationSelector = false;
             ribbonControl1.ShowToolbarCustomizeItem = false;
-            ribbonControl1.Size = new Size(1381, 66);
+            ribbonControl1.Size = new Size(1381, 113);
             ribbonControl1.Toolbar.ShowCustomizeItem = false;
             ribbonControl1.ToolbarLocation = DevExpress.XtraBars.Ribbon.RibbonQuickAccessToolbarLocation.Hidden;
             // 
@@ -613,9 +619,46 @@ namespace CHIFA.Pro.Views
             toDateRepo.CalendarTimeProperties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             toDateRepo.Name = "toDateRepo";
             // 
+            // btnPrintFacture
+            // 
+            btnPrintFacture.Caption = "Imprimer Facture";
+            btnPrintFacture.Id = 24;
+            btnPrintFacture.ImageOptions.Image = (Image)resources.GetObject("btnPrintFacture.ImageOptions.Image");
+            btnPrintFacture.ImageOptions.LargeImage = (Image)resources.GetObject("btnPrintFacture.ImageOptions.LargeImage");
+            btnPrintFacture.Name = "btnPrintFacture";
+            btnPrintFacture.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            btnPrintFacture.ItemClick += BtnPrintFacture_ItemClick;
+            // 
+            // btnPrintVerso
+            // 
+            btnPrintVerso.Caption = "Imprimer Verso";
+            btnPrintVerso.Id = 25;
+            btnPrintVerso.ImageOptions.Image = (Image)resources.GetObject("btnPrintVerso.ImageOptions.Image");
+            btnPrintVerso.ImageOptions.LargeImage = (Image)resources.GetObject("btnPrintVerso.ImageOptions.LargeImage");
+            btnPrintVerso.Name = "btnPrintVerso";
+            btnPrintVerso.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            btnPrintVerso.ItemClick += BtnPrintVerso_ItemClick;
+            // 
+            // btnDeleteFacture
+            // 
+            btnDeleteFacture.Caption = "Supprimer Facture";
+            btnDeleteFacture.Id = 26;
+            btnDeleteFacture.ImageOptions.Image = (Image)resources.GetObject("btnDeleteFacture.ImageOptions.Image");
+            btnDeleteFacture.ImageOptions.LargeImage = (Image)resources.GetObject("btnDeleteFacture.ImageOptions.LargeImage");
+            btnDeleteFacture.Name = "btnDeleteFacture";
+            btnDeleteFacture.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.SmallWithText;
+            btnDeleteFacture.ItemClick += BtnDeleteFacture_ItemClick;
+            // 
+            // btnViewFacture
+            // 
+            btnViewFacture.Caption = "Aperçu Facture";
+            btnViewFacture.Id = 27;
+            btnViewFacture.Name = "btnViewFacture";
+            btnViewFacture.ItemClick += BtnViewFacture_ItemClick;
+            // 
             // ribbonPage2
             // 
-            ribbonPage2.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup2, ribbonPageGroup3, ribbonPageGroup4 });
+            ribbonPage2.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup2, ribbonPageGroup3, ribbonPageGroup4, ribbonPageGroup5, ribbonPageGroup6 });
             ribbonPage2.Name = "ribbonPage2";
             ribbonPage2.Text = "ribbonPage2";
             // 
@@ -642,6 +685,14 @@ namespace CHIFA.Pro.Views
             ribbonPageGroup4.ItemLinks.Add(txtMedic);
             ribbonPageGroup4.Name = "ribbonPageGroup4";
             ribbonPageGroup4.Text = "ribbonPageGroup4";
+            // 
+            // ribbonPageGroup5
+            // 
+            ribbonPageGroup5.ItemLinks.Add(btnPrintFacture);
+            ribbonPageGroup5.ItemLinks.Add(btnPrintVerso);
+            ribbonPageGroup5.ItemLinks.Add(btnDeleteFacture);
+            ribbonPageGroup5.Name = "ribbonPageGroup5";
+            ribbonPageGroup5.Text = "Impression / Actions";
             // 
             // repositoryItemToggleSwitch1
             // 
@@ -713,7 +764,12 @@ namespace CHIFA.Pro.Views
             gridColumn2.VisibleIndex = 3;
             gridColumn2.Width = 98;
             // 
-            // FacturesUC
+            // ribbonPageGroup6
+            // 
+            ribbonPageGroup6.Name = "ribbonPageGroup6";
+            ribbonPageGroup6.Text = "ribbonPageGroup6";
+            // 
+            // FacturesUc
             // 
             AutoScaleMode = AutoScaleMode.None;
             Controls.Add(gridFactures);
@@ -813,5 +869,11 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;
+        private DevExpress.XtraBars.BarButtonItem btnPrintFacture;
+        private DevExpress.XtraBars.BarButtonItem btnPrintVerso;
+        private DevExpress.XtraBars.BarButtonItem btnDeleteFacture;
+        private DevExpress.XtraBars.BarButtonItem btnViewFacture;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup5;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup6;
     }
 }

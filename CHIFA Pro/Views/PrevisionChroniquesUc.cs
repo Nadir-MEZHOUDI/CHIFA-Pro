@@ -6,7 +6,7 @@ namespace CHIFA.Pro.Views;
 
 public partial class PrevisionChroniquesUc : XtraUserControl, INavigable
 {
-    private readonly SemaphoreSlim _reloadLock = new(1, 1);
+    private CancellationTokenSource? _reloadCts;
     private List<ForecastRefillDto> _allForecasts = [];
 
     public string Caption { get; } = "PRÉVISION DES CHRONIQUES";
@@ -19,7 +19,12 @@ public partial class PrevisionChroniquesUc : XtraUserControl, INavigable
         viewForecast.CustomDrawCell += ViewForecast_CustomDrawCell;
 
         Load += async (_, _) => await ReloadDataAsync();
-        Disposed += (_, _) => _reloadLock.Dispose();
+        Disposed += (_, _) =>
+        {
+            _reloadCts?.Cancel();
+            _reloadCts?.Dispose();
+            _reloadCts = null;
+        };
     }
 
     private void ViewForecast_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
@@ -49,12 +54,20 @@ public partial class PrevisionChroniquesUc : XtraUserControl, INavigable
 
     private async Task ReloadDataAsync()
     {
-        if (!await _reloadLock.WaitAsync(0)) return;
+        _reloadCts?.Cancel();
+        _reloadCts?.Dispose();
+        _reloadCts = new CancellationTokenSource();
+        var cancellationToken = _reloadCts.Token;
 
         try
         {
+            if (cancellationToken.IsCancellationRequested) return;
+
             Cursor = Cursors.WaitCursor;
             var summary = await ScopeService.Instance.GetChronicForecastsAsync(6, 30);
+
+            if (cancellationToken.IsCancellationRequested) return;
+
             _allForecasts = summary.Details;
 
             lblTotalVal.Text = $"{summary.TotalPatientsAttendus:N0}";
@@ -74,7 +87,6 @@ public partial class PrevisionChroniquesUc : XtraUserControl, INavigable
         finally
         {
             Cursor = Cursors.Default;
-            _reloadLock.Release();
         }
     }
 

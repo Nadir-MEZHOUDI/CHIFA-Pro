@@ -8,11 +8,11 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 {
     private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
     private readonly HashSet<StatisticsSection> _loadedSections = [];
-    private readonly SemaphoreSlim _reloadLock = new(1, 1);
     private CancellationTokenSource? _reloadCts;
     private StatisticsSection _selectedSection = StatisticsSection.Bordereaux;
     private StatisticsView _selectedView = StatisticsView.Table;
     private bool _suspendDateEvents;
+    private bool _disposed;
 
     public string Caption { get; } = "STATISTIQUES";
     public Image Image => FrmMain.Image(4);
@@ -161,22 +161,29 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private async void MovementsUc_Load(object sender, EventArgs e)
     {
-        viewBord.SetOptions();
-        viewYearly.SetOptions();
-        viewMonthly.SetOptions();
-        viewWeekly.SetOptions();
-        viewDaily.SetOptions();
-        viewClients.SetOptions();
-        viewProducts.SetOptions();
+        try
+        {
+            viewBord.SetOptions();
+            viewYearly.SetOptions();
+            viewMonthly.SetOptions();
+            viewWeekly.SetOptions();
+            viewDaily.SetOptions();
+            viewClients.SetOptions();
+            viewProducts.SetOptions();
 
-        await LoadMaxAndMinDates(defaultToThisYear: true);
+            await LoadMaxAndMinDates(defaultToThisYear: true);
 
-        FromDate.EditValueChanged += FromDate_EditValueChanged!;
+            if (_disposed || IsDisposed) return;
 
-        ToDate.EditValueChanged += ToDate_EditValueChanged!;
+            FromDate.EditValueChanged += FromDate_EditValueChanged!;
 
-        await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
-        await GetOfficineAsync();
+            ToDate.EditValueChanged += ToDate_EditValueChanged!;
+
+            await ReloadSelectedTableImmediateAsync(tabControl.SelectedTabPage);
+            await GetOfficineAsync();
+        }
+        catch (ObjectDisposedException) { }
+        catch (Exception ex) { ex.Log(); }
     }
 
     private async Task GetOfficineAsync()
@@ -193,7 +200,12 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private async Task ScheduleSelectedTableReloadAsync(XtraTabPage? tab, bool forceReload = false)
     {
+        if (_disposed || IsDisposed)
+            return;
+
         var cancellationToken = ResetReloadToken();
+        if (cancellationToken.IsCancellationRequested)
+            return;
 
         try
         {
@@ -203,21 +215,32 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         catch (OperationCanceledException)
         {
         }
+        catch (ObjectDisposedException)
+        {
+        }
     }
 
     private async Task ReloadSelectedTableImmediateAsync(XtraTabPage? tab, bool forceReload = false)
     {
+        if (_disposed || IsDisposed)
+            return;
+
         var cancellationToken = ResetReloadToken();
+        if (cancellationToken.IsCancellationRequested)
+            return;
+
         await ReloadSelectedTableAsync(tab, cancellationToken, forceReload);
     }
 
     private CancellationToken ResetReloadToken()
     {
-        var cts = new CancellationTokenSource();
-        var previous = Interlocked.Exchange(ref _reloadCts, cts);
-        previous?.Cancel();
-        previous?.Dispose();
-        return cts.Token;
+        if (_disposed || IsDisposed)
+            return new CancellationToken(true);
+
+        _reloadCts?.Cancel();
+        _reloadCts?.Dispose();
+        _reloadCts = new CancellationTokenSource();
+        return _reloadCts.Token;
     }
 
     private void UpdatePeriodFromEditors()
@@ -236,21 +259,16 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private async Task ReloadSelectedTableAsync(XtraTabPage? tab, CancellationToken cancellationToken, bool forceReload)
     {
-        if (tab is null || cancellationToken.IsCancellationRequested)
+        if (_disposed || IsDisposed || tab is null || cancellationToken.IsCancellationRequested)
             return;
 
         var section = GetSection(tab);
         if (section is null || !forceReload && _loadedSections.Contains(section.Value))
             return;
 
-        var lockTaken = false;
-
         try
         {
-            await _reloadLock.WaitAsync(cancellationToken);
-            lockTaken = true;
-
-            if (cancellationToken.IsCancellationRequested)
+            if (_disposed || IsDisposed || cancellationToken.IsCancellationRequested)
                 return;
 
             if (!forceReload && _loadedSections.Contains(section.Value))
@@ -320,15 +338,16 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         catch (OperationCanceledException)
         {
         }
+        catch (ObjectDisposedException)
+        {
+        }
         catch (Exception ex)
         {
             ex.Log();
         }
         finally
         {
-            SetLoadingState(false);
-            if (lockTaken)
-                _reloadLock.Release();
+            try { SetLoadingState(false); } catch (ObjectDisposedException) { }
         }
     }
 
@@ -349,9 +368,17 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private void SetLoadingState(bool isLoading)
     {
-        loadingIndicator.Visible = isLoading;
-        btnRefresh.Enabled = !isLoading;
-        Cursor = isLoading ? Cursors.WaitCursor : Cursors.Default;
+        if (_disposed || IsDisposed)
+            return;
+
+        try
+        {
+            if (!loadingIndicator.IsDisposed)
+                loadingIndicator.Visible = isLoading;
+            btnRefresh.Enabled = !isLoading;
+            Cursor = isLoading ? Cursors.WaitCursor : Cursors.Default;
+        }
+        catch (ObjectDisposedException) { }
     }
 
     private async void tabControl_SelectedPageChanged(object sender, TabPageChangedEventArgs e)
@@ -507,10 +534,13 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private void StatisticsUc_Disposed(object? sender, EventArgs e)
     {
-        var previous = Interlocked.Exchange(ref _reloadCts, null);
-        previous?.Cancel();
-        previous?.Dispose();
-        _reloadLock.Dispose();
+        if (_disposed)
+            return;
+        _disposed = true;
+
+        _reloadCts?.Cancel();
+        _reloadCts?.Dispose();
+        _reloadCts = null;
     }
 }
 
