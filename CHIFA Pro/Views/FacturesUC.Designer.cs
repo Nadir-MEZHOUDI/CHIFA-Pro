@@ -90,15 +90,6 @@ namespace CHIFA.Pro.Views
             ribbonPageGroup3 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup4 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ribbonPageGroup5 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            repositoryItemToggleSwitch1 = new DevExpress.XtraEditors.Repository.RepositoryItemToggleSwitch();
-            barEditItem6 = new DevExpress.XtraBars.BarEditItem();
-            ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
-            ribbonPage1 = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            barEditItem3 = new DevExpress.XtraBars.BarEditItem();
-            barEditItem4 = new DevExpress.XtraBars.BarEditItem();
-            barEditItem5 = new DevExpress.XtraBars.BarEditItem();
-            gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
-            gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             ribbonPageGroup6 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)fromDateRepo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)fromDateRepo.CalendarTimeProperties).BeginInit();
@@ -119,7 +110,6 @@ namespace CHIFA.Pro.Views
             ((System.ComponentModel.ISupportInitialize)repositoryItemTextEdit1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)toDateRepo).BeginInit();
             ((System.ComponentModel.ISupportInitialize)toDateRepo.CalendarTimeProperties).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)repositoryItemToggleSwitch1).BeginInit();
             SuspendLayout();
             // 
             // fromDateRepo
@@ -497,7 +487,7 @@ namespace CHIFA.Pro.Views
             ribbonControl1.OptionsPageCategories.ShowCaptions = false;
             ribbonControl1.OptionsTouch.ShowTouchUISelectorInSearchMenu = false;
             ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] { ribbonPage2 });
-            ribbonControl1.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { repositoryItemToggleSwitch1, repositoryItemToggleSwitch2, repositoryItemToggleSwitch3, repositoryItemTextEdit1, toDateRepo });
+            ribbonControl1.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] { repositoryItemToggleSwitch2, repositoryItemToggleSwitch3, repositoryItemTextEdit1, toDateRepo, fromDateRepo });
             ribbonControl1.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonControlStyle.MacOffice;
             ribbonControl1.ShowApplicationButton = DevExpress.Utils.DefaultBoolean.False;
             ribbonControl1.ShowPageHeadersInFormCaption = DevExpress.Utils.DefaultBoolean.False;
@@ -694,76 +684,6 @@ namespace CHIFA.Pro.Views
             ribbonPageGroup5.Name = "ribbonPageGroup5";
             ribbonPageGroup5.Text = "Impression / Actions";
             // 
-            // repositoryItemToggleSwitch1
-            // 
-            repositoryItemToggleSwitch1.AutoHeight = false;
-            repositoryItemToggleSwitch1.GlyphAlignment = DevExpress.Utils.HorzAlignment.Far;
-            repositoryItemToggleSwitch1.Name = "repositoryItemToggleSwitch1";
-            repositoryItemToggleSwitch1.OffText = "Toutes";
-            repositoryItemToggleSwitch1.OnText = "Dernières";
-            // 
-            // barEditItem6
-            // 
-            barEditItem6.Caption = "Factures : ";
-            barEditItem6.Edit = null;
-            barEditItem6.Id = 11;
-            barEditItem6.ImageOptions.Image = (Image)resources.GetObject("barEditItem6.ImageOptions.Image");
-            barEditItem6.ImageOptions.LargeImage = (Image)resources.GetObject("barEditItem6.ImageOptions.LargeImage");
-            barEditItem6.Name = "barEditItem6";
-            // 
-            // ribbonPageGroup1
-            // 
-            ribbonPageGroup1.Name = "ribbonPageGroup1";
-            // 
-            // ribbonPage1
-            // 
-            ribbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] { ribbonPageGroup1 });
-            ribbonPage1.Name = "ribbonPage1";
-            // 
-            // barEditItem3
-            // 
-            barEditItem3.Caption = "Du : ";
-            barEditItem3.Edit = null;
-            barEditItem3.EditWidth = 100;
-            barEditItem3.Id = 4;
-            barEditItem3.Name = "barEditItem3";
-            // 
-            // barEditItem4
-            // 
-            barEditItem4.Caption = "Au : ";
-            barEditItem4.Edit = null;
-            barEditItem4.EditWidth = 100;
-            barEditItem4.Id = 5;
-            barEditItem4.Name = "barEditItem4";
-            // 
-            // barEditItem5
-            // 
-            barEditItem5.Edit = null;
-            barEditItem5.Id = 7;
-            barEditItem5.ImageOptions.Image = (Image)resources.GetObject("barEditItem5.ImageOptions.Image");
-            barEditItem5.ImageOptions.LargeImage = (Image)resources.GetObject("barEditItem5.ImageOptions.LargeImage");
-            barEditItem5.Name = "barEditItem5";
-            // 
-            // gridColumn1
-            // 
-            gridColumn1.FieldName = "DureeTrait";
-            gridColumn1.MinWidth = 25;
-            gridColumn1.Name = "gridColumn1";
-            gridColumn1.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Max, "DureeTrait", "MAX={0}") });
-            gridColumn1.Visible = true;
-            gridColumn1.VisibleIndex = 3;
-            gridColumn1.Width = 98;
-            // 
-            // gridColumn2
-            // 
-            gridColumn2.FieldName = "DureeTrait";
-            gridColumn2.MinWidth = 25;
-            gridColumn2.Name = "gridColumn2";
-            gridColumn2.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Max, "DureeTrait", "MAX={0}") });
-            gridColumn2.Visible = true;
-            gridColumn2.VisibleIndex = 3;
-            gridColumn2.Width = 98;
-            // 
             // ribbonPageGroup6
             // 
             ribbonPageGroup6.Name = "ribbonPageGroup6";
@@ -798,7 +718,6 @@ namespace CHIFA.Pro.Views
             ((System.ComponentModel.ISupportInitialize)repositoryItemTextEdit1).EndInit();
             ((System.ComponentModel.ISupportInitialize)toDateRepo.CalendarTimeProperties).EndInit();
             ((System.ComponentModel.ISupportInitialize)toDateRepo).EndInit();
-            ((System.ComponentModel.ISupportInitialize)repositoryItemToggleSwitch1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -813,18 +732,9 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraBars.Ribbon.RibbonControl ribbonControl1;
         private DevExpress.XtraBars.BarButtonItem btnRefresh;
         private DevExpress.XtraBars.BarEditItem txtDateFrom;
-        private DevExpress.XtraBars.BarEditItem barEditItem6;
         private DevExpress.XtraEditors.Repository.RepositoryItemDateEdit fromDateRepo;
-        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup1;
-        private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage1;
-        private DevExpress.XtraBars.BarEditItem barEditItem3;
-        private DevExpress.XtraBars.BarEditItem barEditItem4;
-        private DevExpress.XtraBars.BarEditItem barEditItem5;
         private DevExpress.XtraBars.Ribbon.RibbonPage ribbonPage2;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup2;
-        private DevExpress.XtraEditors.Repository.RepositoryItemToggleSwitch repositoryItemToggleSwitch1;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
-        private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
         private BindingSource factureDtoBindingSource;
         private DevExpress.XtraGrid.Columns.GridColumn colNumFact;
         private DevExpress.XtraGrid.Columns.GridColumn colCentre;
