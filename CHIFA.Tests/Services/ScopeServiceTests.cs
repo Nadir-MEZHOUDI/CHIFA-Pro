@@ -42,17 +42,6 @@ public class ScopeServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task AuditBordereauAsync_ReturnsAuditReport()
-    {
-        using var w = StartWatch();
-        var report = await _svc.AuditBordereauAsync();
-
-        report.Should().NotBeNull();
-        report.TotalFacturesAuditees.Should().BeGreaterThanOrEqualTo(0);
-        report.Anomalies.Should().NotBeNull();
-    }
-
-    [Fact]
     public async Task GetRecentFacturesLiveAsync_ReturnsLimitedRows()
     {
         using var w = StartWatch();
