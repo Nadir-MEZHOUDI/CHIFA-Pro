@@ -52,6 +52,9 @@ namespace CHIFA.Pro.Views
             gridColumn1 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn2 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMontantRejete = new DevExpress.XtraGrid.Columns.GridColumn();
+            colTauxRejet = new DevExpress.XtraGrid.Columns.GridColumn();
+            colStatutRejet = new DevExpress.XtraGrid.Columns.GridColumn();
             ((System.ComponentModel.ISupportInitialize)gridBordereaux).BeginInit();
             ((System.ComponentModel.ISupportInitialize)bordereauDtoBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridView1).BeginInit();
@@ -85,7 +88,7 @@ namespace CHIFA.Pro.Views
             // 
             // gridView1
             // 
-            gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNum, colCenter, colDateGen, colDateExtraction, colNmbr, colEtat, colMontOff, colMaj, colMFAE, colMontGlobal, gridColumn1, gridColumn2, gridColumn3 });
+            gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNum, colCenter, colDateGen, colDateExtraction, colNmbr, colEtat, colMontOff, colMaj, colMFAE, colMontGlobal, gridColumn1, gridColumn2, colTauxRejet, colMontantRejete, colStatutRejet, gridColumn3 });
             gridView1.DetailHeight = 371;
             gridFormatRule1.Column = colEtat;
             gridFormatRule1.Description = null;
@@ -233,7 +236,7 @@ namespace CHIFA.Pro.Views
             gridColumn1.Width = 69;
             // 
             // gridColumn2
-            // 
+            //
             gridColumn2.FieldName = "Ecart";
             gridColumn2.MinWidth = 19;
             gridColumn2.Name = "gridColumn2";
@@ -241,14 +244,49 @@ namespace CHIFA.Pro.Views
             gridColumn2.Visible = true;
             gridColumn2.VisibleIndex = 11;
             gridColumn2.Width = 77;
-            // 
+            //
+            // colMontantRejete
+            //
+            colMontantRejete.Caption = "Montant Rejeté";
+            colMontantRejete.DisplayFormat.FormatString = "n2";
+            colMontantRejete.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colMontantRejete.FieldName = "MontantRejete";
+            colMontantRejete.MinWidth = 19;
+            colMontantRejete.Name = "colMontantRejete";
+            colMontantRejete.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontantRejete", "{0:N2}") });
+            colMontantRejete.Visible = true;
+            colMontantRejete.VisibleIndex = 12;
+            colMontantRejete.Width = 90;
+            //
+            // colTauxRejet
+            //
+            colTauxRejet.Caption = "Taux %";
+            colTauxRejet.DisplayFormat.FormatString = "n1";
+            colTauxRejet.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colTauxRejet.FieldName = "TauxRejet";
+            colTauxRejet.MinWidth = 19;
+            colTauxRejet.Name = "colTauxRejet";
+            colTauxRejet.Visible = true;
+            colTauxRejet.VisibleIndex = 13;
+            colTauxRejet.Width = 60;
+            //
+            // colStatutRejet
+            //
+            colStatutRejet.Caption = "Statut Rejet";
+            colStatutRejet.FieldName = "StatutRejet";
+            colStatutRejet.MinWidth = 19;
+            colStatutRejet.Name = "colStatutRejet";
+            colStatutRejet.Visible = true;
+            colStatutRejet.VisibleIndex = 14;
+            colStatutRejet.Width = 110;
+            //
             // gridColumn3
-            // 
+            //
             gridColumn3.DisplayFormat.FormatType = DevExpress.Utils.FormatType.None;
             gridColumn3.FieldName = "DepotFtp";
             gridColumn3.Name = "gridColumn3";
             gridColumn3.Visible = true;
-            gridColumn3.VisibleIndex = 12;
+            gridColumn3.VisibleIndex = 15;
             // 
             // BordereauxUc
             // 
@@ -281,5 +319,8 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn1;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn2;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn3;
+        private DevExpress.XtraGrid.Columns.GridColumn colMontantRejete;
+        private DevExpress.XtraGrid.Columns.GridColumn colTauxRejet;
+        private DevExpress.XtraGrid.Columns.GridColumn colStatutRejet;
     }
 }

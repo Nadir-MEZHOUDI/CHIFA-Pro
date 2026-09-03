@@ -16,9 +16,14 @@ public class BordereauDto
    [DataMember(Order=11)]public DateTime? DateOuverture { get; set; }
    [DataMember(Order=12)]public DateTime? DateDepotFtp { get; set; }
    [DataMember(Order=13)]public DateTime? DateCloture { get; set; }
-    public string DepotFtp => DateDepotFtp is { Year: > 2000 } ? DateDepotFtp.Value.ToString("MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture) : string.Empty;
-    public decimal? Ecart => Virment <= 0 ? 0 : MontGlobal - Virment;
-    public decimal? MFAE => Nmbr * 5;
-    public int Etat => State == 'C' ? 2 : State == 'O' ? 1 : 0;
-    public decimal? MontGlobal => MontOff + Maj + MFAE;
+     public string DepotFtp => DateDepotFtp is { Year: > 2000 } ? DateDepotFtp.Value.ToString("MM-dd-yyyy HH:mm", CultureInfo.InvariantCulture) : string.Empty;
+     public decimal? Ecart => Virment <= 0 ? 0 : MontGlobal - Virment;
+     public decimal? MFAE => Nmbr * 5;
+     public int Etat => State == 'C' ? 2 : State == 'O' ? 1 : 0;
+     public decimal? MontGlobal => MontOff + Maj + MFAE;
+     public decimal? MontantRejete => Math.Max(0, MontGlobal - (Virment ?? 0) ?? 0);
+     public decimal? TauxRejet => MontGlobal > 0 ? (MontantRejete / MontGlobal) * 100 : 0;
+     public string StatutRejet => MontantRejete == 0 ? "Sans Rejet"
+         : Virment <= 0 ? "Non Payé / Rejet Total"
+         : "Rejet Partiel";
 }

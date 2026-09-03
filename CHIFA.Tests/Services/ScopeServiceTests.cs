@@ -23,33 +23,6 @@ public class ScopeServiceTests : IDisposable
     private TimeWatch StartWatch() => new(output: _output);
 
     [Fact]
-    public async Task GetScopeDashboardAsync_ReturnsAggregatedKpis()
-    {
-        using var w = StartWatch();
-        var dashboard = await _svc.GetScopeDashboardAsync();
-
-        dashboard.Should().NotBeNull();
-        dashboard.NombreFactures.Should().BeGreaterThanOrEqualTo(0);
-        dashboard.ActiviteHoraire.Should().NotBeNull();
-        dashboard.ActiviteHoraire.Count.Should().Be(14);
-    }
-
-    [Fact]
-    public async Task GetRejetsAsync_ReturnsRejetList()
-    {
-        using var w = StartWatch();
-        var rejets = (await _svc.GetRejetsAsync()).ToList();
-
-        rejets.Should().NotBeNull();
-        if (rejets.Count > 0)
-        {
-            var first = rejets[0];
-            first.NumBord.Should().NotBeNullOrEmpty();
-            first.MontantRejete.Should().BeGreaterThanOrEqualTo(0);
-        }
-    }
-
-    [Fact]
     public async Task GetPsychotropesAsync_ReturnsRows()
     {
         using var w = StartWatch();

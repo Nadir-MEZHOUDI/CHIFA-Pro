@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using DevExpress.XtraBars;
+using DevExpress.XtraCharts;
 using DevExpress.XtraGrid;
 using DevExpress.XtraTab;
 
@@ -23,6 +25,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     public StatisticsUc()
     {
         InitializeComponent();
+        SetupDashboardCharts();
         Disposed += StatisticsUc_Disposed;
     }
 
@@ -43,6 +46,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         return section switch
         {
+            StatisticsSection.Dashboard => "TABLEAU DE BORD",
             StatisticsSection.Bordereaux => "BORDEREAUX",
             StatisticsSection.Yearly => "ANNUELLES",
             StatisticsSection.Monthly => "MENSUELLES",
@@ -66,6 +70,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         tabControl.SelectedTabPage = (_selectedSection, _selectedView) switch
         {
+            (StatisticsSection.Dashboard, _) => tabDashboard,
             (StatisticsSection.Bordereaux, StatisticsView.Table) => tabBordereauxTable,
             (StatisticsSection.Bordereaux, StatisticsView.Chart) => tabBordereaux,
             (StatisticsSection.Yearly, StatisticsView.Table) => tabYearlyTable,
@@ -275,6 +280,12 @@ public partial class StatisticsUc : XtraUserControl, INavigable
                 return;
 
             SetLoadingState(true);
+            if (tab.Name is nameof(tabDashboard))
+            {
+                await ReloadDashboardAsync(cancellationToken);
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+            }
             if (tab.Name is nameof(tabBordereaux) or nameof(tabBordereauxTable))
             {
                 var data = await StatisticsService.Instance.BordereauxAsync();
@@ -355,6 +366,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         return tab.Name switch
         {
+            nameof(tabDashboard) => StatisticsSection.Dashboard,
             nameof(tabBordereaux) or nameof(tabBordereauxTable) => StatisticsSection.Bordereaux,
             nameof(tabYearly) or nameof(tabYearlyTable) => StatisticsSection.Yearly,
             nameof(tabMonthly) or nameof(tabMonthlyTable) => StatisticsSection.Monthly,
@@ -365,6 +377,138 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             _ => null
         };
     }
+
+    #region Dashboard (Tour de Contrôle)
+
+    private void SetupDashboardCharts()
+    {
+        // Hourly chart
+        chartHourly.Legend.Visibility = DevExpress.Utils.DefaultBoolean.False;
+        chartHourly.Titles.Clear();
+        chartHourly.Titles.Add(new ChartTitle
+        {
+            Text = "Distribution Horaire & Heures de Pointe (Nombre de Factures)",
+            Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+            TextColor = Color.DarkSlateBlue
+        });
+
+        var seriesHourly = new Series("Activité Horaire", ViewType.Bar)
+        {
+            ArgumentDataMember = "TrancheHoraire",
+            ValueDataMembersSerializable = "NombreFactures",
+            LabelsVisibility = DevExpress.Utils.DefaultBoolean.True
+        };
+        if (seriesHourly.View is SideBySideBarSeriesView hourlyBarView)
+        {
+            hourlyBarView.ColorEach = true;
+            hourlyBarView.FillStyle.FillMode = FillMode.Gradient;
+        }
+        if (seriesHourly.Label is SideBySideBarSeriesLabel hourlyLabel)
+        {
+            hourlyLabel.TextPattern = "{V:N0}";
+            hourlyLabel.Position = BarSeriesLabelPosition.Top;
+        }
+        chartHourly.Series.Clear();
+        chartHourly.Series.Add(seriesHourly);
+        if (chartHourly.Diagram is XYDiagram diagHourly)
+        {
+            diagHourly.Rotated = true;
+            diagHourly.AxisX.Reverse = true;
+            diagHourly.AxisX.Label.Angle = 0;
+            diagHourly.AxisX.Label.Font = new Font("Segoe UI", 8.25F);
+            diagHourly.AxisX.Title.Text = "Tranche Horaire";
+            diagHourly.AxisX.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+            diagHourly.AxisY.Title.Text = "Nombre de Factures";
+            diagHourly.AxisY.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+        }
+
+        // Top products chart
+        chartTopProducts.Legend.Visibility = DevExpress.Utils.DefaultBoolean.False;
+        chartTopProducts.Titles.Clear();
+        chartTopProducts.Titles.Add(new ChartTitle
+        {
+            Text = "Top 10 Médicaments Dispensés (Quantité en Boîtes)",
+            Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+            TextColor = Color.DarkSlateBlue
+        });
+
+        var seriesProducts = new Series("Top Médicaments", ViewType.Bar)
+        {
+            ArgumentDataMember = "Designation",
+            ValueDataMembersSerializable = "QuantiteTotale",
+            LabelsVisibility = DevExpress.Utils.DefaultBoolean.True
+        };
+        if (seriesProducts.View is SideBySideBarSeriesView prodBarView)
+        {
+            prodBarView.ColorEach = true;
+            prodBarView.FillStyle.FillMode = FillMode.Gradient;
+        }
+        if (seriesProducts.Label is SideBySideBarSeriesLabel prodLabel)
+        {
+            prodLabel.TextPattern = "{V:N0} btes";
+            prodLabel.Position = BarSeriesLabelPosition.Top;
+        }
+        chartTopProducts.Series.Clear();
+        chartTopProducts.Series.Add(seriesProducts);
+        if (chartTopProducts.Diagram is XYDiagram diagProducts)
+        {
+            diagProducts.Rotated = true;
+            diagProducts.AxisX.Reverse = true;
+            diagProducts.AxisX.Label.Angle = 0;
+            diagProducts.AxisX.Label.Font = new Font("Segoe UI", 8.25F);
+            diagProducts.AxisX.Title.Text = "Médicaments";
+            diagProducts.AxisX.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+            diagProducts.AxisY.Title.Text = "Nombre de Boîtes";
+            diagProducts.AxisY.Title.Visibility = DevExpress.Utils.DefaultBoolean.True;
+        }
+    }
+
+    private async Task ReloadDashboardAsync(CancellationToken cancellationToken)
+    {
+        var dashboard = await StatisticsService.Instance.GetScopeDashboardAsync(StatisticsService.Instance.Period);
+
+        if (cancellationToken.IsCancellationRequested) return;
+
+        // KPIs
+        lblCaVal.Text = $"{dashboard.MontantTotalFact:N2} DA";
+        lblFactVal.Text = $"{dashboard.NombreFactures:N0}";
+        lblBoitesVal.Text = $"{dashboard.NombreBoites:N0}";
+
+        var cnasList = dashboard.RepartitionParCaisse.Where(c => IsCnas(c.Centre)).ToList();
+        var casnosList = dashboard.RepartitionParCaisse.Where(c => IsCasnos(c.Centre)).ToList();
+
+        var cnasMontant = cnasList.Sum(c => c.MontantTotal);
+        var cnasPct = dashboard.MontantTotalFact > 0 ? (cnasMontant / dashboard.MontantTotalFact) * 100m : 0m;
+        lblCnasVal.Text = $"{cnasMontant:N0} DA ({cnasPct:N1}%)";
+
+        var casnosMontant = casnosList.Sum(c => c.MontantTotal);
+        var casnosPct = dashboard.MontantTotalFact > 0 ? (casnosMontant / dashboard.MontantTotalFact) * 100m : 0m;
+        lblCasnosVal.Text = $"{casnosMontant:N0} DA ({casnosPct:N1}%)";
+
+        var totalCaisse = dashboard.RepartitionParCaisse.Sum(c => c.MontantCaisse);
+        var totalAssure = dashboard.RepartitionParCaisse.Sum(c => c.MontantAssure);
+        var totalGeneral = totalCaisse + totalAssure;
+        var tauxCouverture = totalGeneral > 0 ? (totalCaisse / totalGeneral) * 100m : 0m;
+        lblTauxPriseEnChargeVal.Text = $"{tauxCouverture:N1} %";
+
+        chartHourly.DataSource = dashboard.ActiviteHoraire;
+        chartTopProducts.DataSource = dashboard.TopMedicaments;
+    }
+
+    private static bool IsCnas(string? center)
+    {
+        if (string.IsNullOrWhiteSpace(center)) return false;
+        var upper = center.Trim().ToUpperInvariant();
+        return upper.Contains("CNAS") || (!upper.Contains("CASNOS") && !upper.Contains("AUTRE") && !upper.Contains("MUTUELLE") && !upper.Contains("MILITAIRE"));
+    }
+
+    private static bool IsCasnos(string? center)
+    {
+        if (string.IsNullOrWhiteSpace(center)) return false;
+        return center.Trim().ToUpperInvariant().Contains("CASNOS");
+    }
+
+    #endregion
 
     private void SetLoadingState(bool isLoading)
     {
@@ -546,6 +690,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
 public enum StatisticsSection
 {
+    Dashboard,
     Bordereaux,
     Yearly,
     Monthly,

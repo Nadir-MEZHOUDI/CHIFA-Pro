@@ -9,6 +9,109 @@ public class StatisticsService
     public static StatisticsService Instance => _instance ??= new StatisticsService();
 
     public readonly Period Period = new();
+
+    public async ValueTask<ScopeDashboardDto> GetScopeDashboardAsync(Period? period = null)
+    {
+        var activePeriod = period ?? Period;
+        await using var db = new ChifaDb();
+
+        Expression<Func<Facture, bool>> predicate = f => f.DateFact != null;
+        predicate = predicate.SetPeriod(activePeriod);
+
+        var facturesQuery = db.Factures.Where(predicate);
+
+        var kpis = await facturesQuery
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                TotalFact = g.Sum(f => f.MontFact) ?? 0m,
+                TotalCaisse = g.Sum(f => f.MontOff) ?? 0m,
+                TotalAssure = g.Sum(f => f.MontAs) ?? 0m,
+                TotalMaj = g.Sum(f => f.MontMaj) ?? 0m,
+                CountFact = g.Count(),
+                DistinctAssures = g.CountExt(f => f.NumAssure, Sql.AggregateModifier.Distinct)
+            })
+            .FirstOrDefaultAsync()
+            .ConfigureAwait(false);
+
+        var totalBoxes = await db.DetailFacts
+            .Where(d => d.Facture.DateFact != null)
+            .Where(d => (activePeriod.From == null || d.Facture.DateFact >= activePeriod.From) &&
+                        (activePeriod.To == null || d.Facture.DateFact <= activePeriod.To))
+            .SumAsync(d => (decimal?)d.Qte)
+            .ConfigureAwait(false) ?? 0m;
+
+        var hourlyRaw = await facturesQuery
+            .GroupBy(f => f.DateFact!.Value.Hour)
+            .Select(g => new
+            {
+                Hour = g.Key,
+                Count = g.Count(),
+                Total = g.Sum(f => f.MontFact) ?? 0m
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var hourlyList = Enumerable.Range(8, 14)
+            .Select(h =>
+            {
+                var match = hourlyRaw.FirstOrDefault(x => x.Hour == h);
+                return new HourlyActivityDto
+                {
+                    Heure = h,
+                    NombreFactures = match?.Count ?? 0,
+                    MontantTotal = match?.Total ?? 0m
+                };
+            })
+            .ToList();
+
+        var centersRaw = await facturesQuery
+            .GroupBy(f => f.Center!.Nom)
+            .Select(g => new CenterSummaryDto
+            {
+                Centre = g.Key ?? "Inconnu",
+                NombreFactures = g.Count(),
+                MontantTotal = g.Sum(f => f.MontFact) ?? 0m,
+                MontantCaisse = g.Sum(f => f.MontOff) ?? 0m,
+                MontantMaj = g.Sum(f => f.MontMaj) ?? 0m
+            })
+            .OrderByDescending(c => c.MontantTotal)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var topProducts = await db.DetailFacts
+            .Where(d => d.Facture.DateFact != null)
+            .Where(d => (activePeriod.From == null || d.Facture.DateFact >= activePeriod.From) &&
+                        (activePeriod.To == null || d.Facture.DateFact <= activePeriod.To))
+            .GroupBy(d => new { d.NumEnr, Nom = d.Medicament.NomCom, Dci = d.Medicament.NomDci })
+            .Select(g => new TopProductDto
+            {
+                CodeEnr = g.Key.NumEnr ?? "",
+                Designation = g.Key.Nom ?? "Non défini",
+                Dci = g.Key.Dci ?? "",
+                QuantiteTotale = g.Sum(d => d.Qte),
+                MontantTotal = g.Sum(d => d.MontPharm) ?? 0m
+            })
+            .OrderByDescending(p => p.QuantiteTotale)
+            .Take(10)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return new ScopeDashboardDto
+        {
+            MontantTotalFact = kpis?.TotalFact ?? 0m,
+            MontantTotalCaisse = kpis?.TotalCaisse ?? 0m,
+            MontantTotalAssure = kpis?.TotalAssure ?? 0m,
+            MontantTotalMajoration = kpis?.TotalMaj ?? 0m,
+            NombreFactures = kpis?.CountFact ?? 0,
+            NombreAssuresUniques = kpis?.DistinctAssures ?? 0,
+            NombreBoites = totalBoxes,
+            ActiviteHoraire = hourlyList,
+            RepartitionParCaisse = centersRaw,
+            TopMedicaments = topProducts
+        };
+    }
+
     public async ValueTask<List<ThisWeekStat>> GetThisWeekStatsAsync()
     {
         await using var db = new ChifaDb();

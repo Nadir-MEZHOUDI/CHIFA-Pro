@@ -236,6 +236,31 @@ namespace CHIFA.Pro.Views
             colGP = new DevExpress.XtraGrid.Columns.GridColumn();
             colCodeDCI = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            tabDashboard = new DevExpress.XtraTab.XtraTabPage();
+            panelHeaderDashboard = new DevExpress.XtraEditors.PanelControl();
+            lblDashboardTitle = new DevExpress.XtraEditors.LabelControl();
+            panelKpisDashboard = new DevExpress.XtraEditors.PanelControl();
+            pnlKpiTaux = new DevExpress.XtraEditors.PanelControl();
+            lblTauxPriseEnChargeVal = new DevExpress.XtraEditors.LabelControl();
+            lblTauxPriseEnChargeTitle = new DevExpress.XtraEditors.LabelControl();
+            pnlKpiCasnos = new DevExpress.XtraEditors.PanelControl();
+            lblCasnosVal = new DevExpress.XtraEditors.LabelControl();
+            lblCasnosTitle = new DevExpress.XtraEditors.LabelControl();
+            pnlKpiCnas = new DevExpress.XtraEditors.PanelControl();
+            lblCnasVal = new DevExpress.XtraEditors.LabelControl();
+            lblCnasTitle = new DevExpress.XtraEditors.LabelControl();
+            pnlKpiBoites = new DevExpress.XtraEditors.PanelControl();
+            lblBoitesVal = new DevExpress.XtraEditors.LabelControl();
+            lblBoitesTitle = new DevExpress.XtraEditors.LabelControl();
+            pnlKpiFactures = new DevExpress.XtraEditors.PanelControl();
+            lblFactVal = new DevExpress.XtraEditors.LabelControl();
+            lblFactTitle = new DevExpress.XtraEditors.LabelControl();
+            pnlKpiCa = new DevExpress.XtraEditors.PanelControl();
+            lblCaVal = new DevExpress.XtraEditors.LabelControl();
+            lblCaTitle = new DevExpress.XtraEditors.LabelControl();
+            splitContainerCharts = new DevExpress.XtraEditors.SplitContainerControl();
+            chartHourly = new DevExpress.XtraCharts.ChartControl();
+            chartTopProducts = new DevExpress.XtraCharts.ChartControl();
             tabClients = new DevExpress.XtraTab.XtraTabPage();
             chartClients = new ChartControl();
             tabControl = new DevExpress.XtraTab.XtraTabControl();
@@ -468,6 +493,31 @@ namespace CHIFA.Pro.Views
             ((System.ComponentModel.ISupportInitialize)repositoryItemRibbonSearchEdit1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridControl5).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridView1).BeginInit();
+            tabDashboard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)panelHeaderDashboard).BeginInit();
+            panelHeaderDashboard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)panelKpisDashboard).BeginInit();
+            panelKpisDashboard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiTaux).BeginInit();
+            pnlKpiTaux.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiCasnos).BeginInit();
+            pnlKpiCasnos.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiCnas).BeginInit();
+            pnlKpiCnas.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiBoites).BeginInit();
+            pnlKpiBoites.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiFactures).BeginInit();
+            pnlKpiFactures.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiCa).BeginInit();
+            pnlKpiCa.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainerCharts).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)splitContainerCharts.Panel1).BeginInit();
+            splitContainerCharts.Panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainerCharts.Panel2).BeginInit();
+            splitContainerCharts.Panel2.SuspendLayout();
+            splitContainerCharts.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)chartHourly).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)chartTopProducts).BeginInit();
             SuspendLayout();
             // 
             // colPA
@@ -1483,7 +1533,349 @@ namespace CHIFA.Pro.Views
             gridColumn3.Visible = true;
             gridColumn3.VisibleIndex = 2;
             gridColumn3.Width = 84;
-            // 
+            //
+            // tabDashboard
+            //
+            tabDashboard.Controls.Add(splitContainerCharts);
+            tabDashboard.Controls.Add(panelKpisDashboard);
+            tabDashboard.Controls.Add(panelHeaderDashboard);
+            tabDashboard.Name = "tabDashboard";
+            tabDashboard.Size = new Size(1544, 859);
+            tabDashboard.Text = "TABLEAU DE BORD";
+            //
+            // panelHeaderDashboard
+            //
+            panelHeaderDashboard.Controls.Add(lblDashboardTitle);
+            panelHeaderDashboard.Dock = DockStyle.Top;
+            panelHeaderDashboard.Location = new Point(0, 0);
+            panelHeaderDashboard.Margin = new Padding(4);
+            panelHeaderDashboard.Name = "panelHeaderDashboard";
+            panelHeaderDashboard.Padding = new Padding(15, 10, 15, 10);
+            panelHeaderDashboard.Size = new Size(1544, 50);
+            panelHeaderDashboard.TabIndex = 0;
+            //
+            // lblDashboardTitle
+            //
+            lblDashboardTitle.Appearance.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
+            lblDashboardTitle.Appearance.ForeColor = Color.DarkSlateBlue;
+            lblDashboardTitle.Appearance.Options.UseFont = true;
+            lblDashboardTitle.Appearance.Options.UseForeColor = true;
+            lblDashboardTitle.Dock = DockStyle.Left;
+            lblDashboardTitle.Location = new Point(17, 12);
+            lblDashboardTitle.Margin = new Padding(4);
+            lblDashboardTitle.Name = "lblDashboardTitle";
+            lblDashboardTitle.Size = new Size(340, 28);
+            lblDashboardTitle.TabIndex = 0;
+            lblDashboardTitle.Text = "CHIFA SCOPE - TOUR DE CONTRÔLE";
+            //
+            // panelKpisDashboard
+            //
+            panelKpisDashboard.Controls.Add(pnlKpiTaux);
+            panelKpisDashboard.Controls.Add(pnlKpiCasnos);
+            panelKpisDashboard.Controls.Add(pnlKpiCnas);
+            panelKpisDashboard.Controls.Add(pnlKpiBoites);
+            panelKpisDashboard.Controls.Add(pnlKpiFactures);
+            panelKpisDashboard.Controls.Add(pnlKpiCa);
+            panelKpisDashboard.Dock = DockStyle.Top;
+            panelKpisDashboard.Location = new Point(0, 50);
+            panelKpisDashboard.Margin = new Padding(4);
+            panelKpisDashboard.Name = "panelKpisDashboard";
+            panelKpisDashboard.Padding = new Padding(8, 7, 8, 7);
+            panelKpisDashboard.Size = new Size(1544, 93);
+            panelKpisDashboard.TabIndex = 1;
+            //
+            // pnlKpiTaux
+            //
+            pnlKpiTaux.Appearance.BackColor = Color.Honeydew;
+            pnlKpiTaux.Appearance.Options.UseBackColor = true;
+            pnlKpiTaux.Controls.Add(lblTauxPriseEnChargeVal);
+            pnlKpiTaux.Controls.Add(lblTauxPriseEnChargeTitle);
+            pnlKpiTaux.Dock = DockStyle.Left;
+            pnlKpiTaux.Location = new Point(1154, 9);
+            pnlKpiTaux.Margin = new Padding(4);
+            pnlKpiTaux.Name = "pnlKpiTaux";
+            pnlKpiTaux.Padding = new Padding(10, 7, 10, 7);
+            pnlKpiTaux.Size = new Size(244, 75);
+            pnlKpiTaux.TabIndex = 5;
+            //
+            // lblTauxPriseEnChargeVal
+            //
+            lblTauxPriseEnChargeVal.Appearance.Font = new Font("Segoe UI", 11.5F, FontStyle.Bold);
+            lblTauxPriseEnChargeVal.Appearance.ForeColor = Color.SeaGreen;
+            lblTauxPriseEnChargeVal.Appearance.Options.UseFont = true;
+            lblTauxPriseEnChargeVal.Appearance.Options.UseForeColor = true;
+            lblTauxPriseEnChargeVal.Dock = DockStyle.Fill;
+            lblTauxPriseEnChargeVal.Location = new Point(12, 24);
+            lblTauxPriseEnChargeVal.Margin = new Padding(4);
+            lblTauxPriseEnChargeVal.Name = "lblTauxPriseEnChargeVal";
+            lblTauxPriseEnChargeVal.Size = new Size(48, 25);
+            lblTauxPriseEnChargeVal.TabIndex = 1;
+            lblTauxPriseEnChargeVal.Text = "0.0 %";
+            //
+            // lblTauxPriseEnChargeTitle
+            //
+            lblTauxPriseEnChargeTitle.Appearance.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            lblTauxPriseEnChargeTitle.Appearance.ForeColor = Color.DarkGreen;
+            lblTauxPriseEnChargeTitle.Appearance.Options.UseFont = true;
+            lblTauxPriseEnChargeTitle.Appearance.Options.UseForeColor = true;
+            lblTauxPriseEnChargeTitle.Dock = DockStyle.Top;
+            lblTauxPriseEnChargeTitle.Location = new Point(12, 9);
+            lblTauxPriseEnChargeTitle.Margin = new Padding(4);
+            lblTauxPriseEnChargeTitle.Name = "lblTauxPriseEnChargeTitle";
+            lblTauxPriseEnChargeTitle.Size = new Size(135, 15);
+            lblTauxPriseEnChargeTitle.TabIndex = 0;
+            lblTauxPriseEnChargeTitle.Text = "TAUX PRISE EN CHARGE";
+            //
+            // pnlKpiCasnos
+            //
+            pnlKpiCasnos.Appearance.BackColor = Color.FloralWhite;
+            pnlKpiCasnos.Appearance.Options.UseBackColor = true;
+            pnlKpiCasnos.Controls.Add(lblCasnosVal);
+            pnlKpiCasnos.Controls.Add(lblCasnosTitle);
+            pnlKpiCasnos.Dock = DockStyle.Left;
+            pnlKpiCasnos.Location = new Point(910, 9);
+            pnlKpiCasnos.Margin = new Padding(4);
+            pnlKpiCasnos.Name = "pnlKpiCasnos";
+            pnlKpiCasnos.Padding = new Padding(10, 7, 10, 7);
+            pnlKpiCasnos.Size = new Size(244, 75);
+            pnlKpiCasnos.TabIndex = 4;
+            //
+            // lblCasnosVal
+            //
+            lblCasnosVal.Appearance.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblCasnosVal.Appearance.ForeColor = Color.DarkGoldenrod;
+            lblCasnosVal.Appearance.Options.UseFont = true;
+            lblCasnosVal.Appearance.Options.UseForeColor = true;
+            lblCasnosVal.Dock = DockStyle.Fill;
+            lblCasnosVal.Location = new Point(12, 24);
+            lblCasnosVal.Margin = new Padding(4);
+            lblCasnosVal.Name = "lblCasnosVal";
+            lblCasnosVal.Size = new Size(111, 25);
+            lblCasnosVal.TabIndex = 1;
+            lblCasnosVal.Text = "0.00 DA (0%)";
+            //
+            // lblCasnosTitle
+            //
+            lblCasnosTitle.Appearance.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            lblCasnosTitle.Appearance.ForeColor = Color.DarkOrange;
+            lblCasnosTitle.Appearance.Options.UseFont = true;
+            lblCasnosTitle.Appearance.Options.UseForeColor = true;
+            lblCasnosTitle.Dock = DockStyle.Top;
+            lblCasnosTitle.Location = new Point(12, 9);
+            lblCasnosTitle.Margin = new Padding(4);
+            lblCasnosTitle.Name = "lblCasnosTitle";
+            lblCasnosTitle.Size = new Size(128, 15);
+            lblCasnosTitle.TabIndex = 0;
+            lblCasnosTitle.Text = "PART CASNOS (TOTAL)";
+            //
+            // pnlKpiCnas
+            //
+            pnlKpiCnas.Appearance.BackColor = Color.GhostWhite;
+            pnlKpiCnas.Appearance.Options.UseBackColor = true;
+            pnlKpiCnas.Controls.Add(lblCnasVal);
+            pnlKpiCnas.Controls.Add(lblCnasTitle);
+            pnlKpiCnas.Dock = DockStyle.Left;
+            pnlKpiCnas.Location = new Point(666, 9);
+            pnlKpiCnas.Margin = new Padding(4);
+            pnlKpiCnas.Name = "pnlKpiCnas";
+            pnlKpiCnas.Padding = new Padding(10, 7, 10, 7);
+            pnlKpiCnas.Size = new Size(244, 75);
+            pnlKpiCnas.TabIndex = 3;
+            //
+            // lblCnasVal
+            //
+            lblCnasVal.Appearance.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblCnasVal.Appearance.ForeColor = Color.DarkSlateBlue;
+            lblCnasVal.Appearance.Options.UseFont = true;
+            lblCnasVal.Appearance.Options.UseForeColor = true;
+            lblCnasVal.Dock = DockStyle.Fill;
+            lblCnasVal.Location = new Point(12, 24);
+            lblCnasVal.Margin = new Padding(4);
+            lblCnasVal.Name = "lblCnasVal";
+            lblCnasVal.Size = new Size(111, 25);
+            lblCnasVal.TabIndex = 1;
+            lblCnasVal.Text = "0.00 DA (0%)";
+            //
+            // lblCnasTitle
+            //
+            lblCnasTitle.Appearance.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            lblCnasTitle.Appearance.ForeColor = Color.MediumSlateBlue;
+            lblCnasTitle.Appearance.Options.UseFont = true;
+            lblCnasTitle.Appearance.Options.UseForeColor = true;
+            lblCnasTitle.Dock = DockStyle.Top;
+            lblCnasTitle.Location = new Point(12, 9);
+            lblCnasTitle.Margin = new Padding(4);
+            lblCnasTitle.Name = "lblCnasTitle";
+            lblCnasTitle.Size = new Size(112, 15);
+            lblCnasTitle.TabIndex = 0;
+            lblCnasTitle.Text = "PART CNAS (TOTAL)";
+            //
+            // pnlKpiBoites
+            //
+            pnlKpiBoites.Appearance.BackColor = Color.MintCream;
+            pnlKpiBoites.Appearance.Options.UseBackColor = true;
+            pnlKpiBoites.Controls.Add(lblBoitesVal);
+            pnlKpiBoites.Controls.Add(lblBoitesTitle);
+            pnlKpiBoites.Dock = DockStyle.Left;
+            pnlKpiBoites.Location = new Point(460, 9);
+            pnlKpiBoites.Margin = new Padding(4);
+            pnlKpiBoites.Name = "pnlKpiBoites";
+            pnlKpiBoites.Padding = new Padding(10, 7, 10, 7);
+            pnlKpiBoites.Size = new Size(206, 75);
+            pnlKpiBoites.TabIndex = 2;
+            //
+            // lblBoitesVal
+            //
+            lblBoitesVal.Appearance.Font = new Font("Segoe UI", 11.5F, FontStyle.Bold);
+            lblBoitesVal.Appearance.ForeColor = Color.Teal;
+            lblBoitesVal.Appearance.Options.UseFont = true;
+            lblBoitesVal.Appearance.Options.UseForeColor = true;
+            lblBoitesVal.Dock = DockStyle.Fill;
+            lblBoitesVal.Location = new Point(12, 24);
+            lblBoitesVal.Margin = new Padding(4);
+            lblBoitesVal.Name = "lblBoitesVal";
+            lblBoitesVal.Size = new Size(11, 25);
+            lblBoitesVal.TabIndex = 1;
+            lblBoitesVal.Text = "0";
+            //
+            // lblBoitesTitle
+            //
+            lblBoitesTitle.Appearance.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            lblBoitesTitle.Appearance.ForeColor = Color.DarkSlateGray;
+            lblBoitesTitle.Appearance.Options.UseFont = true;
+            lblBoitesTitle.Appearance.Options.UseForeColor = true;
+            lblBoitesTitle.Dock = DockStyle.Top;
+            lblBoitesTitle.Location = new Point(12, 9);
+            lblBoitesTitle.Margin = new Padding(4);
+            lblBoitesTitle.Name = "lblBoitesTitle";
+            lblBoitesTitle.Size = new Size(104, 15);
+            lblBoitesTitle.TabIndex = 0;
+            lblBoitesTitle.Text = "BOÎTES DÉLIVRÉES";
+            //
+            // pnlKpiFactures
+            //
+            pnlKpiFactures.Appearance.BackColor = Color.WhiteSmoke;
+            pnlKpiFactures.Appearance.Options.UseBackColor = true;
+            pnlKpiFactures.Controls.Add(lblFactVal);
+            pnlKpiFactures.Controls.Add(lblFactTitle);
+            pnlKpiFactures.Dock = DockStyle.Left;
+            pnlKpiFactures.Location = new Point(254, 9);
+            pnlKpiFactures.Margin = new Padding(4);
+            pnlKpiFactures.Name = "pnlKpiFactures";
+            pnlKpiFactures.Padding = new Padding(10, 7, 10, 7);
+            pnlKpiFactures.Size = new Size(206, 75);
+            pnlKpiFactures.TabIndex = 1;
+            //
+            // lblFactVal
+            //
+            lblFactVal.Appearance.Font = new Font("Segoe UI", 11.5F, FontStyle.Bold);
+            lblFactVal.Appearance.ForeColor = Color.DarkGreen;
+            lblFactVal.Appearance.Options.UseFont = true;
+            lblFactVal.Appearance.Options.UseForeColor = true;
+            lblFactVal.Dock = DockStyle.Fill;
+            lblFactVal.Location = new Point(12, 24);
+            lblFactVal.Margin = new Padding(4);
+            lblFactVal.Name = "lblFactVal";
+            lblFactVal.Size = new Size(11, 25);
+            lblFactVal.TabIndex = 1;
+            lblFactVal.Text = "0";
+            //
+            // lblFactTitle
+            //
+            lblFactTitle.Appearance.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            lblFactTitle.Appearance.ForeColor = Color.ForestGreen;
+            lblFactTitle.Appearance.Options.UseFont = true;
+            lblFactTitle.Appearance.Options.UseForeColor = true;
+            lblFactTitle.Dock = DockStyle.Top;
+            lblFactTitle.Location = new Point(12, 9);
+            lblFactTitle.Margin = new Padding(4);
+            lblFactTitle.Name = "lblFactTitle";
+            lblFactTitle.Size = new Size(98, 15);
+            lblFactTitle.TabIndex = 0;
+            lblFactTitle.Text = "TOTAL FACTURES";
+            //
+            // pnlKpiCa
+            //
+            pnlKpiCa.Appearance.BackColor = Color.AliceBlue;
+            pnlKpiCa.Appearance.Options.UseBackColor = true;
+            pnlKpiCa.Controls.Add(lblCaVal);
+            pnlKpiCa.Controls.Add(lblCaTitle);
+            pnlKpiCa.Dock = DockStyle.Left;
+            pnlKpiCa.Location = new Point(10, 9);
+            pnlKpiCa.Margin = new Padding(4);
+            pnlKpiCa.Name = "pnlKpiCa";
+            pnlKpiCa.Padding = new Padding(10, 7, 10, 7);
+            pnlKpiCa.Size = new Size(244, 75);
+            pnlKpiCa.TabIndex = 0;
+            //
+            // lblCaVal
+            //
+            lblCaVal.Appearance.Font = new Font("Segoe UI", 11.5F, FontStyle.Bold);
+            lblCaVal.Appearance.ForeColor = Color.MidnightBlue;
+            lblCaVal.Appearance.Options.UseFont = true;
+            lblCaVal.Appearance.Options.UseForeColor = true;
+            lblCaVal.Dock = DockStyle.Fill;
+            lblCaVal.Location = new Point(12, 24);
+            lblCaVal.Margin = new Padding(4);
+            lblCaVal.Name = "lblCaVal";
+            lblCaVal.Size = new Size(70, 25);
+            lblCaVal.TabIndex = 1;
+            lblCaVal.Text = "0.00 DA";
+            //
+            // lblCaTitle
+            //
+            lblCaTitle.Appearance.Font = new Font("Segoe UI", 7.5F, FontStyle.Bold);
+            lblCaTitle.Appearance.ForeColor = Color.SteelBlue;
+            lblCaTitle.Appearance.Options.UseFont = true;
+            lblCaTitle.Appearance.Options.UseForeColor = true;
+            lblCaTitle.Dock = DockStyle.Top;
+            lblCaTitle.Location = new Point(12, 9);
+            lblCaTitle.Margin = new Padding(4);
+            lblCaTitle.Name = "lblCaTitle";
+            lblCaTitle.Size = new Size(115, 15);
+            lblCaTitle.TabIndex = 0;
+            lblCaTitle.Text = "CHIFFRE D'AFFAIRES";
+            //
+            // splitContainerCharts
+            //
+            splitContainerCharts.Dock = DockStyle.Fill;
+            splitContainerCharts.Location = new Point(0, 143);
+            splitContainerCharts.Margin = new Padding(4);
+            splitContainerCharts.Name = "splitContainerCharts";
+            //
+            // splitContainerCharts.Panel1
+            //
+            splitContainerCharts.Panel1.Controls.Add(chartHourly);
+            splitContainerCharts.Panel1.Padding = new Padding(8, 7, 8, 7);
+            splitContainerCharts.Panel1.Text = "Panel1";
+            //
+            // splitContainerCharts.Panel2
+            //
+            splitContainerCharts.Panel2.Controls.Add(chartTopProducts);
+            splitContainerCharts.Panel2.Padding = new Padding(8, 7, 8, 7);
+            splitContainerCharts.Panel2.Text = "Panel2";
+            splitContainerCharts.Size = new Size(1544, 716);
+            splitContainerCharts.SplitterPosition = 772;
+            splitContainerCharts.TabIndex = 2;
+            //
+            // chartHourly
+            //
+            chartHourly.Dock = DockStyle.Fill;
+            chartHourly.Location = new Point(8, 7);
+            chartHourly.Margin = new Padding(4);
+            chartHourly.Name = "chartHourly";
+            chartHourly.Size = new Size(756, 702);
+            chartHourly.TabIndex = 0;
+            //
+            // chartTopProducts
+            //
+            chartTopProducts.Dock = DockStyle.Fill;
+            chartTopProducts.Location = new Point(8, 7);
+            chartTopProducts.Margin = new Padding(4);
+            chartTopProducts.Name = "chartTopProducts";
+            chartTopProducts.Size = new Size(750, 702);
+            chartTopProducts.TabIndex = 0;
+            //
             // tabClients
             // 
             tabClients.Controls.Add(chartClients);
@@ -1631,7 +2023,7 @@ namespace CHIFA.Pro.Views
             tabControl.ShowTabHeader = DevExpress.Utils.DefaultBoolean.False;
             tabControl.Size = new Size(1551, 865);
             tabControl.TabIndex = 1;
-            tabControl.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] { tabBordereauxTable, tabBordereaux, tabYearlyTable, tabYearly, tabMonthlyTable, tabMonthly, tabWeeklyTable, tabWeekly, tabDailyTable, tabDaily, tabProductTable, tabProducts2, tabClientsTable, tabClients });
+            tabControl.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] { tabDashboard, tabBordereauxTable, tabBordereaux, tabYearlyTable, tabYearly, tabMonthlyTable, tabMonthly, tabWeeklyTable, tabWeekly, tabDailyTable, tabDaily, tabProductTable, tabProducts2, tabClientsTable, tabClients });
             tabControl.SelectedPageChanged += tabControl_SelectedPageChanged;
             //
             // loadingIndicator
@@ -2960,6 +3352,38 @@ namespace CHIFA.Pro.Views
             ((System.ComponentModel.ISupportInitialize)repositoryItemRibbonSearchEdit1).EndInit();
             ((System.ComponentModel.ISupportInitialize)gridControl5).EndInit();
             ((System.ComponentModel.ISupportInitialize)gridView1).EndInit();
+            tabDashboard.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)panelHeaderDashboard).EndInit();
+            panelHeaderDashboard.ResumeLayout(false);
+            panelHeaderDashboard.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)panelKpisDashboard).EndInit();
+            panelKpisDashboard.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pnlKpiTaux).EndInit();
+            pnlKpiTaux.ResumeLayout(false);
+            pnlKpiTaux.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiCasnos).EndInit();
+            pnlKpiCasnos.ResumeLayout(false);
+            pnlKpiCasnos.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiCnas).EndInit();
+            pnlKpiCnas.ResumeLayout(false);
+            pnlKpiCnas.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiBoites).EndInit();
+            pnlKpiBoites.ResumeLayout(false);
+            pnlKpiBoites.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiFactures).EndInit();
+            pnlKpiFactures.ResumeLayout(false);
+            pnlKpiFactures.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pnlKpiCa).EndInit();
+            pnlKpiCa.ResumeLayout(false);
+            pnlKpiCa.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainerCharts.Panel1).EndInit();
+            splitContainerCharts.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainerCharts.Panel2).EndInit();
+            splitContainerCharts.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainerCharts).EndInit();
+            splitContainerCharts.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)chartHourly).EndInit();
+            ((System.ComponentModel.ISupportInitialize)chartTopProducts).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -3139,5 +3563,30 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroupView;
         private DevExpress.XtraBars.BarCheckItem btnTable;
         private DevExpress.XtraBars.BarCheckItem btnChart;
+        private DevExpress.XtraTab.XtraTabPage tabDashboard;
+        private DevExpress.XtraEditors.PanelControl panelHeaderDashboard;
+        private DevExpress.XtraEditors.LabelControl lblDashboardTitle;
+        private DevExpress.XtraEditors.PanelControl panelKpisDashboard;
+        private DevExpress.XtraEditors.PanelControl pnlKpiTaux;
+        private DevExpress.XtraEditors.LabelControl lblTauxPriseEnChargeVal;
+        private DevExpress.XtraEditors.LabelControl lblTauxPriseEnChargeTitle;
+        private DevExpress.XtraEditors.PanelControl pnlKpiCasnos;
+        private DevExpress.XtraEditors.LabelControl lblCasnosVal;
+        private DevExpress.XtraEditors.LabelControl lblCasnosTitle;
+        private DevExpress.XtraEditors.PanelControl pnlKpiCnas;
+        private DevExpress.XtraEditors.LabelControl lblCnasVal;
+        private DevExpress.XtraEditors.LabelControl lblCnasTitle;
+        private DevExpress.XtraEditors.PanelControl pnlKpiBoites;
+        private DevExpress.XtraEditors.LabelControl lblBoitesVal;
+        private DevExpress.XtraEditors.LabelControl lblBoitesTitle;
+        private DevExpress.XtraEditors.PanelControl pnlKpiFactures;
+        private DevExpress.XtraEditors.LabelControl lblFactVal;
+        private DevExpress.XtraEditors.LabelControl lblFactTitle;
+        private DevExpress.XtraEditors.PanelControl pnlKpiCa;
+        private DevExpress.XtraEditors.LabelControl lblCaVal;
+        private DevExpress.XtraEditors.LabelControl lblCaTitle;
+        private DevExpress.XtraEditors.SplitContainerControl splitContainerCharts;
+        private DevExpress.XtraCharts.ChartControl chartHourly;
+        private DevExpress.XtraCharts.ChartControl chartTopProducts;
     }
 }

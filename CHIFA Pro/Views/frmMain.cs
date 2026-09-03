@@ -35,7 +35,7 @@ public partial class FrmMain : XtraForm
 
     private void accTourDeControle_Click(object sender, EventArgs e)
     {
-        sender.NavigateTo<ScopeDashboardUc>();
+        sender.NavigateTo<StatisticsUc>(s => s.SelectSection(StatisticsSection.Dashboard));
     }
 
     private void accAuditBordereau_Click(object sender, EventArgs e)
@@ -46,11 +46,6 @@ public partial class FrmMain : XtraForm
     private void accPsychotropes_Click(object sender, EventArgs e)
     {
         sender.NavigateTo<PsychotropesUc>();
-    }
-
-    private void accRejets_Click(object sender, EventArgs e)
-    {
-        sender.NavigateTo<RejetsUc>();
     }
 
     private void accSpecialists_Click(object sender, EventArgs e)
