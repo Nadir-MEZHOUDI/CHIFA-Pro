@@ -22,7 +22,10 @@
 
 		<MajorVersion>$([MSBuild]::Subtract($(CurrentYear), 2022))</MajorVersion>
 		<MinorVersion>$(CurrentMonth)</MinorVersion>
-		<PatchVersion>$([System.DateTime]::Now.ToString("ddHH"))</PatchVersion>
+		<CurrentHour>$([System.DateTime]::Now.Hour)</CurrentHour>
+
+		<!-- ddHH as a number: a leading zero on days 1-9 is an invalid semver patch and breaks Velopack Setup -->
+		<PatchVersion>$([MSBuild]::Add($([MSBuild]::Multiply($(CurrentDay), 100)), $(CurrentHour)))</PatchVersion>
 
 		<Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)</Version>
 
