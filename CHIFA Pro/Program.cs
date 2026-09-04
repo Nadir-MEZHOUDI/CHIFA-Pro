@@ -37,7 +37,6 @@ internal static partial class Program
                 .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
  
-
             SetExceptionHandling();
             SetTelemetry();
 
@@ -100,7 +99,6 @@ internal static partial class Program
     private static void DisposeTelemetry()
     {
         if (_telemetry is null) return;
-
         try
         {
             _telemetry.DisposeAsync().AsTask().GetAwaiter().GetResult();

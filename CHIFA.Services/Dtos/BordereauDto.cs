@@ -22,6 +22,6 @@ public class BordereauDto
     public decimal? MFAE => Nmbr * 5;
     public int Etat => State == 'C' ? 2 : State == 'O' ? 1 : 0;
     public decimal? MontGlobal => MontOff + Maj + MFAE;
-    public decimal? TauxRejet => MontGlobal > 0 ? (MontantRejete / MontGlobal) * 100 : 0;
+    public decimal? TauxRejet => MontGlobal > 0 ? (MontantRejete )/ MontGlobal : 0;
     public string StatutRejet => Virment == 0 ? "Non Payé" : MontantRejete == 0 ? "Sans Rejet" : "Rejet Partiel";
 }

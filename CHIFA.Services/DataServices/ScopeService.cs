@@ -51,7 +51,6 @@ public class ScopeService
                 NomBeneficiaire = d.Facture.Beneficiaire.FullName,
                 Rang = d.Facture.RangAd,
                 Medecin = d.Facture.Specialite!.Libelle,
-                SpecialiteMedecin = d.Facture.Specialite.Libelle,
                 CodeEnr = d.NumEnr,
                 CodeDci = d.Medicament.CodeDci,
                 Tableau = d.Medicament.Tableau != null ? d.Medicament.Tableau.ToString() : null,
@@ -63,7 +62,6 @@ public class ScopeService
                 DureeTrait = d.DureeTrait,
                 Ppa = d.Ppa,
                 TarifRef = d.TarifRef,
-                NumeroOrdonnance = d.Facture.NumFact,
                 EstTraitementSpecial = d.Ts == true
             })
             .OrderByDescending(p => p.DateDelivrance)
@@ -75,14 +73,10 @@ public class ScopeService
         {
             NumFact = d.NumFact,
             DateDelivrance = d.DateDelivrance,
-            NumAssure = d.NumAssure,
+            NumAssure = d.NumAssure+"-"+d.Rang,
             NomAssure = d.NomAssure,
             NomBeneficiaire = d.NomBeneficiaire,
-            Rang = d.Rang,
             Medecin = d.Medecin,
-            SpecialiteMedecin = d.SpecialiteMedecin,
-            CodeEnr = d.CodeEnr,
-            CodeDci = d.CodeDci,
             CategoriePsychotrope = PsychotropesHelper.GetCategorie(d.CodeDci),
             Tableau = d.Tableau,
             MedicamentNom = d.MedicamentNom,
@@ -92,8 +86,6 @@ public class ScopeService
             Quantite = d.Quantite,
             DureeTrait = d.DureeTrait,
             Ppa = d.Ppa,
-            TarifRef = d.TarifRef,
-            NumeroOrdonnance = d.NumeroOrdonnance,
             EstTraitementSpecial = d.EstTraitementSpecial
         }).ToList();
     }

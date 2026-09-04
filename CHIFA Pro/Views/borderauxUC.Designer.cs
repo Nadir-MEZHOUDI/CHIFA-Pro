@@ -78,7 +78,7 @@ namespace CHIFA.Pro.Views
             gridBordereaux.MainView = gridView1;
             gridBordereaux.Margin = new Padding(4, 3, 4, 3);
             gridBordereaux.Name = "gridBordereaux";
-            gridBordereaux.Size = new Size(1362, 576);
+            gridBordereaux.Size = new Size(1363, 575);
             gridBordereaux.TabIndex = 0;
             gridBordereaux.ViewCollection.AddRange(new BaseView[] { gridView1 });
             // 
@@ -177,7 +177,7 @@ namespace CHIFA.Pro.Views
             // 
             // colMontOff
             // 
-            colMontOff.DisplayFormat.FormatString = "n";
+            colMontOff.DisplayFormat.FormatString = "n2";
             colMontOff.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colMontOff.FieldName = "MontOff";
             colMontOff.MinWidth = 15;
@@ -189,7 +189,7 @@ namespace CHIFA.Pro.Views
             // 
             // colMaj
             // 
-            colMaj.DisplayFormat.FormatString = "n";
+            colMaj.DisplayFormat.FormatString = "n2";
             colMaj.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colMaj.FieldName = "Maj";
             colMaj.MinWidth = 15;
@@ -201,7 +201,7 @@ namespace CHIFA.Pro.Views
             // 
             // colMFAE
             // 
-            colMFAE.DisplayFormat.FormatString = "n";
+            colMFAE.DisplayFormat.FormatString = "n2";
             colMFAE.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colMFAE.FieldName = "MFAE";
             colMFAE.MinWidth = 15;
@@ -214,7 +214,7 @@ namespace CHIFA.Pro.Views
             // 
             colMontGlobal.AppearanceCell.BackColor = Color.FromArgb(192, 255, 192);
             colMontGlobal.AppearanceCell.Options.UseBackColor = true;
-            colMontGlobal.DisplayFormat.FormatString = "n";
+            colMontGlobal.DisplayFormat.FormatString = "n2";
             colMontGlobal.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colMontGlobal.FieldName = "MontGlobal";
             colMontGlobal.MinWidth = 15;
@@ -226,6 +226,8 @@ namespace CHIFA.Pro.Views
             // 
             // gridColumn1
             // 
+            gridColumn1.DisplayFormat.FormatString = "n2";
+            gridColumn1.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             gridColumn1.FieldName = "Virment";
             gridColumn1.MinWidth = 19;
             gridColumn1.Name = "gridColumn1";
@@ -237,7 +239,7 @@ namespace CHIFA.Pro.Views
             // colTauxRejet
             // 
             colTauxRejet.Caption = "Taux %";
-            colTauxRejet.DisplayFormat.FormatString = "p2";
+            colTauxRejet.DisplayFormat.FormatString = "P2";
             colTauxRejet.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colTauxRejet.FieldName = "TauxRejet";
             colTauxRejet.MinWidth = 19;
@@ -257,17 +259,17 @@ namespace CHIFA.Pro.Views
             colMontantRejete.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontantRejete", "{0:N2}") });
             colMontantRejete.Visible = true;
             colMontantRejete.VisibleIndex = 12;
-            colMontantRejete.Width = 90;
+            colMontantRejete.Width = 89;
             // 
             // colStatutRejet
             // 
-            colStatutRejet.Caption = "Statut Rejet";
+            colStatutRejet.Caption = "Statut";
             colStatutRejet.FieldName = "StatutRejet";
             colStatutRejet.MinWidth = 19;
             colStatutRejet.Name = "colStatutRejet";
             colStatutRejet.Visible = true;
             colStatutRejet.VisibleIndex = 14;
-            colStatutRejet.Width = 110;
+            colStatutRejet.Width = 109;
             // 
             // gridColumn3
             // 
@@ -293,7 +295,7 @@ namespace CHIFA.Pro.Views
             Controls.Add(gridBordereaux);
             Margin = new Padding(4, 3, 4, 3);
             Name = "BordereauxUc";
-            Size = new Size(1362, 576);
+            Size = new Size(1363, 575);
             ((System.ComponentModel.ISupportInitialize)gridBordereaux).EndInit();
             ((System.ComponentModel.ISupportInitialize)bordereauDtoBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)gridView1).EndInit();
