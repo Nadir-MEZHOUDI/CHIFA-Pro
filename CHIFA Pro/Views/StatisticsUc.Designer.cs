@@ -192,6 +192,7 @@ namespace CHIFA.Pro.Views
             colBrut = new DevExpress.XtraGrid.Columns.GridColumn();
             colNet = new DevExpress.XtraGrid.Columns.GridColumn();
             colEcart = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMontAssBord = new DevExpress.XtraGrid.Columns.GridColumn();
             tabClientsTable = new DevExpress.XtraTab.XtraTabPage();
             gridClients = new DevExpress.XtraGrid.GridControl();
             byClientStatBindingSource = new BindingSource(components);
@@ -225,6 +226,7 @@ namespace CHIFA.Pro.Views
             colBrut1 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn4 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn5 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMontAss = new DevExpress.XtraGrid.Columns.GridColumn();
             tabProductTable = new DevExpress.XtraTab.XtraTabPage();
             gridProducts = new DevExpress.XtraGrid.GridControl();
             productStatBindingSource = new BindingSource(components);
@@ -236,6 +238,7 @@ namespace CHIFA.Pro.Views
             colGP = new DevExpress.XtraGrid.Columns.GridColumn();
             colCodeDCI = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn3 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMontAssProd = new DevExpress.XtraGrid.Columns.GridColumn();
             tabDashboard = new DevExpress.XtraTab.XtraTabPage();
             splitContainerCharts = new SplitContainerControl();
             chartHourly = new ChartControl();
@@ -287,6 +290,7 @@ namespace CHIFA.Pro.Views
             colBrut4 = new DevExpress.XtraGrid.Columns.GridColumn();
             colAssureis = new DevExpress.XtraGrid.Columns.GridColumn();
             colBenificiaires = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMontAssYearly = new DevExpress.XtraGrid.Columns.GridColumn();
             tabYearly = new DevExpress.XtraTab.XtraTabPage();
             chartYearly = new ChartControl();
             tabMonthly = new DevExpress.XtraTab.XtraTabPage();
@@ -311,6 +315,7 @@ namespace CHIFA.Pro.Views
             colBrut2 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn6 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn7 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMontAssWeekly = new DevExpress.XtraGrid.Columns.GridColumn();
             tabWeekly = new DevExpress.XtraTab.XtraTabPage();
             chartWeekly = new ChartControl();
             tabDailyTable = new DevExpress.XtraTab.XtraTabPage();
@@ -331,6 +336,7 @@ namespace CHIFA.Pro.Views
             colBrut3 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn8 = new DevExpress.XtraGrid.Columns.GridColumn();
             gridColumn9 = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMontAssDaily = new DevExpress.XtraGrid.Columns.GridColumn();
             tabDaily = new DevExpress.XtraTab.XtraTabPage();
             chartDaily = new ChartControl();
             tabProducts2 = new DevExpress.XtraTab.XtraTabPage();
@@ -819,7 +825,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewBord
             // 
-            viewBord.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDateDebut, colDateFin, colDate, colNum, colFactures2, colJours, colMontantJour, colFactureJour, colMontantFacture, colCenter, colMontantMaj, colMontantFact, colMontantOff, colMontantFE, colMontantGlobal, colVirement, colMarge1, colBrut, colNet, colEcart });
+            viewBord.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDateDebut, colDateFin, colDate, colNum, colFactures2, colJours, colMontantJour, colFactureJour, colMontantFacture, colCenter, colMontantMaj, colMontantFact, colMontantOff, colMontantFE, colMontantGlobal, colVirement, colMarge1, colBrut, colNet, colEcart, colMontAssBord });
             viewBord.GridControl = gridBordereaux;
             viewBord.Name = "viewBord";
             viewBord.OptionsView.ShowFooter = true;
@@ -1012,7 +1018,7 @@ namespace CHIFA.Pro.Views
             colBrut.OptionsColumn.ReadOnly = true;
             colBrut.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:n2}") });
             colBrut.Visible = true;
-            colBrut.VisibleIndex = 15;
+            colBrut.VisibleIndex = 16;
             colBrut.Width = 60;
             // 
             // colNet
@@ -1024,11 +1030,12 @@ namespace CHIFA.Pro.Views
             colNet.OptionsColumn.ReadOnly = true;
             colNet.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Net", "{0:n2}") });
             colNet.Visible = true;
-            colNet.VisibleIndex = 17;
+            colNet.VisibleIndex = 18;
             colNet.Width = 67;
             // 
             // colEcart
             // 
+            colEcart.Caption = "Rejet";
             colEcart.DisplayFormat.FormatString = "N2";
             colEcart.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colEcart.FieldName = "Ecart";
@@ -1036,8 +1043,19 @@ namespace CHIFA.Pro.Views
             colEcart.OptionsColumn.ReadOnly = true;
             colEcart.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Ecart", "{0:n2}") });
             colEcart.Visible = true;
-            colEcart.VisibleIndex = 16;
+            colEcart.VisibleIndex = 17;
             colEcart.Width = 60;
+            // 
+            // colMontAssBord
+            // 
+            colMontAssBord.Caption = "Mont Assure";
+            colMontAssBord.DisplayFormat.FormatString = "n2";
+            colMontAssBord.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colMontAssBord.FieldName = "MontantAss";
+            colMontAssBord.Name = "colMontAssBord";
+            colMontAssBord.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontantAss", "SUM={0:n2}") });
+            colMontAssBord.Visible = true;
+            colMontAssBord.VisibleIndex = 15;
             // 
             // tabClientsTable
             // 
@@ -1045,7 +1063,7 @@ namespace CHIFA.Pro.Views
             tabClientsTable.ImageOptions.Image = (Image)resources.GetObject("tabClientsTable.ImageOptions.Image");
             tabClientsTable.Margin = new Padding(4, 3, 4, 3);
             tabClientsTable.Name = "tabClientsTable";
-            tabClientsTable.Size = new Size(1373, 694);
+            tabClientsTable.Size = new Size(1377, 669);
             tabClientsTable.Text = "CLIENTS";
             // 
             // gridClients
@@ -1057,7 +1075,7 @@ namespace CHIFA.Pro.Views
             gridClients.MainView = viewClients;
             gridClients.Margin = new Padding(4, 3, 4, 3);
             gridClients.Name = "gridClients";
-            gridClients.Size = new Size(1373, 694);
+            gridClients.Size = new Size(1377, 669);
             gridClients.TabIndex = 0;
             gridClients.ViewCollection.AddRange(new BaseView[] { viewClients, gridView2 });
             // 
@@ -1132,12 +1150,12 @@ namespace CHIFA.Pro.Views
             // 
             // colTR
             // 
-            colTR.Caption = "TR";
+            colTR.Caption = "Mont Assure";
             colTR.DisplayFormat.FormatString = "n";
             colTR.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
             colTR.FieldName = "MontAss";
             colTR.Name = "colTR";
-            colTR.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "TR", "SUM={0:n}") });
+            colTR.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontAss", "SUM={0:n}") });
             colTR.Visible = true;
             colTR.VisibleIndex = 5;
             colTR.Width = 76;
@@ -1187,7 +1205,7 @@ namespace CHIFA.Pro.Views
             tabMonthlyTable.ImageOptions.Image = (Image)resources.GetObject("tabMonthlyTable.ImageOptions.Image");
             tabMonthlyTable.Margin = new Padding(4, 3, 4, 3);
             tabMonthlyTable.Name = "tabMonthlyTable";
-            tabMonthlyTable.Size = new Size(1373, 694);
+            tabMonthlyTable.Size = new Size(1377, 669);
             tabMonthlyTable.Text = "MENSUELLES";
             // 
             // gridMonthly
@@ -1198,7 +1216,7 @@ namespace CHIFA.Pro.Views
             gridMonthly.MainView = viewMonthly;
             gridMonthly.MenuManager = ribbonControl1;
             gridMonthly.Name = "gridMonthly";
-            gridMonthly.Size = new Size(1373, 694);
+            gridMonthly.Size = new Size(1377, 669);
             gridMonthly.TabIndex = 0;
             gridMonthly.ViewCollection.AddRange(new BaseView[] { viewMonthly });
             // 
@@ -1208,7 +1226,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewMonthly
             // 
-            viewMonthly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate2, colMonth, colYear, colFactures1, colJours1, colMontantJour1, colFactureJour1, colMontantFacture1, colMontantMaj1, colMontantFact1, colMontantOff1, colMarge2, colBrut1, gridColumn4, gridColumn5 });
+            viewMonthly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate2, colMonth, colYear, colFactures1, colJours1, colMontantJour1, colFactureJour1, colMontantFacture1, colMontantMaj1, colMontantFact1, colMontantOff1, colMarge2, colBrut1, gridColumn4, gridColumn5, colMontAss });
             viewMonthly.GridControl = gridMonthly;
             viewMonthly.Name = "viewMonthly";
             viewMonthly.OptionsView.ShowFooter = true;
@@ -1343,22 +1361,35 @@ namespace CHIFA.Pro.Views
             colBrut1.OptionsColumn.ReadOnly = true;
             colBrut1.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Average, DevExpress.Data.SummaryMode.Mixed, "Brut", "{0:N2}") });
             colBrut1.Visible = true;
-            colBrut1.VisibleIndex = 9;
+            colBrut1.VisibleIndex = 10;
             colBrut1.Width = 125;
             // 
             // gridColumn4
             // 
             gridColumn4.FieldName = "Assureis";
             gridColumn4.Name = "gridColumn4";
+            gridColumn4.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Assureis", "SUM={0:0.##}") });
             gridColumn4.Visible = true;
-            gridColumn4.VisibleIndex = 10;
+            gridColumn4.VisibleIndex = 11;
             // 
             // gridColumn5
             // 
             gridColumn5.FieldName = "Beneficiaires";
             gridColumn5.Name = "gridColumn5";
+            gridColumn5.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Beneficiaires", "SUM={0:0.##}") });
             gridColumn5.Visible = true;
-            gridColumn5.VisibleIndex = 11;
+            gridColumn5.VisibleIndex = 12;
+            // 
+            // colMontAss
+            // 
+            colMontAss.Caption = "Mont Assure";
+            colMontAss.DisplayFormat.FormatString = "n2";
+            colMontAss.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colMontAss.FieldName = "MontantAss";
+            colMontAss.Name = "colMontAss";
+            colMontAss.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontantAss", "SUM={0:n2}") });
+            colMontAss.Visible = true;
+            colMontAss.VisibleIndex = 9;
             // 
             // tabProductTable
             // 
@@ -1366,7 +1397,7 @@ namespace CHIFA.Pro.Views
             tabProductTable.ImageOptions.Image = (Image)resources.GetObject("tabProductTable.ImageOptions.Image");
             tabProductTable.Margin = new Padding(4, 3, 4, 3);
             tabProductTable.Name = "tabProductTable";
-            tabProductTable.Size = new Size(1373, 694);
+            tabProductTable.Size = new Size(1377, 669);
             tabProductTable.Text = "PRODUITS";
             // 
             // gridProducts
@@ -1378,7 +1409,7 @@ namespace CHIFA.Pro.Views
             gridProducts.MainView = viewProducts;
             gridProducts.Margin = new Padding(4, 3, 4, 3);
             gridProducts.Name = "gridProducts";
-            gridProducts.Size = new Size(1373, 694);
+            gridProducts.Size = new Size(1377, 669);
             gridProducts.TabIndex = 0;
             gridProducts.ViewCollection.AddRange(new BaseView[] { viewProducts });
             // 
@@ -1388,7 +1419,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewProducts
             // 
-            viewProducts.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCode1, colProduit1, colQt1, colPrix1, colDate1, colMontant1, colPA, colTPa, colGP, colCodeDCI, gridColumn3 });
+            viewProducts.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCode1, colProduit1, colQt1, colPrix1, colDate1, colMontant1, colPA, colTPa, colGP, colCodeDCI, gridColumn3, colMontAssProd });
             viewProducts.DetailHeight = 271;
             viewProducts.GridControl = gridProducts;
             viewProducts.GroupCount = 1;
@@ -1464,54 +1495,64 @@ namespace CHIFA.Pro.Views
             gridColumn3.Visible = true;
             gridColumn3.VisibleIndex = 2;
             // 
+            // colMontAssProd
+            // 
+            colMontAssProd.Caption = "Mont Assure";
+            colMontAssProd.DisplayFormat.FormatString = "n2";
+            colMontAssProd.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colMontAssProd.FieldName = "MontAss";
+            colMontAssProd.Name = "colMontAssProd";
+            colMontAssProd.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontAss", "SUM={0:n2}") });
+            colMontAssProd.Visible = true;
+            colMontAssProd.VisibleIndex = 10;
+            // 
             // tabDashboard
             // 
             tabDashboard.Controls.Add(splitContainerCharts);
             tabDashboard.Controls.Add(panelKpisDashboard);
             tabDashboard.Controls.Add(panelHeaderDashboard);
-            tabDashboard.Margin = new Padding(3, 2, 3, 2);
             tabDashboard.Name = "tabDashboard";
-            tabDashboard.Size = new Size(1373, 694);
+            tabDashboard.Size = new Size(1377, 669);
             tabDashboard.Text = "TABLEAU DE BORD";
             // 
             // splitContainerCharts
             // 
             splitContainerCharts.Dock = DockStyle.Fill;
-            splitContainerCharts.Location = new Point(0, 115);
+            splitContainerCharts.Location = new Point(0, 116);
             splitContainerCharts.Margin = new Padding(4, 3, 4, 3);
             splitContainerCharts.Name = "splitContainerCharts";
             // 
             // splitContainerCharts.Panel1
             // 
             splitContainerCharts.Panel1.Controls.Add(chartHourly);
-            splitContainerCharts.Panel1.Padding = new Padding(7, 6, 7, 6);
+            splitContainerCharts.Panel1.Padding = new Padding(7, 7, 7, 7);
             splitContainerCharts.Panel1.Text = "Panel1";
             // 
             // splitContainerCharts.Panel2
             // 
             splitContainerCharts.Panel2.Controls.Add(chartTopProducts);
-            splitContainerCharts.Panel2.Padding = new Padding(7, 6, 7, 6);
+            splitContainerCharts.Panel2.Padding = new Padding(7, 7, 7, 7);
             splitContainerCharts.Panel2.Text = "Panel2";
-            splitContainerCharts.Size = new Size(1373, 579);
-            splitContainerCharts.SplitterPosition = 686;
+            splitContainerCharts.Size = new Size(1377, 553);
+            splitContainerCharts.SplitterPosition = 685;
             splitContainerCharts.TabIndex = 2;
             // 
             // chartHourly
             // 
             chartHourly.Dock = DockStyle.Fill;
-            chartHourly.Location = new Point(7, 6);
+            chartHourly.Location = new Point(7, 7);
             chartHourly.Margin = new Padding(4, 3, 4, 3);
             chartHourly.Name = "chartHourly";
-            chartHourly.Size = new Size(672, 567);
+            chartHourly.Size = new Size(671, 539);
             chartHourly.TabIndex = 0;
             // 
             // chartTopProducts
             // 
             chartTopProducts.Dock = DockStyle.Fill;
-            chartTopProducts.Location = new Point(7, 6);
+            chartTopProducts.Location = new Point(7, 7);
             chartTopProducts.Margin = new Padding(4, 3, 4, 3);
             chartTopProducts.Name = "chartTopProducts";
-            chartTopProducts.Size = new Size(668, 567);
+            chartTopProducts.Size = new Size(673, 539);
             chartTopProducts.TabIndex = 0;
             // 
             // panelKpisDashboard
@@ -1523,11 +1564,11 @@ namespace CHIFA.Pro.Views
             panelKpisDashboard.Controls.Add(pnlKpiFactures);
             panelKpisDashboard.Controls.Add(pnlKpiCa);
             panelKpisDashboard.Dock = DockStyle.Top;
-            panelKpisDashboard.Location = new Point(0, 40);
+            panelKpisDashboard.Location = new Point(0, 41);
             panelKpisDashboard.Margin = new Padding(4, 3, 4, 3);
             panelKpisDashboard.Name = "panelKpisDashboard";
-            panelKpisDashboard.Padding = new Padding(7, 6, 7, 6);
-            panelKpisDashboard.Size = new Size(1373, 75);
+            panelKpisDashboard.Padding = new Padding(7, 7, 7, 7);
+            panelKpisDashboard.Size = new Size(1377, 75);
             panelKpisDashboard.TabIndex = 1;
             // 
             // pnlKpiTaux
@@ -1537,11 +1578,11 @@ namespace CHIFA.Pro.Views
             pnlKpiTaux.Controls.Add(lblTauxPriseEnChargeVal);
             pnlKpiTaux.Controls.Add(lblTauxPriseEnChargeTitle);
             pnlKpiTaux.Dock = DockStyle.Left;
-            pnlKpiTaux.Location = new Point(1026, 8);
+            pnlKpiTaux.Location = new Point(1026, 9);
             pnlKpiTaux.Margin = new Padding(4, 3, 4, 3);
             pnlKpiTaux.Name = "pnlKpiTaux";
-            pnlKpiTaux.Padding = new Padding(9, 6, 9, 6);
-            pnlKpiTaux.Size = new Size(217, 59);
+            pnlKpiTaux.Padding = new Padding(9, 7, 9, 7);
+            pnlKpiTaux.Size = new Size(217, 57);
             pnlKpiTaux.TabIndex = 5;
             // 
             // lblTauxPriseEnChargeVal
@@ -1551,7 +1592,7 @@ namespace CHIFA.Pro.Views
             lblTauxPriseEnChargeVal.Appearance.Options.UseFont = true;
             lblTauxPriseEnChargeVal.Appearance.Options.UseForeColor = true;
             lblTauxPriseEnChargeVal.Dock = DockStyle.Fill;
-            lblTauxPriseEnChargeVal.Location = new Point(11, 20);
+            lblTauxPriseEnChargeVal.Location = new Point(11, 21);
             lblTauxPriseEnChargeVal.Margin = new Padding(4, 3, 4, 3);
             lblTauxPriseEnChargeVal.Name = "lblTauxPriseEnChargeVal";
             lblTauxPriseEnChargeVal.Size = new Size(39, 20);
@@ -1565,7 +1606,7 @@ namespace CHIFA.Pro.Views
             lblTauxPriseEnChargeTitle.Appearance.Options.UseFont = true;
             lblTauxPriseEnChargeTitle.Appearance.Options.UseForeColor = true;
             lblTauxPriseEnChargeTitle.Dock = DockStyle.Top;
-            lblTauxPriseEnChargeTitle.Location = new Point(11, 8);
+            lblTauxPriseEnChargeTitle.Location = new Point(11, 9);
             lblTauxPriseEnChargeTitle.Margin = new Padding(4, 3, 4, 3);
             lblTauxPriseEnChargeTitle.Name = "lblTauxPriseEnChargeTitle";
             lblTauxPriseEnChargeTitle.Size = new Size(116, 12);
@@ -1579,11 +1620,11 @@ namespace CHIFA.Pro.Views
             pnlKpiCasnos.Controls.Add(lblCasnosVal);
             pnlKpiCasnos.Controls.Add(lblCasnosTitle);
             pnlKpiCasnos.Dock = DockStyle.Left;
-            pnlKpiCasnos.Location = new Point(809, 8);
+            pnlKpiCasnos.Location = new Point(809, 9);
             pnlKpiCasnos.Margin = new Padding(4, 3, 4, 3);
             pnlKpiCasnos.Name = "pnlKpiCasnos";
-            pnlKpiCasnos.Padding = new Padding(9, 6, 9, 6);
-            pnlKpiCasnos.Size = new Size(217, 59);
+            pnlKpiCasnos.Padding = new Padding(9, 7, 9, 7);
+            pnlKpiCasnos.Size = new Size(217, 57);
             pnlKpiCasnos.TabIndex = 4;
             // 
             // lblCasnosVal
@@ -1593,7 +1634,7 @@ namespace CHIFA.Pro.Views
             lblCasnosVal.Appearance.Options.UseFont = true;
             lblCasnosVal.Appearance.Options.UseForeColor = true;
             lblCasnosVal.Dock = DockStyle.Fill;
-            lblCasnosVal.Location = new Point(11, 20);
+            lblCasnosVal.Location = new Point(11, 21);
             lblCasnosVal.Margin = new Padding(4, 3, 4, 3);
             lblCasnosVal.Name = "lblCasnosVal";
             lblCasnosVal.Size = new Size(95, 20);
@@ -1607,7 +1648,7 @@ namespace CHIFA.Pro.Views
             lblCasnosTitle.Appearance.Options.UseFont = true;
             lblCasnosTitle.Appearance.Options.UseForeColor = true;
             lblCasnosTitle.Dock = DockStyle.Top;
-            lblCasnosTitle.Location = new Point(11, 8);
+            lblCasnosTitle.Location = new Point(11, 9);
             lblCasnosTitle.Margin = new Padding(4, 3, 4, 3);
             lblCasnosTitle.Name = "lblCasnosTitle";
             lblCasnosTitle.Size = new Size(113, 12);
@@ -1621,11 +1662,11 @@ namespace CHIFA.Pro.Views
             pnlKpiCnas.Controls.Add(lblCnasVal);
             pnlKpiCnas.Controls.Add(lblCnasTitle);
             pnlKpiCnas.Dock = DockStyle.Left;
-            pnlKpiCnas.Location = new Point(592, 8);
+            pnlKpiCnas.Location = new Point(592, 9);
             pnlKpiCnas.Margin = new Padding(4, 3, 4, 3);
             pnlKpiCnas.Name = "pnlKpiCnas";
-            pnlKpiCnas.Padding = new Padding(9, 6, 9, 6);
-            pnlKpiCnas.Size = new Size(217, 59);
+            pnlKpiCnas.Padding = new Padding(9, 7, 9, 7);
+            pnlKpiCnas.Size = new Size(217, 57);
             pnlKpiCnas.TabIndex = 3;
             // 
             // lblCnasVal
@@ -1635,7 +1676,7 @@ namespace CHIFA.Pro.Views
             lblCnasVal.Appearance.Options.UseFont = true;
             lblCnasVal.Appearance.Options.UseForeColor = true;
             lblCnasVal.Dock = DockStyle.Fill;
-            lblCnasVal.Location = new Point(11, 20);
+            lblCnasVal.Location = new Point(11, 21);
             lblCnasVal.Margin = new Padding(4, 3, 4, 3);
             lblCnasVal.Name = "lblCnasVal";
             lblCnasVal.Size = new Size(95, 20);
@@ -1649,7 +1690,7 @@ namespace CHIFA.Pro.Views
             lblCnasTitle.Appearance.Options.UseFont = true;
             lblCnasTitle.Appearance.Options.UseForeColor = true;
             lblCnasTitle.Dock = DockStyle.Top;
-            lblCnasTitle.Location = new Point(11, 8);
+            lblCnasTitle.Location = new Point(11, 9);
             lblCnasTitle.Margin = new Padding(4, 3, 4, 3);
             lblCnasTitle.Name = "lblCnasTitle";
             lblCnasTitle.Size = new Size(99, 12);
@@ -1663,11 +1704,11 @@ namespace CHIFA.Pro.Views
             pnlKpiBoites.Controls.Add(lblBoitesVal);
             pnlKpiBoites.Controls.Add(lblBoitesTitle);
             pnlKpiBoites.Dock = DockStyle.Left;
-            pnlKpiBoites.Location = new Point(409, 8);
+            pnlKpiBoites.Location = new Point(409, 9);
             pnlKpiBoites.Margin = new Padding(4, 3, 4, 3);
             pnlKpiBoites.Name = "pnlKpiBoites";
-            pnlKpiBoites.Padding = new Padding(9, 6, 9, 6);
-            pnlKpiBoites.Size = new Size(183, 59);
+            pnlKpiBoites.Padding = new Padding(9, 7, 9, 7);
+            pnlKpiBoites.Size = new Size(183, 57);
             pnlKpiBoites.TabIndex = 2;
             // 
             // lblBoitesVal
@@ -1677,7 +1718,7 @@ namespace CHIFA.Pro.Views
             lblBoitesVal.Appearance.Options.UseFont = true;
             lblBoitesVal.Appearance.Options.UseForeColor = true;
             lblBoitesVal.Dock = DockStyle.Fill;
-            lblBoitesVal.Location = new Point(11, 20);
+            lblBoitesVal.Location = new Point(11, 21);
             lblBoitesVal.Margin = new Padding(4, 3, 4, 3);
             lblBoitesVal.Name = "lblBoitesVal";
             lblBoitesVal.Size = new Size(9, 20);
@@ -1691,7 +1732,7 @@ namespace CHIFA.Pro.Views
             lblBoitesTitle.Appearance.Options.UseFont = true;
             lblBoitesTitle.Appearance.Options.UseForeColor = true;
             lblBoitesTitle.Dock = DockStyle.Top;
-            lblBoitesTitle.Location = new Point(11, 8);
+            lblBoitesTitle.Location = new Point(11, 9);
             lblBoitesTitle.Margin = new Padding(4, 3, 4, 3);
             lblBoitesTitle.Name = "lblBoitesTitle";
             lblBoitesTitle.Size = new Size(87, 12);
@@ -1705,11 +1746,11 @@ namespace CHIFA.Pro.Views
             pnlKpiFactures.Controls.Add(lblFactVal);
             pnlKpiFactures.Controls.Add(lblFactTitle);
             pnlKpiFactures.Dock = DockStyle.Left;
-            pnlKpiFactures.Location = new Point(226, 8);
+            pnlKpiFactures.Location = new Point(226, 9);
             pnlKpiFactures.Margin = new Padding(4, 3, 4, 3);
             pnlKpiFactures.Name = "pnlKpiFactures";
-            pnlKpiFactures.Padding = new Padding(9, 6, 9, 6);
-            pnlKpiFactures.Size = new Size(183, 59);
+            pnlKpiFactures.Padding = new Padding(9, 7, 9, 7);
+            pnlKpiFactures.Size = new Size(183, 57);
             pnlKpiFactures.TabIndex = 1;
             // 
             // lblFactVal
@@ -1719,7 +1760,7 @@ namespace CHIFA.Pro.Views
             lblFactVal.Appearance.Options.UseFont = true;
             lblFactVal.Appearance.Options.UseForeColor = true;
             lblFactVal.Dock = DockStyle.Fill;
-            lblFactVal.Location = new Point(11, 20);
+            lblFactVal.Location = new Point(11, 21);
             lblFactVal.Margin = new Padding(4, 3, 4, 3);
             lblFactVal.Name = "lblFactVal";
             lblFactVal.Size = new Size(9, 20);
@@ -1733,7 +1774,7 @@ namespace CHIFA.Pro.Views
             lblFactTitle.Appearance.Options.UseFont = true;
             lblFactTitle.Appearance.Options.UseForeColor = true;
             lblFactTitle.Dock = DockStyle.Top;
-            lblFactTitle.Location = new Point(11, 8);
+            lblFactTitle.Location = new Point(11, 9);
             lblFactTitle.Margin = new Padding(4, 3, 4, 3);
             lblFactTitle.Name = "lblFactTitle";
             lblFactTitle.Size = new Size(84, 12);
@@ -1747,11 +1788,11 @@ namespace CHIFA.Pro.Views
             pnlKpiCa.Controls.Add(lblCaVal);
             pnlKpiCa.Controls.Add(lblCaTitle);
             pnlKpiCa.Dock = DockStyle.Left;
-            pnlKpiCa.Location = new Point(9, 8);
+            pnlKpiCa.Location = new Point(9, 9);
             pnlKpiCa.Margin = new Padding(4, 3, 4, 3);
             pnlKpiCa.Name = "pnlKpiCa";
-            pnlKpiCa.Padding = new Padding(9, 6, 9, 6);
-            pnlKpiCa.Size = new Size(217, 59);
+            pnlKpiCa.Padding = new Padding(9, 7, 9, 7);
+            pnlKpiCa.Size = new Size(217, 57);
             pnlKpiCa.TabIndex = 0;
             // 
             // lblCaVal
@@ -1761,7 +1802,7 @@ namespace CHIFA.Pro.Views
             lblCaVal.Appearance.Options.UseFont = true;
             lblCaVal.Appearance.Options.UseForeColor = true;
             lblCaVal.Dock = DockStyle.Fill;
-            lblCaVal.Location = new Point(11, 20);
+            lblCaVal.Location = new Point(11, 21);
             lblCaVal.Margin = new Padding(4, 3, 4, 3);
             lblCaVal.Name = "lblCaVal";
             lblCaVal.Size = new Size(57, 20);
@@ -1775,7 +1816,7 @@ namespace CHIFA.Pro.Views
             lblCaTitle.Appearance.Options.UseFont = true;
             lblCaTitle.Appearance.Options.UseForeColor = true;
             lblCaTitle.Dock = DockStyle.Top;
-            lblCaTitle.Location = new Point(11, 8);
+            lblCaTitle.Location = new Point(11, 9);
             lblCaTitle.Margin = new Padding(4, 3, 4, 3);
             lblCaTitle.Name = "lblCaTitle";
             lblCaTitle.Size = new Size(97, 12);
@@ -1790,7 +1831,7 @@ namespace CHIFA.Pro.Views
             panelHeaderDashboard.Margin = new Padding(4, 3, 4, 3);
             panelHeaderDashboard.Name = "panelHeaderDashboard";
             panelHeaderDashboard.Padding = new Padding(13, 8, 13, 8);
-            panelHeaderDashboard.Size = new Size(1373, 40);
+            panelHeaderDashboard.Size = new Size(1377, 41);
             panelHeaderDashboard.TabIndex = 0;
             // 
             // lblDashboardTitle
@@ -1812,7 +1853,7 @@ namespace CHIFA.Pro.Views
             tabClients.Controls.Add(chartClients);
             tabClients.ImageOptions.Image = (Image)resources.GetObject("tabClients.ImageOptions.Image");
             tabClients.Name = "tabClients";
-            tabClients.Size = new Size(1373, 694);
+            tabClients.Size = new Size(1377, 669);
             tabClients.Text = "CLIENTS";
             // 
             // chartClients
@@ -1937,7 +1978,7 @@ namespace CHIFA.Pro.Views
     series4
     };
             chartClients.SeriesTemplate.ArgumentDataMember = "Malade";
-            chartClients.Size = new Size(1373, 694);
+            chartClients.Size = new Size(1377, 669);
             chartClients.TabIndex = 0;
             // 
             // tabControl
@@ -1960,7 +2001,7 @@ namespace CHIFA.Pro.Views
             tabBordereaux.Controls.Add(chartBordereaux);
             tabBordereaux.ImageOptions.Image = (Image)resources.GetObject("tabBordereaux.ImageOptions.Image");
             tabBordereaux.Name = "tabBordereaux";
-            tabBordereaux.Size = new Size(1373, 694);
+            tabBordereaux.Size = new Size(1377, 669);
             tabBordereaux.Text = "BORDEREAUX";
             // 
             // chartBordereaux
@@ -2077,7 +2118,7 @@ namespace CHIFA.Pro.Views
     series12,
     series13
     };
-            chartBordereaux.Size = new Size(1373, 694);
+            chartBordereaux.Size = new Size(1377, 669);
             chartBordereaux.TabIndex = 0;
             // 
             // tabYearlyTable
@@ -2085,7 +2126,7 @@ namespace CHIFA.Pro.Views
             tabYearlyTable.Controls.Add(gridYearly);
             tabYearlyTable.ImageOptions.Image = (Image)resources.GetObject("tabYearlyTable.ImageOptions.Image");
             tabYearlyTable.Name = "tabYearlyTable";
-            tabYearlyTable.Size = new Size(1373, 694);
+            tabYearlyTable.Size = new Size(1377, 669);
             tabYearlyTable.Text = "ANNUELLES";
             // 
             // gridYearly
@@ -2096,7 +2137,7 @@ namespace CHIFA.Pro.Views
             gridYearly.MainView = viewYearly;
             gridYearly.MenuManager = ribbonControl1;
             gridYearly.Name = "gridYearly";
-            gridYearly.Size = new Size(1373, 694);
+            gridYearly.Size = new Size(1377, 669);
             gridYearly.TabIndex = 0;
             gridYearly.ViewCollection.AddRange(new BaseView[] { viewYearly });
             // 
@@ -2106,7 +2147,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewYearly
             // 
-            viewYearly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate5, colDateDebut2, colDateFin2, colFactures5, colMontantMaj4, colMontantFE1, colMontantFact4, colMontantOff4, colJours3, colMontantJour3, colFactureJour3, colMontantFacture4, colMontantGlobal1, colMarge5, colBrut4, colAssureis, colBenificiaires });
+            viewYearly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate5, colDateDebut2, colDateFin2, colFactures5, colMontantMaj4, colMontantFE1, colMontantFact4, colMontantOff4, colJours3, colMontantJour3, colFactureJour3, colMontantFacture4, colMontantGlobal1, colMarge5, colBrut4, colAssureis, colBenificiaires, colMontAssYearly });
             viewYearly.GridControl = gridYearly;
             viewYearly.Name = "viewYearly";
             viewYearly.OptionsView.ShowFooter = true;
@@ -2282,12 +2323,23 @@ namespace CHIFA.Pro.Views
             colBenificiaires.VisibleIndex = 5;
             colBenificiaires.Width = 87;
             // 
+            // colMontAssYearly
+            // 
+            colMontAssYearly.Caption = "Mont Assure";
+            colMontAssYearly.DisplayFormat.FormatString = "n2";
+            colMontAssYearly.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colMontAssYearly.FieldName = "MontantAss";
+            colMontAssYearly.Name = "colMontAssYearly";
+            colMontAssYearly.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontantAss", "SUM={0:n2}") });
+            colMontAssYearly.Visible = true;
+            colMontAssYearly.VisibleIndex = 17;
+            // 
             // tabYearly
             // 
             tabYearly.Controls.Add(chartYearly);
             tabYearly.ImageOptions.Image = (Image)resources.GetObject("tabYearly.ImageOptions.Image");
             tabYearly.Name = "tabYearly";
-            tabYearly.Size = new Size(1373, 694);
+            tabYearly.Size = new Size(1377, 669);
             tabYearly.Text = "ANNUELLES";
             // 
             // chartYearly
@@ -2336,7 +2388,7 @@ namespace CHIFA.Pro.Views
     series16,
     series17
     };
-            chartYearly.Size = new Size(1373, 694);
+            chartYearly.Size = new Size(1377, 669);
             chartYearly.TabIndex = 0;
             // 
             // tabMonthly
@@ -2344,7 +2396,7 @@ namespace CHIFA.Pro.Views
             tabMonthly.Controls.Add(chartMonthly);
             tabMonthly.ImageOptions.Image = (Image)resources.GetObject("tabMonthly.ImageOptions.Image");
             tabMonthly.Name = "tabMonthly";
-            tabMonthly.Size = new Size(1373, 694);
+            tabMonthly.Size = new Size(1377, 669);
             tabMonthly.Text = "MENSUELLES";
             // 
             // chartMonthly
@@ -2406,7 +2458,7 @@ namespace CHIFA.Pro.Views
     series20,
     series21
     };
-            chartMonthly.Size = new Size(1373, 694);
+            chartMonthly.Size = new Size(1377, 669);
             chartMonthly.TabIndex = 0;
             // 
             // tabWeeklyTable
@@ -2414,7 +2466,7 @@ namespace CHIFA.Pro.Views
             tabWeeklyTable.Controls.Add(gridWeekly);
             tabWeeklyTable.ImageOptions.Image = (Image)resources.GetObject("tabWeeklyTable.ImageOptions.Image");
             tabWeeklyTable.Name = "tabWeeklyTable";
-            tabWeeklyTable.Size = new Size(1373, 694);
+            tabWeeklyTable.Size = new Size(1377, 669);
             tabWeeklyTable.Text = "HEBDOMADAIRES";
             // 
             // gridWeekly
@@ -2425,13 +2477,13 @@ namespace CHIFA.Pro.Views
             gridWeekly.MainView = viewWeekly;
             gridWeekly.MenuManager = ribbonControl1;
             gridWeekly.Name = "gridWeekly";
-            gridWeekly.Size = new Size(1373, 694);
+            gridWeekly.Size = new Size(1377, 669);
             gridWeekly.TabIndex = 0;
             gridWeekly.ViewCollection.AddRange(new BaseView[] { viewWeekly });
             // 
             // viewWeekly
             // 
-            viewWeekly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate3, colMonth1, colYear1, colDateDebut1, colDateFin1, colFactures3, colJours2, colMontantJour2, colFactureJour2, colMontantFacture2, colMontantMaj2, colMontantFact2, colMontantOff2, colMarge3, colBrut2, gridColumn6, gridColumn7 });
+            viewWeekly.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate3, colMonth1, colYear1, colDateDebut1, colDateFin1, colFactures3, colJours2, colMontantJour2, colFactureJour2, colMontantFacture2, colMontantMaj2, colMontantFact2, colMontantOff2, colMarge3, colBrut2, gridColumn6, gridColumn7, colMontAssWeekly });
             viewWeekly.GridControl = gridWeekly;
             viewWeekly.Name = "viewWeekly";
             viewWeekly.OptionsView.ShowFooter = true;
@@ -2588,12 +2640,23 @@ namespace CHIFA.Pro.Views
             gridColumn7.Visible = true;
             gridColumn7.VisibleIndex = 15;
             // 
+            // colMontAssWeekly
+            // 
+            colMontAssWeekly.Caption = "Mont Assure";
+            colMontAssWeekly.DisplayFormat.FormatString = "n2";
+            colMontAssWeekly.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colMontAssWeekly.FieldName = "MontantAss";
+            colMontAssWeekly.Name = "colMontAssWeekly";
+            colMontAssWeekly.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontantAss", "SUM={0:n2}") });
+            colMontAssWeekly.Visible = true;
+            colMontAssWeekly.VisibleIndex = 16;
+            // 
             // tabWeekly
             // 
             tabWeekly.Controls.Add(chartWeekly);
             tabWeekly.ImageOptions.Image = (Image)resources.GetObject("tabWeekly.ImageOptions.Image");
             tabWeekly.Name = "tabWeekly";
-            tabWeekly.Size = new Size(1373, 694);
+            tabWeekly.Size = new Size(1377, 669);
             tabWeekly.Text = "HEBDOMADAIRES";
             // 
             // chartWeekly
@@ -2658,7 +2721,7 @@ namespace CHIFA.Pro.Views
     series24,
     series25
     };
-            chartWeekly.Size = new Size(1373, 694);
+            chartWeekly.Size = new Size(1377, 669);
             chartWeekly.TabIndex = 0;
             // 
             // tabDailyTable
@@ -2666,7 +2729,7 @@ namespace CHIFA.Pro.Views
             tabDailyTable.Controls.Add(gridDaily);
             tabDailyTable.ImageOptions.Image = (Image)resources.GetObject("tabDailyTable.ImageOptions.Image");
             tabDailyTable.Name = "tabDailyTable";
-            tabDailyTable.Size = new Size(1373, 694);
+            tabDailyTable.Size = new Size(1377, 669);
             tabDailyTable.Text = "QUOTIDIENNES";
             // 
             // gridDaily
@@ -2677,7 +2740,7 @@ namespace CHIFA.Pro.Views
             gridDaily.MainView = viewDaily;
             gridDaily.MenuManager = ribbonControl1;
             gridDaily.Name = "gridDaily";
-            gridDaily.Size = new Size(1373, 694);
+            gridDaily.Size = new Size(1377, 669);
             gridDaily.TabIndex = 0;
             gridDaily.ViewCollection.AddRange(new BaseView[] { viewDaily });
             // 
@@ -2687,7 +2750,7 @@ namespace CHIFA.Pro.Views
             // 
             // viewDaily
             // 
-            viewDaily.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate4, colDay, colMonth2, colYear2, colDateTime, colFactures4, colMontantFacture3, colMontantMaj3, colMontantFact3, colMontantOff3, colMarge4, colBrut3, gridColumn8, gridColumn9 });
+            viewDaily.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colDate4, colDay, colMonth2, colYear2, colDateTime, colFactures4, colMontantFacture3, colMontantMaj3, colMontantFact3, colMontantOff3, colMarge4, colBrut3, gridColumn8, gridColumn9, colMontAssDaily });
             viewDaily.GridControl = gridDaily;
             viewDaily.Name = "viewDaily";
             viewDaily.OptionsView.ShowFooter = true;
@@ -2812,12 +2875,23 @@ namespace CHIFA.Pro.Views
             gridColumn9.Visible = true;
             gridColumn9.VisibleIndex = 10;
             // 
+            // colMontAssDaily
+            // 
+            colMontAssDaily.Caption = "Mont Assure";
+            colMontAssDaily.DisplayFormat.FormatString = "n2";
+            colMontAssDaily.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            colMontAssDaily.FieldName = "MontantAss";
+            colMontAssDaily.Name = "colMontAssDaily";
+            colMontAssDaily.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "MontantAss", "SUM={0:n2}") });
+            colMontAssDaily.Visible = true;
+            colMontAssDaily.VisibleIndex = 11;
+            // 
             // tabDaily
             // 
             tabDaily.Controls.Add(chartDaily);
             tabDaily.ImageOptions.Image = (Image)resources.GetObject("tabDaily.ImageOptions.Image");
             tabDaily.Name = "tabDaily";
-            tabDaily.Size = new Size(1373, 694);
+            tabDaily.Size = new Size(1377, 669);
             tabDaily.Text = "QUOTIDIENNES";
             // 
             // chartDaily
@@ -2869,7 +2943,7 @@ namespace CHIFA.Pro.Views
     series27,
     series28
     };
-            chartDaily.Size = new Size(1373, 694);
+            chartDaily.Size = new Size(1377, 669);
             chartDaily.TabIndex = 0;
             // 
             // tabProducts2
@@ -2877,7 +2951,7 @@ namespace CHIFA.Pro.Views
             tabProducts2.Controls.Add(chartProducts);
             tabProducts2.ImageOptions.Image = (Image)resources.GetObject("tabProducts2.ImageOptions.Image");
             tabProducts2.Name = "tabProducts2";
-            tabProducts2.Size = new Size(1373, 694);
+            tabProducts2.Size = new Size(1377, 669);
             tabProducts2.Text = "PRODUITS";
             // 
             // chartProducts
@@ -2964,7 +3038,7 @@ namespace CHIFA.Pro.Views
     series30,
     series31
     };
-            chartProducts.Size = new Size(1373, 694);
+            chartProducts.Size = new Size(1377, 669);
             chartProducts.TabIndex = 14;
             // 
             // loadingIndicator
@@ -2972,7 +3046,6 @@ namespace CHIFA.Pro.Views
             loadingIndicator.Dock = DockStyle.Top;
             loadingIndicator.EditValue = 0;
             loadingIndicator.Location = new Point(0, 108);
-            loadingIndicator.Margin = new Padding(3, 2, 3, 2);
             loadingIndicator.Name = "loadingIndicator";
             loadingIndicator.Properties.MarqueeAnimationSpeed = 30;
             loadingIndicator.Size = new Size(1379, 4);
@@ -3405,5 +3478,11 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraEditors.SplitContainerControl splitContainerCharts;
         private DevExpress.XtraCharts.ChartControl chartHourly;
         private DevExpress.XtraCharts.ChartControl chartTopProducts;
+        private DevExpress.XtraGrid.Columns.GridColumn colMontAss;
+        private DevExpress.XtraGrid.Columns.GridColumn colMontAssBord;
+        private DevExpress.XtraGrid.Columns.GridColumn colMontAssYearly;
+        private DevExpress.XtraGrid.Columns.GridColumn colMontAssWeekly;
+        private DevExpress.XtraGrid.Columns.GridColumn colMontAssDaily;
+        private DevExpress.XtraGrid.Columns.GridColumn colMontAssProd;
     }
 }

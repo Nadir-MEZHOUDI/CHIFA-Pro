@@ -199,7 +199,7 @@ public partial class FrmMain : XtraForm
         if (await DbChecker.CheckDbConnectionAsync())
             return true;
 
-        using var dialog = new DatabaseConnectionPromptForm();
+        using var dialog = new ConnectionForm();
         if (dialog.ShowDialog(this) != DialogResult.OK)
             return false;
 

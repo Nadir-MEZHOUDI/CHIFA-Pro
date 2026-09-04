@@ -2,13 +2,13 @@ using Npgsql;
 
 namespace CHIFA.Pro.Views;
 
-public sealed partial class DatabaseConnectionPromptForm
+public sealed partial class ConnectionForm
 {
 
     public string Server => _txtServer.Text.Trim();
     public int Port => Convert.ToInt32(_spnPort.Value);
 
-    public DatabaseConnectionPromptForm()
+    public ConnectionForm()
     {
         InitializeComponent();
         var con = new NpgsqlConnectionStringBuilder(ChifaDb.ConString);

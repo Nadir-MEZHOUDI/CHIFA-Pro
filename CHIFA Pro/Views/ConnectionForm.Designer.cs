@@ -1,6 +1,6 @@
 namespace CHIFA.Pro.Views
 {
-    partial class DatabaseConnectionPromptForm : XtraForm
+    partial class ConnectionForm : XtraForm
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -242,7 +242,7 @@ namespace CHIFA.Pro.Views
             emptyBottom.Size = new Size(454, 17);
             emptyBottom.TextSize = new Size(0, 0);
             // 
-            // DatabaseConnectionPromptForm
+            // ConnectionForm
             // 
             AcceptButton = _btnSave;
             AutoScaleDimensions = new SizeF(8F, 21F);
@@ -255,7 +255,7 @@ namespace CHIFA.Pro.Views
             IconOptions.ShowIcon = false;
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "DatabaseConnectionPromptForm";
+            Name = "ConnectionForm";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Parametres de connexion a la base de donnees";
