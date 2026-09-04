@@ -48,6 +48,7 @@ namespace CHIFA.Pro.Views
             accStatisticsDaily = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accStatisticsProducts = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accStatisticsClients = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accDahsboard = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accordionControlSeparator5 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             accLN = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accCM = new DevExpress.XtraBars.Navigation.AccordionControlElement();
@@ -150,7 +151,7 @@ namespace CHIFA.Pro.Views
             accTrtSps.ImageOptions.Image = (Image)resources.GetObject("accTrtSps.ImageOptions.Image");
             accTrtSps.Name = "accTrtSps";
             accTrtSps.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accTrtSps.Text = "TRAITEMENT SPÉCIFIQUE";
+            accTrtSps.Text = "TRTMNT SPCFQ";
             accTrtSps.Click += accFactures_Click;
             // 
             // accBordereaux
@@ -179,7 +180,7 @@ namespace CHIFA.Pro.Views
             // 
             // accStatistics
             // 
-            accStatistics.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accStatisticsBordereaux, accStatisticsYearly, accStatisticsMonthly, accStatisticsWeekly, accStatisticsDaily, accStatisticsProducts, accStatisticsClients });
+            accStatistics.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accStatisticsBordereaux, accStatisticsYearly, accStatisticsMonthly, accStatisticsWeekly, accStatisticsDaily, accStatisticsProducts, accStatisticsClients, accDahsboard });
             accStatistics.Expanded = true;
             accStatistics.ImageOptions.Image = (Image)resources.GetObject("accStatistics.ImageOptions.Image");
             accStatistics.Name = "accStatistics";
@@ -233,6 +234,13 @@ namespace CHIFA.Pro.Views
             accStatisticsClients.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accStatisticsClients.Text = "CLIENTS";
             accStatisticsClients.Click += accStatisticsClients_Click;
+            // 
+            // accDahsboard
+            // 
+            accDahsboard.Name = "accDahsboard";
+            accDahsboard.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accDahsboard.Text = "DASHBOARD";
+            accDahsboard.Click += accDahsboard_Click;
             // 
             // accordionControlSeparator5
             // 
@@ -718,5 +726,6 @@ namespace CHIFA.Pro.Views
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem menuExit;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accPsychotropes;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accDahsboard;
     }
 }

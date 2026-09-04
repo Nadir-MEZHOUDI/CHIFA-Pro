@@ -17,7 +17,6 @@ public partial class FrmMain : XtraForm
         _instance = this;
         InitializeComponent();
         SetStatisticsAccordionImages();
-        accordionControl1.Width = 270;
         ChangeTitle();
     }
 
@@ -33,7 +32,7 @@ public partial class FrmMain : XtraForm
         return new Bitmap(16, 16);
     }
 
-    
+
 
     private void accPsychotropes_Click(object sender, EventArgs e)
     {
@@ -116,6 +115,7 @@ public partial class FrmMain : XtraForm
         accStatisticsDaily.ImageOptions.Image = (Image)resources.GetObject("tabDailyTable.ImageOptions.Image")!;
         accStatisticsProducts.ImageOptions.Image = (Image)resources.GetObject("tabProductTable.ImageOptions.Image")!;
         accStatisticsClients.ImageOptions.Image = (Image)resources.GetObject("tabClientsTable.ImageOptions.Image")!;
+        accDahsboard.ImageOptions.Image = (Image)resources.GetObject("btnChart.ImageOptions.LargeImage")!;
     }
 
     private void accStatisticsBordereaux_Click(object sender, EventArgs e)
@@ -438,6 +438,11 @@ public partial class FrmMain : XtraForm
         {
             ex.Log();
         }
+    }
+
+    private void accDahsboard_Click(object sender, EventArgs e)
+    {
+        NavigateToStatistics(sender,StatisticsSection.Dashboard);
     }
 }
 
