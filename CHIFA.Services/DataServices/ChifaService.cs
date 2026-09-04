@@ -28,6 +28,7 @@ public class ChifaService
                 NumBord = g.Key,
                 Nmbr = g.Count(),
                 MontOff = g.Sum(m => m.MontOff),
+                MontAss = g.Sum(m => m.MontAs),
                 Maj = g.Sum(m => m.MontMaj),
                 FirstFacture = g.Min(m => m.DateFact),
                 LastFacture = g.Max(m => m.DateFact)
@@ -69,6 +70,7 @@ public class ChifaService
                 DateOuverture = x.DateOuverture,
                 State = x.Etat,
                 MontOff = a?.MontOff,
+                MontAss = a?.MontAss,
                 Maj = a?.Maj
             });
         }

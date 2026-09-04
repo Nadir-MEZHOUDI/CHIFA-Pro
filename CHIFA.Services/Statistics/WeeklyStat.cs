@@ -9,10 +9,11 @@ public class WeeklyStat
     [DataMember(Order = 3)] public int Factures { get; init; }
     [DataMember(Order = 4)] public decimal? MontantMaj { get; init; }
     [DataMember(Order = 5)] public decimal? MontantFact { get; init; }
-    [DataMember(Order = 6)] public decimal? MontantOff { get; init; }
-    [DataMember(Order = 7)] public decimal? MontantFE { get; init; }
-    [DataMember(Order = 8)] public int Assureis { get; init; }
-    [DataMember(Order = 9)] public int Beneficiaires { get; init; }
+    [DataMember(Order = 6)] public decimal? MontantAss { get; init; }
+    [DataMember(Order = 7)] public decimal? MontantOff { get; init; }
+    [DataMember(Order = 8)] public decimal? MontantFE { get; init; }
+    [DataMember(Order = 9)] public int Assureis { get; init; }
+    [DataMember(Order = 10)] public int Beneficiaires { get; init; }
 
 
 

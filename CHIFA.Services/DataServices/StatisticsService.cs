@@ -149,6 +149,7 @@ public class StatisticsService
             {
                 MontantOff = x.Factures.Sum(f => f.MontOff),
                 MontantFact = x.Factures.Sum(f => f.MontFact),
+                MontantAss = x.Factures.Sum(f => f.MontAs),
                 MontantMaj = x.Factures.Sum(f => f.MontMaj),
                 MontantFE = x.Factures.Sum(f => f.MontMajFae),
                 Factures = x.Factures.Count(),
@@ -176,6 +177,7 @@ public class StatisticsService
             {
                 Year = x.Key,
                 MontantFact = x.Sum(f => f.MontFact),
+                MontantAss = x.Sum(f => f.MontAs),
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantFE = x.Sum(f => f.MontMajFae),
@@ -202,6 +204,7 @@ public class StatisticsService
                 Year = x.Key.Year,
                 Month = x.Key.Month,
                 MontantFact = x.Sum(f => f.MontFact),
+                MontantAss = x.Sum(f => f.MontAs),
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantFE = x.Sum(f => f.MontMajFae),
@@ -221,6 +224,7 @@ public class StatisticsService
                 Year = x.Year.ToString(),
                 Month = x.Month.ToString(),
                 MontantFact = x.MontantFact,
+                MontantAss = x.MontantAss,
                 MontantOff = x.MontantOff,
                 MontantMaj = x.MontantMaj,
                 MontantFE = x.MontantFE,
@@ -245,6 +249,7 @@ public class StatisticsService
             {
                 DateDebut = x.Key,
                 MontantFact = x.Sum(f => f.MontFact),
+                MontantAss = x.Sum(f => f.MontAs),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantFE = x.Sum(f => f.MontMajFae),
@@ -262,6 +267,7 @@ public class StatisticsService
                 DateDebut = x.DateDebut,
                 StartDate = x.DateDebut.ToString("yyyy-MM-dd"),
                 MontantFact = x.MontantFact,
+                MontantAss = x.MontantAss,
                 MontantMaj = x.MontantMaj,
                 MontantOff = x.MontantOff,
                 MontantFE = x.MontantFE,
@@ -284,6 +290,7 @@ public class StatisticsService
             {
                 DateTime = g.Key,
                 MontantFact = g.Sum(f => f.MontFact),
+                MontantAss = g.Sum(f => f.MontAs),
                 MontantMaj = g.Sum(f => f.MontMaj),
                 MontantOff = g.Sum(f => f.MontOff),
                 MontantFE = g.Sum(f => f.MontMajFae),
@@ -336,6 +343,7 @@ public class StatisticsService
                 Qt = x.Sum(m => m.Qte),
                 Prix = x.Max(m => m.Ppa),
                 Montant = x.Sum(m => m.Mont),
+                MontAss = x.Sum(m => m.MontAs),
                 NumEnr = x.Key,
                 Local = x.Max(m => m.Local),
                 Maj = x.Sum(m => m.MajLocal)

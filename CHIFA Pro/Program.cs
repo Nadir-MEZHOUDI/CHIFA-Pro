@@ -5,7 +5,6 @@ global using System.Linq.Expressions;
 global using System.Reflection;
 global using System.Runtime.InteropServices;
 
-global using CHIFA.Services.DataServices;
 global using CHIFA.Pro.Helpers;
 global using CHIFA.Pro.Views;
 
@@ -16,22 +15,12 @@ global using DevExpress.XtraGrid.Views.Base;
 
 global using LinqToDB;
 global using Serilog;
-global using Serilog.Sinks.SystemConsole.Themes;
 
 namespace CHIFA.Pro;
 internal static partial class Program
 {
     private static TelemetrySession? _telemetry;
-
-    internal static TelemetrySession? Telemetry => _telemetry;
-
-#if DEBUG
-    // Import AllocConsole from kernel32.dll to create a new console window
-    [LibraryImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial void AllocConsole();
-#endif
-
+    internal static TelemetrySession? Telemetry => _telemetry; 
 
     [STAThread]
     private static void Main()
@@ -43,17 +32,11 @@ internal static partial class Program
             Log.Logger = new LoggerConfiguration()
                 .Enrich.FromLogContext()
 #if DEBUG
-                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
-                      //  .WriteTo.Debug()
+                .WriteTo.Debug()
 #endif
                 .WriteTo.File("../logs/log.txt", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
-#if DEBUG
-            AllocConsole();
-            Console.WriteLine(@"Console is ready");
-      //   DataConnection.TurnTraceSwitchOn();
-      //  DataConnection.WriteTraceLine = Log.Debug!;
-#endif
+ 
 
             SetExceptionHandling();
             SetTelemetry();

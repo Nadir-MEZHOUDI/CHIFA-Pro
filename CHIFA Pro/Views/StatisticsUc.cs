@@ -1,7 +1,10 @@
 using System.ComponentModel;
+using DevExpress.Data;
 using DevExpress.XtraBars;
 using DevExpress.XtraCharts;
 using DevExpress.XtraGrid;
+using DevExpress.XtraGrid.Columns;
+using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraTab;
 
 namespace CHIFA.Pro.Views;
@@ -175,6 +178,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             viewDaily.SetOptions();
             viewClients.SetOptions();
             viewProducts.SetOptions();
+            EnsureMontantAssureColumns();
 
             await LoadMaxAndMinDates(defaultToThisYear: true);
 
@@ -203,6 +207,45 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         }
     }
 
+    private void EnsureMontantAssureColumns()
+    {
+        AddMontantAssColumn(viewBord, "MontantAss");
+        AddMontantAssColumn(viewYearly, "MontantAss");
+        AddMontantAssColumn(viewMonthly, "MontantAss");
+        AddMontantAssColumn(viewWeekly, "MontantAss");
+        AddMontantAssColumn(viewDaily, "MontantAss");
+        AddMontantAssColumn(viewProducts, "MontAss");
+        AddMontantAssColumn(viewClients, "MontAss");
+    }
+
+    private static void AddMontantAssColumn(GridView view, string fieldName)
+    {
+        var existing = view.Columns.ColumnByFieldName(fieldName);
+        if (existing is not null)
+        {
+            existing.Caption = "Mnt Ass";
+            existing.DisplayFormat.FormatString = "n2";
+            existing.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+            existing.Visible = true;
+            return;
+        }
+
+        var column = new GridColumn
+        {
+            FieldName = fieldName,
+            Caption = "Mnt Ass",
+            Name = $"col{fieldName}_{view.Name}",
+            Visible = true,
+            VisibleIndex = view.VisibleColumns.Count
+        };
+        column.OptionsColumn.ReadOnly = true;
+        column.DisplayFormat.FormatString = "n2";
+        column.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Numeric;
+        column.Summary.AddRange([new GridColumnSummaryItem(SummaryItemType.Sum, fieldName, "SUM={0:n2}")]);
+        view.Columns.Add(column);
+    }
+
+
     private async Task ScheduleSelectedTableReloadAsync(XtraTabPage? tab, bool forceReload = false)
     {
         if (_disposed || IsDisposed)
@@ -211,7 +254,6 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         var cancellationToken = ResetReloadToken();
         if (cancellationToken.IsCancellationRequested)
             return;
-
         try
         {
             await Task.Delay(ReloadDebounceDelay, cancellationToken);
@@ -219,9 +261,11 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         }
         catch (OperationCanceledException)
         {
+
         }
         catch (ObjectDisposedException)
         {
+
         }
     }
 

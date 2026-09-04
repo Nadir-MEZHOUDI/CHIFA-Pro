@@ -6,6 +6,7 @@ public class ProductStat
     public decimal Prix { get; init; } = 0;
     public string? CodeDci { get; init; }
     public decimal Montant { get; init; } = 0;
+    public decimal? MontAss { get; init; }
     public string? Dci { get; init; }
     public bool? Local { get; init; }
     public string? NumEnr { get; init; }
