@@ -86,7 +86,7 @@ namespace CHIFA.Pro.Views
             // 
             // _spnPort
             // 
-            _spnPort.EditValue = new decimal(new int[] { 5432, 0, 0, 0 });
+            _spnPort.EditValue = new decimal(new int[] { DbChecker.DefaultDbPort, 0, 0, 0 });
             _spnPort.Name = "_spnPort";
             _spnPort.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             _spnPort.Properties.IsFloatValue = false;

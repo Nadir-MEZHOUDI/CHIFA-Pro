@@ -7,9 +7,12 @@ public class AppSettings : SettingsToRegistry<AppSettings>
     #region ChifaFiles  
     public string ChifaPath { get; set; } = "D:\\CHIFA_OFFICINE";
     public string ChifaBackup => Path.Combine(ChifaPath, "Backup");
+    public string ChifaDbFolder => $"{ChifaPath}\\CHIFA_OFFICINE_DB";
     public string ChifaPostgres => $"{ChifaPath}\\CHIFA_OFFICINE_DB\\bin\\postgres.exe";
     public string ChifaLancerServeur => $"{ChifaPath}\\CHIFA_OFFICINE_DB\\Lancer_Serveur.bat";
     public string ChifaBin => $"{ChifaPath}\\CHIFA_OFFICINE_DB\\bin\\";
+    public string ChifaData => $"{ChifaPath}\\CHIFA_OFFICINE_DB\\data";
+    // Portable PostgreSQL 9.x bundled with the app - a system-installed PostgreSQL (e.g. 18) must never be used.
     public string ChifaDump => $"{ChifaPath}\\CHIFA_OFFICINE_DB\\bin\\pg_dump.exe";
     public string ChifaRestore => $"{ChifaPath}\\CHIFA_OFFICINE_DB\\bin\\pg_restore.exe";
     #endregion

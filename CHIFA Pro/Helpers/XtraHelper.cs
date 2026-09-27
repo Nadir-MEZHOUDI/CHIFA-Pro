@@ -6,6 +6,8 @@ using System.Runtime.CompilerServices;
 
 using DevExpress.XtraGrid.Views.Grid;
 
+using Npgsql;
+
 namespace CHIFA.Pro.Helpers;
 
 public static class XtraHelper
@@ -213,17 +215,53 @@ public static class XtraHelper
 
     public static void SetServer(string server)
     {
-        Environment.SetEnvironmentVariable(ChifaDb.CHIFA_OFFICINE_SERVER, server, EnvironmentVariableTarget.Process);
-        Environment.SetEnvironmentVariable(ChifaDb.CHIFA_OFFICINE_SERVER, server, EnvironmentVariableTarget.User);
+        SetServerVariable(server);
+
+        // Apply the new host to the live connection string as well, otherwise every query
+        // would keep using the server captured when the process started.
+        ApplyConnectionSettings(server, DbChecker.GetDbPort());
     }
 
     public static void SetServerAndPort(string server, int port)
     {
-        SetServer(server);
+        SetServerVariable(server);
 
         var dbPort = port > 0 ? port : DbChecker.DefaultDbPort;
 
         Environment.SetEnvironmentVariable("CHIFA_DB_PORT", dbPort.ToString(), EnvironmentVariableTarget.Process);
         Environment.SetEnvironmentVariable("CHIFA_DB_PORT", dbPort.ToString(), EnvironmentVariableTarget.User);
+
+        ApplyConnectionSettings(server, dbPort);
+    }
+
+    private static void SetServerVariable(string server)
+    {
+        Environment.SetEnvironmentVariable(ChifaDb.CHIFA_OFFICINE_SERVER, server, EnvironmentVariableTarget.Process);
+        Environment.SetEnvironmentVariable(ChifaDb.CHIFA_OFFICINE_SERVER, server, EnvironmentVariableTarget.User);
+    }
+
+    /// <summary>
+    /// Updates <see cref="ChifaDb.ConString"/> so connections opened after a settings change use the
+    /// new server without restarting the application. Connections already opened keep their server.
+    /// </summary>
+    private static void ApplyConnectionSettings(string server, int port)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(server)) return;
+
+            var connection = new NpgsqlConnectionStringBuilder(ChifaDb.ConString)
+            {
+                Host = server,
+                Port = port
+            };
+
+            ChifaDb.ConString = connection.ConnectionString;
+            DbChecker.ResetServerState();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 }
