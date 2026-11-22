@@ -35,6 +35,15 @@ public partial class RejetsUc : XtraUserControl, INavigable
                     e.Appearance.ForeColor = Color.Crimson;
                 }
             }
+            else if (!row.EstPaye)
+            {
+                // Sent but not paid yet (or still open): to follow up, not a rejection.
+                if (e.Column.FieldName is "StatutRejet" or "MontantEnAttente")
+                {
+                    e.Appearance.BackColor = Color.FromArgb(255, 248, 225);
+                    e.Appearance.ForeColor = Color.DarkOrange;
+                }
+            }
             else
             {
                 if (e.Column.FieldName == "StatutRejet")
@@ -121,18 +130,23 @@ public partial class RejetsUc : XtraUserControl, INavigable
 
             if (cancellationToken.IsCancellationRequested) return;
 
-            var totalFact = data.Sum(r => r.MontantFacture);
-            var totalVir = data.Sum(r => r.MontantVirement);
-            var totalRejet = data.Sum(r => r.MontantRejete);
+            // KPIs compare only paid bordereaux, so "dû - viré" matches "rejeté".
+            // Bordereaux still waiting for their virement are reported separately.
+            var paid = data.Where(r => r.EstPaye).ToList();
+            var pending = data.Where(r => r.MontantEnAttente > 0).ToList();
 
-            lblTotalFactureVal.Text = $"{totalFact:N2} DA";
-            lblTotalVirementVal.Text = $"{totalVir:N2} DA";
-            lblTotalRejetVal.Text = $"{totalRejet:N2} DA";
+            lblTotalFactureTitle.Text = "TOTAL DÛ — BORDEREAUX PAYÉS";
+            lblTotalFactureVal.Text = $"{paid.Sum(r => r.MontantFacture):N2} DA";
+            lblTotalVirementVal.Text = $"{paid.Sum(r => r.MontantVirement):N2} DA";
+            lblTotalRejetVal.Text = $"{data.Sum(r => r.MontantRejete):N2} DA";
+            lblSubtitle.Text = "Dû = part caisse + majorations + FAE.  En attente de virement : " +
+                               $"{pending.Sum(r => r.MontantEnAttente):N2} DA ({pending.Count} bordereaux)";
 
             gridRejets.DataSource = data;
-            viewRejets.BestFitColumns();
 
+            ConfigureColumns();
             ConfigureSummary();
+            viewRejets.BestFitColumns();
         }
         catch (Exception ex)
         {
@@ -144,10 +158,56 @@ public partial class RejetsUc : XtraUserControl, INavigable
         }
     }
 
+    private void ConfigureColumns()
+    {
+        if (viewRejets.Columns.Count == 0) return;
+
+        string[] order =
+        [
+            "NumBord", "Centre", "DateBord", "DateDepotFtp", "NombreFactures",
+            "MontantPartCaisse", "MontantMajorations", "MontantFae", "MontantFacture",
+            "MontantVirement", "MontantRejete", "TauxRejet", "MontantEnAttente", "StatutRejet", "MotifPrincipal"
+        ];
+        var captions = new Dictionary<string, string>
+        {
+            ["NumBord"] = "N° Bordereau",
+            ["Centre"] = "Centre",
+            ["DateBord"] = "Date Clôture",
+            ["DateDepotFtp"] = "Dépôt FTP",
+            ["NombreFactures"] = "Factures",
+            ["MontantPartCaisse"] = "Part Caisse (DA)",
+            ["MontantMajorations"] = "MAJ (DA)",
+            ["MontantFae"] = "FAE (DA)",
+            ["MontantFacture"] = "Total Dû (DA)",
+            ["MontantVirement"] = "Virement (DA)",
+            ["MontantRejete"] = "Rejeté (DA)",
+            ["TauxRejet"] = "Taux Rejet (%)",
+            ["MontantEnAttente"] = "En Attente (DA)",
+            ["StatutRejet"] = "Statut",
+            ["MotifPrincipal"] = "Motif"
+        };
+
+        foreach (DevExpress.XtraGrid.Columns.GridColumn col in viewRejets.Columns)
+        {
+            var index = Array.IndexOf(order, col.FieldName);
+            col.Visible = index >= 0; // internal fields (EstOuvert, EstPaye, JoursAttente, Etat...) stay hidden
+            if (index < 0) continue;
+            col.VisibleIndex = index;
+            col.Caption = captions[col.FieldName];
+        }
+    }
+
     private void ConfigureSummary()
     {
         viewRejets.OptionsView.ShowFooter = true;
         if (viewRejets.Columns.Count == 0) return;
+
+        var pendingCol = viewRejets.Columns["MontantEnAttente"];
+        if (pendingCol != null)
+        {
+            pendingCol.Summary.Clear();
+            pendingCol.Summary.Add(DevExpress.Data.SummaryItemType.Sum, "MontantEnAttente", "Total: {0:N2} DA");
+        }
 
         var numBordCol = viewRejets.Columns["NumBord"];
         if (numBordCol != null)

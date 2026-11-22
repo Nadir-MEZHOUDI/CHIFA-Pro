@@ -137,8 +137,11 @@ public class ScopeService
                 b.DateDepotFtp,
                 b.MontVir,
                 Etat = b.Etat.ToString(),
+                EstOuvert = b.Etat == 'O',
                 NombreFactures = b.Factures.Count(),
-                MontantFacture = b.Factures.Sum(f => f.MontOff) ?? 0m
+                PartCaisse = b.Factures.Sum(f => f.MontOff) ?? 0m,
+                Majorations = b.Factures.Sum(f => f.MontMaj) ?? 0m,
+                Fae = b.Factures.Sum(f => f.MontMajFae) ?? 0m
             })
             .ToListAsync()
             .ConfigureAwait(false);
@@ -149,10 +152,13 @@ public class ScopeService
                 NumBord = b.NumBord,
                 Centre = b.Center ?? "Inconnu",
                 DateBord = b.DateCloture ?? b.DateDepotFtp,
-                DateVirement = b.DateDepotFtp,
+                DateDepotFtp = b.DateDepotFtp,
                 NombreFactures = b.NombreFactures,
-                MontantFacture = b.MontantFacture,
+                MontantPartCaisse = b.PartCaisse,
+                MontantMajorations = b.Majorations,
+                MontantFae = b.Fae,
                 MontantVirement = b.MontVir ?? 0m,
+                EstOuvert = b.EstOuvert,
                 EtatBordereau = b.Etat ?? ""
             })
             .OrderByDescending(r => r.MontantRejete)
