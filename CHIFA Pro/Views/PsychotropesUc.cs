@@ -147,16 +147,22 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
         SetColumn("NomAssure", "Assuré", 2);
         SetColumn("NomBeneficiaire", "Bénéficiaire", 3);
         SetColumn("Medecin", "Médecin Prescripteur", 4);
-        SetColumn("MedicamentNom", "Médicament", 5);
-        SetColumn("Dci", "DCI (Molécule)", 6);
-        SetColumn("CodeDci", "Code DCI", 7);
-        SetColumn("CategoriePsychotrope", "Classification Réglementaire", 8);
-        SetColumn("Dosage", "Dosage", 9);
-        SetColumn("Forme", "Forme", 10);
-        SetColumn("Quantite", "Quantité", 11);
-        SetColumn("DureeTrait", "Durée (Jours)", 12);
-        SetColumn("Ppa", "PPA (DA)", 13);
-        SetColumn("TarifRef", "Tarif Réf (DA)", 14);
+        SetColumn("SpecialiteMedecin", "Spécialité", 5);
+        SetColumn("MedicamentNom", "Médicament", 6);
+        SetColumn("Dci", "DCI (Molécule)", 7);
+        SetColumn("CodeDci", "Code DCI", 8);
+        SetColumn("CategoriePsychotrope", "Classification Réglementaire", 9);
+        SetColumn("Dosage", "Dosage", 10);
+        SetColumn("Forme", "Forme", 11);
+        SetColumn("Quantite", "Quantité", 12);
+        SetColumn("DureeTrait", "Durée (Jours)", 13);
+        SetColumn("Ppa", "PPA (DA)", 14);
+        SetColumn("TarifRef", "Tarif Réf (DA)", 15);
+        SetColumn("Montant", "Montant (DA)", 16);
+
+        // Same value as NumFact: no separate prescription number exists in CHIFA.
+        if (viewPsychotropes.Columns["NumeroOrdonnance"] is { } ordonnanceCol)
+            ordonnanceCol.Visible = false;
 
         viewPsychotropes.BestFitColumns();
     }
@@ -190,11 +196,14 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
             qteCol.Summary.Add(DevExpress.Data.SummaryItemType.Sum, "Quantite", "Boîtes: {0:N0}");
         }
 
-        var ppaCol = viewPsychotropes.Columns["Ppa"];
-        if (ppaCol != null)
+        // A sum of unit prices means nothing: total the line amounts instead.
+        viewPsychotropes.Columns["Ppa"]?.Summary.Clear();
+
+        var montantCol = viewPsychotropes.Columns["Montant"];
+        if (montantCol != null)
         {
-            ppaCol.Summary.Clear();
-            ppaCol.Summary.Add(DevExpress.Data.SummaryItemType.Sum, "Ppa", "Total: {0:N2} DA");
+            montantCol.Summary.Clear();
+            montantCol.Summary.Add(DevExpress.Data.SummaryItemType.Sum, "Montant", "Total: {0:N2} DA");
         }
     }
 

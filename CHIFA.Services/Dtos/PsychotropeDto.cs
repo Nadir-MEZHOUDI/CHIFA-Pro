@@ -8,7 +8,9 @@ public class PsychotropeDto
     public string? NomAssure { get; set; }
     public string? NomBeneficiaire { get; set; }
     public string? Rang { get; set; }
+    /// <summary>Prescribing doctor (<c>Facture.Prescripteur</c>).</summary>
     public string? Medecin { get; set; }
+    /// <summary>Doctor's speciality (<c>Specialite.Libelle</c>).</summary>
     public string? SpecialiteMedecin { get; set; }
     public string? CodeEnr { get; set; }
     public string? CodeDci { get; set; }
@@ -22,6 +24,8 @@ public class PsychotropeDto
     public decimal? DureeTrait { get; set; }
     public decimal? Ppa { get; set; }
     public decimal? TarifRef { get; set; }
+    /// <summary>Line amount as stored by CHIFA (<c>DetailFact.Mont</c>), i.e. price x quantity.</summary>
+    public decimal? Montant { get; set; }
     public string? NumeroOrdonnance { get; set; }
     public bool EstTraitementSpecial { get; set; }
 }

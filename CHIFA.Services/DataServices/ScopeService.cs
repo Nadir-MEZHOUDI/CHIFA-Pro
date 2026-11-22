@@ -203,8 +203,8 @@ public class ScopeService
                 NomAssure = d.Facture.Assure.FullName,
                 NomBeneficiaire = d.Facture.Beneficiaire.FullName,
                 Rang = d.Facture.RangAd,
-                Medecin = d.Facture.Specialite!.Libelle,
-                SpecialiteMedecin = d.Facture.Specialite.Libelle,
+                Medecin = d.Facture.Prescripteur,
+                SpecialiteMedecin = d.Facture.Specialite!.Libelle,
                 CodeEnr = d.NumEnr,
                 CodeDci = d.Medicament.CodeDci,
                 Tableau = d.Medicament.Tableau != null ? d.Medicament.Tableau.ToString() : null,
@@ -216,11 +216,12 @@ public class ScopeService
                 DureeTrait = d.DureeTrait,
                 Ppa = d.Ppa,
                 TarifRef = d.TarifRef,
+                Montant = d.Mont,
                 NumeroOrdonnance = d.Facture.NumFact,
                 EstTraitementSpecial = d.Ts == true
             })
+            // Regulatory register: every dispensing of the period must be listed, never truncated.
             .OrderByDescending(p => p.DateDelivrance)
-            .Take(1000)
             .ToListAsync()
             .ConfigureAwait(false);
 
@@ -246,6 +247,7 @@ public class ScopeService
             DureeTrait = d.DureeTrait,
             Ppa = d.Ppa,
             TarifRef = d.TarifRef,
+            Montant = d.Montant,
             NumeroOrdonnance = d.NumeroOrdonnance,
             EstTraitementSpecial = d.EstTraitementSpecial
         }).ToList();
