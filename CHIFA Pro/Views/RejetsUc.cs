@@ -59,13 +59,10 @@ public partial class RejetsUc : XtraUserControl, INavigable
             await ChifaService.Instance.GetMinAndMaxDatesAsync();
             var lastYear = DateTime.Today.AddYears(-1);
 
-            repoDateFrom.MinValue = Period.MinDate;
-            repoDateFrom.MaxValue = Period.MaxDate;
-            repoDateTo.MinValue = Period.MinDate;
-            repoDateTo.MaxValue = Period.MaxDate;
+            DateFilter.Configure(repoDateFrom, repoDateTo);
 
             txtDateFrom.EditValue = lastYear;
-            txtDateTo.EditValue = Period.MaxDate;
+            txtDateTo.EditValue = null; // up to today
 
             txtDateFrom.EditValueChanged += TxtDate_EditValueChanged;
             txtDateTo.EditValueChanged += TxtDate_EditValueChanged;
@@ -116,8 +113,8 @@ public partial class RejetsUc : XtraUserControl, INavigable
         {
             if (cancellationToken.IsCancellationRequested) return;
 
-            _period.From = txtDateFrom.EditValue as DateTime?;
-            _period.To = txtDateTo.EditValue as DateTime?;
+            _period.From = DateFilter.Value(txtDateFrom.EditValue);
+            _period.To = DateFilter.Value(txtDateTo.EditValue);
 
             Cursor = Cursors.WaitCursor;
             var data = (await ScopeService.Instance.GetRejetsAsync(_period)).ToList();
@@ -189,7 +186,7 @@ public partial class RejetsUc : XtraUserControl, INavigable
     private void BtnClearDates_ItemClick(object sender, ItemClickEventArgs e)
     {
         txtDateFrom.EditValue = Period.MinDate;
-        txtDateTo.EditValue = Period.MaxDate;
+        txtDateTo.EditValue = null; // up to today
     }
 
     private void BtnExport_ItemClick(object sender, ItemClickEventArgs e)

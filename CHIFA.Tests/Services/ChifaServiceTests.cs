@@ -39,13 +39,12 @@ public class ChifaServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetAllBordereauxAsync_RespectsPeriod()
+    public async Task GetAllBordereauxAsync_RespectsPeriod_ButAlwaysShowsOpenBordereaux()
     {
         using var w = StartWatch();
-        _svc.Period.From = new DateTime(2050, 1, 1);
-        _svc.Period.To = new DateTime(2051, 1, 1);
-        var rows = (await _svc.GetAllBordereauxAsync()).ToList();
-        rows.Should().BeEmpty();
+        var future = new Period { From = new DateTime(2050, 1, 1), To = new DateTime(2051, 1, 1) };
+        var rows = (await _svc.GetAllBordereauxAsync(period: future)).ToList();
+        rows.Should().OnlyContain(r => r.State == 'O');
     }
 
     [Fact]

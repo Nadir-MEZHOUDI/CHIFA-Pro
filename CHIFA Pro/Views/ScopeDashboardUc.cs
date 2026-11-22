@@ -130,13 +130,10 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
             await ChifaService.Instance.GetMinAndMaxDatesAsync();
             var thisMonthStart = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
 
-            repoDateFrom.MinValue = Period.MinDate;
-            repoDateFrom.MaxValue = Period.MaxDate;
-            repoDateTo.MinValue = Period.MinDate;
-            repoDateTo.MaxValue = Period.MaxDate;
+            DateFilter.Configure(repoDateFrom, repoDateTo);
 
             txtDateFrom.EditValue = thisMonthStart;
-            txtDateTo.EditValue = Period.MaxDate;
+            txtDateTo.EditValue = null; // up to today
 
             txtDateFrom.EditValueChanged += TxtDate_EditValueChanged;
             txtDateTo.EditValueChanged += TxtDate_EditValueChanged;
@@ -153,7 +150,8 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
         ScheduleReload();
     }
 
-    private void SetDates(DateTime from, DateTime to)
+    /// <param name="to">Last day included; <c>null</c> = up to today.</param>
+    private void SetDates(DateTime from, DateTime? to = null)
     {
         try
         {
@@ -173,27 +171,27 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
 
     private void BtnAllPeriod_ItemClick(object sender, ItemClickEventArgs e)
     {
-        SetDates(Period.MinDate, Period.MaxDate);
+        SetDates(Period.MinDate);
     }
 
     private void BtnLastYear_ItemClick(object sender, ItemClickEventArgs e)
     {
-        SetDates(DateTime.Now.AddYears(-1), DateTime.Now);
+        SetDates(DateTime.Today.AddYears(-1));
     }
 
     private void Btn6Months_ItemClick(object sender, ItemClickEventArgs e)
     {
-        SetDates(DateTime.Now.AddMonths(-6), DateTime.Now);
+        SetDates(DateTime.Today.AddMonths(-6));
     }
 
     private void BtnThisYear_ItemClick(object sender, ItemClickEventArgs e)
     {
-        SetDates(new DateTime(DateTime.Now.Year, 1, 1), DateTime.Now);
+        SetDates(new DateTime(DateTime.Today.Year, 1, 1));
     }
 
     private void BtnThisMonth_ItemClick(object sender, ItemClickEventArgs e)
     {
-        SetDates(new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1), DateTime.Now);
+        SetDates(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1));
     }
 
     private void ScheduleReload()
@@ -231,8 +229,8 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
         {
             if (cancellationToken.IsCancellationRequested) return;
 
-            _period.From = txtDateFrom.EditValue as DateTime?;
-            _period.To = txtDateTo.EditValue as DateTime?;
+            _period.From = DateFilter.Value(txtDateFrom.EditValue);
+            _period.To = DateFilter.Value(txtDateTo.EditValue);
 
             Cursor = Cursors.WaitCursor;
 
@@ -296,7 +294,7 @@ public partial class ScopeDashboardUc : XtraUserControl, INavigable
 
     private void BtnClearDates_ItemClick(object sender, ItemClickEventArgs e)
     {
-        SetDates(Period.MinDate, Period.MaxDate);
+        SetDates(Period.MinDate);
     }
 
     private void ScopeDashboardUc_Disposed(object? sender, EventArgs e)

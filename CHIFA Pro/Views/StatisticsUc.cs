@@ -132,21 +132,16 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         {
             await ChifaService.Instance.GetMinAndMaxDatesAsync();
 
-            var towYearsBefore = DateTime.Now.AddYears(-2);
+            var towYearsBefore = DateTime.Today.AddYears(-2);
 
-            fromDateRepo.MaxValue = Period.MaxDate;
-            fromDateRepo.MinValue = Period.MinDate;
+            DateFilter.Configure(fromDateRepo, toDateRepo);
             fromDateRepo.TodayDate = Period.MinDate < towYearsBefore ? towYearsBefore : Period.MinDate;
-
-            toDateRepo.MaxValue = Period.MaxDate;
-            toDateRepo.MinValue = Period.MinDate;
-            toDateRepo.TodayDate = Period.MaxDate;
 
             _suspendDateEvents = true;
             FromDate.EditValue = defaultToThisYear
-                ? new DateTime(DateTime.Now.Year, 1, 1)
+                ? new DateTime(DateTime.Today.Year, 1, 1)
                 : fromDateRepo.TodayDate;
-            ToDate.EditValue = defaultToThisYear ? DateTime.Now : toDateRepo.TodayDate;
+            ToDate.EditValue = null; // up to today
             UpdatePeriodFromEditors();
         }
         catch (Exception ex)
@@ -245,11 +240,8 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private void UpdatePeriodFromEditors()
     {
-        if (FromDate.EditValue is DateTime from)
-            StatisticsService.Instance.Period.From = from;
-
-        if (ToDate.EditValue is DateTime to)
-            StatisticsService.Instance.Period.To = to;
+        StatisticsService.Instance.Period.From = DateFilter.Value(FromDate.EditValue);
+        StatisticsService.Instance.Period.To = DateFilter.Value(ToDate.EditValue); // null = up to today
     }
 
     private void InvalidateStatisticsData()
@@ -395,30 +387,31 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private void btnAllPeriod_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        SetDates(fromDateRepo.MinValue, toDateRepo.MaxValue);
+        SetDates(Period.MinDate);
     }
 
     private void btnLastYear_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        SetDates(DateTime.Now.AddYears(-1), DateTime.Now);
+        SetDates(DateTime.Today.AddYears(-1));
     }
 
     private void btn6Months_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        SetDates(DateTime.Now.AddMonths(-6), DateTime.Now);
+        SetDates(DateTime.Today.AddMonths(-6));
     }
 
     private void btnThisYear_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        SetDates(new DateTime(DateTime.Now.Year, 1, 1), DateTime.Now);
+        SetDates(new DateTime(DateTime.Today.Year, 1, 1));
     }
 
     private void btnThisMonth_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        SetDates(new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1), DateTime.Now);
+        SetDates(new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1));
     }
 
-    private void SetDates(DateTime from, DateTime to)
+    /// <param name="to">Last day included; <c>null</c> = up to today.</param>
+    private void SetDates(DateTime from, DateTime? to = null)
     {
         try
         {
@@ -507,7 +500,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         var section = GetSectionDisplayName(_selectedSection);
         var pharmacy = Officine?.NomPharmacie ?? "Officine";
         var from = StatisticsService.Instance.Period.From?.ToString("dd-MM-yyyy") ?? "Min";
-        var to = StatisticsService.Instance.Period.To?.ToString("dd-MM-yyyy") ?? "Max";
+        var to = (StatisticsService.Instance.Period.To ?? DateTime.Today).ToString("dd-MM-yyyy");
         var fileName = SanitizeFileName($"{section}_{viewName}_Ph_{pharmacy}_{from}_{to}.{extension}");
 
         using var saveFileDialog = new SaveFileDialog

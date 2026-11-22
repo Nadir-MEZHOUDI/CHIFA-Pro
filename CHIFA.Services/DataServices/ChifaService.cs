@@ -7,21 +7,43 @@ public class ChifaService
     private static ChifaService? _instance;
     public static ChifaService Instance => _instance ??= new();
 
+    /// <summary>Default period when a caller passes none. <c>To</c> is open-ended, so it never goes stale.</summary>
     public Period Period { get; } = new();
-    private DateTime YearAgo { get; } = DateTime.Now.AddYears(-1);
 
-    public async ValueTask<IEnumerable<BordereauDto>> GetAllBordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = default)
+    /// <summary>Computed on each call: the app can stay open (in the tray) for days.</summary>
+    private static DateTime YearAgo => DateTime.Now.AddYears(-1);
+
+    /// <summary>
+    /// Open bordereaux are always listed; closed ones when their extraction date is in the period.
+    /// Counts and amounts cover all factures of each bordereau, whatever their date.
+    /// </summary>
+    public async ValueTask<IEnumerable<BordereauDto>> GetAllBordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = default, Period? period = null)
     {
         await using var db = new ChifaDb();
 
-        var periodFrom = Period.From;
-        var periodTo = Period.To;
+        Expression<Func<Bordereau, bool>> isOpen = b => b.Etat == 'O';
+        var extractedInPeriod = ((Expression<Func<Bordereau, bool>>?)null).SetPeriod(period ?? Period);
+        var filter = (predicate ?? (_ => true)).And(isOpen.Or(extractedInPeriod));
+
+        var bordereaux = await db.Bordereaus
+            .Where(filter)
+            .Select(x => new
+            {
+                x.NumBord,
+                Center = x.Center!.Nom,
+                x.MontVir,
+                x.DateDepotFtp,
+                x.DateCloture,
+                x.DateOuverture,
+                x.Etat
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var numBords = bordereaux.Select(b => b.NumBord).ToList();
 
         var aggregates = await db.Factures
-            .Where(f => f.NumBord != null)
-            .Where(f => f.DateFact != null
-                && (periodFrom == null || f.DateFact > periodFrom)
-                && (periodTo == null || f.DateFact < periodTo))
+            .Where(f => f.NumBord != null && numBords.Contains(f.NumBord))
             .GroupBy(f => f.NumBord)
             .Select(g => new
             {
@@ -36,21 +58,6 @@ public class ChifaService
             .ConfigureAwait(false);
 
         var aggByNum = aggregates.ToDictionary(a => a.NumBord!);
-
-        var bordereaux = await db.Bordereaus
-            .Where(predicate.SetPeriod(Period))
-            .Select(x => new
-            {
-                x.NumBord,
-                Center = x.Center!.Nom,
-                x.MontVir,
-                x.DateDepotFtp,
-                x.DateCloture,
-                x.DateOuverture,
-                x.Etat
-            })
-            .ToListAsync()
-            .ConfigureAwait(false);
 
         var list = new List<BordereauDto>(bordereaux.Count);
         foreach (var x in bordereaux)
@@ -90,7 +97,10 @@ public class ChifaService
                 x.DetailFacts.Any(d => d.Ts == true || d.DureeTrait >= MedicalThresholds.MediumTreatmentDurationDays || (d.Ppa >= MedicalThresholds.HighPriceThreshold && d.Qte >= MedicalThresholds.HighQuantityThreshold)));
 
         if (last == true)
-            predicate = predicate.And(x => x.DateFact > YearAgo);
+        {
+            var yearAgo = YearAgo;
+            predicate = predicate.And(x => x.DateFact > yearAgo);
+        }
 
         await using var db = new ChifaDb();
         var list = await db.Factures.Where(predicate)
@@ -292,12 +302,12 @@ public class ChifaService
         return list;
     }
 
-    public async ValueTask<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang, bool proche, Expression<Func<DetailFact?, bool>>? predicate = default)
+    public async ValueTask<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang, bool proche, Expression<Func<DetailFact?, bool>>? predicate = default, Period? period = null)
     {
         predicate ??= _ => true;
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
-            .Where(predicate!.SetPeriod(Period))
+            .Where(predicate!.SetPeriod(period ?? Period))
             .Where(x => x.Facture.NumAssure == noAssure && x.Facture.RangAd == rang)
             .Where(x => (x.Ppa >= MedicalThresholds.HighPriceThreshold && x.Qte >= MedicalThresholds.HighQuantityThreshold) || x.Ts == true || x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays)
             .Select(x => new
@@ -460,7 +470,8 @@ public class ChifaService
     public async ValueTask<IEnumerable<TraitSpec2>> PatientsWithTraitSpec2Async(Expression<Func<DetailFact, bool>>? predicate = default)
     {
         predicate ??= (fact => true);
-        predicate = predicate.And(x => x.Facture.DateFact > YearAgo);
+        var yearAgo = YearAgo;
+        predicate = predicate.And(x => x.Facture.DateFact > yearAgo);
         predicate = predicate.And(x =>
             x.Ts == true
             || (x.DureeTrait == 1 && x.Qte >= MedicalThresholds.HighQuantityThreshold
@@ -538,8 +549,9 @@ public class ChifaService
         Expression<Func<DetailFact, bool>>? predicate = default)
     {
         predicate ??= _ => true;
+        var yearAgo = YearAgo;
         predicate = predicate.And(x =>
-            (x.Facture.DateFact > YearAgo && x.Ppa >= MedicalThresholds.HighPriceThreshold && x.Qte >= MedicalThresholds.HighQuantityThreshold) || x.Ts == true || x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays);
+            (x.Facture.DateFact > yearAgo &&x.Ppa >= MedicalThresholds.HighPriceThreshold && x.Qte >= MedicalThresholds.HighQuantityThreshold) || x.Ts == true || x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays);
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
             .Where(predicate)

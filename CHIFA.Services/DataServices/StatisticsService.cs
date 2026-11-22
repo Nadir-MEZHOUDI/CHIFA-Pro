@@ -14,7 +14,7 @@ public class StatisticsService
         await using var db = new ChifaDb();
         var firstDate = DateTime.Today.AddDays(-8);
         var weekStats = await db.Factures
-                .Where(f => f.DateFact!.Value.Date >= firstDate)
+                .Where(f => f.DateFact >= firstDate)
                 .GroupBy(f => f.DateFact!.Value.Date)
                 .Select(g => new ThisWeekStat
                 {
@@ -247,6 +247,9 @@ public class StatisticsService
 
 public static class PredicateExtensions
 {
+    // All overloads filter whole days, both bounds inclusive: DateFact >= From.Date AND DateFact < To.Date + 1 day.
+    // Bounds are captured as local values so each query gets the dates as they were when it was built.
+
     public static Expression<Func<Facture, bool>> SetPeriod(this Expression<Func<Facture, bool>>? predicate, Period? period = default)
     {
         period ??= new Period();
@@ -254,11 +257,11 @@ public static class PredicateExtensions
 
         predicate = predicate.And(x => x.DateFact != null);
 
-        if (period.From.HasValue)
-            predicate = predicate.And(x => x.DateFact > period.From);
+        if (period.Start is { } start)
+            predicate = predicate.And(x => x.DateFact >= start);
 
-        if (period.To.HasValue)
-            predicate = predicate.And(x => x.DateFact < period.To);
+        if (period.EndExclusive is { } end)
+            predicate = predicate.And(x => x.DateFact < end);
 
         return predicate;
     }
@@ -270,11 +273,11 @@ public static class PredicateExtensions
 
         predicate = predicate.And(x => x.Facture.DateFact.HasValue);
 
-        if (period?.From.HasValue == true)
-            predicate = predicate.And(x => x.Facture.DateFact > period.From);
+        if (period.Start is { } start)
+            predicate = predicate.And(x => x.Facture.DateFact >= start);
 
-        if (period?.To.HasValue == true)
-            predicate = predicate.And(x => x.Facture.DateFact < period.To);
+        if (period.EndExclusive is { } end)
+            predicate = predicate.And(x => x.Facture.DateFact < end);
 
         return predicate;
     }
@@ -283,16 +286,15 @@ public static class PredicateExtensions
         Period? period = default)
     {
         period ??= new Period();
-
         predicate ??= _ => true;
 
         predicate = predicate.And(x => x.DateExtract != null);
 
-        if (period?.From.HasValue == true)
-            predicate = predicate.And(x => x.DateExtract > period.From);
+        if (period.Start is { } start)
+            predicate = predicate.And(x => x.DateExtract >= start);
 
-        if (period?.To.HasValue == true)
-            predicate = predicate.And(x => x.DateExtract < period.To);
+        if (period.EndExclusive is { } end)
+            predicate = predicate.And(x => x.DateExtract < end);
 
         return predicate;
     }

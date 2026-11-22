@@ -33,11 +33,12 @@ public class PeriodTests : IDisposable
     }
 
     [Fact]
-    public void Default_To_IsToday()
+    public void Default_To_IsOpenEnded()
     {
         using var w = new TimeWatch();
         var p = new Period();
-        p.To.Should().Be(DateTime.Today);
+        p.To.Should().BeNull();
+        p.EndExclusive.Should().BeNull();
     }
 
     [Fact]

@@ -36,17 +36,12 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
         try
         {
             await ChifaService.Instance.GetMinAndMaxDatesAsync();
-            var lastYear = DateTime.Now.AddYears(-1);
-            fromDateRepo.MaxValue = Period.MaxDate;
-            fromDateRepo.MinValue = Period.MinDate;
+            var lastYear = DateTime.Today.AddYears(-1);
+            DateFilter.Configure(fromDateRepo, toDateRepo);
             fromDateRepo.TodayDate = lastYear;
 
-            toDateRepo.MaxValue = Period.MaxDate;
-            toDateRepo.MinValue = Period.MinDate;
-            toDateRepo.TodayDate = Period.MaxDate;
-
             FromDate.EditValue = lastYear;
-            ToDate.EditValue = toDateRepo.MaxValue;
+            ToDate.EditValue = null; // up to today
 
             FromDate.EditValueChanged += FromDate_EditValueChanged;
             ToDate.EditValueChanged += ToDate_EditValueChanged;
@@ -100,8 +95,11 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     private Task LoadDetailsAsync(PatientOfTraitSpec row)
     {
         var procheOnly = (bool)swtchTimeOnly.EditValue;
-        return viewDetails.LoadDataAsync(() => ChifaService.Instance.GetPatientTraitementAsync(row.NumAssure!, row.Rang!, procheOnly));
+        var period = CurrentPeriod();
+        return viewDetails.LoadDataAsync(() => ChifaService.Instance.GetPatientTraitementAsync(row.NumAssure!, row.Rang!, procheOnly, period: period));
     }
+
+    private Period CurrentPeriod() => DateFilter.ToPeriod(FromDate.EditValue, ToDate.EditValue);
 
     private async Task ScheduleReloadDataAsync()
     {
@@ -143,7 +141,7 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
             if (txtMedic.EditValue is string txt)
                 predicate = predicate.And(d => d.Medicament.FullName!.Contains(txt, StringComparison.InvariantCultureIgnoreCase));
 
-            var period = new Period { From = (DateTime?)FromDate.EditValue, To = (DateTime?)ToDate.EditValue };
+            var period = CurrentPeriod();
 
             await viewFectures.LoadDataAsync(() => ChifaService.Instance.GetPatientsOfTraitSpecAsync(period, predicate),
                 cancellationToken);

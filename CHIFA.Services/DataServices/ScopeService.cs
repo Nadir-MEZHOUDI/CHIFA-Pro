@@ -12,6 +12,8 @@ public class ScopeService
     public async ValueTask<ScopeDashboardDto> GetScopeDashboardAsync(Period? period = null)
     {
         var activePeriod = period ?? Period;
+        var start = activePeriod.Start;
+        var end = activePeriod.EndExclusive;
         await using var db = new ChifaDb();
 
         Expression<Func<Facture, bool>> predicate = f => f.DateFact != null;
@@ -37,8 +39,8 @@ public class ScopeService
         // Total Boxes from Details
         var totalBoxes = await db.DetailFacts
             .Where(d => d.Facture.DateFact != null)
-            .Where(d => (activePeriod.From == null || d.Facture.DateFact >= activePeriod.From) &&
-                        (activePeriod.To == null || d.Facture.DateFact <= activePeriod.To))
+            .Where(d => (start == null || d.Facture.DateFact >= start) &&
+                        (end == null || d.Facture.DateFact < end))
             .SumAsync(d => (decimal?)d.Qte)
             .ConfigureAwait(false) ?? 0m;
 
@@ -85,8 +87,8 @@ public class ScopeService
         // Top 10 Medicaments
         var topProducts = await db.DetailFacts
             .Where(d => d.Facture.DateFact != null)
-            .Where(d => (activePeriod.From == null || d.Facture.DateFact >= activePeriod.From) &&
-                        (activePeriod.To == null || d.Facture.DateFact <= activePeriod.To))
+            .Where(d => (start == null || d.Facture.DateFact >= start) &&
+                        (end == null || d.Facture.DateFact < end))
             .GroupBy(d => new { d.NumEnr, Nom = d.Medicament.NomCom, Dci = d.Medicament.NomDci })
             .Select(g => new TopProductDto
             {
@@ -119,11 +121,14 @@ public class ScopeService
     public async ValueTask<IEnumerable<RejetDto>> GetRejetsAsync(Period? period = null)
     {
         var activePeriod = period ?? Period;
+        var start = activePeriod.Start;
+        var end = activePeriod.EndExclusive;
         await using var db = new ChifaDb();
 
+        // A bordereau belongs to the period by its closing date (or its FTP deposit date when it has none).
         var bordereaux = await db.Bordereaus
-            .Where(b => (activePeriod.From == null || b.DateCloture >= activePeriod.From || b.DateDepotFtp >= activePeriod.From) &&
-                        (activePeriod.To == null || b.DateCloture <= activePeriod.To || b.DateDepotFtp <= activePeriod.To))
+            .Where(b => (start == null || (b.DateCloture ?? b.DateDepotFtp) >= start) &&
+                        (end == null || (b.DateCloture ?? b.DateDepotFtp) < end))
             .Select(b => new
             {
                 b.NumBord,
@@ -158,6 +163,8 @@ public class ScopeService
     public async ValueTask<IEnumerable<PsychotropeDto>> GetPsychotropesAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
     {
         var activePeriod = period ?? Period;
+        var start = activePeriod.Start;
+        var end = activePeriod.EndExclusive;
         await using var db = new ChifaDb();
 
         var explicitCodes = PsychotropesHelper.ExplicitDciCodes;
@@ -180,8 +187,8 @@ public class ScopeService
                     !excludedCodes.Contains(d.Medicament.CodeDci!)
                 )
             ) &&
-            (activePeriod.From == null || d.Facture.DateFact >= activePeriod.From) &&
-            (activePeriod.To == null || d.Facture.DateFact <= activePeriod.To);
+            (start == null || d.Facture.DateFact >= start) &&
+            (end == null || d.Facture.DateFact < end);
 
         if (predicate != null)
             basePredicate = basePredicate.And(predicate);
@@ -323,9 +330,13 @@ public class ScopeService
         var query = db.Factures.AsQueryable();
         if (!string.IsNullOrEmpty(numBord))
             query = query.Where(f => f.NumBord == numBord);
-        else if (activePeriod.From != null || activePeriod.To != null)
-            query = query.Where(f => (activePeriod.From == null || f.DateFact >= activePeriod.From) &&
-                                     (activePeriod.To == null || f.DateFact <= activePeriod.To));
+        else if (activePeriod.Start is not null || activePeriod.EndExclusive is not null)
+        {
+            var start = activePeriod.Start;
+            var end = activePeriod.EndExclusive;
+            query = query.Where(f => (start == null || f.DateFact >= start) &&
+                                     (end == null || f.DateFact < end));
+        }
 
         query = query.Where(f => f.Bordereau != null && f.Bordereau.Etat == 'O');
 

@@ -19,8 +19,8 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
     private void BtnClearDate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
     {
-        txtDateFrom.EditValue = toDateRepo.MinValue;
-        txtDateTo.EditValue = toDateRepo.MaxValue;
+        txtDateFrom.EditValue = Period.MinDate;
+        txtDateTo.EditValue = null; // up to today
     }
 
     private void BtnHistory_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -91,17 +91,12 @@ public partial class FacturesUc : XtraUserControl, INavigable
         try
         {
             await ChifaService.Instance.GetMinAndMaxDatesAsync();
-            var lastYear = DateTime.Now.AddYears(-1);
-            fromDateRepo.MaxValue = Period.MaxDate;
-            fromDateRepo.MinValue = Period.MinDate;
+            var lastYear = DateTime.Today.AddYears(-1);
+            DateFilter.Configure(fromDateRepo, toDateRepo);
             fromDateRepo.TodayDate = lastYear;
 
-            toDateRepo.MaxValue = Period.MaxDate;
-            toDateRepo.MinValue = Period.MinDate;
-            toDateRepo.TodayDate = Period.MaxDate;
-
             txtDateFrom.EditValue = lastYear;
-            txtDateTo.EditValue = toDateRepo.MaxValue;
+            txtDateTo.EditValue = null; // up to today
 
             txtDateFrom.EditValueChanged += TxtDateFrom_EditValueChanged;
             txtDateTo.EditValueChanged += TxtDateTo_EditValueChanged;
@@ -159,7 +154,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
             var ts = (bool)swtchTS.EditValue;
 
-            var period = new Period { From = (DateTime?)txtDateFrom.EditValue, To = (DateTime?)txtDateTo.EditValue };
+            var period = DateFilter.ToPeriod(txtDateFrom.EditValue, txtDateTo.EditValue);
 
             Expression<Func<Facture, bool>> predicate = f => true;
 
