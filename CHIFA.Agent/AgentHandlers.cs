@@ -20,7 +20,7 @@ public class AgentHandlers(ILogger<AgentHandlers> logger)
         connection.On(AgentMethods.GetInfo, () => RunAsync(AgentMethods.GetInfo, GetInfoAsync));
 
         connection.On<PeriodQuery, ScopeDashboardDto>(AgentMethods.GetDashboard, q =>
-            RunAsync(AgentMethods.GetDashboard, async () => await ScopeService.Instance.GetScopeDashboardAsync(ToPeriod(q))));
+            RunAsync(AgentMethods.GetDashboard, async () => await StatisticsService.Instance.GetScopeDashboardAsync(ToPeriod(q))));
 
         connection.On<PageQuery, Page<RejetDto>>(AgentMethods.GetRejets, q =>
             RunAsync(AgentMethods.GetRejets, async () =>

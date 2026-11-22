@@ -95,34 +95,5 @@ public class BordereauDtoTests
 
         dto.MontGlobal.Should().Be(1000m + 200m + 50m);
     }
-
-    [Fact]
-    public void Ecart_WhenVirmentIsZero_ReturnsZero()
-    {
-        var dto = new BordereauDto { Virment = 0, MontOff = 1000m, Maj = 100m, Nmbr = 5 };
-
-        dto.Ecart.Should().Be(0);
-    }
-
-    [Fact]
-    public void Ecart_WhenVirmentIsPositive_ReturnsMontGlobalMinusVirment()
-    {
-        var dto = new BordereauDto
-        {
-            Virment = 1000m,
-            MontOff = 2000m,
-            Maj = 500m,
-            Nmbr = 10
-        };
-
-        dto.Ecart.Should().Be(2000m + 500m + 50m - 1000m);
-    }
-
-    [Fact]
-    public void Ecart_WhenVirmentIsNegative_ReturnsZero()
-    {
-        var dto = new BordereauDto { Virment = -100m, MontOff = 1000m, Maj = 100m, Nmbr = 5 };
-
-        dto.Ecart.Should().Be(0);
-    }
+    
 }

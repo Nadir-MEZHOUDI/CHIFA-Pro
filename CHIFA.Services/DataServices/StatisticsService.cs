@@ -9,6 +9,109 @@ public class StatisticsService
     public static StatisticsService Instance => _instance ??= new StatisticsService();
 
     public readonly Period Period = new();
+
+    public async ValueTask<ScopeDashboardDto> GetScopeDashboardAsync(Period? period = null)
+    {
+        var activePeriod = period ?? Period;
+        await using var db = new ChifaDb();
+
+        Expression<Func<Facture, bool>> predicate = f => f.DateFact != null;
+        predicate = predicate.SetPeriod(activePeriod);
+
+        var facturesQuery = db.Factures.Where(predicate);
+
+        var kpis = await facturesQuery
+            .GroupBy(_ => 1)
+            .Select(g => new
+            {
+                TotalFact = g.Sum(f => f.MontFact) ?? 0m,
+                TotalCaisse = g.Sum(f => f.MontOff) ?? 0m,
+                TotalAssure = g.Sum(f => f.MontAs) ?? 0m,
+                TotalMaj = g.Sum(f => f.MontMaj) ?? 0m,
+                CountFact = g.Count(),
+                DistinctAssures = g.CountExt(f => f.NumAssure, Sql.AggregateModifier.Distinct)
+            })
+            .FirstOrDefaultAsync()
+            .ConfigureAwait(false);
+
+        var totalBoxes = await db.DetailFacts
+            .Where(d => d.Facture.DateFact != null)
+            .Where(d => (activePeriod.Start == null || d.Facture.DateFact >= activePeriod.Start) &&
+                        (activePeriod.EndExclusive == null || d.Facture.DateFact < activePeriod.EndExclusive))
+            .SumAsync(d => (decimal?)d.Qte)
+            .ConfigureAwait(false) ?? 0m;
+
+        var hourlyRaw = await facturesQuery
+            .GroupBy(f => f.DateFact!.Value.Hour)
+            .Select(g => new
+            {
+                Hour = g.Key,
+                Count = g.Count(),
+                Total = g.Sum(f => f.MontFact) ?? 0m
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var hourlyList = Enumerable.Range(8, 14)
+            .Select(h =>
+            {
+                var match = hourlyRaw.FirstOrDefault(x => x.Hour == h);
+                return new HourlyActivityDto
+                {
+                    Heure = h,
+                    NombreFactures = match?.Count ?? 0,
+                    MontantTotal = match?.Total ?? 0m
+                };
+            })
+            .ToList();
+
+        var centersRaw = await facturesQuery
+            .GroupBy(f => f.Center!.Nom)
+            .Select(g => new CenterSummaryDto
+            {
+                Centre = g.Key ?? "Inconnu",
+                NombreFactures = g.Count(),
+                MontantTotal = g.Sum(f => f.MontFact) ?? 0m,
+                MontantCaisse = g.Sum(f => f.MontOff) ?? 0m,
+                MontantMaj = g.Sum(f => f.MontMaj) ?? 0m
+            })
+            .OrderByDescending(c => c.MontantTotal)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var topProducts = await db.DetailFacts
+            .Where(d => d.Facture.DateFact != null)
+            .Where(d => (activePeriod.Start == null || d.Facture.DateFact >= activePeriod.Start) &&
+                        (activePeriod.EndExclusive == null || d.Facture.DateFact < activePeriod.EndExclusive))
+            .GroupBy(d => new { d.NumEnr, Nom = d.Medicament.NomCom, Dci = d.Medicament.NomDci })
+            .Select(g => new TopProductDto
+            {
+                CodeEnr = g.Key.NumEnr ?? "",
+                Designation = g.Key.Nom ?? "Non défini",
+                Dci = g.Key.Dci ?? "",
+                QuantiteTotale = g.Sum(d => d.Qte),
+                MontantTotal = g.Sum(d => d.MontPharm) ?? 0m
+            })
+            .OrderByDescending(p => p.QuantiteTotale)
+            .Take(10)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return new ScopeDashboardDto
+        {
+            MontantTotalFact = kpis?.TotalFact ?? 0m,
+            MontantTotalCaisse = kpis?.TotalCaisse ?? 0m,
+            MontantTotalAssure = kpis?.TotalAssure ?? 0m,
+            MontantTotalMajoration = kpis?.TotalMaj ?? 0m,
+            NombreFactures = kpis?.CountFact ?? 0,
+            NombreAssuresUniques = kpis?.DistinctAssures ?? 0,
+            NombreBoites = totalBoxes,
+            ActiviteHoraire = hourlyList,
+            RepartitionParCaisse = centersRaw,
+            TopMedicaments = topProducts
+        };
+    }
+
     public async ValueTask<List<ThisWeekStat>> GetThisWeekStatsAsync()
     {
         await using var db = new ChifaDb();
@@ -46,6 +149,7 @@ public class StatisticsService
             {
                 MontantOff = x.Factures.Sum(f => f.MontOff),
                 MontantFact = x.Factures.Sum(f => f.MontFact),
+                MontantAss = x.Factures.Sum(f => f.MontAs),
                 MontantMaj = x.Factures.Sum(f => f.MontMaj),
                 MontantFE = x.Factures.Sum(f => f.MontMajFae),
                 Factures = x.Factures.Count(),
@@ -73,6 +177,7 @@ public class StatisticsService
             {
                 Year = x.Key,
                 MontantFact = x.Sum(f => f.MontFact),
+                MontantAss = x.Sum(f => f.MontAs),
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantFE = x.Sum(f => f.MontMajFae),
@@ -99,6 +204,7 @@ public class StatisticsService
                 Year = x.Key.Year,
                 Month = x.Key.Month,
                 MontantFact = x.Sum(f => f.MontFact),
+                MontantAss = x.Sum(f => f.MontAs),
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantFE = x.Sum(f => f.MontMajFae),
@@ -118,6 +224,7 @@ public class StatisticsService
                 Year = x.Year.ToString(),
                 Month = x.Month.ToString(),
                 MontantFact = x.MontantFact,
+                MontantAss = x.MontantAss,
                 MontantOff = x.MontantOff,
                 MontantMaj = x.MontantMaj,
                 MontantFE = x.MontantFE,
@@ -142,6 +249,7 @@ public class StatisticsService
             {
                 DateDebut = x.Key,
                 MontantFact = x.Sum(f => f.MontFact),
+                MontantAss = x.Sum(f => f.MontAs),
                 MontantMaj = x.Sum(f => f.MontMaj),
                 MontantOff = x.Sum(f => f.MontOff),
                 MontantFE = x.Sum(f => f.MontMajFae),
@@ -159,6 +267,7 @@ public class StatisticsService
                 DateDebut = x.DateDebut,
                 StartDate = x.DateDebut.ToString("yyyy-MM-dd"),
                 MontantFact = x.MontantFact,
+                MontantAss = x.MontantAss,
                 MontantMaj = x.MontantMaj,
                 MontantOff = x.MontantOff,
                 MontantFE = x.MontantFE,
@@ -181,6 +290,7 @@ public class StatisticsService
             {
                 DateTime = g.Key,
                 MontantFact = g.Sum(f => f.MontFact),
+                MontantAss = g.Sum(f => f.MontAs),
                 MontantMaj = g.Sum(f => f.MontMaj),
                 MontantOff = g.Sum(f => f.MontOff),
                 MontantFE = g.Sum(f => f.MontMajFae),
@@ -233,6 +343,7 @@ public class StatisticsService
                 Qt = x.Sum(m => m.Qte),
                 Prix = x.Max(m => m.Ppa),
                 Montant = x.Sum(m => m.Mont),
+                MontAss = x.Sum(m => m.MontAs),
                 NumEnr = x.Key,
                 Local = x.Max(m => m.Local),
                 Maj = x.Sum(m => m.MajLocal)

@@ -1,6 +1,6 @@
 namespace CHIFA.Pro.Views
 {
-    partial class DatabaseConnectionPromptForm : XtraForm
+    partial class ConnectionForm : XtraForm
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -86,7 +86,7 @@ namespace CHIFA.Pro.Views
             // 
             // _spnPort
             // 
-            _spnPort.EditValue = new decimal(new int[] { 5432, 0, 0, 0 });
+            _spnPort.EditValue = new decimal(new int[] { DbChecker.DefaultDbPort, 0, 0, 0 });
             _spnPort.Name = "_spnPort";
             _spnPort.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             _spnPort.Properties.IsFloatValue = false;
@@ -242,7 +242,7 @@ namespace CHIFA.Pro.Views
             emptyBottom.Size = new Size(454, 17);
             emptyBottom.TextSize = new Size(0, 0);
             // 
-            // DatabaseConnectionPromptForm
+            // ConnectionForm
             // 
             AcceptButton = _btnSave;
             AutoScaleDimensions = new SizeF(8F, 21F);
@@ -255,7 +255,7 @@ namespace CHIFA.Pro.Views
             IconOptions.ShowIcon = false;
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "DatabaseConnectionPromptForm";
+            Name = "ConnectionForm";
             ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Parametres de connexion a la base de donnees";

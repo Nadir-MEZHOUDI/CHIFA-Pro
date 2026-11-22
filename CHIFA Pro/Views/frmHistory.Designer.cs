@@ -29,7 +29,7 @@ namespace CHIFA.Pro.Views
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmHistory));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmHistory));
             gridHistory = new DevExpress.XtraGrid.GridControl();
             factureDtoBindingSource = new BindingSource(components);
             gridHistFactures = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -246,11 +246,11 @@ namespace CHIFA.Pro.Views
             // NumAssureTextEdit
             // 
             NumAssureTextEdit.DataBindings.Add(new Binding("EditValue", BeneficiareBindingSource, "NumAssure", true));
-            NumAssureTextEdit.Location = new Point(69, 2);
+            NumAssureTextEdit.Location = new Point(126, 2);
             NumAssureTextEdit.Name = "NumAssureTextEdit";
             NumAssureTextEdit.Properties.ReadOnly = true;
             NumAssureTextEdit.Properties.UseReadOnlyAppearance = false;
-            NumAssureTextEdit.Size = new Size(585, 20);
+            NumAssureTextEdit.Size = new Size(528, 24);
             NumAssureTextEdit.StyleController = dataLayoutControl1;
             NumAssureTextEdit.TabIndex = 4;
             // 
@@ -261,33 +261,33 @@ namespace CHIFA.Pro.Views
             // AssureNameTextEdit
             // 
             AssureNameTextEdit.DataBindings.Add(new Binding("EditValue", BeneficiareBindingSource, "Assure", true));
-            AssureNameTextEdit.Location = new Point(725, 2);
+            AssureNameTextEdit.Location = new Point(782, 2);
             AssureNameTextEdit.Name = "AssureNameTextEdit";
             AssureNameTextEdit.Properties.ReadOnly = true;
             AssureNameTextEdit.Properties.UseReadOnlyAppearance = false;
-            AssureNameTextEdit.Size = new Size(585, 20);
+            AssureNameTextEdit.Size = new Size(528, 24);
             AssureNameTextEdit.StyleController = dataLayoutControl1;
             AssureNameTextEdit.TabIndex = 5;
             // 
             // MaladeTextEdit
             // 
             MaladeTextEdit.DataBindings.Add(new Binding("EditValue", BeneficiareBindingSource, "Beneficiare", true));
-            MaladeTextEdit.Location = new Point(69, 26);
+            MaladeTextEdit.Location = new Point(126, 30);
             MaladeTextEdit.Name = "MaladeTextEdit";
             MaladeTextEdit.Properties.ReadOnly = true;
             MaladeTextEdit.Properties.UseReadOnlyAppearance = false;
-            MaladeTextEdit.Size = new Size(585, 20);
+            MaladeTextEdit.Size = new Size(528, 24);
             MaladeTextEdit.StyleController = dataLayoutControl1;
             MaladeTextEdit.TabIndex = 6;
             // 
             // RangTextEdit
             // 
             RangTextEdit.DataBindings.Add(new Binding("EditValue", BeneficiareBindingSource, "Rang", true));
-            RangTextEdit.Location = new Point(725, 26);
+            RangTextEdit.Location = new Point(782, 30);
             RangTextEdit.Name = "RangTextEdit";
             RangTextEdit.Properties.ReadOnly = true;
             RangTextEdit.Properties.UseReadOnlyAppearance = false;
-            RangTextEdit.Size = new Size(585, 20);
+            RangTextEdit.Size = new Size(528, 24);
             RangTextEdit.StyleController = dataLayoutControl1;
             RangTextEdit.TabIndex = 7;
             // 
@@ -315,36 +315,36 @@ namespace CHIFA.Pro.Views
             ItemForNumAssure.Control = NumAssureTextEdit;
             ItemForNumAssure.Location = new Point(0, 0);
             ItemForNumAssure.Name = "ItemForNumAssure";
-            ItemForNumAssure.Size = new Size(656, 24);
+            ItemForNumAssure.Size = new Size(656, 28);
             ItemForNumAssure.Text = "N° Assuré";
-            ItemForNumAssure.TextSize = new Size(63, 13);
+            ItemForNumAssure.TextSize = new Size(120, 17);
             // 
             // ItemForAssureName
             // 
             ItemForAssureName.Control = AssureNameTextEdit;
             ItemForAssureName.Location = new Point(656, 0);
             ItemForAssureName.Name = "ItemForAssureName";
-            ItemForAssureName.Size = new Size(656, 24);
+            ItemForAssureName.Size = new Size(656, 28);
             ItemForAssureName.Text = "Nom de l'assuré";
-            ItemForAssureName.TextSize = new Size(63, 13);
+            ItemForAssureName.TextSize = new Size(120, 17);
             // 
             // ItemForMalade
             // 
             ItemForMalade.Control = MaladeTextEdit;
-            ItemForMalade.Location = new Point(0, 24);
+            ItemForMalade.Location = new Point(0, 28);
             ItemForMalade.Name = "ItemForMalade";
-            ItemForMalade.Size = new Size(656, 58);
+            ItemForMalade.Size = new Size(656, 54);
             ItemForMalade.Text = "Malade / Bénéficiaire";
-            ItemForMalade.TextSize = new Size(63, 13);
+            ItemForMalade.TextSize = new Size(120, 17);
             // 
             // ItemForRang
             // 
             ItemForRang.Control = RangTextEdit;
-            ItemForRang.Location = new Point(656, 24);
+            ItemForRang.Location = new Point(656, 28);
             ItemForRang.Name = "ItemForRang";
-            ItemForRang.Size = new Size(656, 58);
+            ItemForRang.Size = new Size(656, 54);
             ItemForRang.Text = "Rang";
-            ItemForRang.TextSize = new Size(63, 13);
+            ItemForRang.TextSize = new Size(120, 17);
             // 
             // gridDetails2
             // 

@@ -1,6 +1,10 @@
 using System.Diagnostics;
+
 using CHIFA.Services.DataServices;
+using CHIFA.Services.Helpers;
+
 using DataModel;
+
 using Xunit.Abstractions;
 
 namespace CHIFA.Tests.Perf;
@@ -14,14 +18,12 @@ public abstract class DbPerfTestBase : IDisposable
     static DbPerfTestBase()
     {
         var host = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_HOST");
-        var port = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_PORT") ?? "5432";
-        var user = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_USER") ?? "pharm";
-        var pwd = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_PWD") ?? "";
-        var db = Environment.GetEnvironmentVariable("CHIFA_TEST_DB_NAME") ?? "CHIFA_OFFICINE";
+        var port = DatabaseDefaults.Port.ToString();
+        var pwd = "";
 
         if (!string.IsNullOrEmpty(host))
         {
-            ChifaDb.ConString = $"Server={host};Port={port};User Id={user};Password={pwd};Database={db};Timeout=15;Command Timeout=60;";
+            ChifaDb.ConString = $"Server={host};Port={port};User Id=pharm;Password={pwd};Database=CHIFA_OFFICINE;Timeout=15;Command Timeout=60;";
         }
     }
 

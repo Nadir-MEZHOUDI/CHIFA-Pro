@@ -25,13 +25,23 @@ public partial class ParametersUc : XtraUserControl, INavigable
         frm.ShowDialog();
     }
 
-    private void btnSave_Click(object sender, EventArgs e)
+    private async void btnSave_Click(object sender, EventArgs e)
     {
         try
         {
+            Cursor.Current = Cursors.WaitCursor;
+
+            var server = rbtServer.Checked ? "localhost" : txtServerName.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(server))
+            {
+                XtraMessageBox.Show("Veuillez sélectionner ou saisir le nom du serveur.", "Paramètres",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             AppSettings.Default.ChifaPath = txtChifaPath.Text;
             AppSettings.Default.IsServer = rbtServer.Checked;
-            XtraHelper.SetServer(rbtServer.Checked ? "localhost" : txtServerName.Text);
 
             AppSettings.Default.NotificationOnDays = chkDays.Checked;
             AppSettings.Default.NotificationOnMontant = chkMontant.Checked;
@@ -41,14 +51,33 @@ public partial class ParametersUc : XtraUserControl, INavigable
             AppSettings.Default.MaxMontant = Convert.ToInt32(txtMontant.EditValue);
             AppSettings.Default.MaxNmbr = Convert.ToInt32(txtFactures.EditValue);
 
-
             AppSettings.Default.Save();
-            XtraMessageBox.Show("Configuration enregistrée avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            _closer?.Invoke();
+
+            // Apply to the running session immediately, no restart required.
+            XtraHelper.SetServer(server);
+
+            var isConnected = await DbChecker.CheckDbConnectionAsync();
+            if (isConnected)
+            {
+                XtraMessageBox.Show("Configuration enregistrée et appliquée. Connexion au serveur réussie.",
+                    "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _closer?.Invoke();
+            }
+            else
+            {
+                XtraMessageBox.Show(
+                    $@"Configuration enregistrée et appliquée, mais la connexion au serveur « {server} » a échoué.
+Vérifiez le nom du serveur ou que PostgreSQL est démarré.",
+                    "Connexion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
         catch (Exception ex)
         {
             ex.Log();
+        }
+        finally
+        {
+            Cursor.Current = Cursors.Default;
         }
     }
 

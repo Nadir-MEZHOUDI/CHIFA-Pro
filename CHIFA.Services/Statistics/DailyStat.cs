@@ -9,6 +9,7 @@ public class DailyStat
     public int Factures { get; init; }
     public decimal? MontantMaj { get;  init; }
     public decimal? MontantFact { get;  init; }
+    public decimal? MontantAss { get; init; }
 
     public decimal? MontantOff { get;  init; }
     public decimal? MontantFE { get; init; }
