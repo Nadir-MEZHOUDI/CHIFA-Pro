@@ -15,10 +15,15 @@
 	</PackageReference>
 	<PackageReference Include="FluentAssertions" Version="8.10.0" />
 	<PackageReference Include="Npgsql" Version="10.*" />
+	<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.*" />
+	<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.*" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.*" />
 </ItemGroup>
 
 <ItemGroup>
   <ProjectReference Include="..\CHIFA.Services\CHIFA.Services.csproj" />
+  <ProjectReference Include="..\CHIFA.Gateway\CHIFA.Gateway.csproj" />
+  <ProjectReference Include="..\CHIFA.Agent\CHIFA.Agent.csproj" />
 </ItemGroup>
 
 </Project>

@@ -1,0 +1,208 @@
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+using CHIFA.Agent;
+using CHIFA.Contract;
+using CHIFA.Gateway.Features.Admin;
+using CHIFA.Gateway.Features.Agents;
+using CHIFA.Gateway.Features.Auth;
+using CHIFA.Gateway.Features.Officine;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+
+namespace CHIFA.Tests.Gateway;
+
+[Collection(GatewayCollection.Name)]
+public class GatewayTests(GatewayFixture gateway)
+{
+    private record Row(string Num, decimal Montant);
+
+    [Fact]
+    public async Task Phone_request_is_answered_by_the_pharmacy_agent()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        PageQuery? received = null;
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On<PageQuery, Page<Row>>(AgentMethods.GetRejets, q =>
+        {
+            received = q;
+            return Task.FromResult(new Page<Row>(1, [new Row("B-001", 1250.50m)]));
+        });
+        await agent.StartAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        var response = await phone.GetAsync("/api/officine/rejets?from=2026-11-01&to=2026-11-22&skip=0&take=10");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var page = await response.Content.ReadFromJsonAsync<Page<Row>>(JsonSerializerOptions.Web);
+        page!.Total.Should().Be(1);
+        page.Items.Should().ContainSingle().Which.Should().Be(new Row("B-001", 1250.50m));
+        received.Should().Be(new PageQuery(new DateTime(2026, 11, 1), new DateTime(2026, 11, 22), 0, 10));
+    }
+
+    [Fact]
+    public async Task Phone_only_reaches_its_own_pharmacy()
+    {
+        var mine = await gateway.CreatePharmacyAsync();
+        var other = await gateway.CreatePharmacyAsync();
+        await using var myAgent = AgentAnsweringInfo(mine.AgentKey, "Mine");
+        await using var otherAgent = AgentAnsweringInfo(other.AgentKey, "Other");
+        await myAgent.StartAsync();
+        await otherAgent.StartAsync();
+        using var phone = await gateway.LoginAsync(mine);
+
+        var info = await phone.GetFromJsonAsync<AgentInfo>("/api/officine/info", JsonSerializerOptions.Web);
+
+        info!.Officine.Should().Be("Mine");
+    }
+
+    [Fact]
+    public async Task Offline_pharmacy_returns_503()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        var response = await phone.GetAsync("/api/officine/dashboard");
+
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+        var status = await phone.GetFromJsonAsync<OfficineStatus>("/api/officine/status", JsonSerializerOptions.Web);
+        status!.Online.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Agent_error_returns_502_with_the_agent_message()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On<PeriodQuery, object>(AgentMethods.GetDashboard, _ => throw new HubException("Base CHIFA indisponible"));
+        await agent.StartAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        var response = await phone.GetAsync("/api/officine/dashboard");
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("Base CHIFA indisponible");
+    }
+
+    [Fact]
+    public async Task Slow_agent_returns_504()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On<PeriodQuery, object>(AgentMethods.GetDashboard, async _ =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(GatewayFixture.AgentTimeoutSeconds + 3));
+            return new object();
+        });
+        await agent.StartAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        var response = await phone.GetAsync("/api/officine/dashboard");
+
+        response.StatusCode.Should().Be(HttpStatusCode.GatewayTimeout);
+    }
+
+    [Fact]
+    public async Task Agent_with_unknown_key_is_rejected()
+    {
+        await using var agent = gateway.CreateAgentConnection("not-a-valid-key");
+
+        var start = () => agent.StartAsync();
+
+        (await start.Should().ThrowAsync<HttpRequestException>()).Which.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Real_agent_reconnects_by_itself_after_the_connection_drops()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        var registry = gateway.Services.GetRequiredService<AgentRegistry>();
+        using var worker = CreateWorker(pharmacy.AgentKey);
+        await worker.StartAsync(CancellationToken.None);
+
+        try
+        {
+            await gateway.WaitUntilAsync(() => Task.FromResult(registry.IsOnline(pharmacy.Id)));
+            var firstConnection = registry.GetConnectionId(pharmacy.Id);
+
+            registry.Disconnect(pharmacy.Id);
+
+            await gateway.WaitUntilAsync(() => Task.FromResult(
+                registry.IsOnline(pharmacy.Id) && registry.GetConnectionId(pharmacy.Id) != firstConnection));
+        }
+        finally
+        {
+            await worker.StopAsync(CancellationToken.None);
+        }
+    }
+
+    [Fact]
+    public async Task Replacing_the_agent_key_disconnects_the_old_agent_for_good()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        var registry = gateway.Services.GetRequiredService<AgentRegistry>();
+        using var worker = CreateWorker(pharmacy.AgentKey);
+        await worker.StartAsync(CancellationToken.None);
+
+        try
+        {
+            await gateway.WaitUntilAsync(() => Task.FromResult(registry.IsOnline(pharmacy.Id)));
+            using var admin = gateway.CreateAdminClient();
+
+            (await admin.PostAsync($"/admin/pharmacies/{pharmacy.Id}/agent-key", null)).EnsureSuccessStatusCode();
+            await Task.Delay(TimeSpan.FromSeconds(4));
+
+            registry.IsOnline(pharmacy.Id).Should().BeFalse();
+        }
+        finally
+        {
+            await worker.StopAsync(CancellationToken.None);
+        }
+    }
+
+    [Fact]
+    public async Task Admin_endpoints_require_the_admin_key()
+    {
+        using var client = gateway.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/admin/pharmacies", new CreatePharmacyRequest("Intrus"));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Wrong_password_is_refused()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        using var client = gateway.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/api/auth/login", new LoginRequest(pharmacy.UserName, "wrong-password"));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Phone_api_requires_a_token()
+    {
+        using var client = gateway.CreateClient();
+
+        var response = await client.GetAsync("/api/officine/status");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    private HubConnection AgentAnsweringInfo(string agentKey, string officine)
+    {
+        var agent = gateway.CreateAgentConnection(agentKey);
+        agent.On(AgentMethods.GetInfo, () => Task.FromResult(new AgentInfo(officine, "test", DateTime.Now)));
+        return agent;
+    }
+
+    private AgentWorker CreateWorker(string agentKey) =>
+        new(Options.Create(new AgentOptions { GatewayUrl = gateway.BaseAddress.ToString(), AgentKey = agentKey }),
+            new AgentHandlers(NullLogger<AgentHandlers>.Instance),
+            NullLogger<AgentWorker>.Instance);
+}
