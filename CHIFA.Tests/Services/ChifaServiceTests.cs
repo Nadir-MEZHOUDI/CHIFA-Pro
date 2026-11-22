@@ -163,11 +163,12 @@ public class ChifaServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task GetUsersAsync_ReturnsRows()
+    public async Task GetUsersAsync_ReturnsRows_WithoutPasswords()
     {
         using var w = StartWatch();
         var rows = (await _svc.GetUsersAsync()).ToList();
         rows.Should().NotBeEmpty();
+        rows.Should().OnlyContain(u => string.IsNullOrEmpty(u.MotPasse));
     }
 
     [Fact]

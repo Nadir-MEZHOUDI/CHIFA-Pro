@@ -362,10 +362,22 @@ public class ChifaService
         return list.ToList();
     }
 
+    /// <summary>
+    /// Lists CHIFA users WITHOUT their password: <c>MotPasse</c> is never read from the database,
+    /// so it cannot be displayed, searched, exported or kept in memory.
+    /// </summary>
     public async ValueTask<IEnumerable<Utilisateur>> GetUsersAsync()
     {
         await using var db = new ChifaDb();
-        return await db.Utilisateurs.ToListAsync().ConfigureAwait(false);
+        return await db.Utilisateurs
+            .Select(u => new Utilisateur
+            {
+                NomUtilisateur = u.NomUtilisateur,
+                DroitAcces = u.DroitAcces,
+                Admin = u.Admin
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
     }
 
     public async ValueTask<IEnumerable<ListeNoire>> LoadAllListNoirAsync()
