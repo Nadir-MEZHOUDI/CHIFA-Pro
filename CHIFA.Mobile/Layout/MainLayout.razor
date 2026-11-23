@@ -17,6 +17,12 @@
                 </span>
             }
         </div>
+        @if (_install != "none")
+        {
+            <button class="install-button" title="Installer l'application" @onclick="InstallAsync">
+                <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>Installer
+            </button>
+        }
         <button class="icon-button" title="Se déconnecter" @onclick="SignOutAsync">
             <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
         </button>
@@ -46,6 +52,8 @@
 @code {
     private OfficineStatus? _status;
     private PeriodicTimer? _timer;
+    private string _install = "none";
+    private DotNetObjectReference<MainLayout>? _self;
 
     protected override void OnInitialized()
     {
@@ -75,6 +83,25 @@
         } while (await _timer.WaitForNextTickAsync());
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        _self = DotNetObjectReference.Create(this);
+        _install = await Js.InvokeAsync<string>("chifa.install.watch", _self);
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public Task OnInstallStateChanged(string state)
+    {
+        _install = state;
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private async Task InstallAsync() => await Js.InvokeVoidAsync("chifa.install.run");
+
     private async Task SignOutAsync()
     {
         var question = Session.DeviceToken is not null
@@ -87,5 +114,13 @@
         Nav.NavigateTo("login");
     }
 
-    public void Dispose() => _timer?.Dispose();
+    public void Dispose()
+    {
+        _timer?.Dispose();
+        if (_self is not null)
+        {
+            _ = Js.InvokeVoidAsync("chifa.install.unwatch").AsTask();
+            _self.Dispose();
+        }
+    }
 }
