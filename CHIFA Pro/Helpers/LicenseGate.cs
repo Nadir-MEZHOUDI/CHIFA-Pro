@@ -62,7 +62,7 @@ internal static class LicenseGate
         {
             ex.Log();
             XtraMessageBox.Show("La vérification de la licence est impossible sur ce poste.\n" + ex.Message,
-                "Licence CHIFA Pro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                "Licence SmartCHIFA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
         }
 
@@ -157,7 +157,7 @@ internal static class LicenseGate
         if (!state.IsValid || days is null || days > ExpiryWarningDays) return;
 
         XtraMessageBox.Show(
-            $"Votre abonnement CHIFA Pro se termine le {state.License!.ExpiresAt!.Value.LocalDateTime:dd/MM/yyyy} " +
+            $"Votre abonnement SmartCHIFA se termine le {state.License!.ExpiresAt!.Value.LocalDateTime:dd/MM/yyyy} " +
             $"(dans {Math.Max(0, days.Value)} jour(s)).\n\nContactez SmartApp pour le renouveler : " +
             "votre numéro de série reste le même.",
             "Renouvellement de l'abonnement", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -219,7 +219,7 @@ internal static class LicenseText
             LicenseStatus.Expired => $"Votre abonnement a pris fin le {end}. Après renouvellement, cliquez sur « Vérifier en ligne ».",
             LicenseStatus.RefreshRequired => "La licence doit être vérifiée en ligne. Connectez ce poste à Internet puis cliquez sur « Vérifier en ligne ».",
             LicenseStatus.Revoked => "Ce numéro de série a été révoqué. Contactez SmartApp.",
-            LicenseStatus.ClockTampered => "La date de cet ordinateur est incorrecte. Corrigez la date et l'heure puis relancez CHIFA Pro.",
+            LicenseStatus.ClockTampered => "La date de cet ordinateur est incorrecte. Corrigez la date et l'heure puis relancez SmartCHIFA.",
             LicenseStatus.WrongMachine => "Cette licence appartient à un autre ordinateur. Ce poste nécessite son propre numéro de série.",
             LicenseStatus.WrongProduct or LicenseStatus.Invalid => "Le fichier de licence est invalide. Activez ce poste avec votre numéro de série.",
             _ => state.Message

@@ -84,7 +84,7 @@ steps:
   displayName: Pack App using VPK
   inputs:
     targetType: 'inline'
-    script: 'vpk pack -u CHIFA.Pro -v $(FileVersion) -p $(Build.ArtifactStagingDirectory)/publish --icon $(Build.ArtifactStagingDirectory)/publish/icon.ico  -e CHIFA.Pro.exe --outputDir $(Build.ArtifactStagingDirectory)/Releases'
+    script: 'vpk pack -u CHIFA.Pro -v $(FileVersion) -p $(Build.ArtifactStagingDirectory)/publish --icon $(Build.ArtifactStagingDirectory)/publish/icon.ico  -e CHIFA.Pro.exe --outputDir $(Build.ArtifactStagingDirectory)/Releases --packTitle SmartCHIFA'
 
 
 - task: PublishBuildArtifacts@1

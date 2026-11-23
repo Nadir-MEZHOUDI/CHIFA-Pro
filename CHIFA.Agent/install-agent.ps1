@@ -18,8 +18,8 @@ if (Get-Service $name -ErrorAction SilentlyContinue) {
 }
 if ($Uninstall) { return }
 
-sc.exe create $name binPath= "`"$exe`"" start= delayed-auto DisplayName= 'CHIFA Pro - Agent mobile' | Out-Null
-sc.exe description $name 'Relie la base CHIFA locale au serveur CHIFA Pro pour l''application mobile.' | Out-Null
+sc.exe create $name binPath= "`"$exe`"" start= delayed-auto DisplayName= 'SmartCHIFA - Agent mobile' | Out-Null
+sc.exe description $name 'Relie la base CHIFA locale au serveur SmartCHIFA pour l''application mobile.' | Out-Null
 # Restart after 5 s, 10 s, then every minute; forget failures after a day.
 sc.exe failure $name reset= 86400 actions= restart/5000/restart/10000/restart/60000 | Out-Null
 

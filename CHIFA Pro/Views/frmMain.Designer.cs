@@ -580,7 +580,7 @@ namespace CHIFA.Pro.Views
             Notification.BalloonTipIcon = ToolTipIcon.Info;
             Notification.ContextMenuStrip = contextMenu;
             Notification.Icon = (Icon)resources.GetObject("Notification.Icon");
-            Notification.Text = "CHIFA Pro";
+            Notification.Text = "SmartCHIFA";
             Notification.Visible = true;
             Notification.MouseDoubleClick += Notification_MouseDoubleClick;
             // 
@@ -590,7 +590,7 @@ namespace CHIFA.Pro.Views
             contextMenu.Items.AddRange(new ToolStripItem[] { menuOpen, toolStripSeparator1, menuExit });
             contextMenu.Name = "contextMenuStrip1";
             contextMenu.Size = new Size(112, 54);
-            contextMenu.Text = "CHIFA Pro";
+            contextMenu.Text = "SmartCHIFA";
             // 
             // menuOpen
             // 
@@ -640,7 +640,7 @@ namespace CHIFA.Pro.Views
             IsMdiContainer = true;
             Margin = new Padding(5, 4, 5, 4);
             Name = "FrmMain";
-            Text = "CHIFFA PRO";
+            Text = "SmartCHIFA";
             WindowState = FormWindowState.Maximized;
             FormClosing += FrmMain_FormClosing;
             Load += frmMain_Load;

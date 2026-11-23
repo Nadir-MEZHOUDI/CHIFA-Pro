@@ -203,7 +203,7 @@ public partial class FrmMain : XtraForm
     {
         var license = LicenseGate.TitleText();
         Text =
-            $@"CHIFA PRO [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )" +
+            $@"SmartCHIFA [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )" +
             (license is null ? string.Empty : $" [Licence : {license}]");
     }
 
@@ -455,7 +455,7 @@ public partial class FrmMain : XtraForm
 
     private async Task ShowNotification(string message, ToolTipIcon icon = ToolTipIcon.Info)
     {
-        await ShowNotification(message, "CHIFA Pro", icon);
+        await ShowNotification(message, "SmartCHIFA", icon);
     }
 
 

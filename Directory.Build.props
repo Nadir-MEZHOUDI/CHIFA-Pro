@@ -3,7 +3,7 @@
 		<LangVersion>preview</LangVersion>
 		<Authors>MEZHOUDI Hadj Nadir</Authors>
 		<Company>SmartApps</Company>
-		<Product>CHIFA Pro</Product>
+		<Product>SmartCHIFA</Product>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<ImplicitUsings>true</ImplicitUsings>
 		<Nullable>enable</Nullable>

@@ -5,7 +5,7 @@
  		<UseWindowsForms>true</UseWindowsForms>
  		<RootNamespace>CHIFA.Pro</RootNamespace>
    		<StartupObject>CHIFA.Pro.Program</StartupObject>
-  		<Product>CHIFA.Pro</Product>
+  		<Product>SmartCHIFA</Product>
   		<ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
   		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<WarningsAsErrors>DX1000;DX1001</WarningsAsErrors>

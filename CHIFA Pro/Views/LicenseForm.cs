@@ -4,7 +4,7 @@ namespace CHIFA.Pro.Views;
 
 /// <summary>
 /// Activation and license details. In <c>startup</c> mode it blocks the application until the
-/// license is valid (Quitter closes CHIFA Pro); otherwise it is an information dialog.
+/// license is valid (Quitter closes SmartCHIFA); otherwise it is an information dialog.
 /// </summary>
 public sealed class LicenseForm : XtraForm
 {
@@ -29,7 +29,7 @@ public sealed class LicenseForm : XtraForm
 
     private void BuildLayout()
     {
-        Text = "Licence CHIFA Pro";
+        Text = "Licence SmartCHIFA";
         ClientSize = new Size(580, 346);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
@@ -38,7 +38,7 @@ public sealed class LicenseForm : XtraForm
         StartPosition = _startup ? FormStartPosition.CenterScreen : FormStartPosition.CenterParent;
         try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
 
-        var title = new LabelControl { Text = "Licence CHIFA Pro", Location = new Point(24, 18) };
+        var title = new LabelControl { Text = "Licence SmartCHIFA", Location = new Point(24, 18) };
         title.Appearance.Font = new Font("Segoe UI", 15f, FontStyle.Bold);
 
         _lblStatus.AutoSizeMode = LabelAutoSizeMode.None;
@@ -111,7 +111,7 @@ public sealed class LicenseForm : XtraForm
             return;
         }
 
-        await RunAsync(() => _client.ActivateAsync(_txtSerial.Text), "CHIFA Pro est maintenant activé sur ce poste.");
+        await RunAsync(() => _client.ActivateAsync(_txtSerial.Text), "SmartCHIFA est maintenant activé sur ce poste.");
     }
 
     private async void BtnRefresh_Click(object? sender, EventArgs e) =>
