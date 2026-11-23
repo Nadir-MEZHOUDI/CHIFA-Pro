@@ -24,8 +24,11 @@ steps:
     script: |
       $destDir = Join-Path $env:APPDATA 'DevExpress'
       New-Item -ItemType Directory -Force -Path $destDir | Out-Null
-      Copy-Item '$(dxLicense.secureFilePath)' (Join-Path $destDir 'DevExpress_License.txt') -Force
-      Write-Host "DevExpress license file copied to $destDir"
+      $dest = Join-Path $destDir 'DevExpress_License.txt'
+      Copy-Item '$(dxLicense.secureFilePath)' $dest -Force
+      # Fingerprint only (never the key) to tell which license file the build actually got.
+      $hash = (Get-FileHash $dest -Algorithm SHA256).Hash.Substring(0, 12)
+      Write-Host "DevExpress license file copied to $destDir ($((Get-Item $dest).Length) bytes, sha256 $hash...)"
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
