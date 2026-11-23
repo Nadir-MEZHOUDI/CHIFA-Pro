@@ -8,6 +8,7 @@
 @if (Session.IsSignedIn)
 {
     <header class="topbar">
+        <img class="topbar-logo" src="icon-192.png" alt="" />
         <div class="topbar-title">
             <span class="pharmacy">@Session.Current!.Pharmacy</span>
             @if (_status is { } s)
