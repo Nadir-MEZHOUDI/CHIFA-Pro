@@ -142,23 +142,29 @@ public class StatisticsService
     public async ValueTask<IEnumerable<BordStatDto>> BordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
-        var query = await db.Bordereaus
-            .Where(x => x.Etat == 'C')
-            .Where(predicate.SetPeriod(Period))
-            .Select(x => new BordStatDto
-            {
-                MontantOff = x.Factures.Sum(f => f.MontOff),
-                MontantFact = x.Factures.Sum(f => f.MontFact),
-                MontantAss = x.Factures.Sum(f => f.MontAs),
-                MontantMaj = x.Factures.Sum(f => f.MontMaj),
-                MontantFE = x.Factures.Sum(f => f.MontMajFae),
-                Factures = x.Factures.Count(),
-                DateDebut = x.DateGen,
-                DateFin = x.DateExtract,
-                Center = x.Center!.Nom,
-                Num = x.NumBord,
-                Virement = x.MontVir
-            })
+        var start = Period.Start;
+        var end = Period.EndExclusive;
+
+        // Same totals as the Bordereaux grid, in one GROUP BY over facture (see ChifaService.FactureTotals).
+        var query = await (
+                from x in db.Bordereaus.Where(predicate ?? (_ => true))
+                from t in ChifaService.FactureTotals(db).LeftJoin(t => t.NumBord == x.NumBord)
+                where x.Etat == 'C' && t.LastFacture != null &&
+                      (start == null || t.LastFacture >= start) && (end == null || t.LastFacture < end)
+                select new BordStatDto
+                {
+                    MontantOff = t.MontOff,
+                    MontantFact = t.MontFact,
+                    MontantAss = t.MontAss,
+                    MontantMaj = t.Maj,
+                    MontantFE = t.Fae,
+                    Factures = t.Nmbr,
+                    DateDebut = t.FirstFacture,
+                    DateFin = t.LastFacture,
+                    Center = x.Center!.Nom,
+                    Num = x.NumBord,
+                    Virement = x.MontVir
+                })
             .OrderBy(x => x.DateFin)
             .ToListAsync()
             .ConfigureAwait(false);

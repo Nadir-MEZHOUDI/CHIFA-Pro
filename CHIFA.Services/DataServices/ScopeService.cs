@@ -19,23 +19,25 @@ public class ScopeService
         // A bordereau belongs to the period by its closing date, or its FTP deposit date when CHIFA left
         // the closing date at the 1900 placeholder (it does so for every bordereau).
         var minDate = RejetDto.DateMinimaleValide;
-        var bordereaux = await db.Bordereaus
-            .Where(b => (start == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) >= start) &&
-                        (end == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) < end))
-            .Select(b => new
-            {
-                b.NumBord,
-                Center = b.Center!.Nom,
-                b.DateCloture,
-                b.DateDepotFtp,
-                b.MontVir,
-                Etat = b.Etat.ToString(),
-                EstOuvert = b.Etat == 'O',
-                NombreFactures = b.Factures.Count(),
-                PartCaisse = b.Factures.Sum(f => f.MontOff) ?? 0m,
-                Majorations = b.Factures.Sum(f => f.MontMaj) ?? 0m,
-                Fae = b.Factures.Sum(f => f.MontMajFae) ?? 0m
-            })
+        var bordereaux = await (
+                from b in db.Bordereaus
+                where (start == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) >= start) &&
+                      (end == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) < end)
+                from t in ChifaService.FactureTotals(db).LeftJoin(t => t.NumBord == b.NumBord)
+                select new
+                {
+                    b.NumBord,
+                    Center = b.Center!.Nom,
+                    b.DateCloture,
+                    b.DateDepotFtp,
+                    b.MontVir,
+                    Etat = b.Etat.ToString(),
+                    EstOuvert = b.Etat == 'O',
+                    NombreFactures = (int?)t.Nmbr ?? 0,
+                    PartCaisse = t.MontOff ?? 0m,
+                    Majorations = t.Maj ?? 0m,
+                    Fae = t.Fae ?? 0m
+                })
             .ToListAsync()
             .ConfigureAwait(false);
 
