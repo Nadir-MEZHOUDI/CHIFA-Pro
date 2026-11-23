@@ -280,8 +280,9 @@ public class ChifaService
                 Rang = x.Key.RangAd,
                 Assure = x.Max(m => m.Facture.Assure.FullName),
                 Malade = x.Max(m => m.Facture.Beneficiaire.FullName),
-                TS = x.Any(m => m.Ts == true),
-                LongDuree = x.Any(m => m.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays)
+                // Count(...) > 0 is an aggregate of the group; Any(...) was a subquery per patient.
+                TS = x.Count(m => m.Ts == true) > 0,
+                LongDuree = x.Count(m => m.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays) > 0
             })
             .ToListAsync()
             .ConfigureAwait(false);
@@ -560,7 +561,7 @@ public class ChifaService
                 Rang = a.Facture.RangAd,
                 Assure = a.Facture.Assure.FullName,
                 Malade = a.Facture.Beneficiaire.FullName,
-                Medicament = a.Medicament.FullName(),
+                a.Medicament.NomCom, a.Medicament.Dosage, a.Medicament.Conditionnement,
                 a.Facture.DateFact,
                 Duree = a.DureeTrait == 1 && a.Qte >= MedicalThresholds.HighQuantityThreshold
                     ? MedicalThresholds.VeryLongTreatmentDurationDays
@@ -591,7 +592,7 @@ public class ChifaService
                     Malade = first.Malade,
                     DetailsDtos = items.Select(m => new TraitDetailsDto
                     {
-                        Medicament = m.Medicament,
+                        Medicament = $"{m.NomCom} {m.Dosage} {m.Conditionnement}",
                         DateFact = m.DateFact,
                         Duree = m.Duree,
                         NEnrg = m.NEnrg,

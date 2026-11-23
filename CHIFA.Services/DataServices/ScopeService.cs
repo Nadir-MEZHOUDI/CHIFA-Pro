@@ -224,9 +224,17 @@ public class ScopeService
     public async ValueTask<IEnumerable<FactureDto>> GetRecentFacturesLiveAsync(int limit = 50)
     {
         await using var db = new ChifaDb();
-        return await db.Factures
+        // Pick the last factures first: with the joins in the same SELECT, PostgreSQL joined and checked
+        // every facture before applying the LIMIT.
+        var numFacts = await db.Factures
             .OrderByDescending(f => f.DateFact)
             .Take(limit)
+            .Select(f => f.NumFact)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return await db.Factures
+            .Where(f => numFacts.Contains(f.NumFact))
             .Select(f => new FactureDto
             {
                 NumFact = f.NumFact,
@@ -246,6 +254,7 @@ public class ScopeService
                 TS = f.DetailFacts.Any(m => m.Ts == true),
                 LongDuree = f.DetailFacts.Any(m => m.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays)
             })
+            .OrderByDescending(x => x.DateFact)
             .ToListAsync()
             .ConfigureAwait(false);
     }

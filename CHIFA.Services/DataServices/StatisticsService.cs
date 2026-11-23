@@ -313,25 +313,48 @@ public class StatisticsService
     public async ValueTask<IEnumerable<ClientsStat>> ByClientAsync(Expression<Func<Facture, bool>>? predicate = null)
     {
         await using var db = new ChifaDb();
-        var list = await db.Factures
-            .Where(predicate.SetPeriod(Period))
+        var factures = db.Factures.Where(predicate.SetPeriod(Period));
+
+        var list = await factures
             .GroupBy(x => new { x.NumAssure, x.RangAd })
-            .Select(x => new ClientsStat
+            .Select(x => new
             {
-                NumAssure = x.Key.NumAssure!,
+                x.Key.NumAssure,
+                x.Key.RangAd,
                 Malade = x.Max(f => f.Beneficiaire.FullName),
                 MantFact = x.Sum(f => f.MontFact),
                 MontMaj = x.Sum(f => f.MontMaj),
                 MontAss = x.Sum(f => f.MontAs),
                 MontOff = x.Sum(f => f.MontOff),
                 MontFE = x.Sum(f => f.MontMajFae),
-                Boites = x.SelectMany(f => f.DetailFacts).Sum(d => d.Qte),
                 Factures = x.Count()
             })
             .OrderByDescending(x => x.MantFact)
             .ToListAsync()
             .ConfigureAwait(false);
-        return list;
+
+        // Boxes in a second grouped query: as a per-client subquery it rescanned facture for each client.
+        var boites = await (
+                from f in factures
+                join d in db.DetailFacts on f.NumFact equals d.NumFact
+                group d by new { f.NumAssure, f.RangAd } into g
+                select new { g.Key.NumAssure, g.Key.RangAd, Qte = g.Sum(d => d.Qte) })
+            .ToDictionaryAsync(x => ((string?)x.NumAssure, (string?)x.RangAd), x => x.Qte)
+            .ConfigureAwait(false);
+
+        return list.Select(x => new ClientsStat
+            {
+                NumAssure = x.NumAssure!,
+                Malade = x.Malade,
+                MantFact = x.MantFact,
+                MontMaj = x.MontMaj,
+                MontAss = x.MontAss,
+                MontOff = x.MontOff,
+                MontFE = x.MontFE,
+                Boites = boites.GetValueOrDefault((x.NumAssure, x.RangAd)),
+                Factures = x.Factures
+            })
+            .ToList();
     }
     public async ValueTask<IEnumerable<ProductStat>> ProductsAsync(Expression<Func<DetailFact, bool>>? predicate = null)
     {
