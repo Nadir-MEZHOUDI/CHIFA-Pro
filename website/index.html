@@ -6,7 +6,8 @@
 <title>SmartCHIFA — Pilotez votre officine CHIFA</title>
 <meta name="description" content="SmartCHIFA : tableau de bord, bordereaux CNAS & CASNOS, rejets, psychotropes et statistiques pour les pharmacies algériennes. Sur votre PC et sur votre téléphone.">
 <link rel="canonical" href="https://smartchifa.smartappdz.org/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230B3B2E'/%3E%3Cpath d='M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z' fill='%2334D17A'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -43,15 +44,17 @@ header.scrolled{border-color:var(--line)}
 .nav{display:flex;align-items:center;gap:24px;height:68px}
 .logo{display:flex;align-items:center;gap:10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;text-decoration:none;letter-spacing:-.02em}
 .logo b{color:var(--emerald)}
-.logo svg{width:34px;height:34px}
+.logo img{width:34px;height:34px;display:block}
 .nav-links{display:flex;gap:26px;margin-inline-start:auto;font-weight:600;font-size:15px}
 .nav-links a{text-decoration:none;color:var(--muted)}
 .nav-links a:hover{color:var(--ink)}
 .nav-cta{display:flex;gap:10px;align-items:center}
 .lang{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font:700 14px var(--f-body);cursor:pointer}
-.nav .btn{padding:10px 18px}
+.nav .btn{padding:10px 18px;white-space:nowrap}
+.nav .login{color:var(--pine);gap:8px}
+@media (max-width:480px){.nav .login{padding:10px}.nav .login span{display:none}}
 .burger{display:none;background:none;border:0;padding:8px;cursor:pointer}
-@media (max-width:900px){
+@media (max-width:1080px){
   .nav-links{display:none;position:absolute;top:68px;inset-inline:0;flex-direction:column;gap:0;background:var(--paper);border-bottom:1px solid var(--line);padding:8px 16px}
   .nav-links.open{display:flex}
   .nav-links a{padding:12px 0;border-bottom:1px solid var(--line)}
@@ -239,7 +242,7 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
 <header id="top">
   <div class="wrap nav">
     <a class="logo" href="#top" aria-label="SmartCHIFA">
-      <svg viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0B3B2E"/><path d="M14 7h6v7h7v6h-7v7h-6v-7H7v-6h7z" fill="#34D17A"/><circle cx="26" cy="8" r="3" fill="#F2A93B"/></svg>
+      <img src="assets/logo.png" alt="" width="34" height="34">
       <span>Smart<b>CHIFA</b></span>
     </a>
     <nav class="nav-links" id="menu">
@@ -252,6 +255,7 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
     </nav>
     <div class="nav-cta">
       <button class="lang" id="lang" type="button" aria-label="Changer de langue">عربي</button>
+      <a class="btn btn-ghost login" href="https://chifa-gateway.smartappdz.org/login" title="CHIFA Mobile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg><span data-i18n="nav.login">Connexion</span></a>
       <a class="btn btn-primary" href="#essai" data-i18n="nav.cta">Essai gratuit</a>
       <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
@@ -556,7 +560,7 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
 
 <footer>
   <div class="wrap foot">
-    <a class="logo" href="#top" style="font-size:18px"><svg viewBox="0 0 34 34" style="width:28px;height:28px" aria-hidden="true"><rect width="34" height="34" rx="9" fill="#0B3B2E"/><path d="M14 7h6v7h7v6h-7v7h-6v-7H7v-6h7z" fill="#34D17A"/><circle cx="26" cy="8" r="3" fill="#F2A93B"/></svg><span>Smart<b>CHIFA</b></span></a>
+    <a class="logo" href="#top" style="font-size:18px"><img src="assets/logo.png" alt="" style="width:28px;height:28px"><span>Smart<b>CHIFA</b></span></a>
     <span data-i18n="foot">© 2026 SmartApp. Fait en Algérie, pour les pharmacies algériennes.</span>
     <a href="https://www.smartappdz.org/">smartappdz.org</a>
   </div>
@@ -564,7 +568,7 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
 
 <script>
 const AR = {
-  "nav.features":"المميزات","nav.mobile":"الهاتف","nav.gallery":"لمحة","nav.why":"لماذا نحن","nav.pricing":"الأسعار","nav.faq":"أسئلة شائعة","nav.cta":"تجربة مجانية",
+  "nav.features":"المميزات","nav.mobile":"الهاتف","nav.gallery":"لمحة","nav.why":"لماذا نحن","nav.pricing":"الأسعار","nav.faq":"أسئلة شائعة","nav.cta":"تجربة مجانية","nav.login":"تسجيل الدخول",
   "hero.eyebrow":"للصيدليات الجزائرية · CNAS و CASNOS",
   "hero.title":"صيدليتك تحت السيطرة، <em>حتى آخر دينار.</em>",
   "hero.lead":"يقرأ SmartCHIFA قاعدة بيانات الشفاء مباشرة ويحوّل كل فاتورة إلى قرار: جداول إرسال مُراجعة قبل الإيداع، مرفوضات مُسترجعة، ومؤثرات عقلية مُتتبَّعة — على حاسوبك وعلى هاتفك.",
