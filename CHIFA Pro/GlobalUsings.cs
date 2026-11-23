@@ -5,4 +5,5 @@ global using System.Net.Http.Json;
 global using CHIFA.Services.Dtos;
 global using CHIFA.Services.Helpers;
 global using CHIFA.Services.DataServices;
+global using SmartApp.Licensing.Client;
 global using SmartApp.Telemetry.Client;

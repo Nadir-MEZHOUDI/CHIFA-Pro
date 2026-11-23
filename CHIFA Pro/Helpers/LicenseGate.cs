@@ -1,0 +1,228 @@
+namespace CHIFA.Pro.Helpers;
+
+/// <summary>
+/// Serial-number licensing through SmartApp.Licensing (https://license.smartappdz.org).
+/// The license is checked offline at every start (signed file + public key); the app checks in
+/// online in the background to pick up renewals and revocations.
+/// <para>
+/// DEBUG builds skip licensing unless <c>CHIFA_LICENSING=1</c>. Then <c>CHIFA_LICENSE_ENDPOINT</c> and
+/// <c>CHIFA_LICENSE_PUBLIC_KEY_FILE</c> can point to a local licensing server for testing.
+/// </para>
+/// </summary>
+internal static class LicenseGate
+{
+    public const string Product = "chifa-pro";
+    public const int ExpiryWarningDays = 15;
+
+    private const string ProductionEndpoint = "https://license.smartappdz.org";
+
+    // Public key of the SmartApp licensing server. It only verifies licenses; it cannot create them.
+    private const string ProductionPublicKey = """
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEPckUvTCNoSzE+EQrTlAb9qaxnTiA
+        l9GJ/e8oSV/rMmErXqmPAiyeKemgKYDL7+BV6o3umXv6GJJxn0yyGPyVQg==
+        -----END PUBLIC KEY-----
+        """;
+
+    private static LicenseClient? _client;
+
+    /// <summary>False in DEBUG builds unless licensing was turned on.</summary>
+    public static bool IsEnabled => _client is not null;
+
+    public static LicenseState? State => _client?.Current;
+
+    /// <summary>Raised (on a background thread) after an online check-in changed the state.</summary>
+    public static event Action? Changed;
+
+    /// <summary>
+    /// Verifies the license before the main window opens. Shows the activation dialog when needed.
+    /// Returns <c>false</c> when the application must exit.
+    /// </summary>
+    public static bool EnsureLicensed()
+    {
+        var settings = ResolveSettings();
+        if (settings is null)
+        {
+            Log.Information("Licensing disabled for this DEBUG build (set CHIFA_LICENSING=1 to enable).");
+            return true;
+        }
+
+        try
+        {
+            _client = LicenseClientFactory.Create(options =>
+            {
+                options.Endpoint = settings.Endpoint;
+                options.Product = Product;
+                options.PublicKeyPem = settings.PublicKeyPem;
+                options.AppVersion = Application.ProductVersion.Split("+")[0];
+                options.StorageDirectory = settings.StorageDirectory;
+            });
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+            XtraMessageBox.Show("La vérification de la licence est impossible sur ce poste.\n" + ex.Message,
+                "Licence CHIFA Pro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
+
+        var state = _client.Check();
+
+        // Expired or offline for too long: maybe it was renewed meanwhile, ask the server once.
+        if (!state.IsValid && state.License is not null)
+            state = RefreshNow();
+
+        if (!state.IsValid)
+        {
+            using var form = new LicenseForm(_client, startup: true);
+            if (form.ShowDialog() != DialogResult.OK)
+                return false;
+            state = _client.Current;
+        }
+        else
+        {
+            _ = RefreshInBackgroundAsync();
+        }
+
+        WarnIfExpiringSoon(state);
+        return true;
+    }
+
+    /// <summary>Opens the license dialog from the main window (details, online check, release this PC).</summary>
+    public static void ShowDialog(IWin32Window owner)
+    {
+        if (_client is null) return;
+        using var form = new LicenseForm(_client, startup: false);
+        form.ShowDialog(owner);
+    }
+
+    /// <summary>Called on the UI thread after a background check-in. Blocks the app if the license was lost.</summary>
+    public static void HandleBackgroundResult(Form mainForm)
+    {
+        if (_client is null || _client.Current.IsValid) return;
+
+        using var form = new LicenseForm(_client, startup: true);
+        if (form.ShowDialog(mainForm) != DialogResult.OK)
+            mainForm.Close();
+    }
+
+    /// <summary>Short text for the window title, e.g. "Pharmacie El Amel · jusqu'au 22/11/2027".</summary>
+    public static string? TitleText()
+    {
+        var license = State is { IsValid: true } s ? s.License : null;
+        if (license is null) return null;
+        var until = license.ExpiresAt is { } end ? $" · jusqu'au {end.LocalDateTime:dd/MM/yyyy}" : string.Empty;
+        return $"{license.Customer}{until}";
+    }
+
+    public static void Dispose()
+    {
+        _client?.Dispose();
+        _client = null;
+    }
+
+    private static LicenseState RefreshNow()
+    {
+        try
+        {
+            return Task.Run(() => _client!.RefreshAsync(force: true))
+                .WaitAsync(TimeSpan.FromSeconds(20))
+                .GetAwaiter()
+                .GetResult();
+        }
+        catch (Exception ex) when (ex is TimeoutException or TaskCanceledException)
+        {
+            return _client!.Current;
+        }
+    }
+
+    private static async Task RefreshInBackgroundAsync()
+    {
+        try
+        {
+            var before = _client!.Current;
+            var after = await Task.Run(() => _client.RefreshAsync()).ConfigureAwait(false);
+            if (after.Status != before.Status || after.License?.ExpiresAt != before.License?.ExpiresAt)
+                Changed?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+    }
+
+    private static void WarnIfExpiringSoon(LicenseState state)
+    {
+        var days = state.DaysRemaining(DateTimeOffset.UtcNow);
+        if (!state.IsValid || days is null || days > ExpiryWarningDays) return;
+
+        XtraMessageBox.Show(
+            $"Votre abonnement CHIFA Pro se termine le {state.License!.ExpiresAt!.Value.LocalDateTime:dd/MM/yyyy} " +
+            $"(dans {Math.Max(0, days.Value)} jour(s)).\n\nContactez SmartApp pour le renouveler : " +
+            "votre numéro de série reste le même.",
+            "Renouvellement de l'abonnement", MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    private sealed record Settings(string Endpoint, string PublicKeyPem, string? StorageDirectory);
+
+    private static Settings? ResolveSettings()
+    {
+#if DEBUG
+        if (Environment.GetEnvironmentVariable("CHIFA_LICENSING") != "1")
+            return null;
+
+        var endpoint = Environment.GetEnvironmentVariable("CHIFA_LICENSE_ENDPOINT");
+        var keyFile = Environment.GetEnvironmentVariable("CHIFA_LICENSE_PUBLIC_KEY_FILE");
+        if (string.IsNullOrWhiteSpace(endpoint))
+            return new Settings(ProductionEndpoint, ProductionPublicKey, null);
+
+        // A test server: keep its license apart from the real one.
+        var key = !string.IsNullOrWhiteSpace(keyFile) && File.Exists(keyFile) ? File.ReadAllText(keyFile) : ProductionPublicKey;
+        var storage = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "SmartApp", "Licensing", Product + "-test");
+        return new Settings(endpoint, key, storage);
+#else
+        return new Settings(ProductionEndpoint, ProductionPublicKey, null);
+#endif
+    }
+}
+
+/// <summary>French messages for the license states and server errors.</summary>
+internal static class LicenseText
+{
+    public static string Describe(LicenseState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+        var fromError = state.ErrorCode switch
+        {
+            "invalid_serial" => "Numéro de série invalide. Vérifiez la saisie (5 groupes de 5 caractères).",
+            "not_found" => "Ce numéro de série n'existe pas. Vérifiez la saisie.",
+            "activation_limit_reached" => "Ce numéro de série est déjà utilisé sur le nombre maximum de postes. " +
+                                          "Libérez un poste ou contactez SmartApp.",
+            "revoked" => "Ce numéro de série a été révoqué. Contactez SmartApp.",
+            "expired" => "Votre abonnement est terminé. Renouvelez-le auprès de SmartApp puis cliquez sur « Vérifier en ligne ».",
+            "not_started" => "Votre abonnement n'a pas encore commencé.",
+            "not_activated" => "Ce poste n'est plus activé. Saisissez à nouveau votre numéro de série.",
+            "offline" => "Impossible de joindre le serveur de licences. Vérifiez la connexion Internet puis réessayez.",
+            "unknown_product" => "Cette application n'est pas disponible à l'activation. Contactez SmartApp.",
+            null => null,
+            _ => "Le serveur de licences a répondu par une erreur. Réessayez plus tard."
+        };
+        if (fromError is not null) return fromError;
+
+        var end = state.License?.ExpiresAt is { } e ? e.LocalDateTime.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : null;
+        return state.Status switch
+        {
+            LicenseStatus.Valid => end is null ? "Licence valide." : $"Licence valide jusqu'au {end}.",
+            LicenseStatus.NotActivated => "Ce poste n'est pas encore activé. Saisissez le numéro de série fourni par SmartApp.",
+            LicenseStatus.Expired => $"Votre abonnement a pris fin le {end}. Après renouvellement, cliquez sur « Vérifier en ligne ».",
+            LicenseStatus.RefreshRequired => "La licence doit être vérifiée en ligne. Connectez ce poste à Internet puis cliquez sur « Vérifier en ligne ».",
+            LicenseStatus.Revoked => "Ce numéro de série a été révoqué. Contactez SmartApp.",
+            LicenseStatus.ClockTampered => "La date de cet ordinateur est incorrecte. Corrigez la date et l'heure puis relancez CHIFA Pro.",
+            LicenseStatus.WrongMachine => "Cette licence a été activée sur un autre ordinateur. Activez ce poste avec votre numéro de série.",
+            LicenseStatus.WrongProduct or LicenseStatus.Invalid => "Le fichier de licence est invalide. Activez ce poste avec votre numéro de série.",
+            _ => state.Message
+        };
+    }
+}

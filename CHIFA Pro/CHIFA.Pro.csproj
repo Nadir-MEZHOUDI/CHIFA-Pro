@@ -31,6 +31,7 @@
 	  <PackageReference Include="ReportViewerCore.WinForms" Version="15.*" />
 	  <PackageReference Include="Serilog.Sinks.Debug" Version="3.*" />
 	  <PackageReference Include="Serilog.Sinks.File" Version="7.*" />
+	  <PackageReference Include="SmartApp.Licensing.Client" Version="1.*" />
 	  <PackageReference Include="SmartApp.Telemetry.Client" Version="1.*" />
 	  <PackageReference Include="Velopack" Version="1.2.0" />
 	  <PackageReference Include="ZXing.Net" Version="0.16.*" />

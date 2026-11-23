@@ -17,7 +17,43 @@ public partial class FrmMain : XtraForm
         _instance = this;
         InitializeComponent();
         SetStatisticsAccordionImages();
+        AddLicenseMenu();
         ChangeTitle();
+    }
+
+    private void AddLicenseMenu()
+    {
+        if (!LicenseGate.IsEnabled) return;
+
+        var element = new DevExpress.XtraBars.Navigation.AccordionControlElement
+        {
+            Name = "accLicence",
+            Text = "LICENCE",
+            Style = DevExpress.XtraBars.Navigation.ElementStyle.Item
+        };
+        element.ImageOptions.Image =
+            DevExpress.Images.ImageResourceCache.Default.GetImage("images/security/key_32x32.png")
+            ?? accParametres.ImageOptions.Image;
+        element.Click += (_, _) =>
+        {
+            LicenseGate.ShowDialog(this);
+            ChangeTitle();
+        };
+        accordionControl1.Elements.Add(element);
+
+        // A background check-in may bring a renewal (new end date) or a revocation.
+        LicenseGate.Changed += LicenseGate_Changed;
+        FormClosed += (_, _) => LicenseGate.Changed -= LicenseGate_Changed;
+    }
+
+    private void LicenseGate_Changed()
+    {
+        if (IsDisposed || !IsHandleCreated) return;
+        BeginInvoke(() =>
+        {
+            ChangeTitle();
+            LicenseGate.HandleBackgroundResult(this);
+        });
     }
 
     public static Image Image(int index)
@@ -165,8 +201,10 @@ public partial class FrmMain : XtraForm
 
     private void ChangeTitle()
     {
+        var license = LicenseGate.TitleText();
         Text =
-            $@"CHIFA PRO [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )";
+            $@"CHIFA PRO [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )" +
+            (license is null ? string.Empty : $" [Licence : {license}]");
     }
 
     private async void frmMain_Load(object sender, EventArgs e)
