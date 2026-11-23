@@ -46,6 +46,8 @@ internal static partial class Program
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             SetCulture();
 
+            if (!LicenseGate.EnsureLicensed()) return;
+
             Application.Run(new FrmMain());
         }
         catch (Exception ex)
@@ -61,6 +63,7 @@ internal static partial class Program
         }
         finally
         {
+            LicenseGate.Dispose();
             DisposeTelemetry();
             Log.CloseAndFlush();
         }
