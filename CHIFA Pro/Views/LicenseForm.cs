@@ -17,7 +17,6 @@ public sealed class LicenseForm : XtraForm
     private readonly TextEdit _txtSerial = new();
     private readonly SimpleButton _btnActivate = new() { Text = "Activer" };
     private readonly SimpleButton _btnRefresh = new() { Text = "Vérifier en ligne" };
-    private readonly SimpleButton _btnRelease = new() { Text = "Libérer ce poste" };
     private readonly SimpleButton _btnClose = new();
 
     internal LicenseForm(LicenseClient client, bool startup)
@@ -31,7 +30,7 @@ public sealed class LicenseForm : XtraForm
     private void BuildLayout()
     {
         Text = "Licence CHIFA Pro";
-        ClientSize = new Size(580, 330);
+        ClientSize = new Size(580, 346);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -52,26 +51,25 @@ public sealed class LicenseForm : XtraForm
         _lblDetails.Appearance.TextOptions.VAlignment = VertAlignment.Top;
         _lblDetails.Appearance.Font = new Font("Segoe UI", 9.5f);
         _lblDetails.Appearance.ForeColor = Color.DimGray;
-        _lblDetails.SetBounds(24, 108, 532, 96);
+        _lblDetails.SetBounds(24, 108, 532, 112);
 
-        _lblSerial.Location = new Point(24, 214);
-        _txtSerial.SetBounds(24, 234, 390, 30);
+        _lblSerial.Location = new Point(24, 230);
+        _txtSerial.SetBounds(24, 250, 390, 30);
         _txtSerial.Properties.CharacterCasing = CharacterCasing.Upper;
         _txtSerial.Properties.MaxLength = 40;
         _txtSerial.Properties.NullValuePrompt = "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX";
         _txtSerial.Properties.Appearance.Font = new Font("Consolas", 12f);
-        _btnActivate.SetBounds(426, 233, 130, 32);
+        _txtSerial.ToolTip = "Un numéro de série ne fonctionne que sur un seul ordinateur.";
+        _btnActivate.SetBounds(426, 249, 130, 32);
 
-        _btnRefresh.SetBounds(24, 284, 150, 30);
-        _btnRelease.SetBounds(184, 284, 150, 30);
-        _btnClose.SetBounds(426, 284, 130, 30);
+        _btnRefresh.SetBounds(24, 300, 150, 30);
+        _btnClose.SetBounds(426, 300, 130, 30);
 
         _btnActivate.Click += BtnActivate_Click;
         _btnRefresh.Click += BtnRefresh_Click;
-        _btnRelease.Click += BtnRelease_Click;
         _btnClose.Click += BtnClose_Click;
 
-        Controls.AddRange([title, _lblStatus, _lblDetails, _lblSerial, _txtSerial, _btnActivate, _btnRefresh, _btnRelease, _btnClose]);
+        Controls.AddRange([title, _lblStatus, _lblDetails, _lblSerial, _txtSerial, _btnActivate, _btnRefresh, _btnClose]);
         AcceptButton = _btnActivate;
     }
 
@@ -93,6 +91,7 @@ public sealed class LicenseForm : XtraForm
                           (days >= 0 ? $" ({days} jour(s) restants)" : string.Empty));
             }
             lines.Add($"Numéro de série : •••••-•••••-•••••-•••••-{license.SerialHint}");
+            lines.Add("Ce numéro de série est lié à cet ordinateur.");
         }
         lines.Add($"Identifiant du poste : {_client.MachineId[..Math.Min(12, _client.MachineId.Length)].ToUpperInvariant()}");
         _lblDetails.Text = string.Join(Environment.NewLine, lines);
@@ -101,7 +100,6 @@ public sealed class LicenseForm : XtraForm
         _lblSerial.Visible = _txtSerial.Visible = _btnActivate.Visible = canEnterSerial;
         AcceptButton = canEnterSerial ? _btnActivate : _btnClose;
         _btnRefresh.Visible = license is not null;
-        _btnRelease.Visible = !_startup && state.IsValid;
         _btnClose.Text = !_startup ? "Fermer" : state.IsValid ? "Continuer" : "Quitter";
     }
 
@@ -146,36 +144,6 @@ public sealed class LicenseForm : XtraForm
         }
     }
 
-    private async void BtnRelease_Click(object? sender, EventArgs e)
-    {
-        try
-        {
-            var answer = XtraMessageBox.Show(this,
-                "Libérer ce poste ?\n\nCHIFA Pro se fermera et votre numéro de série pourra être activé sur un autre ordinateur.",
-                "Libérer ce poste", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (answer != DialogResult.Yes) return;
-
-            SetBusy(true);
-            if (!await _client.DeactivateAsync())
-            {
-                XtraMessageBox.Show(this, "Impossible de joindre le serveur de licences. Vérifiez la connexion Internet puis réessayez.",
-                    Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            XtraMessageBox.Show(this, "Ce poste a été libéré. CHIFA Pro va se fermer.", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Application.Exit();
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-        finally
-        {
-            if (!IsDisposed) SetBusy(false);
-        }
-    }
-
     private void BtnClose_Click(object? sender, EventArgs e)
     {
         DialogResult = _startup && _client.Current.IsValid ? DialogResult.OK : DialogResult.Cancel;
@@ -185,6 +153,6 @@ public sealed class LicenseForm : XtraForm
     private void SetBusy(bool busy)
     {
         UseWaitCursor = busy;
-        _btnActivate.Enabled = _btnRefresh.Enabled = _btnRelease.Enabled = _btnClose.Enabled = _txtSerial.Enabled = !busy;
+        _btnActivate.Enabled = _btnRefresh.Enabled = _btnClose.Enabled = _txtSerial.Enabled = !busy;
     }
 }

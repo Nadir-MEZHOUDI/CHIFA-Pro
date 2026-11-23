@@ -88,7 +88,7 @@ internal static class LicenseGate
         return true;
     }
 
-    /// <summary>Opens the license dialog from the main window (details, online check, release this PC).</summary>
+    /// <summary>Opens the license dialog from the main window (details and online check).</summary>
     public static void ShowDialog(IWin32Window owner)
     {
         if (_client is null) return;
@@ -198,8 +198,8 @@ internal static class LicenseText
         {
             "invalid_serial" => "Numéro de série invalide. Vérifiez la saisie (5 groupes de 5 caractères).",
             "not_found" => "Ce numéro de série n'existe pas. Vérifiez la saisie.",
-            "activation_limit_reached" => "Ce numéro de série est déjà utilisé sur le nombre maximum de postes. " +
-                                          "Libérez un poste ou contactez SmartApp.",
+            "activation_limit_reached" => "Ce numéro de série est déjà activé sur un autre ordinateur. " +
+                                          "Chaque poste nécessite son propre numéro de série : contactez SmartApp.",
             "revoked" => "Ce numéro de série a été révoqué. Contactez SmartApp.",
             "expired" => "Votre abonnement est terminé. Renouvelez-le auprès de SmartApp puis cliquez sur « Vérifier en ligne ».",
             "not_started" => "Votre abonnement n'a pas encore commencé.",
@@ -220,7 +220,7 @@ internal static class LicenseText
             LicenseStatus.RefreshRequired => "La licence doit être vérifiée en ligne. Connectez ce poste à Internet puis cliquez sur « Vérifier en ligne ».",
             LicenseStatus.Revoked => "Ce numéro de série a été révoqué. Contactez SmartApp.",
             LicenseStatus.ClockTampered => "La date de cet ordinateur est incorrecte. Corrigez la date et l'heure puis relancez CHIFA Pro.",
-            LicenseStatus.WrongMachine => "Cette licence a été activée sur un autre ordinateur. Activez ce poste avec votre numéro de série.",
+            LicenseStatus.WrongMachine => "Cette licence appartient à un autre ordinateur. Ce poste nécessite son propre numéro de série.",
             LicenseStatus.WrongProduct or LicenseStatus.Invalid => "Le fichier de licence est invalide. Activez ce poste avec votre numéro de série.",
             _ => state.Message
         };
