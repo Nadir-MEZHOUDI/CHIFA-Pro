@@ -6,6 +6,7 @@ var builder = Host.CreateApplicationBuilder(args);
 
 // As a Windows service the working directory is System32: read appsettings.json next to the exe.
 builder.Configuration.SetBasePath(AppContext.BaseDirectory);
+builder.Configuration.AddJsonFile(AgentOptions.SharedSettingsPath, optional: true, reloadOnChange: true);
 builder.Services.AddWindowsService(o => o.ServiceName = "CHIFA.Agent");
 
 builder.Services.AddOptions<AgentOptions>().BindConfiguration(AgentOptions.Section).ValidateDataAnnotations().ValidateOnStart();

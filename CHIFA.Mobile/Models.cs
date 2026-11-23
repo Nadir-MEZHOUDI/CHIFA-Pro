@@ -2,7 +2,8 @@ namespace CHIFA.Mobile;
 
 // Shapes of the gateway JSON (the pharmacy agent's DTOs), limited to what the phone shows.
 
-public record LoginResponse(string AccessToken, DateTime ExpiresAt, string Pharmacy);
+/// <param name="DeviceToken">Linked phones only: signs in again without a code until logout.</param>
+public record LoginResponse(string AccessToken, DateTime ExpiresAt, string Pharmacy, string? DeviceToken = null);
 
 public record OfficineStatus(string Name, bool Online, DateTime? LastSeenAt);
 

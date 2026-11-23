@@ -1,5 +1,9 @@
+using System.Buffers.Text;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using CHIFA.Contract;
 using CHIFA.Gateway.Data;
 using CHIFA.Gateway.Features.Admin;
@@ -23,6 +27,11 @@ public sealed class GatewayFixture : IAsyncLifetime
     public const string AdminKey = "test-admin-key-0123456789-0123456789";
     public const int AgentTimeoutSeconds = 2;
 
+    public const string LicenseProduct = "chifa-pro";
+
+    /// <summary>Stands in for the SmartApp licensing server's signing key.</summary>
+    public static readonly ECDsa LicenseKey = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+
     private readonly SqliteConnection _db = new("DataSource=:memory:");
     private WebApplicationFactory<Program> _factory = null!;
 
@@ -38,6 +47,9 @@ public sealed class GatewayFixture : IAsyncLifetime
             b.UseSetting("Gateway:AdminKey", AdminKey);
             b.UseSetting("Gateway:AgentTimeoutSeconds", AgentTimeoutSeconds.ToString());
             b.UseSetting("Jwt:SigningKey", "test-signing-key-0123456789-0123456789-0123456789");
+            b.UseSetting("Gateway:LicensePublicKey", LicenseKey.ExportSubjectPublicKeyInfoPem());
+            // Every test signs in from 127.0.0.1.
+            b.UseSetting("Gateway:AuthRequestsPerMinute", "10000");
             b.ConfigureServices(s =>
             {
                 s.RemoveAll<IDbContextOptionsConfiguration<GatewayDbContext>>();
@@ -89,6 +101,52 @@ public sealed class GatewayFixture : IAsyncLifetime
         var login = await (await client.PostAsJsonAsync("/api/auth/login", new LoginRequest(pharmacy.UserName, pharmacy.Password)))
             .EnsureSuccessStatusCode().Content.ReadFromJsonAsync<LoginResponse>();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", login!.AccessToken);
+        return client;
+    }
+
+    /// <summary>A license file as the SmartApp licensing server issues it (<c>SL1.payload.signature</c>).</summary>
+    public static string CreateLicense(
+        Guid? licenseId = null,
+        string? customer = "Pharmacie Test",
+        string product = LicenseProduct,
+        DateTimeOffset? expiresAt = null,
+        DateTimeOffset? offlineUntil = null,
+        ECDsa? signingKey = null)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var payload = JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            formatVersion = 1,
+            licenseId = licenseId ?? Guid.NewGuid(),
+            product,
+            serialHint = "ABCDE",
+            customer,
+            edition = "standard",
+            features = Array.Empty<string>(),
+            machineId = "machine",
+            issuedAt = now,
+            expiresAt = expiresAt ?? now.AddYears(1),
+            refreshAfter = now.AddDays(1),
+            offlineUntil = offlineUntil ?? now.AddDays(30)
+        });
+        var signingInput = "SL1." + Base64Url.EncodeToString(payload);
+        var signature = (signingKey ?? LicenseKey).SignData(Encoding.ASCII.GetBytes(signingInput), HashAlgorithmName.SHA256);
+        return signingInput + "." + Base64Url.EncodeToString(signature);
+    }
+
+    /// <summary>What CHIFA Pro does on first use of « Application mobile ».</summary>
+    public async Task<RegisterPharmacyResponse> RegisterAsync(string license)
+    {
+        using var client = CreateClient();
+        return (await (await client.PostAsJsonAsync(LinkRoutes.Register, new RegisterPharmacyRequest(license)))
+            .EnsureSuccessStatusCode().Content.ReadFromJsonAsync<RegisterPharmacyResponse>())!;
+    }
+
+    /// <summary>CHIFA Pro's calls with its agent key.</summary>
+    public HttpClient CreatePharmacyClient(string agentKey)
+    {
+        var client = CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", agentKey);
         return client;
     }
 

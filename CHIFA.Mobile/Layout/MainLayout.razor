@@ -3,6 +3,7 @@
 @inject Session Session
 @inject Api Api
 @inject NavigationManager Nav
+@inject IJSRuntime Js
 
 @if (Session.IsSignedIn)
 {
@@ -76,7 +77,13 @@
 
     private async Task SignOutAsync()
     {
-        await Session.SignOutAsync();
+        var question = Session.DeviceToken is not null
+            ? "Se déconnecter ? Pour revenir, il faudra un nouveau code affiché dans SmartCHIFA."
+            : "Se déconnecter ?";
+        if (!await Js.InvokeAsync<bool>("chifa.confirm", question))
+            return;
+
+        await Api.LogoutAsync();
         Nav.NavigateTo("login");
     }
 

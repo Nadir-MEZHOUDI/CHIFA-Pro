@@ -14,10 +14,64 @@ public sealed class ApiException(string title, string? detail = null) : Exceptio
     public string? Detail { get; } = detail;
 }
 
-/// <summary>Calls the gateway on the same origin. A 401 signs the user out and returns to the login page.</summary>
+/// <summary>
+/// Calls the gateway on the same origin. A linked phone renews its access token by itself; when that is
+/// refused (logged out, removed in SmartCHIFA) it returns to the login page.
+/// </summary>
 public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 {
     private const int PageSize = 30;
+
+    private Task<bool>? _renewal;
+
+    /// <summary>Links this phone with the code shown in SmartCHIFA.</summary>
+    public async Task PairAsync(string code, string deviceName)
+    {
+        HttpResponseMessage response;
+        try
+        {
+            response = await http.PostAsJsonAsync("api/auth/pair", new { code, deviceName });
+        }
+        catch (HttpRequestException)
+        {
+            throw Unreachable();
+        }
+
+        using (response)
+        {
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                await session.SignInAsync((await response.Content.ReadFromJsonAsync<LoginResponse>(JsonSerializerOptions.Web))!);
+                return;
+            }
+
+            if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                throw new ApiException("Trop de tentatives.", "Réessayez dans une minute.");
+
+            var problem = await ReadProblemAsync(response);
+            throw new ApiException(problem?.Title ?? "Liaison impossible.", problem?.Detail ?? $"Erreur {(int)response.StatusCode}.");
+        }
+    }
+
+    /// <summary>Unlinks this phone on the server too, so its saved token cannot be reused.</summary>
+    public async Task LogoutAsync()
+    {
+        try
+        {
+            if (session.HasValidToken || await RenewAsync())
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Post, "api/auth/logout");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", session.Current!.AccessToken);
+                using var _ = await http.SendAsync(request);
+            }
+        }
+        catch (Exception ex) when (ex is HttpRequestException or ApiException)
+        {
+            // Offline: the phone still forgets its token.
+        }
+
+        await session.SignOutAsync();
+    }
 
     public async Task<LoginResponse> LoginAsync(string userName, string password)
     {
@@ -61,20 +115,16 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 
     private async Task<T> GetAsync<T>(string url)
     {
-        if (!session.IsSignedIn)
+        if (!session.HasValidToken && !await RenewAsync())
             throw await SignedOutAsync();
 
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", session.Current!.AccessToken);
-
-        HttpResponseMessage response;
-        try
+        var response = await SendGetAsync(url);
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            response = await http.SendAsync(request);
-        }
-        catch (HttpRequestException)
-        {
-            throw Unreachable();
+            response.Dispose();
+            if (!await RenewAsync())
+                throw await SignedOutAsync();
+            response = await SendGetAsync(url);
         }
 
         using (response)
@@ -91,11 +141,74 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
         }
     }
 
+    private async Task<HttpResponseMessage> SendGetAsync(string url)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", session.Current!.AccessToken);
+        try
+        {
+            return await http.SendAsync(request);
+        }
+        catch (HttpRequestException)
+        {
+            throw Unreachable();
+        }
+    }
+
+    /// <summary>
+    /// New access token from the device token. False when the phone is no longer linked. Pages load several
+    /// things at once: they share one renewal.
+    /// </summary>
+    private async Task<bool> RenewAsync()
+    {
+        _renewal ??= RenewOnceAsync();
+        try
+        {
+            return await _renewal;
+        }
+        finally
+        {
+            _renewal = null;
+        }
+    }
+
+    private async Task<bool> RenewOnceAsync()
+    {
+        if (session.DeviceToken is not { } deviceToken)
+            return false;
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await http.PostAsJsonAsync("api/auth/device", new { deviceToken });
+        }
+        catch (HttpRequestException)
+        {
+            throw Unreachable();
+        }
+
+        using (response)
+        {
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                return false;
+            if (response.StatusCode == HttpStatusCode.TooManyRequests)
+                throw new ApiException("Trop de tentatives.", "Réessayez dans une minute.");
+            if (response.StatusCode != HttpStatusCode.OK)
+                throw new ApiException("Serveur indisponible.", $"Erreur {(int)response.StatusCode}. Réessayez plus tard.");
+
+            await session.RenewAsync((await response.Content.ReadFromJsonAsync<LoginResponse>(JsonSerializerOptions.Web))!);
+            return true;
+        }
+    }
+
     private async Task<ApiException> SignedOutAsync()
     {
+        var wasLinked = session.DeviceToken is not null;
         await session.SignOutAsync();
         nav.NavigateTo("login");
-        return new ApiException("Session expirée.", "Reconnectez-vous.");
+        return wasLinked
+            ? new ApiException("Ce téléphone n'est plus lié.", "Saisissez un nouveau code affiché dans SmartCHIFA.")
+            : new ApiException("Session expirée.", "Reconnectez-vous.");
     }
 
     private static ApiException Unreachable() =>

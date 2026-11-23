@@ -1,10 +1,18 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Options;
 
 namespace CHIFA.Agent;
 
 public class AgentOptions
 {
     public const string Section = "Agent";
+
+    /// <summary>
+    /// Written by SmartCHIFA when the pharmacy links its phones (« Application mobile »). Holds the
+    /// <c>Agent</c> section, so the Windows service uses the same key as the desktop app.
+    /// </summary>
+    public static string SharedSettingsPath =>
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "SmartCHIFA", "mobile.json");
 
     /// <summary>Base address of the gateway, e.g. <c>https://chifa.example.com</c>.</summary>
     [Required, Url]
@@ -13,6 +21,16 @@ public class AgentOptions
     /// <summary>The key given by <c>POST /admin/pharmacies</c>. It identifies this pharmacy.</summary>
     [Required]
     public string AgentKey { get; set; } = string.Empty;
+}
+
+/// <summary>Agent options set in code rather than read from configuration: SmartCHIFA hosting the agent itself, tests.</summary>
+public sealed class FixedOptionsMonitor<T>(T value) : IOptionsMonitor<T>
+{
+    public T CurrentValue => value;
+
+    public T Get(string? name) => value;
+
+    public IDisposable? OnChange(Action<T, string?> listener) => null;
 }
 
 /// <summary>

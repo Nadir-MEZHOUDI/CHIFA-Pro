@@ -227,7 +227,7 @@ public class GatewayTests(GatewayFixture gateway)
     }
 
     private AgentWorker CreateWorker(string agentKey) =>
-        new(Options.Create(new AgentOptions { GatewayUrl = gateway.BaseAddress.ToString(), AgentKey = agentKey }),
+        new(new FixedOptionsMonitor<AgentOptions>(new AgentOptions { GatewayUrl = gateway.BaseAddress.ToString(), AgentKey = agentKey }),
             new AgentHandlers(NullLogger<AgentHandlers>.Instance),
             NullLogger<AgentWorker>.Instance);
 }

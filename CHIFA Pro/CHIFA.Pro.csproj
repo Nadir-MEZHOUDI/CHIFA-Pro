@@ -29,6 +29,7 @@
 	  <PackageReference Include="Npgsql" Version="10.*" />
 	  <PackageReference Include="QRCoder" Version="1.*" />
 	  <PackageReference Include="ReportViewerCore.WinForms" Version="15.*" />
+	  <PackageReference Include="Serilog.Extensions.Logging" Version="10.*" />
 	  <PackageReference Include="Serilog.Sinks.Debug" Version="3.*" />
 	  <PackageReference Include="Serilog.Sinks.File" Version="7.*" />
 	  <PackageReference Include="SmartApp.Licensing.Client" Version="1.*" />
@@ -49,6 +50,8 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\CHIFA.Services\CHIFA.Services.csproj" />
+	  <!-- The agent that answers the phones runs inside SmartCHIFA (see Mobile/MobileLink). -->
+	  <ProjectReference Include="..\CHIFA.Agent\CHIFA.Agent.csproj" />
 	</ItemGroup>
 
 </Project>

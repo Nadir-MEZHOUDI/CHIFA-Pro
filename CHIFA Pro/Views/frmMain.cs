@@ -18,7 +18,31 @@ public partial class FrmMain : XtraForm
         InitializeComponent();
         SetStatisticsAccordionImages();
         AddLicenseMenu();
+        AddMobileMenu();
         ChangeTitle();
+    }
+
+    /// <summary>« Application mobile »: link phones, and answer them while SmartCHIFA is open.</summary>
+    private void AddMobileMenu()
+    {
+        var element = new DevExpress.XtraBars.Navigation.AccordionControlElement
+        {
+            Name = "accMobile",
+            Text = "APPLICATION MOBILE",
+            Style = DevExpress.XtraBars.Navigation.ElementStyle.Item
+        };
+        element.ImageOptions.Image =
+            DevExpress.Images.ImageResourceCache.Default.GetImage("images/devices/mobile_32x32.png")
+            ?? accParametres.ImageOptions.Image;
+        element.Click += (_, _) =>
+        {
+            using var form = new Mobile.MobileLinkForm();
+            form.ShowDialog(this);
+        };
+        accordionControl1.Elements.Add(element);
+
+        Mobile.MobileLink.StartAgent();
+        FormClosed += async (_, _) => await Mobile.MobileLink.StopAgentAsync();
     }
 
     private void AddLicenseMenu()

@@ -3,6 +3,7 @@ using CHIFA.Gateway;
 using CHIFA.Gateway.Features.Admin;
 using CHIFA.Gateway.Features.Agents;
 using CHIFA.Gateway.Features.Auth;
+using CHIFA.Gateway.Features.Link;
 using CHIFA.Gateway.Features.Officine;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,6 +35,7 @@ builder.Services
             NameClaimType = "name",
             ClockSkew = TimeSpan.FromMinutes(1)
         };
+        o.Events = new JwtBearerEvents { OnTokenValidated = AuthEndpoints.RejectRevokedDeviceAsync };
     })
     .AddScheme<AuthenticationSchemeOptions, AgentKeyAuthenticationHandler>(AgentKeyAuthenticationHandler.SchemeName, null);
 builder.Services.AddAuthorization();
@@ -46,12 +48,13 @@ builder.Services.AddSignalR(o =>
     o.MaximumReceiveMessageSize = 4 * 1024 * 1024;
 });
 
+var authRequestsPerMinute = builder.Configuration.GetSection(GatewayOptions.Section).Get<GatewayOptions>()?.AuthRequestsPerMinute ?? 10;
 builder.Services.AddRateLimiter(o =>
 {
     o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     o.AddPolicy(AuthEndpoints.LoginRateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
         http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-        _ => new FixedWindowRateLimiterOptions { PermitLimit = 10, Window = TimeSpan.FromMinutes(1) }));
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = authRequestsPerMinute, Window = TimeSpan.FromMinutes(1) }));
 });
 
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
@@ -87,6 +90,7 @@ app.UseRateLimiter();
 app.MapGet("/health", () => Results.Ok("ok")).AllowAnonymous();
 app.MapHub<AgentConnectionHub>(AgentHub.Route);
 app.MapAuthEndpoints();
+app.MapLinkEndpoints();
 app.MapAdminEndpoints();
 app.MapOfficineEndpoints();
 

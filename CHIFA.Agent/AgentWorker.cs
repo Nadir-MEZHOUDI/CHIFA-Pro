@@ -10,7 +10,7 @@ namespace CHIFA.Agent;
 /// Short drops are handled by SignalR's automatic reconnect; this loop restarts the connection
 /// when it is fully closed (gateway down at startup, key rejected, reconnect aborted).
 /// </summary>
-public class AgentWorker(IOptions<AgentOptions> options, AgentHandlers handlers, ILogger<AgentWorker> logger) : BackgroundService
+public class AgentWorker(IOptionsMonitor<AgentOptions> options, AgentHandlers handlers, ILogger<AgentWorker> logger) : BackgroundService
 {
     private static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(5);
 
@@ -27,7 +27,7 @@ public class AgentWorker(IOptions<AgentOptions> options, AgentHandlers handlers,
                 try
                 {
                     await connection.StartAsync(stoppingToken);
-                    logger.LogInformation("Connected to the gateway {Url}", options.Value.GatewayUrl);
+                    logger.LogInformation("Connected to the gateway {Url}", options.CurrentValue.GatewayUrl);
                     failedStarts = 0;
                 }
                 catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
@@ -57,9 +57,10 @@ public class AgentWorker(IOptions<AgentOptions> options, AgentHandlers handlers,
 
     private HubConnection BuildConnection()
     {
-        var url = new Uri(new Uri(options.Value.GatewayUrl), AgentHub.Route);
+        var url = new Uri(new Uri(options.CurrentValue.GatewayUrl), AgentHub.Route);
         var connection = new HubConnectionBuilder()
-            .WithUrl(url, o => o.AccessTokenProvider = () => Task.FromResult<string?>(options.Value.AgentKey))
+            // Read on every (re)connection: a key replaced by SmartCHIFA is picked up without a restart.
+            .WithUrl(url, o => o.AccessTokenProvider = () => Task.FromResult<string?>(options.CurrentValue.AgentKey))
             .WithAutomaticReconnect(new ForeverRetryPolicy())
             .WithKeepAliveInterval(TimeSpan.FromSeconds(15))
             .WithServerTimeout(TimeSpan.FromSeconds(30))

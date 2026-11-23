@@ -25,6 +25,7 @@ internal static class LicenseGate
         """;
 
     private static LicenseClient? _client;
+    private static string? _storageDirectory;
 
     /// <summary>False in DEBUG builds unless licensing was turned on.</summary>
     public static bool IsEnabled => _client is not null;
@@ -46,6 +47,9 @@ internal static class LicenseGate
             Log.Information("Licensing disabled for this DEBUG build (set CHIFA_LICENSING=1 to enable).");
             return true;
         }
+
+        _storageDirectory = settings.StorageDirectory ?? Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartApp", "Licensing", Product);
 
         try
         {
@@ -86,6 +90,24 @@ internal static class LicenseGate
 
         WarnIfExpiringSoon(state);
         return true;
+    }
+
+    /// <summary>
+    /// The signed license file of this computer, or <c>null</c> when it is not licensed. The SmartCHIFA
+    /// server checks its signature to know which pharmacy links phones.
+    /// </summary>
+    public static string? LicenseFile()
+    {
+        if (_storageDirectory is null || State is not { IsValid: true }) return null;
+        try
+        {
+            var path = Path.Combine(_storageDirectory, "license.lic");
+            return File.Exists(path) ? File.ReadAllText(path) : null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
     }
 
     /// <summary>Opens the license dialog from the main window (details and online check).</summary>

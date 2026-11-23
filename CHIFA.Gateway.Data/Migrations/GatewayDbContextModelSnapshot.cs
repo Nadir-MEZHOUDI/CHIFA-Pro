@@ -22,6 +22,54 @@ namespace CHIFA.Gateway.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CHIFA.Gateway.Data.MobileDevice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_seen_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("PharmacyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("pharmacy_id");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("revoked_at");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("token_hash");
+
+                    b.HasKey("Id")
+                        .HasName("pk_mobile_devices");
+
+                    b.HasIndex("PharmacyId")
+                        .HasDatabaseName("ix_mobile_devices_pharmacy_id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique()
+                        .HasDatabaseName("ix_mobile_devices_token_hash");
+
+                    b.ToTable("mobile_devices", (string)null);
+                });
+
             modelBuilder.Entity("CHIFA.Gateway.Data.MobileUser", b =>
                 {
                     b.Property<Guid>("Id")
@@ -65,6 +113,44 @@ namespace CHIFA.Gateway.Data.Migrations
                     b.ToTable("mobile_users", (string)null);
                 });
 
+            modelBuilder.Entity("CHIFA.Gateway.Data.PairingCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("code_hash");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<Guid>("PharmacyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("pharmacy_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_pairing_codes");
+
+                    b.HasIndex("CodeHash")
+                        .IsUnique()
+                        .HasDatabaseName("ix_pairing_codes_code_hash");
+
+                    b.HasIndex("PharmacyId")
+                        .HasDatabaseName("ix_pairing_codes_pharmacy_id");
+
+                    b.ToTable("pairing_codes", (string)null);
+                });
+
             modelBuilder.Entity("CHIFA.Gateway.Data.Pharmacy", b =>
                 {
                     b.Property<Guid>("Id")
@@ -90,6 +176,10 @@ namespace CHIFA.Gateway.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_seen_at");
 
+                    b.Property<Guid?>("LicenseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("license_id");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -103,7 +193,23 @@ namespace CHIFA.Gateway.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_pharmacies_agent_key_hash");
 
+                    b.HasIndex("LicenseId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_pharmacies_license_id");
+
                     b.ToTable("pharmacies", (string)null);
+                });
+
+            modelBuilder.Entity("CHIFA.Gateway.Data.MobileDevice", b =>
+                {
+                    b.HasOne("CHIFA.Gateway.Data.Pharmacy", "Pharmacy")
+                        .WithMany("Devices")
+                        .HasForeignKey("PharmacyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_mobile_devices_pharmacies_pharmacy_id");
+
+                    b.Navigation("Pharmacy");
                 });
 
             modelBuilder.Entity("CHIFA.Gateway.Data.MobileUser", b =>
@@ -118,8 +224,22 @@ namespace CHIFA.Gateway.Data.Migrations
                     b.Navigation("Pharmacy");
                 });
 
+            modelBuilder.Entity("CHIFA.Gateway.Data.PairingCode", b =>
+                {
+                    b.HasOne("CHIFA.Gateway.Data.Pharmacy", "Pharmacy")
+                        .WithMany()
+                        .HasForeignKey("PharmacyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_pairing_codes_pharmacies_pharmacy_id");
+
+                    b.Navigation("Pharmacy");
+                });
+
             modelBuilder.Entity("CHIFA.Gateway.Data.Pharmacy", b =>
                 {
+                    b.Navigation("Devices");
+
                     b.Navigation("Users");
                 });
 #pragma warning restore 612, 618

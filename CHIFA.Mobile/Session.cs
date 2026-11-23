@@ -3,14 +3,21 @@ using Microsoft.JSInterop;
 
 namespace CHIFA.Mobile;
 
-/// <summary>The signed-in phone user, kept in localStorage so the app stays signed in until the token expires.</summary>
+/// <summary>
+/// The signed-in phone, kept in localStorage. A linked phone also keeps its device token, so it gets a new
+/// access token by itself when the current one expires: the pharmacist enters the code only once.
+/// </summary>
 public sealed class Session(IJSRuntime js)
 {
     private const string StorageKey = "chifa.session";
 
     public LoginResponse? Current { get; private set; }
 
-    public bool IsSignedIn => Current is { } s && s.ExpiresAt.ToUniversalTime() > DateTime.UtcNow.AddMinutes(1);
+    public bool HasValidToken => Current is { } s && s.ExpiresAt.ToUniversalTime() > DateTime.UtcNow.AddMinutes(1);
+
+    public string? DeviceToken => Current?.DeviceToken;
+
+    public bool IsSignedIn => HasValidToken || DeviceToken is not null;
 
     public async Task LoadAsync()
     {
@@ -28,7 +35,14 @@ public sealed class Session(IJSRuntime js)
     public async Task SignInAsync(LoginResponse login)
     {
         Current = login;
-        await js.InvokeVoidAsync("localStorage.setItem", StorageKey, JsonSerializer.Serialize(login, JsonSerializerOptions.Web));
+        await SaveAsync();
+    }
+
+    /// <summary>A new access token for the linked phone: the device token stays.</summary>
+    public async Task RenewAsync(LoginResponse login)
+    {
+        Current = login with { DeviceToken = login.DeviceToken ?? Current?.DeviceToken };
+        await SaveAsync();
     }
 
     public async Task SignOutAsync()
@@ -36,4 +50,7 @@ public sealed class Session(IJSRuntime js)
         Current = null;
         await js.InvokeVoidAsync("localStorage.removeItem", StorageKey);
     }
+
+    private ValueTask SaveAsync() =>
+        js.InvokeVoidAsync("localStorage.setItem", StorageKey, JsonSerializer.Serialize(Current, JsonSerializerOptions.Web));
 }

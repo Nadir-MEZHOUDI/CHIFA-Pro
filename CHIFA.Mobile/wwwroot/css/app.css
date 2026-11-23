@@ -255,6 +255,31 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 
 .login input:focus { outline: 2px solid var(--primary); border-color: transparent; }
 
+.login input.code-input {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+
+.login input.code-input::placeholder { color: var(--line); font-weight: 600; }
+.login .hint { font-size: .82rem; color: var(--muted); line-height: 1.45; margin-top: .4rem; }
+
+.link-button {
+    align-self: center;
+    margin-top: .6rem;
+    padding: .4rem;
+    border: 0;
+    background: none;
+    color: var(--primary);
+    font: inherit;
+    font-size: .85rem;
+    text-decoration: underline;
+}
+
 /* Startup and Blazor errors */
 .loading-progress { position: absolute; display: block; width: 6rem; height: 6rem; inset: 30vh 0 auto 0; margin: 0 auto; }
 .loading-progress circle { fill: none; stroke: var(--line); stroke-width: .6rem; transform-origin: 50% 50%; transform: rotate(-90deg); }

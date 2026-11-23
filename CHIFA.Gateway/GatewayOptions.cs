@@ -13,6 +13,26 @@ public class GatewayOptions
     /// <summary>How long a phone request waits for the agent before giving up.</summary>
     [Range(1, 300)]
     public int AgentTimeoutSeconds { get; set; } = 30;
+
+    /// <summary>SmartApp licensing public key: verifies the license CHIFA Pro sends to register its pharmacy.</summary>
+    [Required]
+    public string LicensePublicKey { get; set; } = """
+        -----BEGIN PUBLIC KEY-----
+        MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEPckUvTCNoSzE+EQrTlAb9qaxnTiA
+        l9GJ/e8oSV/rMmErXqmPAiyeKemgKYDL7+BV6o3umXv6GJJxn0yyGPyVQg==
+        -----END PUBLIC KEY-----
+        """;
+
+    /// <summary>Product slug the license must be issued for.</summary>
+    [Required]
+    public string LicenseProduct { get; set; } = "chifa-pro";
+
+    [Range(1, 60)]
+    public int PairingCodeMinutes { get; set; } = 10;
+
+    /// <summary>Sign-in, pairing and registration attempts allowed per IP address and minute.</summary>
+    [Range(1, 10_000)]
+    public int AuthRequestsPerMinute { get; set; } = 10;
 }
 
 public class JwtOptions
