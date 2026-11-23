@@ -13,11 +13,13 @@ WORKDIR /src
 COPY ["Directory.Build.props", "."]
 COPY ["CHIFA.Contract/CHIFA.Contract.csproj", "CHIFA.Contract/"]
 COPY ["CHIFA.Gateway.Data/CHIFA.Gateway.Data.csproj", "CHIFA.Gateway.Data/"]
+COPY ["CHIFA.Mobile/CHIFA.Mobile.csproj", "CHIFA.Mobile/"]
 COPY ["CHIFA.Gateway/CHIFA.Gateway.csproj", "CHIFA.Gateway/"]
 RUN dotnet restore "CHIFA.Gateway/CHIFA.Gateway.csproj"
 
 COPY CHIFA.Contract/ CHIFA.Contract/
 COPY CHIFA.Gateway.Data/ CHIFA.Gateway.Data/
+COPY CHIFA.Mobile/ CHIFA.Mobile/
 COPY CHIFA.Gateway/ CHIFA.Gateway/
 RUN dotnet publish "CHIFA.Gateway/CHIFA.Gateway.csproj" -c $BUILD_CONFIGURATION --no-restore -o /app/publish /p:UseAppHost=false
 

@@ -1,0 +1,108 @@
+@page "/"
+@inject Api Api
+
+<PeriodChips Selected="_period" SelectedChanged="ChangePeriodAsync" />
+
+@if (_error is not null)
+{
+    <ErrorBox Error="_error" Retry="LoadAsync" />
+}
+else if (_data is null)
+{
+    <Loading />
+}
+else
+{
+    <section class="card hero">
+        <span class="label">Total facturé CHIFA · @_period.Label</span>
+        <span class="amount">@Fmt.Money(_data.MontantTotalFact)</span>
+        <span class="muted">@Fmt.Number(_data.NombreFactures) factures · @Fmt.Number(_data.NombreAssuresUniques) assurés · @Fmt.Number(_data.NombreBoites) boîtes</span>
+    </section>
+
+    <section class="kpis">
+        <div class="card kpi"><span class="label">Part caisse</span><span class="value">@Fmt.Money(_data.MontantTotalCaisse)</span></div>
+        <div class="card kpi"><span class="label">Part assuré</span><span class="value">@Fmt.Money(_data.MontantTotalAssure)</span></div>
+        <div class="card kpi"><span class="label">Majorations</span><span class="value">@Fmt.Money(_data.MontantTotalMajoration)</span></div>
+        <div class="card kpi"><span class="label">Panier moyen</span><span class="value">@Fmt.Money(_data.PanierMoyen)</span></div>
+    </section>
+
+    @if (_data.RepartitionParCaisse.Count > 0)
+    {
+        var max = _data.RepartitionParCaisse.Max(c => c.MontantTotal);
+        <section class="card">
+            <h2>Par caisse</h2>
+            @foreach (var c in _data.RepartitionParCaisse)
+            {
+                <div class="bar-row">
+                    <div class="bar-head"><span>@c.Centre</span><span>@Fmt.Money(c.MontantTotal)</span></div>
+                    <div class="bar"><span style="width:@Width(c.MontantTotal, max)"></span></div>
+                    <span class="muted small">@Fmt.Number(c.NombreFactures) factures · caisse @Fmt.Money(c.MontantCaisse)</span>
+                </div>
+            }
+        </section>
+    }
+
+    @if (_data.ActiviteHoraire.Count > 0)
+    {
+        var max = (decimal)_data.ActiviteHoraire.Max(h => h.NombreFactures);
+        <section class="card">
+            <h2>Factures par heure</h2>
+            <div class="hours">
+                @foreach (var h in _data.ActiviteHoraire.OrderBy(h => h.Heure))
+                {
+                    <div class="hour" title="@h.Heure h : @h.NombreFactures factures">
+                        <span class="hour-bar" style="height:@Width(h.NombreFactures, max)"></span>
+                        <span class="hour-label">@h.Heure</span>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    @if (_data.TopMedicaments.Count > 0)
+    {
+        <section class="card">
+            <h2>Médicaments les plus délivrés</h2>
+            <ol class="top">
+                @foreach (var m in _data.TopMedicaments)
+                {
+                    <li>
+                        <div><strong>@m.Designation</strong><span class="muted small">@m.Dci</span></div>
+                        <div class="right"><strong>@Fmt.Number(m.QuantiteTotale)</strong><span class="muted small">@Fmt.Money(m.MontantTotal)</span></div>
+                    </li>
+                }
+            </ol>
+        </section>
+    }
+}
+
+@code {
+    private Period _period = PeriodChips.Named("Ce mois");
+    private Dashboard? _data;
+    private ApiException? _error;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task ChangePeriodAsync(Period period)
+    {
+        _period = period;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _data = null;
+        _error = null;
+        try
+        {
+            _data = await Api.DashboardAsync(_period);
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+    }
+
+    private static string Width(decimal value, decimal max) =>
+        max <= 0 ? "0%" : $"{Math.Max(2, (int)(value / max * 100))}%";
+}

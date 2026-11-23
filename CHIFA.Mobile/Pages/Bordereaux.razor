@@ -1,0 +1,47 @@
+@page "/bordereaux"
+@inherits PagedPage<Bordereau>
+
+<div class="page-head"><h1>Bordereaux</h1></div>
+<PeriodChips Selected="Period" SelectedChanged="ChangePeriodAsync" />
+
+@foreach (var b in Items)
+{
+    <article class="card item">
+        <div class="item-head">
+            <strong>N° @b.Num</strong>
+            <strong>@Fmt.Money(b.MontGlobal)</strong>
+        </div>
+        <div class="item-sub">
+            <span>@b.Center · @Fmt.Number(b.Nmbr) factures</span>
+            <span>@Fmt.Date(b.FirstFacture) → @Fmt.Date(b.LastFacture)</span>
+        </div>
+        <div class="tags">
+            @if (b.EstOuvert)
+            {
+                <span class="tag warn">Ouvert</span>
+            }
+            else
+            {
+                <span class="tag">Clôturé</span>
+            }
+            @if (b.Virment > 0)
+            {
+                <span class="tag ok">Viré @Fmt.Money(b.Virment)</span>
+            }
+            else if (!b.EstOuvert)
+            {
+                <span class="tag warn">Non payé</span>
+            }
+            @if (b.Depot is { } depot)
+            {
+                <span class="tag">Déposé le @Fmt.Date(depot)</span>
+            }
+        </div>
+    </article>
+}
+
+<ListFooter Count="Items.Count" Total="Total" Loading="Loading" Error="Error" More="LoadMoreAsync" />
+
+@code {
+    protected override Task<Page<Bordereau>> FetchAsync(Period period, int skip) => Api.BordereauxAsync(period, skip);
+}

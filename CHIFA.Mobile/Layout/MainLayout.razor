@@ -1,0 +1,84 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject Session Session
+@inject Api Api
+@inject NavigationManager Nav
+
+@if (Session.IsSignedIn)
+{
+    <header class="topbar">
+        <div class="topbar-title">
+            <span class="pharmacy">@Session.Current!.Pharmacy</span>
+            @if (_status is { } s)
+            {
+                <span class="status @(s.Online ? "online" : "offline")">
+                    <span class="dot"></span>@(s.Online ? "Pharmacie en ligne" : $"Hors ligne · vue {Fmt.Ago(s.LastSeenAt)}")
+                </span>
+            }
+        </div>
+        <button class="icon-button" title="Se déconnecter" @onclick="SignOutAsync">
+            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+        </button>
+    </header>
+
+    <main class="content">@Body</main>
+
+    <nav class="tabbar">
+        <NavLink href="" Match="NavLinkMatch.All">
+            <svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10" /></svg>Accueil
+        </NavLink>
+        <NavLink href="factures">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8" /></svg>Factures
+        </NavLink>
+        <NavLink href="bordereaux">
+            <svg viewBox="0 0 24 24"><path d="M3 7h18M3 12h18M3 17h18" /></svg>Bordereaux
+        </NavLink>
+        <NavLink href="rejets">
+            <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>Rejets
+        </NavLink>
+        <NavLink href="psychotropes">
+            <svg viewBox="0 0 24 24"><path d="M10.5 20.5 3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7zM8.5 8.5l7 7" /></svg>Psycho.
+        </NavLink>
+    </nav>
+}
+
+@code {
+    private OfficineStatus? _status;
+    private PeriodicTimer? _timer;
+
+    protected override void OnInitialized()
+    {
+        if (!Session.IsSignedIn)
+        {
+            Nav.NavigateTo("login");
+            return;
+        }
+
+        _ = RefreshStatusLoopAsync();
+    }
+
+    // The pharmacy can go offline at any time (PC off, no internet): refresh the badge every 30 s.
+    private async Task RefreshStatusLoopAsync()
+    {
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        do
+        {
+            try
+            {
+                _status = await Api.StatusAsync();
+                StateHasChanged();
+            }
+            catch (ApiException)
+            {
+            }
+        } while (await _timer.WaitForNextTickAsync());
+    }
+
+    private async Task SignOutAsync()
+    {
+        await Session.SignOutAsync();
+        Nav.NavigateTo("login");
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}

@@ -90,6 +90,12 @@ app.MapAuthEndpoints();
 app.MapAdminEndpoints();
 app.MapOfficineEndpoints();
 
+// Phone app (CHIFA.Mobile). Unknown API paths stay 404 instead of returning the app's index.html.
+app.MapStaticAssets();
+app.MapFallbackToFile("index.html");
+foreach (var prefix in new[] { "api", "admin", "hubs" })
+    app.MapFallback($"{prefix}/{{**rest}}", () => Results.NotFound());
+
 app.Run();
 
 public partial class Program;

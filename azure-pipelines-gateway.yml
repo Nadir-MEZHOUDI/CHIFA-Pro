@@ -13,6 +13,7 @@ trigger:
     - CHIFA.Gateway
     - CHIFA.Gateway.Data
     - CHIFA.Contract
+    - CHIFA.Mobile
     - deploy/gateway
     - azure-pipelines-gateway.yml
 

@@ -1,9 +1,10 @@
-# Only the gateway image is built from this repository: send just its projects to Docker.
+# Only the gateway image (with the phone app it serves) is built from this repository: send just its projects to Docker.
 *
 !Directory.Build.props
 !CHIFA.Contract/
 !CHIFA.Gateway/
 !CHIFA.Gateway.Data/
+!CHIFA.Mobile/
 **/bin/
 **/obj/
 **/Properties/launchSettings.json

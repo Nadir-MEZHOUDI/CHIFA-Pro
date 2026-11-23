@@ -1,0 +1,49 @@
+@page "/psychotropes"
+@inherits PagedPage<Psychotrope>
+
+<div class="page-head"><h1>Psychotropes</h1></div>
+<PeriodChips Selected="Period" SelectedChanged="ChangePeriodAsync" />
+
+@foreach (var p in Items)
+{
+    <article class="card item">
+        <div class="item-head">
+            <strong>@p.MedicamentNom @p.Dosage</strong>
+            <strong>× @Fmt.Number(p.Quantite)</strong>
+        </div>
+        <div class="item-sub">
+            <span>@(p.NomBeneficiaire ?? p.NomAssure)</span>
+            <span>@Fmt.Date(p.DateDelivrance)</span>
+        </div>
+        <div class="item-sub">
+            <span>@Prescriber(p)</span>
+            <span>Fact. @p.NumFact</span>
+        </div>
+        <div class="tags">
+            @if (!string.IsNullOrWhiteSpace(p.CategoriePsychotrope))
+            {
+                <span class="tag accent">@p.CategoriePsychotrope</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(p.Tableau))
+            {
+                <span class="tag">Tableau @p.Tableau</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(p.Forme))
+            {
+                <span class="tag">@p.Forme</span>
+            }
+        </div>
+    </article>
+}
+
+<ListFooter Count="Items.Count" Total="Total" Loading="Loading" Error="Error" More="LoadMoreAsync" />
+
+@code {
+    protected override Task<Page<Psychotrope>> FetchAsync(Period period, int skip) => Api.PsychotropesAsync(period, skip);
+
+    private static string Prescriber(Psychotrope p)
+    {
+        var doctor = string.IsNullOrWhiteSpace(p.Medecin) ? "Prescripteur non renseigné" : "Dr " + p.Medecin.Trim();
+        return string.IsNullOrWhiteSpace(p.SpecialiteMedecin) ? doctor : $"{doctor} · {p.SpecialiteMedecin}";
+    }
+}

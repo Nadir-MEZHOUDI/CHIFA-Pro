@@ -194,6 +194,31 @@ public class GatewayTests(GatewayFixture gateway)
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
+    [Theory]
+    [InlineData("/")]
+    [InlineData("/rejets")]
+    public async Task Phone_app_is_served_on_its_routes(string path)
+    {
+        using var client = gateway.CreateClient();
+
+        var response = await client.GetAsync(path);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("_framework/blazor.webassembly.js");
+    }
+
+    [Theory]
+    [InlineData("/api/unknown")]
+    [InlineData("/admin/unknown")]
+    public async Task Unknown_api_paths_are_404_not_the_phone_app(string path)
+    {
+        using var client = gateway.CreateClient();
+
+        var response = await client.GetAsync(path);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
     private HubConnection AgentAnsweringInfo(string agentKey, string officine)
     {
         var agent = gateway.CreateAgentConnection(agentKey);

@@ -1,0 +1,63 @@
+@page "/login"
+@layout EmptyLayout
+@inject Api Api
+@inject Session Session
+@inject NavigationManager Nav
+
+<div class="login">
+    <img src="icon-192.png" alt="" class="login-logo" />
+    <h1>SmartCHIFA</h1>
+    <p class="muted">Votre pharmacie, partout.</p>
+
+    <EditForm Model="this" OnSubmit="SignInAsync" FormName="login">
+        <label>
+            Nom d'utilisateur
+            <InputText @bind-Value="UserName" autocomplete="username" autocapitalize="none" spellcheck="false" />
+        </label>
+        <label>
+            Mot de passe
+            <InputText @bind-Value="Password" type="password" autocomplete="current-password" />
+        </label>
+
+        @if (_error is not null)
+        {
+            <ErrorBox Error="_error" />
+        }
+
+        <button class="button" type="submit" disabled="@(_busy || string.IsNullOrWhiteSpace(UserName) || string.IsNullOrEmpty(Password))">
+            @(_busy ? "Connexion…" : "Se connecter")
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    private string UserName { get; set; } = "";
+    private string Password { get; set; } = "";
+    private bool _busy;
+    private ApiException? _error;
+
+    protected override void OnInitialized()
+    {
+        if (Session.IsSignedIn)
+            Nav.NavigateTo("");
+    }
+
+    private async Task SignInAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            await Session.SignInAsync(await Api.LoginAsync(UserName.Trim(), Password));
+            Nav.NavigateTo("");
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}
