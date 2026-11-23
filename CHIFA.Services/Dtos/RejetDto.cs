@@ -11,6 +11,15 @@ public class RejetDto
     /// <summary>Differences below this amount (DA) are rounding, not rejections.</summary>
     public const decimal ToleranceArrondi = 1m;
 
+    /// <summary>CHIFA writes 01/01/1900 instead of leaving a date empty: anything before this is "no date".</summary>
+    public static readonly DateTime DateMinimaleValide = new(2000, 1, 1);
+
+    /// <summary>The closing date, or the FTP deposit date when the closing date is missing or a placeholder.</summary>
+    public static DateTime? DateReelle(DateTime? cloture, DateTime? depotFtp) =>
+        cloture >= DateMinimaleValide ? cloture
+        : depotFtp >= DateMinimaleValide ? depotFtp
+        : null;
+
     public string? NumBord { get; set; }
     public string? Centre { get; set; }
 

@@ -68,4 +68,14 @@ public class RejetDtoTests
     [Fact]
     public void Overpayment_IsNotARejection()
         => Sent(10_000m, 0m, 0m, virement: 10_500m).StatutRejet.Should().Be("Sans rejet");
+
+    [Theory]
+    [InlineData("1900-01-01", "2026-10-28", "2026-10-28")]
+    [InlineData(null, "2026-10-28", "2026-10-28")]
+    [InlineData("2026-10-20", "2026-10-28", "2026-10-20")]
+    [InlineData("1900-01-01", "1900-01-01", null)]
+    public void BordereauDate_Ignores_The1900Placeholder(string? cloture, string? depotFtp, string? expected)
+        => RejetDto.DateReelle(Parse(cloture), Parse(depotFtp)).Should().Be(Parse(expected));
+
+    private static DateTime? Parse(string? date) => date is null ? null : DateTime.Parse(date);
 }

@@ -16,10 +16,12 @@ public class ScopeService
         var end = activePeriod.EndExclusive;
         await using var db = new ChifaDb();
 
-        // A bordereau belongs to the period by its closing date (or its FTP deposit date when it has none).
+        // A bordereau belongs to the period by its closing date, or its FTP deposit date when CHIFA left
+        // the closing date at the 1900 placeholder (it does so for every bordereau).
+        var minDate = RejetDto.DateMinimaleValide;
         var bordereaux = await db.Bordereaus
-            .Where(b => (start == null || (b.DateCloture ?? b.DateDepotFtp) >= start) &&
-                        (end == null || (b.DateCloture ?? b.DateDepotFtp) < end))
+            .Where(b => (start == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) >= start) &&
+                        (end == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) < end))
             .Select(b => new
             {
                 b.NumBord,
@@ -42,7 +44,7 @@ public class ScopeService
             {
                 NumBord = b.NumBord,
                 Centre = b.Center ?? "Inconnu",
-                DateBord = b.DateCloture ?? b.DateDepotFtp,
+                DateBord = RejetDto.DateReelle(b.DateCloture, b.DateDepotFtp),
                 DateDepotFtp = b.DateDepotFtp,
                 NombreFactures = b.NombreFactures,
                 MontantPartCaisse = b.PartCaisse,
