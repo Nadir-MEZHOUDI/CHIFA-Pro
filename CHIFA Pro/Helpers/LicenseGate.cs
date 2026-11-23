@@ -76,6 +76,10 @@ internal static class LicenseGate
         if (!state.IsValid && state.License is not null)
             state = RefreshNow();
 
+        // A license request was sent from this computer: if SmartApp approved it, the license installs now.
+        if (!state.IsValid && _client.PendingRequest is not null)
+            state = CheckRequestNow();
+
         if (!state.IsValid)
         {
             using var form = new LicenseForm(_client, startup: true);
@@ -158,6 +162,24 @@ internal static class LicenseGate
         }
     }
 
+    private static LicenseState CheckRequestNow()
+    {
+        try
+        {
+            var result = Task.Run(() => _client!.CheckRequestAsync())
+                .WaitAsync(TimeSpan.FromSeconds(20))
+                .GetAwaiter()
+                .GetResult();
+            if (result.Outcome == LicenseRequestOutcome.Approved)
+                Program.Telemetry?.TrackFeatureUsed("license.request.approved");
+            return result.State;
+        }
+        catch (Exception ex) when (ex is TimeoutException or TaskCanceledException)
+        {
+            return _client!.Current;
+        }
+    }
+
     private static async Task RefreshInBackgroundAsync()
     {
         try
@@ -216,7 +238,27 @@ internal static class LicenseText
     public static string Describe(LicenseState state)
     {
         ArgumentNullException.ThrowIfNull(state);
-        var fromError = state.ErrorCode switch
+        var fromError = DescribeError(state.ErrorCode);
+        if (fromError is not null) return fromError;
+
+        var end = state.License?.ExpiresAt is { } e ? e.LocalDateTime.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : null;
+        return state.Status switch
+        {
+            LicenseStatus.Valid => end is null ? "Licence valide." : $"Licence valide jusqu'au {end}.",
+            LicenseStatus.NotActivated => "Ce poste n'est pas encore activé. Demandez une licence à SmartApp, ou saisissez le numéro de série fourni.",
+            LicenseStatus.Expired => $"Votre abonnement a pris fin le {end}. Après renouvellement, cliquez sur « Vérifier en ligne ».",
+            LicenseStatus.RefreshRequired => "La licence doit être vérifiée en ligne. Connectez ce poste à Internet puis cliquez sur « Vérifier en ligne ».",
+            LicenseStatus.Revoked => "Ce numéro de série a été révoqué. Contactez SmartApp.",
+            LicenseStatus.ClockTampered => "La date de cet ordinateur est incorrecte. Corrigez la date et l'heure puis relancez SmartCHIFA.",
+            LicenseStatus.WrongMachine => "Cette licence appartient à un autre ordinateur. Ce poste nécessite son propre numéro de série.",
+            LicenseStatus.WrongProduct or LicenseStatus.Invalid => "Le fichier de licence est invalide. Activez ce poste avec votre numéro de série.",
+            _ => state.Message
+        };
+    }
+
+    /// <summary>French text for a licensing server error code, or <c>null</c> when there is none.</summary>
+    public static string? DescribeError(string? code) =>
+        code switch
         {
             "invalid_serial" => "Numéro de série invalide. Vérifiez la saisie (5 groupes de 5 caractères).",
             "not_found" => "Ce numéro de série n'existe pas. Vérifiez la saisie.",
@@ -228,23 +270,9 @@ internal static class LicenseText
             "not_activated" => "Ce poste n'est plus activé. Saisissez à nouveau votre numéro de série.",
             "offline" => "Impossible de joindre le serveur de licences. Vérifiez la connexion Internet puis réessayez.",
             "unknown_product" => "Cette application n'est pas disponible à l'activation. Contactez SmartApp.",
+            "invalid_request" => "Demande incomplète : le nom et le téléphone sont obligatoires.",
+            "request_not_found" => "Votre demande n'existe plus. Envoyez une nouvelle demande.",
             null => null,
             _ => "Le serveur de licences a répondu par une erreur. Réessayez plus tard."
         };
-        if (fromError is not null) return fromError;
-
-        var end = state.License?.ExpiresAt is { } e ? e.LocalDateTime.ToString("dd/MM/yyyy", CultureInfo.CurrentCulture) : null;
-        return state.Status switch
-        {
-            LicenseStatus.Valid => end is null ? "Licence valide." : $"Licence valide jusqu'au {end}.",
-            LicenseStatus.NotActivated => "Ce poste n'est pas encore activé. Saisissez le numéro de série fourni par SmartApp.",
-            LicenseStatus.Expired => $"Votre abonnement a pris fin le {end}. Après renouvellement, cliquez sur « Vérifier en ligne ».",
-            LicenseStatus.RefreshRequired => "La licence doit être vérifiée en ligne. Connectez ce poste à Internet puis cliquez sur « Vérifier en ligne ».",
-            LicenseStatus.Revoked => "Ce numéro de série a été révoqué. Contactez SmartApp.",
-            LicenseStatus.ClockTampered => "La date de cet ordinateur est incorrecte. Corrigez la date et l'heure puis relancez SmartCHIFA.",
-            LicenseStatus.WrongMachine => "Cette licence appartient à un autre ordinateur. Ce poste nécessite son propre numéro de série.",
-            LicenseStatus.WrongProduct or LicenseStatus.Invalid => "Le fichier de licence est invalide. Activez ce poste avec votre numéro de série.",
-            _ => state.Message
-        };
-    }
 }
