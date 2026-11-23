@@ -1,0 +1,9 @@
+# Only the gateway image is built from this repository: send just its projects to Docker.
+*
+!Directory.Build.props
+!CHIFA.Contract/
+!CHIFA.Gateway/
+!CHIFA.Gateway.Data/
+**/bin/
+**/obj/
+**/Properties/launchSettings.json
