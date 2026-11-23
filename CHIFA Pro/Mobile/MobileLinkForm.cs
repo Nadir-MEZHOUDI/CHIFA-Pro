@@ -20,9 +20,14 @@ public sealed class MobileLinkForm : XtraForm
     private readonly SimpleButton _btnNewCode = new() { Text = "Nouveau code" };
     private readonly ListBoxControl _lstDevices = new();
     private readonly SimpleButton _btnRemove = new() { Text = "Retirer ce téléphone" };
+    private readonly LabelControl _lblService = new();
+    private readonly SimpleButton _btnService = new();
     private readonly SimpleButton _btnClose = new() { Text = "Fermer" };
     private readonly System.Windows.Forms.Timer _clock = new() { Interval = 1000 };
     private readonly System.Windows.Forms.Timer _devicesPoll = new() { Interval = 5000 };
+
+    /// <summary>Not asked again during this session of SmartCHIFA once the user refused the Windows prompt.</summary>
+    private static bool _serviceDeclined;
 
     private PairingCodeResponse? _code;
     private List<LinkedDevice> _devices = [];
@@ -31,7 +36,14 @@ public sealed class MobileLinkForm : XtraForm
     public MobileLinkForm()
     {
         BuildLayout();
-        Shown += async (_, _) => await NewCodeAsync();
+        Shown += async (_, _) =>
+        {
+            await NewCodeAsync();
+            ShowService();
+            // Linked: make the phone work with SmartCHIFA closed too, or bring the service up to date.
+            if (_code is not null && !_serviceDeclined && AgentService.State is AgentServiceState.NotInstalled or AgentServiceState.Outdated)
+                await InstallServiceAsync();
+        };
         FormClosed += (_, _) =>
         {
             _clock.Dispose();
@@ -42,7 +54,7 @@ public sealed class MobileLinkForm : XtraForm
     private void BuildLayout()
     {
         Text = "Application mobile";
-        ClientSize = new Size(640, 540);
+        ClientSize = new Size(640, 600);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
@@ -90,17 +102,26 @@ public sealed class MobileLinkForm : XtraForm
         _lstDevices.SetBounds(24, 346, 592, 130);
         _lstDevices.Appearance.Font = new Font("Segoe UI", 9.75f);
 
-        _btnRemove.SetBounds(24, 490, 190, 30);
-        _btnClose.SetBounds(486, 490, 130, 30);
+        _btnRemove.SetBounds(24, 484, 190, 30);
+
+        _lblService.AutoSizeMode = LabelAutoSizeMode.None;
+        _lblService.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
+        _lblService.Appearance.TextOptions.VAlignment = VertAlignment.Center;
+        _lblService.Appearance.Font = new Font("Segoe UI", 9.5f);
+        _lblService.SetBounds(24, 524, 420, 40);
+        _btnService.SetBounds(456, 528, 160, 30);
+
+        _btnClose.SetBounds(486, 562, 130, 30);
 
         _btnNewCode.Click += async (_, _) => await NewCodeAsync();
         _btnRemove.Click += async (_, _) => await RemoveSelectedAsync();
         _btnClose.Click += (_, _) => Close();
+        _btnService.Click += async (_, _) => await InstallServiceAsync();
         _lstDevices.SelectedIndexChanged += (_, _) => _btnRemove.Enabled = !_busy && SelectedDevice() is not null;
         _clock.Tick += (_, _) => ShowExpiry();
         _devicesPoll.Tick += async (_, _) => await PollDevicesAsync();
 
-        Controls.AddRange([title, _lblIntro, _qr, _lblCode, _lblExpiry, _lblStatus, _btnNewCode, devicesTitle, _lstDevices, _btnRemove, _btnClose]);
+        Controls.AddRange([title, _lblIntro, _qr, _lblCode, _lblExpiry, _lblStatus, _btnNewCode, devicesTitle, _lstDevices, _btnRemove, _lblService, _btnService, _btnClose]);
         CancelButton = _btnClose;
         _btnRemove.Enabled = false;
     }
@@ -200,6 +221,49 @@ public sealed class MobileLinkForm : XtraForm
             ShowDevices(await MobileLink.DevicesAsync());
             SetStatus(($"« {device.Name} » a été retiré.", Color.DimGray));
         });
+    }
+
+    private async Task InstallServiceAsync()
+    {
+        _lblService.Text = "Installation du service… Acceptez la demande de Windows.";
+        _lblService.Appearance.ForeColor = Color.DimGray;
+        _btnService.Enabled = false;
+        try
+        {
+            await AgentService.InstallAsync();
+            _serviceDeclined = false;
+            ShowService();
+            if (_code is not null)
+                ShowCode();
+        }
+        catch (MobileLinkException ex)
+        {
+            _serviceDeclined = true;
+            ShowService();
+            _lblService.Text = ex.Message + " Le téléphone fonctionne tant que SmartCHIFA est ouvert.";
+            _lblService.Appearance.ForeColor = Color.Crimson;
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+            ShowService();
+        }
+    }
+
+    private void ShowService()
+    {
+        var (text, color, button) = AgentService.State switch
+        {
+            AgentServiceState.Running => ("Service Windows actif : le téléphone fonctionne même quand SmartCHIFA est fermé.", Color.SeaGreen, null),
+            AgentServiceState.Outdated => ("Le service Windows doit être mis à jour avec cette version de SmartCHIFA.", Color.DarkOrange, "Mettre à jour"),
+            AgentServiceState.Stopped => ("Service Windows arrêté : le téléphone ne fonctionne que si SmartCHIFA est ouvert.", Color.DarkOrange, "Réparer"),
+            _ => ("Sans le service Windows, le téléphone ne fonctionne que si SmartCHIFA est ouvert.", Color.DimGray, "Installer le service")
+        };
+        _lblService.Text = text;
+        _lblService.Appearance.ForeColor = color;
+        _btnService.Visible = button is not null;
+        _btnService.Text = button ?? string.Empty;
+        _btnService.Enabled = true;
     }
 
     private LinkedDevice? SelectedDevice() =>

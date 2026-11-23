@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.ServiceProcess;
 using System.Text.Json;
 using CHIFA.Agent;
 using CHIFA.Contract;
@@ -25,7 +24,6 @@ internal sealed class MobileLinkException(string message) : Exception(message);
 internal static class MobileLink
 {
     private const string DefaultGatewayUrl = "https://chifa-gateway.smartappdz.org";
-    private const string AgentServiceName = "CHIFA.Agent";
 
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(20) };
     private static readonly SemaphoreSlim RegisterLock = new(1, 1);
@@ -41,21 +39,7 @@ internal static class MobileLink
 
     public static string PhoneHost => new Uri(GatewayUrl).Host;
 
-    public static bool AgentRunsAsService
-    {
-        get
-        {
-            try
-            {
-                using var service = new ServiceController(AgentServiceName);
-                return service.Status == ServiceControllerStatus.Running;
-            }
-            catch (InvalidOperationException)
-            {
-                return false;
-            }
-        }
-    }
+    public static bool AgentRunsAsService => AgentService.State is AgentServiceState.Running or AgentServiceState.Outdated;
 
     /// <summary>At startup: answer the linked phones while SmartCHIFA is open.</summary>
     public static void StartAgent()
@@ -163,7 +147,7 @@ internal static class MobileLink
                 await StopAgentAsync();
                 if (AgentRunsAsService)
                 {
-                    Log.Information("Mobile link: the {Service} service answers the phones", AgentServiceName);
+                    Log.Information("Mobile link: the {Service} service answers the phones", AgentService.Name);
                     return;
                 }
 

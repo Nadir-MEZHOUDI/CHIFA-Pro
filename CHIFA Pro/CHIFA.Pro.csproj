@@ -54,4 +54,16 @@
 	  <ProjectReference Include="..\CHIFA.Agent\CHIFA.Agent.csproj" />
 	</ItemGroup>
 
+	<!-- The CHIFA.Agent Windows service runs on the plain .NET runtime, not on Windows Desktop like SmartCHIFA:
+	     it needs assemblies SmartCHIFA's folder leaves out (System.Diagnostics.EventLog...). So the agent is also
+	     published complete in agent\, which install-agent.ps1 copies to Program Files (see Mobile/AgentService). -->
+	<Target Name="BuildAgentForService" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true'">
+		<MSBuild Projects="..\CHIFA.Agent\CHIFA.Agent.csproj" Targets="Publish"
+		         Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=false;PublishDir=$(OutDir)agent\" />
+	</Target>
+	<Target Name="PublishAgentForService" AfterTargets="Publish">
+		<MSBuild Projects="..\CHIFA.Agent\CHIFA.Agent.csproj" Targets="Publish"
+		         Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=false;PublishDir=$(PublishDir)agent\" />
+	</Target>
+
 </Project>
