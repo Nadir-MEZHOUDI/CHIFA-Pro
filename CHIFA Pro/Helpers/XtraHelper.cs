@@ -219,19 +219,7 @@ public static class XtraHelper
 
         // Apply the new host to the live connection string as well, otherwise every query
         // would keep using the server captured when the process started.
-        ApplyConnectionSettings(server, DbChecker.GetDbPort());
-    }
-
-    public static void SetServerAndPort(string server, int port)
-    {
-        SetServerVariable(server);
-
-        var dbPort = port > 0 ? port : DbChecker.DefaultDbPort;
-
-        Environment.SetEnvironmentVariable("CHIFA_DB_PORT", dbPort.ToString(), EnvironmentVariableTarget.Process);
-        Environment.SetEnvironmentVariable("CHIFA_DB_PORT", dbPort.ToString(), EnvironmentVariableTarget.User);
-
-        ApplyConnectionSettings(server, dbPort);
+        ApplyConnectionSettings(server, DbChecker.DefaultDbPort);
     }
 
     private static void SetServerVariable(string server)

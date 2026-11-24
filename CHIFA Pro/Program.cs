@@ -46,6 +46,7 @@ internal static partial class Program
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             SetCulture();
 
+            if (!DbChecker.EnsureConnectedAtStartup()) return;
             if (!LicenseGate.EnsureLicensed()) return;
 
             Application.Run(new FrmMain());

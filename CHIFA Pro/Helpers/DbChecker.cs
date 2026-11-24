@@ -5,26 +5,13 @@ namespace CHIFA.Pro.Helpers;
 
 public static class DbChecker
 {
-    /// <summary>Default PostgreSQL port (5432), shared with the whole solution.</summary>
+    /// <summary>CHIFA_OFFICINE always listens on 5432; the port is not configurable.</summary>
     public const int DefaultDbPort = DatabaseDefaults.Port;
 
     /// <summary>Major version prefix of the portable PostgreSQL server bundled with the app.</summary>
     private const string SupportedServerMajorVersion = "9.";
 
     private static bool _isConnected;
-    //private static readonly Func<bool> ChangeSettingsMsg = () => XtraMessageBox.Show("Cannot connect to database \n Do you want to Change Settings?", "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes;
-
-    /// <summary>
-    /// Port used by the PostgreSQL command-line tools: an explicit <c>CHIFA_DB_PORT</c> wins,
-    /// otherwise the supplied fallback, otherwise <see cref="DefaultDbPort"/> (5432).
-    /// </summary>
-    public static int GetDbPort(int? fallbackPort = null)
-    {
-        if (int.TryParse(Environment.GetEnvironmentVariable("CHIFA_DB_PORT"), out var port) && port > 0)
-            return port;
-
-        return fallbackPort is > 0 ? fallbackPort.Value : DefaultDbPort;
-    }
 
     /// <summary>
     /// Clears the cached connection state so the next check re-evaluates the current server,
@@ -32,7 +19,8 @@ public static class DbChecker
     /// </summary>
     internal static void ResetServerState() => _isConnected = false;
 
-    public static async Task<bool> CheckDbConnectionAsync(string? conStr = null)
+    /// <param name="quiet">Only log to the file: used while waiting for a server that is still starting.</param>
+    public static async Task<bool> CheckDbConnectionAsync(string? conStr = null, bool quiet = false)
     {
         var connectionString = BuildConnectionString(conStr);
         NpgsqlConnection? con = null;
@@ -44,7 +32,8 @@ public static class DbChecker
         }
         catch (Exception ex)
         {
-            ex.Log();
+            if (quiet) Serilog.Log.Debug(ex, "Database not reachable yet");
+            else ex.Log();
             return false;
         }
         finally
@@ -101,40 +90,93 @@ public static class DbChecker
         return (value, null);
     }
 
-    private static bool CheckOrDownloadServer()
+    /// <summary>True when <paramref name="folder"/> is a CHIFA_OFFICINE installation with its portable server.</summary>
+    public static bool IsChifaFolder(string? folder) =>
+        !string.IsNullOrWhiteSpace(folder)
+        && File.Exists(Path.Combine(folder, "CHIFA_OFFICINE_DB", "bin", "postgres.exe"))
+        && File.Exists(Path.Combine(folder, "CHIFA_OFFICINE_DB", "Lancer_Serveur.bat"));
+
+    public static bool IsLocalHost(string? host) =>
+        string.IsNullOrWhiteSpace(host)
+        || host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
+        || host is "127.0.0.1" or "::1"
+        || host.Equals(Environment.MachineName, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>The database is on this computer: SmartCHIFA may start CHIFA_OFFICINE's server.</summary>
+    public static bool IsLocalServer =>
+        AppSettings.Default.IsServer || IsLocalHost(new NpgsqlConnectionStringBuilder(ChifaDb.ConString).Host);
+
+    /// <summary>
+    /// Runs before the license dialog, which fills the pharmacy's details from the database.
+    /// Starts CHIFA_OFFICINE's server when it is on this computer, otherwise asks where the database is.
+    /// Returns <c>false</c> when the application must exit.
+    /// </summary>
+    public static bool EnsureConnectedAtStartup()
+    {
+        var connected = Task.Run(() => CheckDbConnectionAsync(quiet: true)).GetAwaiter().GetResult();
+
+        if (!connected && IsLocalServer && IsChifaFolder(AppSettings.Default.ChifaPath))
+        {
+            DevExpress.XtraSplashScreen.SplashScreenManager.ShowDefaultWaitForm("SmartCHIFA", "Démarrage du serveur CHIFA_OFFICINE…");
+            try
+            {
+                connected = Task.Run(StartLocalServerAsync).GetAwaiter().GetResult();
+            }
+            finally
+            {
+                DevExpress.XtraSplashScreen.SplashScreenManager.CloseDefaultWaitForm();
+            }
+        }
+
+        if (connected)
+        {
+            _isConnected = true;
+            return true;
+        }
+
+        using var form = new ConnectionForm(startup: true);
+        return form.ShowDialog() == DialogResult.OK;
+    }
+
+    /// <summary>
+    /// Starts CHIFA_OFFICINE's portable PostgreSQL silently, as CHIFA_OFFICINE does itself
+    /// (Lancer_Serveur.bat in a hidden window), unless it already runs. True once it accepts connections.
+    /// </summary>
+    public static async Task<bool> StartLocalServerAsync()
     {
         try
         {
             // The portable PostgreSQL 9.x is the only supported server; a system installation
-            // (e.g. PostgreSQL 18) must never be detected or used. If the portable bundle is
-            // missing, skip launching instead of starting an unrelated server.
-            if (!File.Exists(AppSettings.Default.ChifaPostgres))
+            // (e.g. PostgreSQL 18) must never be started in its place.
+            if (!IsChifaFolder(AppSettings.Default.ChifaPath))
                 return false;
 
-            if (IsPortableServerRunning()) return true;
-
-            if (!IsSupportedServerVersion()) return false;
-
-            var process = new Process()
+            if (!IsPortableServerRunning())
             {
-                StartInfo = new ProcessStartInfo(AppSettings.Default.ChifaLancerServeur)
-                {
-                    UseShellExecute = false,
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true,
-                }
-            };
+                if (!IsSupportedServerVersion()) return false;
 
-            process.Start();
-            process.WaitForExit(1000);
-            // process.Close();
-            //process.Dispose();
+                // The batch file tests "IF EXIST data" relative to the current directory.
+                using var process = Process.Start(new ProcessStartInfo(AppSettings.Default.ChifaLancerServeur)
+                {
+                    UseShellExecute = true,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    WorkingDirectory = AppSettings.Default.ChifaDbFolder
+                });
+            }
+
+            var local = new NpgsqlConnectionStringBuilder(ChifaDb.ConString) { Host = "localhost", Port = DefaultDbPort };
+            for (var attempt = 0; attempt < 20; attempt++)
+            {
+                if (await CheckDbConnectionAsync(local.ConnectionString, quiet: true)) return true;
+                await Task.Delay(1000);
+            }
         }
         catch (Exception ex)
         {
-            ex.Log();
+            ex.Log(showMessage: false);
         }
-        return IsPortableServerRunning();
+
+        return false;
     }
 
     /// <summary>
@@ -190,22 +232,12 @@ public static class DbChecker
     }
     public static async Task RunServerAsync()
     {
-        if (!AppSettings.Default.IsServer) return;
+        if (!IsLocalServer) return;
 
         if (_isConnected) return;
         try
         {
-            if (!CheckOrDownloadServer())
-            {
-                //   MessageBox.Show(@"Postgres SQL Server Not working! and cannot run it!", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            _isConnected = await CheckDbConnectionAsync();
-
-            if (!_isConnected)
-            {
-                // ParametersUc.ShowAsForm();
-            }
+            _isConnected = await CheckDbConnectionAsync(quiet: true) || await StartLocalServerAsync();
         }
         catch (Exception ex)
         {
@@ -264,7 +296,7 @@ Vérifiez l'installation du dossier « CHIFA_OFFICINE_DB » dans le chemin CHIFA
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
-                Arguments = $"""-h "{ChifaDb.Server}" -p {GetDbPort()} -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """
+                Arguments = $"""-h "{ChifaDb.Server}" -p {DefaultDbPort} -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """
             };
 
             Process process = new() { StartInfo = startInfo };
@@ -309,7 +341,7 @@ Vérifiez l'installation du dossier « CHIFA_OFFICINE_DB » dans le chemin CHIFA
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-                Arguments = $"""-h "{ChifaDb.Server}" -c  -p {GetDbPort()} -U pharm -d CHIFA_OFFICINE "{fileName}" """,
+                Arguments = $"""-h "{ChifaDb.Server}" -c  -p {DefaultDbPort} -U pharm -d CHIFA_OFFICINE "{fileName}" """,
             };
 
             using Process process = new();
