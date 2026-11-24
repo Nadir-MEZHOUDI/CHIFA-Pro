@@ -1,0 +1,177 @@
+@page "/patients"
+@inject Api Api
+@inject NavigationManager Nav
+
+<div class="page-head"><h1>Patients</h1></div>
+
+<div class="chips">
+    <button class="chip @(Relance ? "" : "active")" @onclick="ShowAll">Tous</button>
+    <button class="chip @(Relance ? "active" : "")" @onclick="ShowReminders">Chroniques à relancer</button>
+</div>
+
+@if (Relance)
+{
+    <p class="muted small">Malades chroniques dont le traitement se termine dans la semaine, ou est déjà terminé.</p>
+    @if (_remindError is not null)
+    {
+        <ErrorBox Error="_remindError" Retry="LoadRemindersAsync" />
+    }
+    else if (_reminders is null)
+    {
+        <Loading />
+    }
+    else if (_reminders.Count == 0)
+    {
+        <div class="empty">Aucun malade chronique à relancer cette semaine.</div>
+    }
+    else
+    {
+        @foreach (var r in _reminders)
+        {
+            <a class="card item link" href="@PatientUrl(r.NumAssure, r.Rang)">
+                <div class="item-head">
+                    <strong>@(r.NomBeneficiaire ?? r.NomAssure ?? "—")</strong>
+                    <span class="tag @(r.JoursRestants < 0 ? "bad" : r.JoursRestants == 0 ? "warn" : "accent")">@Due(r.JoursRestants)</span>
+                </div>
+                <div class="item-sub">
+                    <span>Dernière visite @Fmt.Date(r.DateDerniereVisite)</span>
+                    <span>Retour prévu @Fmt.Date(r.DatePrevisionnelleRetour)</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(r.TraitementHabituelResume))
+                {
+                    <span class="muted small">@r.TraitementHabituelResume · ~@Fmt.Money(r.MontantMoyenHabituel)</span>
+                }
+            </a>
+        }
+        <div class="list-end">@_reminders.Count patient@(_reminders.Count > 1 ? "s" : "")</div>
+    }
+}
+else
+{
+    <SearchBox Value="@_search" Placeholder="Nom, prénom ou N° d'assuré" Search="SearchAsync" />
+
+    @foreach (var p in _items)
+    {
+        <a class="card item link" href="@PatientUrl(p.NumAssure, p.Rang)">
+            <div class="item-head">
+                <strong>@(p.Nom ?? "—")</strong>
+                <span class="tag">@Fmt.Number(p.NombreFactures) fact.</span>
+            </div>
+            <div class="item-sub">
+                <span>@p.NumAssure · rang @p.Rang@(p.Rang != "00" && !string.IsNullOrWhiteSpace(p.Assure) ? $" · ayant droit de {p.Assure}" : "")</span>
+                <span>@Fmt.Date(p.DerniereVisite)</span>
+            </div>
+        </a>
+    }
+
+    @if (_error is not null)
+    {
+        <ErrorBox Error="_error" Retry="LoadMoreAsync" />
+    }
+    else if (_loading)
+    {
+        <Loading />
+    }
+    else if (_items.Count == 0)
+    {
+        <div class="empty">@(string.IsNullOrEmpty(_search) ? "Aucun patient." : "Aucun patient ne correspond.")</div>
+    }
+    else if (_items.Count < _total)
+    {
+        <button class="button secondary wide" @onclick="LoadMoreAsync">Afficher plus (@_items.Count / @_total)</button>
+    }
+    else
+    {
+        <div class="list-end">@_total patient@(_total > 1 ? "s" : "")</div>
+    }
+}
+
+@code {
+    [SupplyParameterFromQuery(Name = "relance")] public int? RelanceQuery { get; set; }
+
+    private bool Relance => RelanceQuery == 1;
+
+    private readonly List<PatientRow> _items = [];
+    private int _total;
+    private string _search = "";
+    private bool _loading;
+    private ApiException? _error;
+    private bool _listLoaded;
+
+    private List<Reminder>? _reminders;
+    private ApiException? _remindError;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Relance && _reminders is null)
+            await LoadRemindersAsync();
+        else if (!Relance && !_listLoaded)
+        {
+            _listLoaded = true;
+            await LoadMoreAsync();
+        }
+    }
+
+    private void ShowAll() => Nav.NavigateTo("patients");
+
+    private void ShowReminders() => Nav.NavigateTo("patients?relance=1");
+
+    public static string PatientUrl(string? numAssure, string? rang) =>
+        $"patients/{Uri.EscapeDataString(numAssure ?? "")}/{Uri.EscapeDataString(rang ?? "")}";
+
+    private async Task SearchAsync(string text)
+    {
+        if (text == _search)
+            return;
+        _search = text;
+        _items.Clear();
+        _total = 0;
+        await LoadMoreAsync();
+    }
+
+    private async Task LoadMoreAsync()
+    {
+        var search = _search;
+        _loading = true;
+        _error = null;
+        try
+        {
+            var page = await Api.PatientsAsync(search, _items.Count);
+            if (search != _search)
+                return; // A newer search started while this one was loading.
+            _total = page.Total;
+            _items.AddRange(page.Items);
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task LoadRemindersAsync()
+    {
+        _remindError = null;
+        _reminders = null;
+        try
+        {
+            _reminders = await Api.RemindersAsync();
+        }
+        catch (ApiException ex)
+        {
+            _remindError = ex;
+        }
+    }
+
+    private static string Due(int days) => days switch
+    {
+        < -1 => $"En retard de {-days} j",
+        -1 => "En retard d'1 j",
+        0 => "Aujourd'hui",
+        1 => "Demain",
+        _ => $"Dans {days} j"
+    };
+}

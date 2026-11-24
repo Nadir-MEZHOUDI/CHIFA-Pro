@@ -15,6 +15,8 @@ public class AgentHandlers(ILogger<AgentHandlers> logger)
 {
     private static readonly string Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0";
 
+    private readonly AlertTracker _alerts = new(logger);
+
     public void Register(HubConnection connection)
     {
         connection.On(AgentMethods.GetInfo, () => RunAsync(AgentMethods.GetInfo, GetInfoAsync));
@@ -36,6 +38,34 @@ public class AgentHandlers(ILogger<AgentHandlers> logger)
 
         connection.On<PageQuery, IEnumerable<FactureDto>>(AgentMethods.GetRecentFactures, q =>
             RunAsync(AgentMethods.GetRecentFactures, async () => await ScopeService.Instance.GetRecentFacturesLiveAsync(q.SafeTake)));
+
+        connection.On<string, FactureFullDto?>(AgentMethods.GetFacture, numFact =>
+            RunAsync(AgentMethods.GetFacture, async () => await PatientService.Instance.GetFactureAsync(numFact)));
+
+        connection.On<PageQuery, Page<PatientRowDto>>(AgentMethods.SearchPatients, q =>
+            RunAsync(AgentMethods.SearchPatients, async () =>
+            {
+                var (total, items) = await PatientService.Instance.SearchPatientsAsync(q.Text, q.SafeSkip, q.SafeTake);
+                return new Page<PatientRowDto>(total, items);
+            }));
+
+        connection.On<PatientKey, PatientDetailDto?>(AgentMethods.GetPatient, key =>
+            RunAsync(AgentMethods.GetPatient, async () => await PatientService.Instance.GetPatientAsync(key.NumAssure, key.Rang)));
+
+        connection.On<List<ForecastRefillDto>>(AgentMethods.GetPatientsToRemind, () =>
+            RunAsync(AgentMethods.GetPatientsToRemind, async () => await PatientService.Instance.GetPatientsToRemindAsync()));
+
+        connection.On<PageQuery, Page<MedicRowDto>>(AgentMethods.SearchMedicaments, q =>
+            RunAsync(AgentMethods.SearchMedicaments, async () =>
+            {
+                var (total, items) = await PatientService.Instance.SearchMedicamentsAsync(q.Text, ToPeriod(q), q.SafeSkip, q.SafeTake);
+                return new Page<MedicRowDto>(total, items);
+            }));
+
+        connection.On<MedicamentQuery, MedicDetailDto?>(AgentMethods.GetMedicament, q =>
+            RunAsync(AgentMethods.GetMedicament, async () => await PatientService.Instance.GetMedicamentAsync(q.NumEnr, ToPeriod(q.From, q.To))));
+
+        connection.On(AgentMethods.GetAlerts, () => RunAsync(AgentMethods.GetAlerts, _alerts.GetNewAlertsAsync));
     }
 
     private static async Task<AgentInfo> GetInfoAsync()

@@ -11,6 +11,15 @@ public static class AgentMethods
     public const string GetBordereaux = nameof(GetBordereaux);
     public const string GetPsychotropes = nameof(GetPsychotropes);
     public const string GetRecentFactures = nameof(GetRecentFactures);
+    public const string GetFacture = nameof(GetFacture);
+    public const string SearchPatients = nameof(SearchPatients);
+    public const string GetPatient = nameof(GetPatient);
+    public const string GetPatientsToRemind = nameof(GetPatientsToRemind);
+    public const string SearchMedicaments = nameof(SearchMedicaments);
+    public const string GetMedicament = nameof(GetMedicament);
+
+    /// <summary>Polled by the gateway for phone notifications. Each alert is returned only once.</summary>
+    public const string GetAlerts = nameof(GetAlerts);
 }
 
 public static class AgentHub
@@ -21,7 +30,8 @@ public static class AgentHub
 /// <summary>Both bounds are whole, inclusive days. <c>To = null</c> means up to today.</summary>
 public record PeriodQuery(DateTime? From, DateTime? To);
 
-public record PageQuery(DateTime? From, DateTime? To, int Skip = 0, int Take = PageQuery.DefaultTake)
+/// <param name="Text">Search text, for the lists that have one (patients, medicines).</param>
+public record PageQuery(DateTime? From, DateTime? To, int Skip = 0, int Take = PageQuery.DefaultTake, string? Text = null)
 {
     public const int DefaultTake = 50;
     public const int MaxTake = 200;
@@ -33,3 +43,11 @@ public record PageQuery(DateTime? From, DateTime? To, int Skip = 0, int Take = P
 public record Page<T>(int Total, IReadOnlyList<T> Items);
 
 public record AgentInfo(string? Officine, string AgentVersion, DateTime ServerTime);
+
+public record PatientKey(string NumAssure, string Rang);
+
+public record MedicamentQuery(string NumEnr, DateTime? From, DateTime? To);
+
+/// <param name="Key">Stable identity of the event: the agent never returns the same key twice.</param>
+/// <param name="Url">Page of the phone app to open, relative to its root (e.g. <c>rejets</c>).</param>
+public record AgentAlert(string Key, string Title, string Body, string Url);

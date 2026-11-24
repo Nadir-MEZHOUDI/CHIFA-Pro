@@ -1,0 +1,110 @@
+@page "/medicaments/{NumEnr}"
+@inherits Detail<MedicDetail>
+
+<div class="page-head">
+    <BackButton Fallback="medicaments" />
+    <h1>@(Data?.Nom ?? "Médicament")</h1>
+</div>
+<PeriodChips Selected="_period" SelectedChanged="ChangePeriodAsync" />
+
+@if (Error is not null)
+{
+    <ErrorBox Error="Error" Retry="LoadAsync" />
+}
+else if (Loading)
+{
+    <Loading />
+}
+else if (NotFound || Data is null)
+{
+    <div class="empty">Médicament introuvable dans la nomenclature.</div>
+}
+else
+{
+    var m = Data;
+    <section class="card hero">
+        <span class="label">Délivré · @_period.Label</span>
+        <span class="amount">@Fmt.Number(m.Quantite) boîtes</span>
+        <span class="muted">@Fmt.Money(m.Montant) · @Fmt.Number(m.Factures) factures · @Fmt.Number(m.NombrePatients) patients</span>
+    </section>
+
+    <section class="card">
+        <dl class="facts">
+            <div><dt>DCI</dt><dd>@(m.Dci ?? "—")</dd></div>
+            <div><dt>Forme</dt><dd>@(m.Forme ?? "—")</dd></div>
+            <div><dt>Laboratoire</dt><dd>@(string.Join(" · ", new[] { m.Laboratoire, m.Pays }.Where(s => !string.IsNullOrWhiteSpace(s))) is { Length: > 0 } labo ? labo : "—")</dd></div>
+            <div><dt>Tarif de référence</dt><dd>@Fmt.Money(m.TarifRef)</dd></div>
+            <div><dt>N° d'enregistrement</dt><dd>@m.NumEnr</dd></div>
+        </dl>
+        @if (m.Generique || m.Psychotrope)
+        {
+            <div class="tags">
+                @if (m.Generique)
+                {
+                    <span class="tag ok">Générique</span>
+                }
+                @if (m.Psychotrope)
+                {
+                    <span class="tag bad">Psychotrope</span>
+                }
+            </div>
+        }
+    </section>
+
+    @if (m.ParMois.Count > 1)
+    {
+        var max = m.ParMois.Max(x => x.Quantite);
+        <section class="card">
+            <h2>Boîtes par mois</h2>
+            <div class="hours">
+                @foreach (var month in m.ParMois.TakeLast(24))
+                {
+                    <div class="hour" title="@month.Mois.ToString("00")/@month.Annee : @Fmt.Number(month.Quantite) boîtes">
+                        <span class="hour-bar" style="height:@Height(month.Quantite, max)"></span>
+                        <span class="hour-label">@month.Mois.ToString("00")</span>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <h2 class="section-title">Patients (@Fmt.Number(m.NombrePatients))</h2>
+    @if (m.Patients.Count == 0)
+    {
+        <div class="empty">Aucune délivrance sur cette période.</div>
+    }
+    @foreach (var p in m.Patients)
+    {
+        <a class="card item link" href="@Patients.PatientUrl(p.NumAssure, p.Rang)">
+            <div class="item-head">
+                <strong>@(p.Nom ?? "—")</strong>
+                <strong>@Fmt.Number(p.Quantite) boîte@(p.Quantite > 1 ? "s" : "")</strong>
+            </div>
+            <div class="item-sub">
+                <span>@p.NumAssure · rang @p.Rang · @p.Factures fois</span>
+                <span>@Fmt.Date(p.DerniereDate)</span>
+            </div>
+        </a>
+    }
+    @if (m.NombrePatients > m.Patients.Count)
+    {
+        <div class="list-end">@m.Patients.Count plus récents sur @Fmt.Number(m.NombrePatients)</div>
+    }
+}
+
+@code {
+    [Parameter] public string NumEnr { get; set; } = "";
+
+    private Period _period = PeriodChips.Named("Cette année");
+
+    protected override Task<MedicDetail?> FetchAsync() => Api.MedicamentAsync(NumEnr, _period);
+
+    private async Task ChangePeriodAsync(Period period)
+    {
+        _period = period;
+        await LoadAsync();
+    }
+
+    private static string Height(decimal value, decimal max) =>
+        max <= 0 ? "0%" : $"{Math.Round(value / max * 100m, 1).ToString(System.Globalization.CultureInfo.InvariantCulture)}%";
+}

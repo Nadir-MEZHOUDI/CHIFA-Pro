@@ -22,38 +22,7 @@ else
 {
     @foreach (var f in _items)
     {
-        <article class="card item">
-            <div class="item-head">
-                <strong>@(f.Malade ?? "—")</strong>
-                <strong>@Fmt.Money(f.MontFact)</strong>
-            </div>
-            <div class="item-sub">
-                <span>@Fmt.Stamp(f.DateFact) · N° @f.NumFact</span>
-                <span>Caisse @Fmt.Money(f.MontOff)</span>
-            </div>
-            <div class="tags">
-                @if (!string.IsNullOrWhiteSpace(f.Centre))
-                {
-                    <span class="tag">@f.Centre</span>
-                }
-                @if (!string.IsNullOrWhiteSpace(f.Specialite))
-                {
-                    <span class="tag">@f.Specialite</span>
-                }
-                @if (f.Ts == true)
-                {
-                    <span class="tag accent">TS</span>
-                }
-                @if (f.LongDuree)
-                {
-                    <span class="tag accent">Longue durée</span>
-                }
-                @if (f.Majoration > 0)
-                {
-                    <span class="tag">Maj. @Fmt.Money(f.Majoration)</span>
-                }
-            </div>
-        </article>
+        <FactureCard F="f" />
     }
 }
 

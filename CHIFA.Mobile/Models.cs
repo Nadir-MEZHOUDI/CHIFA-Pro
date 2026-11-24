@@ -53,6 +53,9 @@ public class TopProduct
 public class Facture
 {
     public string? NumFact { get; init; }
+    public string? NumAssure { get; init; }
+    public string? Rang { get; init; }
+    public string? Bordereau { get; init; }
     public DateTime? DateFact { get; init; }
     public string? Malade { get; init; }
     public string? Assure { get; init; }
@@ -118,3 +121,149 @@ public class Psychotrope
     public string? Tableau { get; init; }
     public string? NumeroOrdonnance { get; init; }
 }
+
+public class FactureFull
+{
+    public string NumFact { get; init; } = "";
+    public DateTime? DateFact { get; init; }
+    public DateTime? DateSoin { get; init; }
+    public string? NumAssure { get; init; }
+    public string? Rang { get; init; }
+    public string? Malade { get; init; }
+    public string? Assure { get; init; }
+    public string? Centre { get; init; }
+    public string? Specialite { get; init; }
+    public string? Prescripteur { get; init; }
+    public string? Bordereau { get; init; }
+    public decimal? MontFact { get; init; }
+    public decimal? MontOff { get; init; }
+    public decimal? MontAss { get; init; }
+    public decimal? Majoration { get; init; }
+    public List<FactureLigne> Lignes { get; init; } = [];
+}
+
+public class FactureLigne
+{
+    public string? Code { get; init; }
+    public string Medicament { get; init; } = "";
+    public decimal? Qt { get; init; }
+    public decimal? Ppa { get; init; }
+    public decimal? TR { get; init; }
+    public decimal? DureeTrait { get; init; }
+    public decimal? MontAss { get; init; }
+    public decimal? MontPharm { get; init; }
+    public bool? Ts { get; init; }
+}
+
+public class PatientRow
+{
+    public string NumAssure { get; init; } = "";
+    public string Rang { get; init; } = "";
+    public string? Nom { get; init; }
+    public string? Assure { get; init; }
+    public DateTime? DerniereVisite { get; init; }
+    public int NombreFactures { get; init; }
+}
+
+public class PatientDetail
+{
+    public string NumAssure { get; init; } = "";
+    public string Rang { get; init; } = "";
+    public string? Nom { get; init; }
+    public string? Assure { get; init; }
+    public string? Centre { get; init; }
+    public DateTime? DateFinDroit { get; init; }
+    public DateTime? PremiereVisite { get; init; }
+    public DateTime? DerniereVisite { get; init; }
+    public int NombreFactures { get; init; }
+    public decimal MontantTotal { get; init; }
+    public List<FamilyMember> Famille { get; init; } = [];
+    public List<Treatment> Traitements { get; init; } = [];
+    public List<Facture> Factures { get; init; } = [];
+}
+
+public class FamilyMember
+{
+    public string Rang { get; init; } = "";
+    public string? Nom { get; init; }
+}
+
+public class Treatment
+{
+    public string? NumEnr { get; init; }
+    public string? Medicament { get; init; }
+    public DateTime? DerniereDate { get; init; }
+    public decimal? Quantite { get; init; }
+    public decimal? Duree { get; init; }
+    public DateTime? Prochain { get; init; }
+    public bool Ts { get; init; }
+    public string? Medecin { get; init; }
+    public int Delivrances { get; init; }
+}
+
+/// <summary>A chronic patient whose treatment runs out soon (or already did).</summary>
+public class Reminder
+{
+    public string? NumAssure { get; init; }
+    public string? Rang { get; init; }
+    public string? NomAssure { get; init; }
+    public string? NomBeneficiaire { get; init; }
+    public DateTime? DateDerniereVisite { get; init; }
+    public DateTime? DatePrevisionnelleRetour { get; init; }
+    public int JoursRestants { get; init; }
+    public string? TraitementHabituelResume { get; init; }
+    public decimal MontantMoyenHabituel { get; init; }
+}
+
+public class MedicRow
+{
+    public string NumEnr { get; init; } = "";
+    public string? Nom { get; init; }
+    public string? Dci { get; init; }
+    public string? Laboratoire { get; init; }
+    public decimal Quantite { get; init; }
+    public decimal Montant { get; init; }
+    public int Factures { get; init; }
+    public int Patients { get; init; }
+}
+
+public class MedicDetail
+{
+    public string NumEnr { get; init; } = "";
+    public string? Nom { get; init; }
+    public string? Dci { get; init; }
+    public string? Laboratoire { get; init; }
+    public string? Forme { get; init; }
+    public string? Pays { get; init; }
+    public decimal? TarifRef { get; init; }
+    public bool Generique { get; init; }
+    public bool Psychotrope { get; init; }
+    public decimal Quantite { get; init; }
+    public decimal Montant { get; init; }
+    public int Factures { get; init; }
+    public List<MonthQuantity> ParMois { get; init; } = [];
+    public List<MedicPatient> Patients { get; init; } = [];
+    public int NombrePatients { get; init; }
+}
+
+public class MonthQuantity
+{
+    public int Annee { get; init; }
+    public int Mois { get; init; }
+    public decimal Quantite { get; init; }
+}
+
+public class MedicPatient
+{
+    public string NumAssure { get; init; } = "";
+    public string Rang { get; init; } = "";
+    public string? Nom { get; init; }
+    public decimal Quantite { get; init; }
+    public int Factures { get; init; }
+    public DateTime? DerniereDate { get; init; }
+}
+
+/// <summary>The browser's push subscription, as <c>chifa.push</c> returns it.</summary>
+public record PushSubscriptionInfo(string Endpoint, string P256dh, string Auth);
+
+public record PushKey(string PublicKey);

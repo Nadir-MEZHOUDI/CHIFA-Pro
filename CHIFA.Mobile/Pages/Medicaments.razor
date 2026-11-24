@@ -1,0 +1,81 @@
+@page "/medicaments"
+@inject Api Api
+
+<div class="page-head"><h1>Médicaments</h1></div>
+<PeriodChips Selected="_period" SelectedChanged="ChangePeriodAsync" />
+<SearchBox Value="@_search" Placeholder="Nom commercial ou DCI" Search="SearchAsync" />
+
+@foreach (var m in _items)
+{
+    <a class="card item link" href="medicaments/@Uri.EscapeDataString(m.NumEnr)">
+        <div class="item-head">
+            <strong>@(m.Nom ?? m.NumEnr)</strong>
+            <strong>@Fmt.Number(m.Quantite) boîtes</strong>
+        </div>
+        <div class="item-sub">
+            <span>@(m.Dci ?? "—")@(string.IsNullOrWhiteSpace(m.Laboratoire) ? "" : $" · {m.Laboratoire}")</span>
+            <span>@Fmt.Money(m.Montant)</span>
+        </div>
+        <div class="tags">
+            <span class="tag">@Fmt.Number(m.Patients) patient@(m.Patients > 1 ? "s" : "")</span>
+            <span class="tag">@Fmt.Number(m.Factures) facture@(m.Factures > 1 ? "s" : "")</span>
+        </div>
+    </a>
+}
+
+<ListFooter Count="_items.Count" Total="_total" Loading="_loading" Error="_error" More="LoadMoreAsync" />
+
+@code {
+    private Period _period = PeriodChips.Named("3 mois");
+    private string _search = "";
+    private readonly List<MedicRow> _items = [];
+    private int _total;
+    private bool _loading;
+    private ApiException? _error;
+
+    protected override Task OnInitializedAsync() => LoadMoreAsync();
+
+    private async Task ChangePeriodAsync(Period period)
+    {
+        _period = period;
+        await ReloadAsync();
+    }
+
+    private async Task SearchAsync(string text)
+    {
+        if (text == _search)
+            return;
+        _search = text;
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        _items.Clear();
+        _total = 0;
+        await LoadMoreAsync();
+    }
+
+    private async Task LoadMoreAsync()
+    {
+        var (search, period) = (_search, _period);
+        _loading = true;
+        _error = null;
+        try
+        {
+            var page = await Api.MedicamentsAsync(search, period, _items.Count);
+            if (search != _search || period != _period)
+                return; // A newer search started while this one was loading.
+            _total = page.Total;
+            _items.AddRange(page.Items);
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

@@ -28,11 +28,23 @@ public static class OfficineEndpoints
 
         api.MapGet("/factures/recent", (int? take, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
             agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetRecentFactures, new PageQuery(null, null, 0, take ?? PageQuery.DefaultTake), ct));
+        api.MapGet("/factures/{numFact}", (string numFact, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetFacture, numFact, ct));
+
+        MapPaged(api, "/patients", AgentMethods.SearchPatients);
+        api.MapGet("/patients/relance", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetPatientsToRemind, null, ct));
+        api.MapGet("/patients/{numAssure}/{rang}", (string numAssure, string rang, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetPatient, new PatientKey(numAssure, rang), ct));
+
+        MapPaged(api, "/medicaments", AgentMethods.SearchMedicaments);
+        api.MapGet("/medicaments/{numEnr}", (string numEnr, DateTime? from, DateTime? to, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetMedicament, new MedicamentQuery(numEnr, from, to), ct));
     }
 
     private static void MapPaged(RouteGroupBuilder api, string route, string method) =>
-        api.MapGet(route, (DateTime? from, DateTime? to, int? skip, int? take, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
-            agent.InvokeAsync(user.GetPharmacyId(), method, new PageQuery(from, to, skip ?? 0, take ?? PageQuery.DefaultTake), ct));
+        api.MapGet(route, (DateTime? from, DateTime? to, int? skip, int? take, string? q, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), method, new PageQuery(from, to, skip ?? 0, take ?? PageQuery.DefaultTake, q), ct));
 
     private static async Task<IResult> StatusAsync(ClaimsPrincipal user, IDbContextFactory<GatewayDbContext> dbFactory, AgentRegistry registry, CancellationToken ct)
     {

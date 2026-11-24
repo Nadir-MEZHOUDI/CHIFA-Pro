@@ -101,6 +101,7 @@ public static class AuthEndpoints
             await using var db = await dbFactory.CreateDbContextAsync(ct);
             await db.MobileDevices.Where(d => d.Id == deviceId && d.RevokedAt == null)
                 .ExecuteUpdateAsync(s => s.SetProperty(d => d.RevokedAt, DateTime.UtcNow), ct);
+            await db.PushSubscriptions.Where(s => s.DeviceId == deviceId).ExecuteDeleteAsync(ct);
         }
 
         return Results.NoContent();

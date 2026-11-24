@@ -33,6 +33,14 @@ public class GatewayOptions
     /// <summary>Sign-in, pairing and registration attempts allowed per IP address and minute.</summary>
     [Range(1, 10_000)]
     public int AuthRequestsPerMinute { get; set; } = 10;
+
+    /// <summary>How often online agents are asked for new alerts to push to phones.</summary>
+    [Range(1, 1440)]
+    public int AlertPollMinutes { get; set; } = 5;
+
+    /// <summary>VAPID contact given to the browsers' push services (a mailto: or https: URL).</summary>
+    [Required]
+    public string PushSubject { get; set; } = "https://smartchifa.smartappdz.org";
 }
 
 public class JwtOptions

@@ -110,28 +110,65 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 
     public Task<Page<Psychotrope>> PsychotropesAsync(Period period, int skip) => PageAsync<Psychotrope>("psychotropes", period, skip);
 
+    public Task<FactureFull?> FactureAsync(string numFact) =>
+        GetAsync<FactureFull?>($"api/officine/factures/{Uri.EscapeDataString(numFact)}");
+
+    public Task<Page<PatientRow>> PatientsAsync(string? search, int skip) =>
+        GetAsync<Page<PatientRow>>($"api/officine/patients?q={Uri.EscapeDataString(search ?? "")}&skip={skip}&take={PageSize}");
+
+    public Task<List<Reminder>> RemindersAsync() => GetAsync<List<Reminder>>("api/officine/patients/relance");
+
+    public Task<PatientDetail?> PatientAsync(string numAssure, string rang) =>
+        GetAsync<PatientDetail?>($"api/officine/patients/{Uri.EscapeDataString(numAssure)}/{Uri.EscapeDataString(rang)}");
+
+    public Task<Page<MedicRow>> MedicamentsAsync(string? search, Period period, int skip) =>
+        GetAsync<Page<MedicRow>>($"api/officine/medicaments?{period.Query}&q={Uri.EscapeDataString(search ?? "")}&skip={skip}&take={PageSize}");
+
+    public Task<MedicDetail?> MedicamentAsync(string numEnr, Period period) =>
+        GetAsync<MedicDetail?>($"api/officine/medicaments/{Uri.EscapeDataString(numEnr)}?{period.Query}");
+
+    public async Task<string> PushKeyAsync() => (await GetAsync<PushKey>("api/push/key")).PublicKey;
+
+    public Task SubscribePushAsync(PushSubscriptionInfo subscription) => PostAsync("api/push/subscribe", subscription);
+
+    public Task UnsubscribePushAsync(string endpoint) => PostAsync("api/push/unsubscribe", new { endpoint });
+
+    public Task TestPushAsync(string endpoint) => PostAsync("api/push/test", new { endpoint });
+
     private Task<Page<T>> PageAsync<T>(string route, Period period, int skip) =>
         GetAsync<Page<T>>($"api/officine/{route}?{period.Query}&skip={skip}&take={PageSize}");
 
     private async Task<T> GetAsync<T>(string url)
     {
+        using var response = await SendAsync(HttpMethod.Get, url, null);
+        return (await response.Content.ReadFromJsonAsync<T>(JsonSerializerOptions.Web))!;
+    }
+
+    private async Task PostAsync(string url, object body)
+    {
+        using var _ = await SendAsync(HttpMethod.Post, url, body);
+    }
+
+    /// <summary>A successful response; anything else becomes an <see cref="ApiException"/>.</summary>
+    private async Task<HttpResponseMessage> SendAsync(HttpMethod method, string url, object? body)
+    {
         if (!session.HasValidToken && !await RenewAsync())
             throw await SignedOutAsync();
 
-        var response = await SendGetAsync(url);
+        var response = await SendOnceAsync(method, url, body);
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
             response.Dispose();
             if (!await RenewAsync())
                 throw await SignedOutAsync();
-            response = await SendGetAsync(url);
+            response = await SendOnceAsync(method, url, body);
         }
+
+        if (response.IsSuccessStatusCode)
+            return response;
 
         using (response)
         {
-            if (response.IsSuccessStatusCode)
-                return (await response.Content.ReadFromJsonAsync<T>(JsonSerializerOptions.Web))!;
-
             if (response.StatusCode == HttpStatusCode.Unauthorized)
                 throw await SignedOutAsync();
 
@@ -141,10 +178,12 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
         }
     }
 
-    private async Task<HttpResponseMessage> SendGetAsync(string url)
+    private async Task<HttpResponseMessage> SendOnceAsync(HttpMethod method, string url, object? body)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        using var request = new HttpRequestMessage(method, url);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", session.Current!.AccessToken);
+        if (body is not null)
+            request.Content = JsonContent.Create(body, options: JsonSerializerOptions.Web);
         try
         {
             return await http.SendAsync(request);

@@ -49,6 +49,27 @@ public class AgentInvoker(
         }
     }
 
+    /// <summary>For background work: the agent's answer, or default when it is offline, slow or fails (logged).</summary>
+    public async Task<T?> TryCallAsync<T>(Guid pharmacyId, string method, CancellationToken ct)
+    {
+        var connectionId = registry.GetConnectionId(pharmacyId);
+        if (connectionId is null)
+            return default;
+
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        timeout.CancelAfter(TimeSpan.FromSeconds(options.Value.AgentTimeoutSeconds));
+        try
+        {
+            return await hub.Clients.Client(connectionId).InvokeAsync<T>(method, timeout.Token);
+        }
+        catch (Exception ex) when (!ct.IsCancellationRequested && ex is OperationCanceledException or HubException or IOException)
+        {
+            // An agent older than the method answers with an error too: it gets it after its next update.
+            logger.LogDebug("Agent {PharmacyId} did not answer {Method}: {Error}", pharmacyId, method, ex.Message);
+            return default;
+        }
+    }
+
     private static IResult Offline() =>
         Results.Problem(statusCode: StatusCodes.Status503ServiceUnavailable,
             title: "Pharmacie hors ligne",

@@ -1,0 +1,37 @@
+<a class="card item link" href="factures/@Uri.EscapeDataString(F.NumFact ?? "")">
+    <div class="item-head">
+        <strong>@(ShowPatient ? F.Malade ?? "—" : $"N° {F.NumFact}")</strong>
+        <strong>@Fmt.Money(F.MontFact)</strong>
+    </div>
+    <div class="item-sub">
+        <span>@Fmt.Stamp(F.DateFact)@(ShowPatient ? $" · N° {F.NumFact}" : "")</span>
+        <span>Caisse @Fmt.Money(F.MontOff)</span>
+    </div>
+    <div class="tags">
+        @if (!string.IsNullOrWhiteSpace(F.Centre))
+        {
+            <span class="tag">@F.Centre</span>
+        }
+        @if (!string.IsNullOrWhiteSpace(F.Specialite))
+        {
+            <span class="tag">@F.Specialite</span>
+        }
+        @if (F.Ts == true)
+        {
+            <span class="tag accent">TS</span>
+        }
+        @if (F.LongDuree)
+        {
+            <span class="tag accent">Longue durée</span>
+        }
+        @if (F.Majoration > 0)
+        {
+            <span class="tag">Maj. @Fmt.Money(F.Majoration)</span>
+        }
+    </div>
+</a>
+
+@code {
+    [Parameter, EditorRequired] public Facture F { get; set; } = default!;
+    [Parameter] public bool ShowPatient { get; set; } = true;
+}

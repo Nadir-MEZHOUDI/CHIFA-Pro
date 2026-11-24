@@ -200,6 +200,83 @@ namespace CHIFA.Gateway.Data.Migrations
                     b.ToTable("pharmacies", (string)null);
                 });
 
+            modelBuilder.Entity("CHIFA.Gateway.Data.PushSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Auth")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("auth");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("DeviceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("device_id");
+
+                    b.Property<string>("Endpoint")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("endpoint");
+
+                    b.Property<string>("P256dh")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("p256dh");
+
+                    b.Property<Guid>("PharmacyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("pharmacy_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_push_subscriptions");
+
+                    b.HasIndex("DeviceId")
+                        .HasDatabaseName("ix_push_subscriptions_device_id");
+
+                    b.HasIndex("Endpoint")
+                        .IsUnique()
+                        .HasDatabaseName("ix_push_subscriptions_endpoint");
+
+                    b.HasIndex("PharmacyId")
+                        .HasDatabaseName("ix_push_subscriptions_pharmacy_id");
+
+                    b.ToTable("push_subscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("CHIFA.Gateway.Data.VapidKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    b.Property<string>("PrivateKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("private_key");
+
+                    b.Property<string>("PublicKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("public_key");
+
+                    b.HasKey("Id")
+                        .HasName("pk_vapid_keys");
+
+                    b.ToTable("vapid_keys", (string)null);
+                });
+
             modelBuilder.Entity("CHIFA.Gateway.Data.MobileDevice", b =>
                 {
                     b.HasOne("CHIFA.Gateway.Data.Pharmacy", "Pharmacy")
@@ -232,6 +309,26 @@ namespace CHIFA.Gateway.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_pairing_codes_pharmacies_pharmacy_id");
+
+                    b.Navigation("Pharmacy");
+                });
+
+            modelBuilder.Entity("CHIFA.Gateway.Data.PushSubscription", b =>
+                {
+                    b.HasOne("CHIFA.Gateway.Data.MobileDevice", "Device")
+                        .WithMany()
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("fk_push_subscriptions_mobile_devices_device_id");
+
+                    b.HasOne("CHIFA.Gateway.Data.Pharmacy", "Pharmacy")
+                        .WithMany()
+                        .HasForeignKey("PharmacyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_push_subscriptions_pharmacies_pharmacy_id");
+
+                    b.Navigation("Device");
 
                     b.Navigation("Pharmacy");
                 });

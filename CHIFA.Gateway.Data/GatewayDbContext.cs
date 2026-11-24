@@ -8,6 +8,8 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
     public DbSet<MobileUser> MobileUsers => Set<MobileUser>();
     public DbSet<MobileDevice> MobileDevices => Set<MobileDevice>();
     public DbSet<PairingCode> PairingCodes => Set<PairingCode>();
+    public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
+    public DbSet<VapidKey> VapidKeys => Set<VapidKey>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -36,6 +38,22 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
         {
             e.Property(c => c.CodeHash).HasMaxLength(64);
             e.HasIndex(c => c.CodeHash).IsUnique();
+        });
+
+        b.Entity<PushSubscription>(e =>
+        {
+            e.Property(s => s.Endpoint).HasMaxLength(1000);
+            e.Property(s => s.P256dh).HasMaxLength(200);
+            e.Property(s => s.Auth).HasMaxLength(100);
+            e.HasIndex(s => s.Endpoint).IsUnique();
+            e.HasOne(s => s.Device).WithMany().OnDelete(DeleteBehavior.Cascade);
+        });
+
+        b.Entity<VapidKey>(e =>
+        {
+            e.Property(k => k.Id).ValueGeneratedNever();
+            e.Property(k => k.PublicKey).HasMaxLength(100);
+            e.Property(k => k.PrivateKey).HasMaxLength(100);
         });
     }
 }

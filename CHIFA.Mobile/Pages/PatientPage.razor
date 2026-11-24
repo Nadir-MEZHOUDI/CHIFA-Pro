@@ -1,0 +1,106 @@
+@page "/patients/{NumAssure}/{Rang}"
+@inherits Detail<PatientDetail>
+
+<div class="page-head">
+    <BackButton Fallback="patients" />
+    <h1>@(Data?.Nom ?? "Patient")</h1>
+</div>
+
+@if (Error is not null)
+{
+    <ErrorBox Error="Error" Retry="LoadAsync" />
+}
+else if (Loading)
+{
+    <Loading />
+}
+else if (NotFound || Data is null)
+{
+    <div class="empty">Patient introuvable.</div>
+}
+else
+{
+    var p = Data;
+    var droitsFinis = p.DateFinDroit is { } fin && fin.Date < DateTime.Today;
+    <section class="card">
+        <dl class="facts">
+            <div><dt>N° assuré</dt><dd>@p.NumAssure · rang @p.Rang</dd></div>
+            @if (p.Rang != "00" && !string.IsNullOrWhiteSpace(p.Assure))
+            {
+                <div><dt>Assuré</dt><dd>@p.Assure</dd></div>
+            }
+            <div><dt>Caisse</dt><dd>@(p.Centre ?? "—")</dd></div>
+            <div><dt>Fin de droits</dt><dd class="@(droitsFinis ? "bad-text" : "")">@Fmt.Date(p.DateFinDroit)@(droitsFinis ? " · expirés" : "")</dd></div>
+            <div><dt>Visites</dt><dd>@Fmt.Number(p.NombreFactures) factures · @Fmt.Date(p.PremiereVisite) → @Fmt.Date(p.DerniereVisite)</dd></div>
+            <div><dt>Total facturé</dt><dd>@Fmt.Money(p.MontantTotal)</dd></div>
+        </dl>
+    </section>
+
+    @if (p.Famille.Count > 1)
+    {
+        <section class="card">
+            <h2>Famille</h2>
+            <div class="tags">
+                @foreach (var m in p.Famille)
+                {
+                    <a class="tag @(m.Rang == p.Rang ? "ok" : "")" href="@Patients.PatientUrl(p.NumAssure, m.Rang)">@m.Rang · @(m.Nom ?? "—")</a>
+                }
+            </div>
+        </section>
+    }
+
+    <section class="card">
+        <h2>Traitements (@p.Traitements.Count)</h2>
+        @if (p.Traitements.Count == 0)
+        {
+            <p class="muted">Aucun médicament délivré.</p>
+        }
+        <ul class="lines">
+            @foreach (var t in p.Traitements)
+            {
+                <li>
+                    <a class="line" href="medicaments/@Uri.EscapeDataString(t.NumEnr ?? "")">
+                        <div class="item-head">
+                            <strong>@t.Medicament</strong>
+                            @if (t.Prochain is { } next)
+                            {
+                                var days = (next.Date - DateTime.Today).Days;
+                                <span class="tag @(days < 0 ? "" : days <= 7 ? "warn" : "ok")">@(days < 0 ? $"Fini le {Fmt.Date(next)}" : $"Jusqu'au {Fmt.Date(next)}")</span>
+                            }
+                        </div>
+                        <div class="item-sub">
+                            <span>@Fmt.Date(t.DerniereDate) · @Fmt.Number(t.Quantite) boîte(s)@(t.Duree > 0 ? $" · {Fmt.Number(t.Duree)} j" : "")</span>
+                            <span>@t.Delivrances×</span>
+                        </div>
+                        @if (t.Ts || !string.IsNullOrWhiteSpace(t.Medecin))
+                        {
+                            <div class="tags">
+                                @if (t.Ts)
+                                {
+                                    <span class="tag accent">TS</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(t.Medecin))
+                                {
+                                    <span class="tag">@t.Medecin</span>
+                                }
+                            </div>
+                        }
+                    </a>
+                </li>
+            }
+        </ul>
+    </section>
+
+    <h2 class="section-title">Dernières factures</h2>
+    @foreach (var f in p.Factures)
+    {
+        <FactureCard F="f" ShowPatient="false" />
+    }
+}
+
+@code {
+    [Parameter] public string NumAssure { get; set; } = "";
+    [Parameter] public string Rang { get; set; } = "";
+
+    protected override Task<PatientDetail?> FetchAsync() => Api.PatientAsync(NumAssure, Rang);
+}

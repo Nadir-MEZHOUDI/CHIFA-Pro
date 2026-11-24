@@ -1,0 +1,96 @@
+@page "/factures/{NumFact}"
+@inherits Detail<FactureFull>
+
+<div class="page-head">
+    <BackButton Fallback="factures" />
+    <h1>Facture N° @NumFact</h1>
+</div>
+
+@if (Error is not null)
+{
+    <ErrorBox Error="Error" Retry="LoadAsync" />
+}
+else if (Loading)
+{
+    <Loading />
+}
+else if (NotFound || Data is null)
+{
+    <div class="empty">Facture introuvable.</div>
+}
+else
+{
+    var f = Data;
+    <section class="card hero">
+        <span class="label">Montant facturé</span>
+        <span class="amount">@Fmt.Money(f.MontFact)</span>
+        <span class="muted">@Fmt.Stamp(f.DateFact)@(f.DateSoin is { } soin ? $" · soin le {Fmt.Date(soin)}" : "")</span>
+    </section>
+
+    <section class="kpis">
+        <div class="card kpi"><span class="label">Part caisse</span><span class="value">@Fmt.Money(f.MontOff)</span></div>
+        <div class="card kpi"><span class="label">Part assuré</span><span class="value">@Fmt.Money(f.MontAss)</span></div>
+    </section>
+
+    <section class="card">
+        <h2>Patient</h2>
+        <dl class="facts">
+            <div><dt>Malade</dt><dd>
+                @if (f.NumAssure is { } num && f.Rang is { } rang)
+                {
+                    <a href="patients/@Uri.EscapeDataString(num)/@Uri.EscapeDataString(rang)">@(f.Malade ?? "—")</a>
+                }
+                else
+                {
+                    @(f.Malade ?? "—")
+                }
+            </dd></div>
+            @if (!string.IsNullOrWhiteSpace(f.Assure) && f.Assure != f.Malade)
+            {
+                <div><dt>Assuré</dt><dd>@f.Assure</dd></div>
+            }
+            <div><dt>N° assuré</dt><dd>@f.NumAssure · rang @f.Rang</dd></div>
+            <div><dt>Caisse</dt><dd>@(f.Centre ?? "—")</dd></div>
+            <div><dt>Médecin</dt><dd>@(string.Join(" · ", new[] { f.Prescripteur, f.Specialite }.Where(s => !string.IsNullOrWhiteSpace(s))) is { Length: > 0 } m ? m : "—")</dd></div>
+            <div><dt>Bordereau</dt><dd>@(string.IsNullOrWhiteSpace(f.Bordereau) ? "—" : $"N° {f.Bordereau}")</dd></div>
+            @if (f.Majoration > 0)
+            {
+                <div><dt>Majoration</dt><dd>@Fmt.Money(f.Majoration)</dd></div>
+            }
+        </dl>
+    </section>
+
+    <section class="card">
+        <h2>Médicaments (@f.Lignes.Count)</h2>
+        <ul class="lines">
+            @foreach (var l in f.Lignes)
+            {
+                <li>
+                    <a class="line" href="medicaments/@Uri.EscapeDataString(l.Code ?? "")">
+                        <div class="item-head">
+                            <strong>@l.Medicament</strong>
+                            <strong>@Fmt.Money(l.Ppa * l.Qt)</strong>
+                        </div>
+                        <div class="item-sub">
+                            <span>@Fmt.Number(l.Qt) × @Fmt.Money(l.Ppa)@(l.DureeTrait > 0 ? $" · {Fmt.Number(l.DureeTrait)} j" : "")</span>
+                            <span>Caisse @Fmt.Money(l.MontPharm)@(l.MontAss > 0 ? $" · assuré {Fmt.Money(l.MontAss)}" : "")</span>
+                        </div>
+                        @if (l.Ts == true || l.TR is > 0 && l.TR < l.Ppa)
+                        {
+                            <div class="tags">
+                                @if (l.Ts == true) { <span class="tag accent">TS</span> }
+                                @if (l.TR is > 0 && l.TR < l.Ppa) { <span class="tag warn">TR @Fmt.Money(l.TR)</span> }
+                            </div>
+                        }
+                    </a>
+                </li>
+            }
+        </ul>
+    </section>
+}
+
+@code {
+    [Parameter] public string NumFact { get; set; } = "";
+
+    protected override Task<FactureFull?> FetchAsync() => Api.FactureAsync(NumFact);
+}
