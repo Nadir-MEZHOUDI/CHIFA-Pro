@@ -87,6 +87,25 @@ public class GatewayTests(GatewayFixture gateway)
         (await response.Content.ReadAsStringAsync()).Should().Contain("Base CHIFA indisponible");
     }
 
+    [Fact]
+    public async Task Stats_routes_pass_the_kind_and_period_and_refuse_unknown_kinds()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        StatsQuery? asked = null;
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On<StatsQuery, object>(AgentMethods.GetStats, q => { asked = q; return Task.FromResult<object>(new { }); });
+        agent.On(AgentMethods.GetRecentDays, () => Task.FromResult<object>(Array.Empty<object>()));
+        await agent.StartAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        (await phone.GetAsync("/api/officine/stats/mois?from=2026-01-01")).EnsureSuccessStatusCode();
+        (await phone.GetAsync("/api/officine/stats/recent")).EnsureSuccessStatusCode();
+        var unknown = await phone.GetAsync("/api/officine/stats/drop-table");
+
+        asked.Should().Be(new StatsQuery("mois", new DateTime(2026, 1, 1), null));
+        unknown.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
     [Theory]
     [InlineData("/api/officine/factures/61001126")]
     [InlineData("/api/officine/patients/relance")]

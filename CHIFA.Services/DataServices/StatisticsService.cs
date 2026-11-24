@@ -1,4 +1,4 @@
-﻿using LinqToDB.Async;
+using LinqToDB.Async;
 using System;
 
 namespace CHIFA.Services.DataServices;
@@ -139,11 +139,95 @@ public class StatisticsService
             .ToList();
     }
 
-    public async ValueTask<IEnumerable<BordStatDto>> BordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = null)
+    public async Task<List<DayStatDto>> GetRecentDaysAsync() =>
+        (await GetThisWeekStatsAsync().ConfigureAwait(false))
+        .Select(d => new DayStatDto(d.Date, d.Count, d.Montant ?? 0, d.Maj ?? 0, d.Marge ?? 0))
+        .ToList();
+
+    /// <summary>Rows per kind; the long kinds keep only their most recent or biggest rows.</summary>
+    private static readonly Dictionary<string, int> MaxRows = new() { ["jours"] = 400, ["semaines"] = 260, ["produits"] = 100, ["clients"] = 100 };
+
+    private static readonly string[] Months = ["", "Janv.", "Févr.", "Mars", "Avr.", "Mai", "Juin", "Juil.", "Août", "Sept.", "Oct.", "Nov.", "Déc."];
+
+    /// <summary>One tab of the phone statistics page. Time rows come oldest first, the others biggest first.</summary>
+    public async Task<StatsDto> GetStatsAsync(string kind, Period period)
+    {
+        IEnumerable<StatRowDto> rows = kind switch
+        {
+            "jours" => (await DailyAsync(period: period).ConfigureAwait(false)).Select(d => new StatRowDto
+            {
+                Label = D(d.DateTime, "dd/MM/yyyy"), Short = D(d.DateTime, "dd/MM"), Date = d.DateTime,
+                Factures = d.Factures, Montant = d.MontantFact ?? 0, Caisse = d.MontantOff ?? 0, Maj = d.MontantMaj ?? 0, Marge = d.Marge ?? 0
+            }).OrderBy(r => r.Date),
+            "semaines" => (await WeeklyAsync(period: period).ConfigureAwait(false)).Select(w => new StatRowDto
+            {
+                Label = $"Semaine du {D(w.DateDebut, "dd/MM/yyyy")}", Short = D(w.DateDebut, "dd/MM"), Date = w.DateDebut,
+                Factures = w.Factures, Montant = w.MontantFact ?? 0, Caisse = w.MontantOff ?? 0, Maj = w.MontantMaj ?? 0, Marge = w.Marge ?? 0
+            }).OrderBy(r => r.Date),
+            "mois" => (await MonthlyAsync(period: period).ConfigureAwait(false)).Select(m =>
+            {
+                int.TryParse(m.Month, out var month);
+                int.TryParse(m.Year, out var year);
+                return new StatRowDto
+                {
+                    Label = $"{Months[month]} {year}", Short = $"{Months[month].TrimEnd('.')} {year % 100:00}", Date = new DateTime(year, Math.Max(1, month), 1),
+                    Factures = m.Factures, Montant = m.MontantFact ?? 0, Caisse = m.MontantOff ?? 0, Maj = m.MontantMaj ?? 0, Marge = m.Marge ?? 0
+                };
+            }).OrderBy(r => r.Date),
+            "annees" => (await YearlyAsync(period).ConfigureAwait(false)).Select(y => new StatRowDto
+            {
+                Label = $"{y.Year}", Short = $"{y.Year}", Date = new DateTime(y.Year ?? 1, 1, 1),
+                Factures = y.Factures, Montant = y.MontantFact ?? 0, Caisse = y.MontantOff ?? 0, Maj = y.MontantMaj ?? 0, Marge = y.Marge ?? 0
+            }).OrderBy(r => r.Date),
+            "bordereaux" => (await BordereauxAsync(period: period).ConfigureAwait(false)).Select(b => new StatRowDto
+            {
+                Label = $"Bordereau N° {b.Num}", Short = b.Num, Date = b.DateFin,
+                Detail = $"{b.Center} · {D(b.DateDebut, "dd/MM")} → {D(b.DateFin, "dd/MM/yyyy")}",
+                Factures = b.Factures, Montant = b.MontantFact ?? 0, Caisse = b.MontantOff ?? 0, Maj = b.MontantMaj ?? 0, Marge = b.Marge ?? 0,
+                Virement = b.Virement, Ecart = b.Ecart
+            }).OrderBy(r => r.Date),
+            "produits" => (await ProductsAsync(period: period).ConfigureAwait(false)).Select(p => new StatRowDto
+            {
+                Label = p.Produits.Trim(), Detail = p.Dci, Key = p.NumEnr,
+                Quantite = p.Qt, Montant = p.Total, Maj = p.Maj ?? 0, Marge = p.Marge ?? 0
+            }).OrderByDescending(r => r.Quantite),
+            "clients" => (await ByClientAsync(period: period).ConfigureAwait(false)).Select(c => new StatRowDto
+            {
+                Label = string.IsNullOrWhiteSpace(c.Malade) ? "—" : c.Malade.Trim(), Detail = c.NumAssure, Key = c.NumAssure, Rang = c.Rang,
+                Factures = c.Factures, Quantite = c.Boites, Montant = c.MantFact ?? 0, Caisse = c.MontOff ?? 0, Maj = c.MontMaj ?? 0, Marge = c.Marge ?? 0
+            }).OrderByDescending(r => r.Montant),
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown statistics kind")
+        };
+
+        var all = rows.ToList();
+        var count = all.Count;
+        var totals = new StatRowDto
+        {
+            Label = "Total",
+            Factures = all.Sum(r => r.Factures),
+            Quantite = all.Sum(r => r.Quantite),
+            Montant = all.Sum(r => r.Montant),
+            Caisse = all.Sum(r => r.Caisse),
+            Maj = all.Sum(r => r.Maj),
+            Marge = all.Sum(r => r.Marge),
+            Virement = kind == "bordereaux" ? all.Sum(r => r.Virement ?? 0) : null,
+            Ecart = kind == "bordereaux" ? all.Sum(r => r.Ecart ?? 0) : null
+        };
+
+        if (MaxRows.TryGetValue(kind, out var max) && all.Count > max)
+            all = all[0].Date is null ? all.Take(max).ToList() : all.TakeLast(max).ToList();
+
+        return new StatsDto(kind, count, all, totals);
+    }
+
+    private static string D(DateTime? date, string format) =>
+        date?.ToString(format, System.Globalization.CultureInfo.InvariantCulture) ?? "";
+
+    public async ValueTask<IEnumerable<BordStatDto>> BordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = null, Period? period = null)
     {
         await using var db = new ChifaDb();
-        var start = Period.Start;
-        var end = Period.EndExclusive;
+        var start = (period ?? Period).Start;
+        var end = (period ?? Period).EndExclusive;
 
         // Same totals as the Bordereaux grid, in one GROUP BY over facture (see ChifaService.FactureTotals).
         var query = await (
@@ -171,13 +255,13 @@ public class StatisticsService
         return query;
     }
 
-    public async ValueTask<IEnumerable<YearlyStat>> YearlyAsync()
+    public async ValueTask<IEnumerable<YearlyStat>> YearlyAsync(Period? period = null)
     {
         Expression<Func<Facture, bool>> predicate = x => true;
 
         await using var db = new ChifaDb();
         var list = await db.Factures
-            .Where(predicate.SetPeriod(Period))
+            .Where(predicate.SetPeriod(period ?? Period))
             .GroupBy(x => x.DateFact!.Value.Date.Year)
             .Select(x => new YearlyStat
             {
@@ -199,11 +283,11 @@ public class StatisticsService
         return list;
     }
 
-    public async ValueTask<IEnumerable<MonthlyStat>> MonthlyAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<MonthlyStat>> MonthlyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null)
     {
         await using var db = new ChifaDb();
         var monthlyRows = await db.Factures
-            .Where(predicate.SetPeriod(Period))
+            .Where(predicate.SetPeriod(period ?? Period))
             .GroupBy(x => new { Year = x.DateFact!.Value.Year, Month = x.DateFact.Value.Month })
             .Select(x => new
             {
@@ -245,11 +329,11 @@ public class StatisticsService
         return list;
     }
 
-    public async ValueTask<IEnumerable<WeeklyStat>> WeeklyAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<WeeklyStat>> WeeklyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null)
     {
         await using var db = new ChifaDb();
         var weeklyRows = await db.Factures
-            .Where(predicate.SetPeriod(Period))
+            .Where(predicate.SetPeriod(period ?? Period))
             .GroupBy(x => x.DateFact!.Value.Date.AddDays(-(int)x.DateFact.Value.Date.DayOfWeek))
             .Select(x => new
             {
@@ -286,11 +370,11 @@ public class StatisticsService
         return query;
     }
 
-    public async ValueTask<IEnumerable<DailyStat>> DailyAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<DailyStat>> DailyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null)
     {
         await using var db = new ChifaDb();
         var query = await db.Factures
-            .Where(predicate.SetPeriod(Period))
+            .Where(predicate.SetPeriod(period ?? Period))
             .GroupBy(x => x.DateFact!.Value.Date)
             .Select(g => new DailyStat
             {
@@ -310,10 +394,10 @@ public class StatisticsService
         return query;
     }
 
-    public async ValueTask<IEnumerable<ClientsStat>> ByClientAsync(Expression<Func<Facture, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<ClientsStat>> ByClientAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null)
     {
         await using var db = new ChifaDb();
-        var factures = db.Factures.Where(predicate.SetPeriod(Period));
+        var factures = db.Factures.Where(predicate.SetPeriod(period ?? Period));
 
         var list = await factures
             .GroupBy(x => new { x.NumAssure, x.RangAd })
@@ -345,6 +429,7 @@ public class StatisticsService
         return list.Select(x => new ClientsStat
             {
                 NumAssure = x.NumAssure!,
+                Rang = x.RangAd,
                 Malade = x.Malade,
                 MantFact = x.MantFact,
                 MontMaj = x.MontMaj,
@@ -356,11 +441,11 @@ public class StatisticsService
             })
             .ToList();
     }
-    public async ValueTask<IEnumerable<ProductStat>> ProductsAsync(Expression<Func<DetailFact, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<ProductStat>> ProductsAsync(Expression<Func<DetailFact, bool>>? predicate = null, Period? period = null)
     {
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
-            .Where(predicate.SetPeriod(Period))
+            .Where(predicate.SetPeriod(period ?? Period))
             .GroupBy(x => x.NumEnr)
             .Select(x => new ProductStat
             {

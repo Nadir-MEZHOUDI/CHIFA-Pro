@@ -40,6 +40,13 @@ public static class OfficineEndpoints
         MapPaged(api, "/medicaments", AgentMethods.SearchMedicaments);
         api.MapGet("/medicaments/{numEnr}", (string numEnr, DateTime? from, DateTime? to, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
             agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetMedicament, new MedicamentQuery(numEnr, from, to), ct));
+
+        api.MapGet("/stats/recent", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetRecentDays, null, ct));
+        api.MapGet("/stats/{kind}", async (string kind, DateTime? from, DateTime? to, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            StatsQuery.All.Contains(kind)
+                ? await agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetStats, new StatsQuery(kind, from, to), ct)
+                : Results.NotFound());
     }
 
     private static void MapPaged(RouteGroupBuilder api, string route, string method) =>

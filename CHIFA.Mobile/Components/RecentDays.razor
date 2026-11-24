@@ -1,0 +1,97 @@
+@inject Api Api
+
+@if (_error is not null)
+{
+    <ErrorBox Error="_error" Retry="LoadAsync" />
+}
+else if (_days is null)
+{
+    <Loading />
+}
+else
+{
+    var day = _days[_selected];
+    var before = _selected + 1 < _days.Count ? _days[_selected + 1] : null;
+    <div class="duo">
+        <section class="card today">
+            <div class="card-head">
+                <h2>@(_selected == 0 ? "Aujourd'hui" : Fmt.LongDay(day.Date))</h2>
+                <span class="muted small">@Fmt.Date(day.Date)@(before is null ? "" : " · par rapport à la veille")</span>
+            </div>
+            <div class="tiles">
+                @Tile("Ordonnances", Fmt.Number(day.Factures), day.Factures, before?.Factures, "c1")
+                @Tile("Chiffre d'affaires", Fmt.Money(day.Montant), day.Montant, before?.Montant, "c0")
+                @Tile("Marge estimée", Fmt.Money(day.Marge), day.Marge, before?.Marge, "c4")
+                @Tile("Majorations", Fmt.Money(day.Maj), day.Maj, before?.Maj, "c2")
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-head">
+                <h2>8 derniers jours</h2>
+                <a class="link-more" href="statistiques">Statistiques →</a>
+            </div>
+            <div class="chips small">
+                @foreach (var metric in Metrics)
+                {
+                    <button class="chip @(metric == _metric ? "active" : "")" @onclick="() => _metric = metric">@metric</button>
+                }
+            </div>
+            <BarChart Bars="Bars()" Selected="_days.Count - 1 - _selected" OnSelect="i => _selected = _days.Count - 1 - i"
+                      Colorful="_metric != Brut" />
+            @if (_metric == Brut)
+            {
+                <div class="legend"><span class="s0">Marge estimée</span><span class="s1">Majorations</span></div>
+            }
+            <p class="muted small hint">Touchez un jour pour voir ses chiffres.</p>
+        </section>
+    </div>
+}
+
+@code {
+    private const string Montant = "Chiffre d'affaires", Factures = "Ordonnances", Brut = "Marge + Maj";
+    private static readonly string[] Metrics = [Montant, Factures, Brut];
+
+    private List<DayStat>? _days;
+    private ApiException? _error;
+    private int _selected;
+    private string _metric = Montant;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _days = null;
+        _error = null;
+        try
+        {
+            var days = await Api.RecentDaysAsync();
+            _days = days.Count > 0 ? days : null;
+            _error = days.Count > 0 ? null : new ApiException("Aucune donnée.");
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+    }
+
+    // Oldest day first, today on the right.
+    private List<BarChart.Bar> Bars() => _days!.AsEnumerable().Reverse().Select(d => _metric switch
+    {
+        Factures => new BarChart.Bar(Fmt.Day(d.Date), $"{Fmt.Date(d.Date)} : {d.Factures} ordonnances", [d.Factures], d.Factures.ToString()),
+        Brut => new BarChart.Bar(Fmt.Day(d.Date), $"{Fmt.Date(d.Date)} : marge {Fmt.Money(d.Marge)}, maj {Fmt.Money(d.Maj)}",
+            [d.Marge, d.Maj], Fmt.Compact(d.Marge + d.Maj)),
+        _ => new BarChart.Bar(Fmt.Day(d.Date), $"{Fmt.Date(d.Date)} : {Fmt.Money(d.Montant)}", [d.Montant], Fmt.Compact(d.Montant))
+    }).ToList();
+
+    private static RenderFragment Tile(string label, string value, decimal now, decimal? before, string color) =>
+        @<div class="tile @color">
+            <span class="label">@label</span>
+            <span class="value">@value</span>
+            @if (before is > 0)
+            {
+                var change = (now - before.Value) / before.Value * 100m;
+                <span class="delta @(change >= 0 ? "up" : "down")">@(change >= 0 ? "▲" : "▼") @Fmt.Percent(Math.Abs(change))</span>
+            }
+        </div>;
+}

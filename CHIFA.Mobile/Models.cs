@@ -267,3 +267,28 @@ public class MedicPatient
 public record PushSubscriptionInfo(string Endpoint, string P256dh, string Auth);
 
 public record PushKey(string PublicKey);
+
+/// <summary>One day of the home chart (today first). <see cref="Marge"/> is estimated like on the desktop home page.</summary>
+public record DayStat(DateTime Date, int Factures, decimal Montant, decimal Maj, decimal Marge);
+
+/// <summary>A row of a statistics tab: a day, week, month, year, bordereau, medicine or patient.</summary>
+public class StatRow
+{
+    public string Label { get; init; } = "";
+    public string? Short { get; init; }
+    public string? Detail { get; init; }
+    public DateTime? Date { get; init; }
+    public string? Key { get; init; }
+    public string? Rang { get; init; }
+    public int Factures { get; init; }
+    public decimal Quantite { get; init; }
+    public decimal Montant { get; init; }
+    public decimal Caisse { get; init; }
+    public decimal Maj { get; init; }
+    public decimal Marge { get; init; }
+    public decimal Brut { get; init; }
+    public decimal? Virement { get; init; }
+    public decimal? Ecart { get; init; }
+}
+
+public record Stats(string Kind, int Count, List<StatRow> Rows, StatRow Totals);

@@ -7,9 +7,9 @@ public static class Fmt
 {
     private static readonly NumberFormatInfo French = new()
     {
-        NumberGroupSeparator = " ",
+        NumberGroupSeparator = " ",
         NumberDecimalSeparator = ",",
-        PercentGroupSeparator = " ",
+        PercentGroupSeparator = " ",
         PercentDecimalSeparator = ","
     };
 
@@ -18,6 +18,22 @@ public static class Fmt
     public static string Number(decimal? value) => value is { } v ? v.ToString("N0", French) : "—";
 
     public static string Percent(decimal value) => $"{value.ToString("N1", French)} %";
+
+    /// <summary>Short amount for chart labels: 950, 12 k, 1,4 M.</summary>
+    public static string Compact(decimal value) => Math.Abs(value) switch
+    {
+        >= 1_000_000 => $"{(value / 1_000_000m).ToString("0.#", French)} M",
+        >= 10_000 => $"{(value / 1_000m).ToString("0", French)} k",
+        >= 1_000 => $"{(value / 1_000m).ToString("0.#", French)} k",
+        _ => value.ToString("0", French)
+    };
+
+    private static readonly string[] Days = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+    private static readonly string[] LongDays = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+
+    public static string Day(DateTime value) => Days[(int)value.DayOfWeek];
+
+    public static string LongDay(DateTime value) => LongDays[(int)value.DayOfWeek];
 
     public static string Date(DateTime? value) => value?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) ?? "—";
 

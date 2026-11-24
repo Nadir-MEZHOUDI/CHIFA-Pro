@@ -127,6 +127,10 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
     public Task<MedicDetail?> MedicamentAsync(string numEnr, Period period) =>
         GetAsync<MedicDetail?>($"api/officine/medicaments/{Uri.EscapeDataString(numEnr)}?{period.Query}");
 
+    public Task<List<DayStat>> RecentDaysAsync() => GetAsync<List<DayStat>>("api/officine/stats/recent");
+
+    public Task<Stats> StatsAsync(string kind, Period period) => GetAsync<Stats>($"api/officine/stats/{kind}?{period.Query}");
+
     public async Task<string> PushKeyAsync() => (await GetAsync<PushKey>("api/push/key")).PublicKey;
 
     public Task SubscribePushAsync(PushSubscriptionInfo subscription) => PostAsync("api/push/subscribe", subscription);

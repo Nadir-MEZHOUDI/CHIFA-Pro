@@ -65,6 +65,12 @@ public class AgentHandlers(ILogger<AgentHandlers> logger)
         connection.On<MedicamentQuery, MedicDetailDto?>(AgentMethods.GetMedicament, q =>
             RunAsync(AgentMethods.GetMedicament, async () => await PatientService.Instance.GetMedicamentAsync(q.NumEnr, ToPeriod(q.From, q.To))));
 
+        connection.On<List<DayStatDto>>(AgentMethods.GetRecentDays, () =>
+            RunAsync(AgentMethods.GetRecentDays, StatisticsService.Instance.GetRecentDaysAsync));
+
+        connection.On<StatsQuery, StatsDto>(AgentMethods.GetStats, q =>
+            RunAsync(AgentMethods.GetStats, () => StatisticsService.Instance.GetStatsAsync(q.Kind, ToPeriod(q.From, q.To))));
+
         connection.On(AgentMethods.GetAlerts, () => RunAsync(AgentMethods.GetAlerts, _alerts.GetNewAlertsAsync));
     }
 

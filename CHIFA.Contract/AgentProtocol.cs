@@ -17,6 +17,8 @@ public static class AgentMethods
     public const string GetPatientsToRemind = nameof(GetPatientsToRemind);
     public const string SearchMedicaments = nameof(SearchMedicaments);
     public const string GetMedicament = nameof(GetMedicament);
+    public const string GetRecentDays = nameof(GetRecentDays);
+    public const string GetStats = nameof(GetStats);
 
     /// <summary>Polled by the gateway for phone notifications. Each alert is returned only once.</summary>
     public const string GetAlerts = nameof(GetAlerts);
@@ -47,6 +49,12 @@ public record AgentInfo(string? Officine, string AgentVersion, DateTime ServerTi
 public record PatientKey(string NumAssure, string Rang);
 
 public record MedicamentQuery(string NumEnr, DateTime? From, DateTime? To);
+
+/// <param name="Kind">One of <see cref="All"/>.</param>
+public record StatsQuery(string Kind, DateTime? From, DateTime? To)
+{
+    public static readonly IReadOnlyList<string> All = ["jours", "semaines", "mois", "annees", "bordereaux", "produits", "clients"];
+}
 
 /// <param name="Key">Stable identity of the event: the agent never returns the same key twice.</param>
 /// <param name="Url">Page of the phone app to open, relative to its root (e.g. <c>rejets</c>).</param>

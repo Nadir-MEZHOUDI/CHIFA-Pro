@@ -1,6 +1,9 @@
 @page "/"
 @inject Api Api
 
+<RecentDays />
+
+<h2 class="section-title">Par période</h2>
 <PeriodChips Selected="_period" SelectedChanged="ChangePeriodAsync" />
 
 @if (_error is not null)

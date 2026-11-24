@@ -330,6 +330,50 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 .hour-bar { width: 100%; background: linear-gradient(180deg, var(--mint), var(--emerald)); border-radius: 5px 5px 2px 2px; min-height: 2px; }
 .hour-label { font-size: .64rem; color: var(--muted); }
 
+/* Colored charts: one color per bar like the desktop charts; s0/s1 are the stacked marge/maj parts. */
+.c0 { --c: #13a356; } .c1 { --c: #1f78b4; } .c2 { --c: #d99a00; } .c3 { --c: #7c5cc4; }
+.c4 { --c: #0f9fa8; } .c5 { --c: #e05d5d; } .c6 { --c: #4f6bd8; } .c7 { --c: #7fae14; }
+.s0 { --c: #13a356; } .s1 { --c: #e0a100; }
+
+.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .6rem; }
+.card-head h2 { margin: 0; }
+.link-more { font-size: .82rem; font-weight: 700; color: var(--primary); text-decoration: none; white-space: nowrap; }
+.chips.small .chip { padding: .3rem .7rem; font-size: .76rem; }
+.card > .chips.small { margin-bottom: .8rem; }
+.hint { margin: .6rem 0 0; }
+
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+.tile { display: flex; flex-direction: column; gap: .2rem; padding: .7rem .8rem; border-radius: 14px; background: color-mix(in srgb, var(--c) 9%, var(--surface)); border-left: 4px solid var(--c); min-width: 0; }
+.tile .value { font-family: var(--f-display); font-size: 1.05rem; font-weight: 800; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.delta { font-size: .72rem; font-weight: 700; }
+.delta.up { color: var(--ok); }
+.delta.down { color: var(--bad); }
+
+.chart { display: flex; gap: 6px; align-items: stretch; }
+.chart.scroll { flex-direction: row-reverse; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.chart.scroll .col { flex: 0 0 38px; }
+.col { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.col-plot { height: 150px; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 3px; }
+.col-top { font-size: .6rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+.col-stack { width: 100%; max-width: 40px; display: flex; flex-direction: column-reverse; border-radius: 7px 7px 3px 3px; overflow: hidden; background: linear-gradient(180deg, color-mix(in srgb, var(--c, var(--emerald)) 60%, #fff), var(--c, var(--emerald))); }
+.col-stack:has(.s1) { background: none; }
+.seg { flex: 1 1 0; min-height: 0; }
+.seg.s0, .seg.s1 { background: linear-gradient(180deg, color-mix(in srgb, var(--c) 65%, #fff), var(--c)); }
+.col-label { font-size: .64rem; line-height: 1.15; color: var(--muted); text-align: center; white-space: normal; }
+.col.on .col-label { color: var(--text); font-weight: 800; }
+.col.on .col-top { color: var(--text); }
+.col.on .col-stack { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--c, var(--emerald)); }
+.col:not(.on) .col-stack { opacity: .88; }
+.chart-pick { margin: .7rem 0 0; font-size: .82rem; }
+
+.legend { display: flex; gap: 1rem; margin-top: .6rem; font-size: .74rem; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: .7rem; height: .7rem; border-radius: 3px; margin-right: .35rem; vertical-align: -1px; background: var(--c); }
+
+.bar[class*=" c"] span { background: linear-gradient(90deg, color-mix(in srgb, var(--c) 65%, #fff), var(--c)); }
+.item .bar { margin: .45rem 0 .35rem; height: 6px; }
+
+.duo { display: grid; gap: .8rem; }
+
 .top { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; counter-reset: top; }
 .top li { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .6rem 0; border-top: 1px solid var(--line); counter-increment: top; }
 .top li:first-child { border-top: 0; padding-top: 0; }
@@ -532,6 +576,12 @@ a.tag { text-decoration: none; }
 
 @media (min-width: 720px) {
     .kpis { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    .tiles { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+    .duo { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); align-items: stretch; }
+    .duo .tiles { grid-template-columns: 1fr 1fr; }
 }
 
 /* Computer (browser or installed app): permanent sidebar, wider content, lists on several columns. */
