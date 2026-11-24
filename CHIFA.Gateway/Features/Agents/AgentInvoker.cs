@@ -33,13 +33,21 @@ public class AgentInvoker(
                                    && timeout.IsCancellationRequested && !requestAborted.IsCancellationRequested)
         {
             logger.LogWarning("Agent {PharmacyId} did not answer {Method} in time", pharmacyId, method);
-            return Results.Problem(statusCode: StatusCodes.Status504GatewayTimeout,
+            return Results.Problem(statusCode: StatusCodes.Status503ServiceUnavailable,
                 title: "La pharmacie ne répond pas", detail: "Le délai d'attente a expiré, réessayez.");
+        }
+        // Not 502/504: Cloudflare replaces those with its own HTML page and the phone loses the message.
+        catch (HubException ex) when (IsUnknownMethod(ex))
+        {
+            logger.LogWarning("Agent {PharmacyId} is too old for {Method}: {Error}", pharmacyId, method, ex.Message);
+            return Results.Problem(statusCode: StatusCodes.Status424FailedDependency,
+                title: "Mise à jour de SmartCHIFA nécessaire",
+                detail: "Mettez à jour SmartCHIFA sur l'ordinateur de la pharmacie pour utiliser cette page.");
         }
         catch (HubException ex)
         {
             logger.LogWarning("Agent {PharmacyId} failed {Method}: {Error}", pharmacyId, method, ex.Message);
-            return Results.Problem(statusCode: StatusCodes.Status502BadGateway,
+            return Results.Problem(statusCode: StatusCodes.Status424FailedDependency,
                 title: "Erreur côté pharmacie", detail: ex.Message);
         }
         catch (IOException)
@@ -69,6 +77,11 @@ public class AgentInvoker(
             return default;
         }
     }
+
+    // What the SignalR client answers when it has no handler for the method.
+    private static bool IsUnknownMethod(HubException ex) =>
+        ex.Message.Contains("failed to parse argument", StringComparison.OrdinalIgnoreCase)
+        || ex.Message.Contains("didn't provide a result", StringComparison.OrdinalIgnoreCase);
 
     private static IResult Offline() =>
         Results.Problem(statusCode: StatusCodes.Status503ServiceUnavailable,

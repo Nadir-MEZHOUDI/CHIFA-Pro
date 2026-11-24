@@ -174,7 +174,7 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 
             // The gateway answers agent problems (offline, timeout, error) with French ProblemDetails.
             var problem = await ReadProblemAsync(response);
-            throw new ApiException(problem?.Title ?? $"Erreur {(int)response.StatusCode}", problem?.Detail);
+            throw new ApiException(problem?.Title ?? "Liaison impossible.", problem?.Detail ?? $"Erreur {(int)response.StatusCode}. Réessayez.");
         }
     }
 

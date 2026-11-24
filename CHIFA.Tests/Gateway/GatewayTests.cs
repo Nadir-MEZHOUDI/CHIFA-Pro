@@ -73,7 +73,7 @@ public class GatewayTests(GatewayFixture gateway)
     }
 
     [Fact]
-    public async Task Agent_error_returns_502_with_the_agent_message()
+    public async Task Agent_error_returns_424_with_the_agent_message()
     {
         var pharmacy = await gateway.CreatePharmacyAsync();
         await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
@@ -83,12 +83,28 @@ public class GatewayTests(GatewayFixture gateway)
 
         var response = await phone.GetAsync("/api/officine/dashboard");
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
+        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency);
         (await response.Content.ReadAsStringAsync()).Should().Contain("Base CHIFA indisponible");
     }
 
+    [Theory]
+    [InlineData("/api/officine/factures/61001126")]
+    [InlineData("/api/officine/patients/relance")]
+    public async Task Agent_without_the_method_asks_for_an_update(string url)
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        await agent.StartAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        var response = await phone.GetAsync(url);
+
+        response.StatusCode.Should().Be(HttpStatusCode.FailedDependency);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("Mise à jour de SmartCHIFA");
+    }
+
     [Fact]
-    public async Task Slow_agent_returns_504()
+    public async Task Slow_agent_returns_503()
     {
         var pharmacy = await gateway.CreatePharmacyAsync();
         await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
@@ -102,7 +118,8 @@ public class GatewayTests(GatewayFixture gateway)
 
         var response = await phone.GetAsync("/api/officine/dashboard");
 
-        response.StatusCode.Should().Be(HttpStatusCode.GatewayTimeout);
+        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("ne répond pas");
     }
 
     [Fact]
