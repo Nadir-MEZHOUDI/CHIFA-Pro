@@ -28,7 +28,7 @@ public sealed class LicenseRequestForm : XtraForm
     private readonly TextEdit _txtEmail = new();
     private readonly ComboBoxEdit _cboWilaya = new();
     private readonly TextEdit _txtAddress = new();
-    private readonly TextEdit _txtTaxNumber = new();
+    private readonly TextEdit _txtCodePs = new();
     private readonly MemoEdit _txtMessage = new();
     private readonly LabelControl _lblError = new();
     private readonly SimpleButton _btnSend = new() { Text = "Envoyer la demande" };
@@ -77,7 +77,7 @@ public sealed class LicenseRequestForm : XtraForm
         AddRow("Email", _txtEmail, ref y, 256);
         AddRow("Wilaya", _cboWilaya, ref y, 64);
         AddRow("Adresse", _txtAddress, ref y, 256);
-        AddRow("NIF", _txtTaxNumber, ref y, 64);
+        AddRow("Code PS", _txtCodePs, ref y, 64);
 
         var lblMessage = new LabelControl { Text = "Message (facultatif)", Location = new Point(24, y + 6) };
         _txtMessage.SetBounds(230, y, 346, 54);
@@ -134,7 +134,7 @@ public sealed class LicenseRequestForm : XtraForm
                 BusinessName: officine.NomPharmacie?.Trim(),
                 Email: officine.Email?.Trim(),
                 Address: officine.Adresse?.Trim(),
-                Message: string.IsNullOrWhiteSpace(officine.CodePs) ? null : $"Code PS : {officine.CodePs.Trim()}"));
+                CodePs: officine.CodePs?.Trim()));
         }
         catch (Exception ex)
         {
@@ -157,7 +157,7 @@ public sealed class LicenseRequestForm : XtraForm
         SetIfEmpty(_txtEmail, info.Email);
         SetIfEmpty(_cboWilaya, info.Wilaya);
         SetIfEmpty(_txtAddress, info.Address);
-        SetIfEmpty(_txtTaxNumber, info.TaxNumber);
+        SetIfEmpty(_txtCodePs, info.CodePs);
         SetIfEmpty(_txtMessage, info.Message);
     }
 
@@ -192,7 +192,7 @@ public sealed class LicenseRequestForm : XtraForm
             Email: Clean(_txtEmail.Text),
             Wilaya: Clean(_cboWilaya.Text),
             Address: Clean(_txtAddress.Text),
-            TaxNumber: Clean(_txtTaxNumber.Text),
+            CodePs: Clean(_txtCodePs.Text),
             Message: Clean(_txtMessage.Text));
 
         try
