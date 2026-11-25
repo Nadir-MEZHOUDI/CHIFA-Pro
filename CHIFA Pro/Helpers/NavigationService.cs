@@ -11,6 +11,9 @@ internal static class NavigationService
         if (Main?.tabContainer == null)
             return null;
 
+        if (AccessGuard.ItemFor(typeof(T)) is { } item && !AccessGuard.EnsureAccess(item, Main))
+            return null;
+
         var tab = Main.tabContainer.TabPages.FirstOrDefault(x => x.Controls.Cast<UserControl>().Any(c => c.GetType() == typeof(T)));
         T control;
         if (tab == null)

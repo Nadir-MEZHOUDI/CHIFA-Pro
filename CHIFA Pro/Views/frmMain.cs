@@ -19,7 +19,88 @@ public partial class FrmMain : XtraForm
         SetStatisticsAccordionImages();
         AddLicenseMenu();
         AddMobileMenu();
+        AddSecurityMenu();
         ChangeTitle();
+    }
+
+    private DevExpress.XtraBars.Navigation.AccordionControlElement? _accMobile;
+    private DevExpress.XtraBars.Navigation.AccordionControlElement? _accLicence;
+    private DevExpress.XtraBars.Navigation.AccordionControlElement _accLogin = null!;
+    private DevExpress.XtraBars.Navigation.AccordionControlElement _accSecurity = null!;
+
+    /// <summary>Administrator login/logout, and the « Sécurité » screen that chooses what is hidden while logged out.</summary>
+    private void AddSecurityMenu()
+    {
+        _accLogin = new DevExpress.XtraBars.Navigation.AccordionControlElement
+        {
+            Name = "accLogin",
+            Style = DevExpress.XtraBars.Navigation.ElementStyle.Item
+        };
+        _accLogin.Click += (_, _) =>
+        {
+            if (AccessGuard.IsAdmin)
+            {
+                AccessGuard.Logout();
+                return;
+            }
+
+            using var form = new LoginForm();
+            form.ShowDialog(this);
+        };
+
+        _accSecurity = new DevExpress.XtraBars.Navigation.AccordionControlElement
+        {
+            Name = "accSecurity",
+            Text = "SÉCURITÉ",
+            Style = DevExpress.XtraBars.Navigation.ElementStyle.Item
+        };
+        _accSecurity.ImageOptions.Image =
+            DevExpress.Images.ImageResourceCache.Default.GetImage("images/xaf/action_security_changepassword_32x32.png")
+            ?? accParametres.ImageOptions.Image;
+        _accSecurity.Click += (_, _) =>
+        {
+            if (!AccessGuard.IsAdmin) return;
+            using var form = new SecurityForm();
+            form.ShowDialog(this);
+        };
+
+        accordionControl1.Elements.Insert(0, _accLogin);
+        accordionControl1.Elements.Insert(1, _accSecurity);
+
+        AccessGuard.Changed += ApplyAccess;
+        FormClosed += (_, _) => AccessGuard.Changed -= ApplyAccess;
+        ApplyAccess();
+    }
+
+    private void ApplyAccess()
+    {
+        var admin = AccessGuard.IsAdmin;
+        _accLogin.Text = admin ? "DÉCONNEXION" : "CONNEXION ADMIN";
+        _accLogin.ImageOptions.Image =
+            DevExpress.Images.ImageResourceCache.Default.GetImage(admin ? "images/richedit/unprotectdocument_32x32.png" : "images/richedit/protectdocument_32x32.png")
+            ?? accParametres.ImageOptions.Image;
+        _accSecurity.Visible = admin;
+
+        accStatistics.Visible = !AccessGuard.IsHidden(ProtectedItem.Statistics);
+        accBordereaux.Visible = !AccessGuard.IsHidden(ProtectedItem.Bordereaux);
+        if (_accMobile is not null) _accMobile.Visible = !AccessGuard.IsHidden(ProtectedItem.Mobile);
+        if (_accLicence is not null) _accLicence.Visible = !AccessGuard.IsHidden(ProtectedItem.License);
+
+        CloseHiddenTabs();
+    }
+
+    private void CloseHiddenTabs()
+    {
+        var hidden = tabContainer.TabPages
+            .Where(page => page.Controls.OfType<Control>()
+                .Any(c => AccessGuard.ItemFor(c.GetType()) is { } item && AccessGuard.IsHidden(item)))
+            .ToList();
+        if (hidden.Count == 0) return;
+
+        if (hidden.Contains(tabContainer.SelectedTabPage))
+            this.NavigateTo<HomeUc>();
+        foreach (var page in hidden)
+            tabContainer.TabPages.Remove(page, true);
     }
 
     /// <summary>« Application mobile »: link phones, and answer them while SmartCHIFA is open.</summary>
@@ -32,14 +113,16 @@ public partial class FrmMain : XtraForm
             Style = DevExpress.XtraBars.Navigation.ElementStyle.Item
         };
         element.ImageOptions.Image =
-            DevExpress.Images.ImageResourceCache.Default.GetImage("images/devices/mobile_32x32.png")
+            DevExpress.Images.ImageResourceCache.Default.GetImage("images/communication/phone_32x32.png")
             ?? accParametres.ImageOptions.Image;
         element.Click += (_, _) =>
         {
+            if (!AccessGuard.EnsureAccess(ProtectedItem.Mobile, this)) return;
             using var form = new Mobile.MobileLinkForm();
             form.ShowDialog(this);
         };
         accordionControl1.Elements.Add(element);
+        _accMobile = element;
 
         Mobile.MobileLink.StartAgent();
         FormClosed += async (_, _) => await Mobile.MobileLink.StopAgentAsync();
@@ -56,14 +139,16 @@ public partial class FrmMain : XtraForm
             Style = DevExpress.XtraBars.Navigation.ElementStyle.Item
         };
         element.ImageOptions.Image =
-            DevExpress.Images.ImageResourceCache.Default.GetImage("images/security/key_32x32.png")
+            DevExpress.Images.ImageResourceCache.Default.GetImage("images/xaf/bo_contract_32x32.png")
             ?? accParametres.ImageOptions.Image;
         element.Click += (_, _) =>
         {
+            if (!AccessGuard.EnsureAccess(ProtectedItem.License, this)) return;
             LicenseGate.ShowDialog(this);
             ChangeTitle();
         };
         accordionControl1.Elements.Add(element);
+        _accLicence = element;
 
         // A background check-in may bring a renewal (new end date) or a revocation.
         LicenseGate.Changed += LicenseGate_Changed;
@@ -227,7 +312,7 @@ public partial class FrmMain : XtraForm
     {
         var license = LicenseGate.TitleText();
         Text =
-            $@"SmartCHIFA [V : {Application.ProductVersion.Split("+")[0]}] [.NET {Environment.Version}] ( By MEZHOUDI Hadj Nadir )" +
+            $@"SmartCHIFA [V : {Application.ProductVersion.Split("+")[0]}] " +
             (license is null ? string.Empty : $" [Licence : {license}]");
     }
 

@@ -8,7 +8,41 @@ public partial class HomeUc : XtraUserControl, INavigable
     public HomeUc()
     {
         InitializeComponent();
+        ApplyAccess();
+        AccessGuard.Changed += ApplyAccess;
+        Disposed += (_, _) => AccessGuard.Changed -= ApplyAccess;
     }
+
+    private void ApplyAccess()
+    {
+        itmStatistics.Visible = !AccessGuard.IsHidden(ProtectedItem.Statistics);
+        itmBordereaux.Visible = !AccessGuard.IsHidden(ProtectedItem.Bordereaux);
+
+        var montant = !AccessGuard.IsHidden(ProtectedItem.HomeMontant);
+        var factures = !AccessGuard.IsHidden(ProtectedItem.HomeFactures);
+        var marge = !AccessGuard.IsHidden(ProtectedItem.HomeMarge);
+
+        chartControl1.Series["Montant"].Visible = montant;
+        chartControl1.Series["Factures"].Visible = factures;
+        foreach (var name in new[] { "Brut", "Marge", "Maj" })
+            chartControl1.Series[name].Visible = marge;
+
+        if (chartControl1.Diagram is DevExpress.XtraCharts.XYDiagram diagram)
+        {
+            diagram.DefaultPane.Visibility = Visibility(montant);
+            diagram.Panes[0].Visibility = Visibility(factures);
+            diagram.Panes[1].Visibility = Visibility(marge);
+            // A hidden pane's axis otherwise moves to a visible pane as an empty 0–1 scale.
+            diagram.AxisY.Visibility = montant ? DevExpress.Utils.DefaultBoolean.Default : DevExpress.Utils.DefaultBoolean.False;
+            diagram.SecondaryAxesY[0].Visibility = factures ? DevExpress.Utils.DefaultBoolean.True : DevExpress.Utils.DefaultBoolean.False;
+            diagram.SecondaryAxesY[1].Visibility = marge ? DevExpress.Utils.DefaultBoolean.True : DevExpress.Utils.DefaultBoolean.False;
+        }
+
+        chartControl1.Visible = montant || factures || marge;
+    }
+
+    private static DevExpress.XtraCharts.ChartElementVisibility Visibility(bool visible) =>
+        visible ? DevExpress.XtraCharts.ChartElementVisibility.Visible : DevExpress.XtraCharts.ChartElementVisibility.Hidden;
 
     private async Task ReLoadDataAsync()
     {
