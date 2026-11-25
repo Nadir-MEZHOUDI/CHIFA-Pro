@@ -1,5 +1,4 @@
 using CHIFA.Pro.Helpers.Settings;
-using DevExpress.Utils;
 using Npgsql;
 
 namespace CHIFA.Pro.Views;
@@ -9,26 +8,21 @@ namespace CHIFA.Pro.Views;
 /// details from it. On the server computer the pharmacist drags the CHIFA_OFFICINE desktop icon here:
 /// its target gives the CHIFA folder, and its PostgreSQL is started silently. The port is always 5432.
 /// </summary>
-public sealed class ConnectionForm : XtraForm
+public sealed partial class ConnectionForm : XtraForm
 {
-    private readonly CheckEdit _rbLocal = new() { Text = "CHIFA_OFFICINE est installé sur ce poste (serveur)" };
-    private readonly CheckEdit _rbRemote = new() { Text = "La base de données est sur un autre poste" };
-    private readonly PanelControl _dropZone = new();
-    private readonly LabelControl _lblDrop = new();
-    private readonly SimpleButton _btnBrowse = new() { Text = "Parcourir…" };
-    private readonly LabelControl _lblServer = new() { Text = "Serveur :" };
-    private readonly ComboBoxEdit _cboServer = new();
-    private readonly LabelControl _lblStatus = new();
-    private readonly SimpleButton _btnTest = new() { Text = "Tester" };
-    private readonly SimpleButton _btnSave = new() { Text = "Enregistrer" };
-    private readonly SimpleButton _btnCancel = new() { DialogResult = DialogResult.Cancel };
-
     private string? _chifaPath;
     private bool _busy;
 
     public ConnectionForm(bool startup = false)
     {
-        BuildLayout(startup);
+        InitializeComponent();
+        if (startup)
+        {
+            _btnCancel.Text = "Quitter";
+            ShowInTaskbar = true;
+            StartPosition = FormStartPosition.CenterScreen;
+        }
+        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
 
         var host = new NpgsqlConnectionStringBuilder(ChifaDb.ConString).Host;
         var local = AppSettings.Default.IsServer || DbChecker.IsLocalHost(host);
@@ -39,77 +33,6 @@ public sealed class ConnectionForm : XtraForm
         UpdateMode();
 
         Shown += async (_, _) => await LoadNetworkDevicesAsync();
-    }
-
-    private void BuildLayout(bool startup)
-    {
-        Text = "Base de données CHIFA_OFFICINE";
-        ClientSize = new Size(600, 430);
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        MaximizeBox = false;
-        MinimizeBox = false;
-        ShowInTaskbar = startup;
-        StartPosition = startup ? FormStartPosition.CenterScreen : FormStartPosition.CenterParent;
-        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
-
-        var title = new LabelControl { Text = "Connexion à la base CHIFA_OFFICINE", Location = new Point(24, 16) };
-        title.Appearance.Font = new Font("Segoe UI", 14f, FontStyle.Bold);
-
-        var intro = new LabelControl
-        {
-            Text = "SmartCHIFA lit les données de CHIFA_OFFICINE. Indiquez où se trouve sa base de données.",
-            AutoSizeMode = LabelAutoSizeMode.None
-        };
-        intro.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        intro.Appearance.ForeColor = Color.DimGray;
-        intro.SetBounds(24, 50, 552, 22);
-
-        _rbLocal.Properties.CheckStyle = DevExpress.XtraEditors.Controls.CheckStyles.Radio;
-        _rbLocal.Properties.RadioGroupIndex = 1;
-        _rbLocal.SetBounds(22, 84, 556, 24);
-        _rbRemote.Properties.CheckStyle = DevExpress.XtraEditors.Controls.CheckStyles.Radio;
-        _rbRemote.Properties.RadioGroupIndex = 1;
-        _rbRemote.SetBounds(22, 236, 556, 24);
-        _rbLocal.CheckedChanged += (_, _) => UpdateMode();
-        _rbRemote.CheckedChanged += (_, _) => UpdateMode();
-
-        _dropZone.SetBounds(46, 114, 400, 110);
-        _dropZone.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.Simple;
-        _lblDrop.Dock = DockStyle.Fill;
-        _lblDrop.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblDrop.Appearance.TextOptions.HAlignment = HorzAlignment.Center;
-        _lblDrop.Appearance.TextOptions.VAlignment = VertAlignment.Center;
-        _lblDrop.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        _dropZone.Controls.Add(_lblDrop);
-        _btnBrowse.SetBounds(456, 114, 120, 32);
-        _btnBrowse.Click += BtnBrowse_Click;
-
-        foreach (Control target in new Control[] { this, _dropZone, _lblDrop })
-        {
-            target.AllowDrop = true;
-            target.DragEnter += OnDragEnter;
-            target.DragDrop += OnDragDrop;
-        }
-
-        _lblServer.Location = new Point(48, 272);
-        _cboServer.SetBounds(130, 268, 316, 26);
-        _cboServer.Properties.NullValuePrompt = "Nom ou adresse IP du poste serveur";
-
-        _lblStatus.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblStatus.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        _lblStatus.SetBounds(24, 312, 552, 54);
-
-        _btnCancel.Text = startup ? "Quitter" : "Annuler";
-        _btnTest.SetBounds(196, 380, 120, 32);
-        _btnSave.SetBounds(326, 380, 120, 32);
-        _btnCancel.SetBounds(456, 380, 120, 32);
-        _btnTest.Click += BtnTest_Click;
-        _btnSave.Click += BtnSave_Click;
-
-        Controls.AddRange([title, intro, _rbLocal, _dropZone, _btnBrowse, _rbRemote, _lblServer, _cboServer,
-            _lblStatus, _btnTest, _btnSave, _btnCancel]);
-        AcceptButton = _btnSave;
-        CancelButton = _btnCancel;
     }
 
     private bool IsLocal => _rbLocal.Checked;
@@ -132,6 +55,8 @@ public sealed class ConnectionForm : XtraForm
             _lblDrop.Appearance.ForeColor = Color.SeaGreen;
         }
     }
+
+    private void Mode_CheckedChanged(object? sender, EventArgs e) => UpdateMode();
 
     private void OnDragEnter(object? sender, DragEventArgs e) =>
         e.Effect = IsLocal && !_busy && e.Data?.GetDataPresent(DataFormats.FileDrop) == true
