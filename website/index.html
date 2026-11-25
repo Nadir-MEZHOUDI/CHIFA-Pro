@@ -15,7 +15,7 @@
 :root{
   --pine:#0B3B2E; --pine-2:#0F4C3B; --emerald:#13A356; --mint:#34D17A; --mint-soft:#DDF6E7;
   --paper:#F6F4EE; --card:#FFFFFF; --ink:#0F1A16; --muted:#55645D; --line:#E2DFD5;
-  --amber:#F2A93B; --red:#D9534F;
+  --amber:#F2A93B; --red:#D9534F; --wa:#25D366;
   --radius:18px; --shadow:0 1px 2px rgba(11,59,46,.06),0 12px 32px -12px rgba(11,59,46,.18);
   --f-display:"Bricolage Grotesque",system-ui,sans-serif; --f-body:"Manrope",system-ui,sans-serif;
 }
@@ -41,11 +41,11 @@ html[dir="rtl"] .btn .arrow{transform:scaleX(-1)}
 /* nav */
 header{position:sticky;top:0;z-index:50;background:rgba(246,244,238,.85);backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:border-color .2s}
 header.scrolled{border-color:var(--line)}
-.nav{display:flex;align-items:center;gap:24px;height:68px}
+.nav{display:flex;align-items:center;gap:20px;height:68px}
 .logo{display:flex;align-items:center;gap:10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;text-decoration:none;letter-spacing:-.02em}
 .logo b{color:var(--emerald)}
 .logo img{width:34px;height:34px;display:block}
-.nav-links{display:flex;gap:22px;margin-inline-start:auto;font-weight:600;font-size:15px}
+.nav-links{display:flex;gap:18px;margin-inline-start:auto;font-weight:600;font-size:14px}
 .nav-links a{text-decoration:none;color:var(--muted);white-space:nowrap}
 .nav-links a:hover{color:var(--ink)}
 .nav-cta{display:flex;gap:10px;align-items:center}
@@ -54,7 +54,7 @@ header.scrolled{border-color:var(--line)}
 .nav .login{color:var(--pine);gap:8px}
 @media (max-width:480px){.nav .login{padding:10px}.nav .login span{display:none}}
 .burger{display:none;background:none;border:0;padding:8px;cursor:pointer}
-@media (max-width:1080px){
+@media (max-width:1220px){
   .nav-links{display:none;position:absolute;top:68px;inset-inline:0;flex-direction:column;gap:0;background:var(--paper);border-bottom:1px solid var(--line);padding:8px 16px}
   .nav-links.open{display:flex}
   .nav-links a{padding:12px 0;border-bottom:1px solid var(--line)}
@@ -230,6 +230,40 @@ summary::after{content:"+";font:400 26px/1 var(--f-body);color:var(--emerald);tr
 details[open] summary::after{transform:rotate(45deg)}
 details p{margin:0;padding:0 24px 22px;color:var(--muted)}
 
+/* payment */
+.pay{display:grid;grid-template-columns:1fr 1.2fr;gap:24px;align-items:start}
+.pay-card{background:var(--pine);color:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+.pay-card h3{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.pay-card h3 svg{width:24px;height:24px;color:var(--mint)}
+.pay-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid rgba(255,255,255,.1)}
+.pay-row > div{flex:1;min-width:0}
+.pay-row small{display:block;font-size:12px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.04em}
+html[lang="ar"] .pay-row small{letter-spacing:0;text-transform:none}
+.pay-row b{display:block;font:700 19px var(--f-body);letter-spacing:.02em;overflow-wrap:anywhere}
+.copy{flex:none;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);color:#fff;border-radius:999px;padding:7px 14px;font:700 13px var(--f-body);cursor:pointer}
+.copy:hover{background:rgba(255,255,255,.14)}
+.copy.done{background:var(--mint);border-color:var(--mint);color:var(--pine)}
+@media (max-width:900px){.pay{grid-template-columns:1fr}}
+
+/* contact */
+.contact{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;max-width:880px;margin-inline:auto}
+.ccard{background:var(--card);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:6px}
+.ccard .ic{width:46px;height:46px;border-radius:12px;background:var(--mint-soft);color:var(--emerald);display:grid;place-items:center;margin-bottom:10px}
+.ccard .ic svg{width:24px;height:24px}
+.ccard small{color:var(--muted);font-weight:700;font-size:14px}
+.ccard .num{font:800 26px var(--f-display);letter-spacing:-.01em}
+.ccard p{margin:0 0 18px;color:var(--muted);font-size:15px}
+.ccard .btn{margin-top:auto;justify-content:center}
+.ccard.wa{background:#E7F8EE}
+.ccard.wa .ic{background:var(--wa);color:#fff}
+.btn-wa{background:var(--wa);color:#fff;box-shadow:0 8px 24px -8px rgba(37,211,102,.7)}
+.btn-wa:hover{background:#1EBE5A}
+.btn-wa svg,.wa-float svg{width:20px;height:20px}
+.wa-float{position:fixed;z-index:60;bottom:20px;inset-inline-end:20px;width:58px;height:58px;border-radius:50%;background:var(--wa);color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px -8px rgba(0,0,0,.35);transition:transform .15s}
+.wa-float:hover{transform:scale(1.06)}
+.wa-float svg{width:30px;height:30px}
+@media (max-width:640px){.contact{grid-template-columns:1fr}}
+
 /* cta */
 .cta{background:linear-gradient(135deg,var(--emerald),#0B7A43);color:#fff;border-radius:32px;padding:64px 48px;display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center}
 .cta h2{font-size:clamp(30px,3.6vw,44px);font-weight:800}
@@ -241,7 +275,7 @@ details p{margin:0;padding:0 24px 22px;color:var(--muted)}
 .cta-box small{text-align:center;opacity:.8}
 @media (max-width:860px){.cta{grid-template-columns:1fr;padding:44px 24px}}
 
-footer{padding:48px 0;color:var(--muted);font-size:14px}
+footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
 .foot{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:28px}
 .foot a{text-decoration:none;font-weight:600}
 
@@ -257,6 +291,9 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
   <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l1.3-4.2A8.5 8.5 0 1 1 8 19.4z"/><path d="M9 8.3c.3-.4.8-.4 1 0l.8 1.6c.1.3 0 .6-.2.8l-.5.5c.6 1.3 1.6 2.3 2.9 2.9l.5-.5c.2-.2.5-.3.8-.2l1.6.8c.4.2.4.7 0 1-.6.6-1.4 1-2.3.7-2.5-.8-4.4-2.7-5.2-5.2-.3-.9.1-1.7.6-2.4z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></symbol>
 </svg>
 
 <header id="top">
@@ -273,6 +310,7 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
       <a href="#pourquoi" data-i18n="nav.why">Pourquoi nous</a>
       <a href="#tarifs" data-i18n="nav.pricing">Tarifs</a>
       <a href="#faq" data-i18n="nav.faq">FAQ</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
     </nav>
     <div class="nav-cta">
       <button class="lang" id="lang" type="button" aria-label="Changer de langue">عربي</button>
@@ -577,6 +615,29 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
   </div>
 </section>
 
+<section id="paiement" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow" data-i18n="pay.eyebrow">Paiement</span>
+      <h2 data-i18n="pay.title">Payez par CCP ou BaridiMob.</h2>
+      <p data-i18n="pay.sub">Réglez votre licence par versement au bureau de poste ou par virement BaridiMob, puis envoyez-nous le reçu. Votre licence est activée dès réception.</p>
+    </div>
+    <div class="pay reveal">
+      <div class="pay-card">
+        <h3><svg><use href="#i-card"/></svg><span data-i18n="pay.card">Compte CCP — Algérie Poste</span></h3>
+        <div class="pay-row"><div><small data-i18n="pay.holder">Titulaire</small><b class="ltr" data-c="holder"></b></div></div>
+        <div class="pay-row"><div><small data-i18n="pay.ccp">N° CCP / Clé</small><b class="ltr" data-c="ccp"></b></div><button class="copy" type="button" data-copy="ccp" data-i18n="pay.copy">Copier</button></div>
+        <div class="pay-row"><div><small data-i18n="pay.rip">RIP (pour virement BaridiMob)</small><b class="ltr" data-c="rip"></b></div><button class="copy" type="button" data-copy="rip" data-i18n="pay.copy">Copier</button></div>
+      </div>
+      <ol class="howto">
+        <li><div><strong data-i18n="pay.s1">Demandez votre licence</strong><span data-i18n-html="pay.s1p">Dans SmartCHIFA, cliquez sur <kbd>Demander une licence</kbd> et envoyez le formulaire.</span></div></li>
+        <li><div><strong data-i18n="pay.s2">Payez le montant de votre formule</strong><span data-i18n="pay.s2p">Versement au bureau de poste sur le N° CCP, ou virement BaridiMob vers le RIP.</span></div></li>
+        <li><div><strong data-i18n="pay.s3">Envoyez le reçu sur WhatsApp</strong><span data-i18n="pay.s3p">Une photo du reçu avec le nom de votre pharmacie suffit. Nous activons la licence et vous prévenons.</span></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
 <section id="faq" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head center reveal">
@@ -593,6 +654,32 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
   </div>
 </section>
 
+<section id="contact" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <span class="eyebrow" data-i18n="ct.eyebrow">Contact</span>
+      <h2 data-i18n="ct.title">Une question ? Parlons-en.</h2>
+      <p data-i18n="ct.sub">Installation, licence ou paiement : appelez-nous ou écrivez-nous sur WhatsApp.</p>
+    </div>
+    <div class="contact reveal">
+      <div class="ccard">
+        <div class="ic"><svg><use href="#i-phone"/></svg></div>
+        <small data-i18n="ct.phone">Téléphone</small>
+        <span class="num ltr" data-c="phone"></span>
+        <p data-i18n="ct.phonep">Pour l'installation, la licence ou toute autre question.</p>
+        <a class="btn btn-ghost" data-tel style="color:var(--pine)"><svg><use href="#i-phone"/></svg><span data-i18n="ct.call">Appeler</span></a>
+      </div>
+      <div class="ccard wa">
+        <div class="ic"><svg><use href="#i-wa"/></svg></div>
+        <small>WhatsApp</small>
+        <span class="num ltr" data-c="whatsappDisplay"></span>
+        <p data-i18n="ct.wap">Écrivez-nous à tout moment, avec captures d'écran ou reçus de paiement.</p>
+        <a class="btn btn-wa" data-wa target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span data-i18n="ct.wa">Écrire sur WhatsApp</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="essai" style="padding-top:0">
   <div class="wrap">
     <div class="cta reveal">
@@ -601,14 +688,16 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
         <p data-i18n="cta.p">30 jours, toutes les fonctionnalités, installation à distance par notre équipe. Vous voyez vos vrais chiffres dès le premier jour.</p>
       </div>
       <div class="cta-box">
-        <a class="btn btn-light" href="https://www.smartappdz.org/" data-i18n="cta.b1">Demander l'essai gratuit</a>
-        <a class="btn btn-ghost" href="https://www.smartappdz.org/" data-i18n="cta.b2">Parler à un conseiller</a>
+        <a class="btn btn-light" href="https://nadirsmartapp.blob.core.windows.net/chifa-pro/CHIFA.Pro-win-Setup.exe" download><svg><use href="#i-download"/></svg><span data-i18n="cta.b1">Télécharger l'essai gratuit</span></a>
+        <a class="btn btn-ghost" data-wa target="_blank" rel="noopener" data-i18n="cta.b2">Parler à un conseiller</a>
         <small>SmartApp · smartappdz.org</small>
       </div>
     </div>
   </div>
 </section>
 </main>
+
+<a class="wa-float" data-wa target="_blank" rel="noopener" aria-label="WhatsApp" title="WhatsApp"><svg><use href="#i-wa"/></svg></a>
 
 <footer>
   <div class="wrap foot">
@@ -619,6 +708,20 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
 </footer>
 
 <script>
+const CONTACT = {
+  phone: "06 71 71 66 66",
+  whatsapp: "213671716666",           // wa.me: international, without + or the leading 0
+  whatsappDisplay: "06 71 71 66 66",
+  holder: "MEZHOUDI Hadj Nadir",
+  ccp: "14692319 / 50",
+  rip: "00799999 0014692319 49"
+};
+const WA_MSG = { fr: "Bonjour, je suis intéressé(e) par SmartCHIFA.", ar: "السلام عليكم، أنا مهتم بتطبيق SmartCHIFA." };
+function applyContact(lang){
+  document.querySelectorAll("[data-c]").forEach(n => n.textContent = CONTACT[n.dataset.c]);
+  document.querySelectorAll("[data-tel]").forEach(a => a.href = "tel:" + CONTACT.phone.replace(/\s/g, ""));
+  document.querySelectorAll("[data-wa]").forEach(a => a.href = "https://wa.me/" + CONTACT.whatsapp + "?text=" + encodeURIComponent(WA_MSG[lang] || WA_MSG.fr));
+}
 const AR = {
   "nav.features":"المميزات","nav.mobile":"الهاتف","nav.gallery":"لمحة","nav.why":"لماذا نحن","nav.pricing":"الأسعار","nav.faq":"أسئلة شائعة","nav.cta":"تجربة مجانية","nav.login":"تسجيل الدخول",
   "hero.eyebrow":"للصيدليات الجزائرية · CNAS و CASNOS",
@@ -668,7 +771,16 @@ const AR = {
   "q3":"ماذا يحدث إذا انقطع الإنترنت؟","a3":"يواصل التطبيق على الحاسوب العمل بشكل عادي. فقط الوصول من الهاتف ينتظر عودة الاتصال.",
   "q4":"كيف تعمل الرخصة؟","a4":"كل رخصة مرتبطة بجهاز واحد. بعد التجربة تتلقى رقماً تسلسلياً تُدخله في التطبيق دون إعادة التثبيت.",
   "q5":"كيف تتم التحديثات؟","a5":"تلقائياً وفي الخلفية. تُحمَّل التغييرات فقط، ويستغرق التحديث بضع ثوانٍ.",
-  "cta.title":"جرّب SmartCHIFA على صيدليتك.","cta.p":"30 يوماً، كل المميزات، تثبيت عن بُعد من فريقنا. ترى أرقامك الحقيقية من اليوم الأول.","cta.b1":"اطلب التجربة المجانية","cta.b2":"تحدّث مع مستشار",
+  "cta.title":"جرّب SmartCHIFA على صيدليتك.","cta.p":"30 يوماً، كل المميزات، تثبيت عن بُعد من فريقنا. ترى أرقامك الحقيقية من اليوم الأول.","cta.b1":"حمّل التجربة المجانية","cta.b2":"تحدّث مع مستشار",
+  "nav.contact":"اتصل بنا",
+  "pay.eyebrow":"الدفع","pay.title":"ادفع عبر CCP أو BaridiMob.","pay.sub":"سدّد ثمن رخصتك بدفع نقدي في مكتب البريد أو بتحويل عبر BaridiMob، ثم أرسل لنا الوصل. تُفعَّل رخصتك فور استلامه.",
+  "pay.card":"حساب بريدي جاري — بريد الجزائر","pay.holder":"صاحب الحساب","pay.ccp":"رقم الحساب CCP / المفتاح","pay.rip":"RIP (للتحويل عبر BaridiMob)","pay.copy":"نسخ",
+  "pay.s1":"اطلب رخصتك","pay.s1p":"في SmartCHIFA اضغط <kbd>Demander une licence</kbd> وأرسل الاستمارة.",
+  "pay.s2":"ادفع مبلغ الصيغة التي اخترتها","pay.s2p":"دفع نقدي في مكتب البريد على رقم الحساب CCP، أو تحويل عبر BaridiMob إلى RIP.",
+  "pay.s3":"أرسل الوصل عبر واتساب","pay.s3p":"صورة الوصل مع اسم صيدليتك تكفي. نفعّل الرخصة ونُعلمك بذلك.",
+  "ct.eyebrow":"اتصل بنا","ct.title":"لديك سؤال؟ تحدّث معنا.","ct.sub":"التثبيت، الرخصة أو الدفع: اتصل بنا أو راسلنا عبر واتساب.",
+  "ct.phone":"الهاتف","ct.phonep":"للتثبيت، الرخصة أو أي سؤال آخر.","ct.call":"اتصل",
+  "ct.wap":"راسلنا في أي وقت، مع لقطات الشاشة أو وصولات الدفع.","ct.wa":"راسلنا عبر واتساب",
   "foot":"© 2026 SmartApp. صُنع في الجزائر، للصيدليات الجزائرية."
 };
 const FR = {};
@@ -688,10 +800,20 @@ function setLang(lang){
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
   document.getElementById("lang").textContent = lang === "ar" ? "Français" : "عربي";
+  applyContact(lang);
   try { localStorage.setItem("sc-lang", lang); } catch {}
 }
 document.getElementById("lang").onclick = () => setLang(document.documentElement.lang === "ar" ? "fr" : "ar");
+applyContact("fr");
 try { if (localStorage.getItem("sc-lang") === "ar") setLang("ar"); } catch {}
+
+document.querySelectorAll("[data-copy]").forEach(b => b.onclick = async () => {
+  const v = CONTACT[b.dataset.copy];
+  try { await navigator.clipboard.writeText(b.dataset.copy === "rip" ? v.replace(/\s/g, "") : v); } catch { return; }
+  b.textContent = document.documentElement.lang === "ar" ? "تم النسخ" : "Copié";
+  b.classList.add("done");
+  setTimeout(() => { b.classList.remove("done"); b.textContent = (document.documentElement.lang === "ar" ? AR : FR)["pay.copy"]; }, 1600);
+});
 
 const burger = document.getElementById("burger"), menu = document.getElementById("menu");
 burger.onclick = () => { const o = menu.classList.toggle("open"); burger.setAttribute("aria-expanded", o); };
