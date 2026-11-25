@@ -29,11 +29,11 @@ namespace CHIFA.Pro.Views
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            var editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
-            var serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
-            var editorButtonImageOptions2 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmTraitSpec));
-            var serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions1 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject1 = new DevExpress.Utils.SerializableAppearanceObject();
+            DevExpress.XtraEditors.Controls.EditorButtonImageOptions editorButtonImageOptions2 = new DevExpress.XtraEditors.Controls.EditorButtonImageOptions();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmTraitSpec));
+            DevExpress.Utils.SerializableAppearanceObject serializableAppearanceObject2 = new DevExpress.Utils.SerializableAppearanceObject();
             colMalad = new DevExpress.XtraGrid.Columns.GridColumn();
             colMontant = new DevExpress.XtraGrid.Columns.GridColumn();
             xtraTabPage1 = new DevExpress.XtraTab.XtraTabPage();
@@ -92,7 +92,7 @@ namespace CHIFA.Pro.Views
             // 
             xtraTabPage1.Controls.Add(gridControl1);
             xtraTabPage1.Name = "xtraTabPage1";
-            xtraTabPage1.Size = new Size(1366, 627);
+            xtraTabPage1.Size = new Size(1362, 634);
             xtraTabPage1.Text = "Par Patient";
             // 
             // gridControl1
@@ -103,7 +103,7 @@ namespace CHIFA.Pro.Views
             gridControl1.Location = new Point(0, 0);
             gridControl1.MainView = gridViewTraitSpec1;
             gridControl1.Name = "gridControl1";
-            gridControl1.Size = new Size(1366, 627);
+            gridControl1.Size = new Size(1362, 634);
             gridControl1.TabIndex = 4;
             gridControl1.ViewCollection.AddRange(new BaseView[] { gridViewTraitSpec1 });
             // 
@@ -152,7 +152,7 @@ namespace CHIFA.Pro.Views
             // 
             xtraTabPage2.Controls.Add(gridControl2);
             xtraTabPage2.Name = "xtraTabPage2";
-            xtraTabPage2.Size = new Size(1366, 627);
+            xtraTabPage2.Size = new Size(1349, 635);
             xtraTabPage2.Text = "Par Médicament";
             // 
             // gridControl2
@@ -162,7 +162,7 @@ namespace CHIFA.Pro.Views
             gridControl2.Location = new Point(0, 0);
             gridControl2.MainView = gridViewTraitSpec2;
             gridControl2.Name = "gridControl2";
-            gridControl2.Size = new Size(1366, 627);
+            gridControl2.Size = new Size(1349, 635);
             gridControl2.TabIndex = 0;
             gridControl2.ViewCollection.AddRange(new BaseView[] { gridViewTraitSpec2 });
             // 
@@ -246,19 +246,19 @@ namespace CHIFA.Pro.Views
             xtraTabControl1.Location = new Point(0, 0);
             xtraTabControl1.Name = "xtraTabControl1";
             xtraTabControl1.SelectedTabPage = xtraTabPage2;
-            xtraTabControl1.Size = new Size(1372, 659);
+            xtraTabControl1.Size = new Size(1356, 669);
             xtraTabControl1.TabIndex = 5;
             xtraTabControl1.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] { xtraTabPage2, xtraTabPage1 });
             // 
-            // frmTraitSpec
+            // FrmTraitSpec
             // 
             Appearance.Options.UseFont = true;
-            AutoScaleDimensions = new SizeF(9F, 19F);
+            AutoScaleDimensions = new SizeF(11F, 24F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1372, 659);
+            ClientSize = new Size(1356, 669);
             Controls.Add(xtraTabControl1);
             Font = new Font("Tahoma", 12F);
-            IconOptions.LargeImage = (Image)resources.GetObject("frmTraitSpec.IconOptions.LargeImage");
+            IconOptions.LargeImage = (Image)resources.GetObject("FrmTraitSpec.IconOptions.LargeImage");
             Name = "FrmTraitSpec";
             Text = "Trait Spec";
             WindowState = FormWindowState.Maximized;

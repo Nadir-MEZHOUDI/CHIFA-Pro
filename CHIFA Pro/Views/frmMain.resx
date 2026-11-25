@@ -824,19 +824,19 @@
 </value>
   </data>
   <metadata name="defaultLookAndFeel1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>192, 17</value>
+    <value>229, 17</value>
   </metadata>
   <metadata name="formAssistant1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>358, 17</value>
+    <value>430, 17</value>
   </metadata>
   <metadata name="statusStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>491, 17</value>
+    <value>588, 17</value>
   </metadata>
   <metadata name="AppImages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>606, 17</value>
+    <value>725, 17</value>
   </metadata>
   <metadata name="AppImages.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>606, 17</value>
+    <value>725, 17</value>
   </metadata>
   <assembly alias="DevExpress.Utils.v26.1" name="DevExpress.Utils.v26.1, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
   <data name="AppImages.ImageStream" type="DevExpress.Utils.ImageCollectionStreamer, DevExpress.Utils.v26.1" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -1488,16 +1488,16 @@
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="SharedImageCollection.Timestamp" type="System.DateTime, mscorlib">
-    <value>09/04/2026 11:08:01</value>
+    <value>11/25/2026 11:09:41</value>
   </data>
   <data name="SharedImageCollection.ImageSize" type="System.Drawing.Size, System.Drawing">
     <value>16, 16</value>
   </data>
   <metadata name="Notification.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>720, 17</value>
+    <value>861, 17</value>
   </metadata>
   <metadata name="contextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>919, 17</value>
+    <value>1095, 17</value>
   </metadata>
   <data name="Notification.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1743,6 +1743,6 @@
 </value>
   </data>
   <metadata name="timer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>837, 17</value>
+    <value>1000, 17</value>
   </metadata>
 </root>

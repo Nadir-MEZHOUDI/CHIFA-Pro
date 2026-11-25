@@ -118,7 +118,7 @@ namespace CHIFA.Pro.Views
             accordionControl1.Name = "accordionControl1";
             accordionControl1.ScrollBarMode = DevExpress.XtraBars.Navigation.ScrollBarMode.Auto;
             accordionControl1.ShowFilterControl = DevExpress.XtraBars.Navigation.ShowFilterControl.Auto;
-            accordionControl1.Size = new Size(270, 725);
+            accordionControl1.Size = new Size(270, 802);
             accordionControl1.TabIndex = 1;
             accordionControl1.ViewType = DevExpress.XtraBars.Navigation.AccordionControlViewType.HamburgerMenu;
             // 
@@ -338,7 +338,7 @@ namespace CHIFA.Pro.Views
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = DockStyle.Bottom;
-            barDockControlBottom.Location = new Point(270, 725);
+            barDockControlBottom.Location = new Point(270, 802);
             barDockControlBottom.Margin = new Padding(5, 4, 5, 4);
             barDockControlBottom.Size = new Size(1012, 0);
             // 
@@ -348,7 +348,7 @@ namespace CHIFA.Pro.Views
             barDockControlLeft.Dock = DockStyle.Left;
             barDockControlLeft.Location = new Point(270, 0);
             barDockControlLeft.Margin = new Padding(5, 4, 5, 4);
-            barDockControlLeft.Size = new Size(0, 725);
+            barDockControlLeft.Size = new Size(0, 802);
             // 
             // barDockControlRight
             // 
@@ -356,7 +356,7 @@ namespace CHIFA.Pro.Views
             barDockControlRight.Dock = DockStyle.Right;
             barDockControlRight.Location = new Point(1282, 0);
             barDockControlRight.Margin = new Padding(5, 4, 5, 4);
-            barDockControlRight.Size = new Size(0, 725);
+            barDockControlRight.Size = new Size(0, 802);
             // 
             // skinDropDownButtonItem2
             // 
@@ -375,7 +375,7 @@ namespace CHIFA.Pro.Views
             // 
             barDockControl2.CausesValidation = false;
             barDockControl2.Dock = DockStyle.Bottom;
-            barDockControl2.Location = new Point(270, 725);
+            barDockControl2.Location = new Point(270, 802);
             barDockControl2.Size = new Size(1012, 0);
             // 
             // barDockControl3
@@ -383,14 +383,14 @@ namespace CHIFA.Pro.Views
             barDockControl3.CausesValidation = false;
             barDockControl3.Dock = DockStyle.Left;
             barDockControl3.Location = new Point(270, 0);
-            barDockControl3.Size = new Size(0, 725);
+            barDockControl3.Size = new Size(0, 802);
             // 
             // barDockControl4
             // 
             barDockControl4.CausesValidation = false;
             barDockControl4.Dock = DockStyle.Right;
             barDockControl4.Location = new Point(1282, 0);
-            barDockControl4.Size = new Size(0, 725);
+            barDockControl4.Size = new Size(0, 802);
             // 
             // container
             // 
@@ -398,7 +398,7 @@ namespace CHIFA.Pro.Views
             container.Dock = DockStyle.Fill;
             container.Location = new Point(270, 0);
             container.Name = "container";
-            container.Size = new Size(1012, 725);
+            container.Size = new Size(1012, 802);
             container.TabIndex = 11;
             // 
             // tabContainer
@@ -410,7 +410,7 @@ namespace CHIFA.Pro.Views
             tabContainer.Location = new Point(0, 0);
             tabContainer.MultiLine = DevExpress.Utils.DefaultBoolean.False;
             tabContainer.Name = "tabContainer";
-            tabContainer.Size = new Size(1012, 725);
+            tabContainer.Size = new Size(1012, 802);
             tabContainer.TabIndex = 0;
             tabContainer.CloseButtonClick += TabContainer_CloseButtonClick;
             // 
@@ -458,17 +458,17 @@ namespace CHIFA.Pro.Views
             // 
             statusStrip1.ImageScalingSize = new Size(20, 20);
             statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel7, txtIP, toolStripStatusLabel1, txtServer, toolStripStatusLabel2, txtDatabase, txtSpring, progressBar, toolStripStatusLabel3, txtPharmacie, toolStripStatusLabel4, txtCodePs });
-            statusStrip1.Location = new Point(0, 725);
+            statusStrip1.Location = new Point(0, 802);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.RenderMode = ToolStripRenderMode.Professional;
-            statusStrip1.Size = new Size(1282, 22);
+            statusStrip1.Size = new Size(1282, 26);
             statusStrip1.TabIndex = 25;
             statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel7
             // 
             toolStripStatusLabel7.Name = "toolStripStatusLabel7";
-            toolStripStatusLabel7.Size = new Size(55, 17);
+            toolStripStatusLabel7.Size = new Size(68, 20);
             toolStripStatusLabel7.Text = "AdressIP:";
             // 
             // txtIP
@@ -477,13 +477,13 @@ namespace CHIFA.Pro.Views
             txtIP.ForeColor = Color.Green;
             txtIP.Margin = new Padding(0, 3, 50, 2);
             txtIP.Name = "txtIP";
-            txtIP.Size = new Size(16, 17);
+            txtIP.Size = new Size(21, 21);
             txtIP.Text = "...";
             // 
             // toolStripStatusLabel1
             // 
             toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            toolStripStatusLabel1.Size = new Size(55, 17);
+            toolStripStatusLabel1.Size = new Size(69, 20);
             toolStripStatusLabel1.Text = "Serveur : ";
             // 
             // txtServer
@@ -492,20 +492,20 @@ namespace CHIFA.Pro.Views
             txtServer.ForeColor = Color.Red;
             txtServer.Margin = new Padding(0, 3, 50, 2);
             txtServer.Name = "txtServer";
-            txtServer.Size = new Size(59, 17);
+            txtServer.Size = new Size(75, 21);
             txtServer.Text = "localhost";
             // 
             // toolStripStatusLabel2
             // 
             toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            toolStripStatusLabel2.Size = new Size(40, 17);
+            toolStripStatusLabel2.Size = new Size(51, 20);
             toolStripStatusLabel2.Text = "Base : ";
             // 
             // txtDatabase
             // 
             txtDatabase.Font = new Font("Segoe UI", 9F, FontStyle.Bold | FontStyle.Italic);
             txtDatabase.Name = "txtDatabase";
-            txtDatabase.Size = new Size(100, 17);
+            txtDatabase.Size = new Size(127, 20);
             txtDatabase.Text = "CHIFA_OFFICINE";
             // 
             // txtSpring
@@ -513,7 +513,7 @@ namespace CHIFA.Pro.Views
             txtSpring.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             txtSpring.ForeColor = Color.Black;
             txtSpring.Name = "txtSpring";
-            txtSpring.Size = new Size(579, 17);
+            txtSpring.Size = new Size(444, 20);
             txtSpring.Spring = true;
             txtSpring.Text = "DateTime";
             // 
@@ -526,7 +526,7 @@ namespace CHIFA.Pro.Views
             // toolStripStatusLabel3
             // 
             toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            toolStripStatusLabel3.Size = new Size(72, 17);
+            toolStripStatusLabel3.Size = new Size(89, 20);
             toolStripStatusLabel3.Text = "Pharmacie : ";
             // 
             // txtPharmacie
@@ -534,13 +534,13 @@ namespace CHIFA.Pro.Views
             txtPharmacie.Font = new Font("Segoe UI", 9F, FontStyle.Bold | FontStyle.Italic);
             txtPharmacie.Margin = new Padding(0, 3, 50, 2);
             txtPharmacie.Name = "txtPharmacie";
-            txtPharmacie.Size = new Size(16, 17);
+            txtPharmacie.Size = new Size(21, 21);
             txtPharmacie.Text = "...";
             // 
             // toolStripStatusLabel4
             // 
             toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            toolStripStatusLabel4.Size = new Size(89, 17);
+            toolStripStatusLabel4.Size = new Size(111, 20);
             toolStripStatusLabel4.Text = "Code Officine : ";
             // 
             // txtCodePs
@@ -549,7 +549,7 @@ namespace CHIFA.Pro.Views
             txtCodePs.ForeColor = Color.FromArgb(0, 192, 192);
             txtCodePs.Margin = new Padding(0, 3, 20, 2);
             txtCodePs.Name = "txtCodePs";
-            txtCodePs.Size = new Size(16, 17);
+            txtCodePs.Size = new Size(21, 21);
             txtCodePs.Text = "...";
             // 
             // AppImages
@@ -589,25 +589,25 @@ namespace CHIFA.Pro.Views
             contextMenu.ImageScalingSize = new Size(20, 20);
             contextMenu.Items.AddRange(new ToolStripItem[] { menuOpen, toolStripSeparator1, menuExit });
             contextMenu.Name = "contextMenuStrip1";
-            contextMenu.Size = new Size(112, 54);
+            contextMenu.Size = new Size(125, 58);
             contextMenu.Text = "SmartCHIFA";
             // 
             // menuOpen
             // 
             menuOpen.Name = "menuOpen";
-            menuOpen.Size = new Size(111, 22);
+            menuOpen.Size = new Size(124, 24);
             menuOpen.Text = "Ouvrir";
             menuOpen.Click += menuOpen_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(108, 6);
+            toolStripSeparator1.Size = new Size(121, 6);
             // 
             // menuExit
             // 
             menuExit.Name = "menuExit";
-            menuExit.Size = new Size(111, 22);
+            menuExit.Size = new Size(124, 24);
             menuExit.Text = "Quitter";
             menuExit.Click += menuExit_Click;
             // 
@@ -620,9 +620,9 @@ namespace CHIFA.Pro.Views
             // FrmMain
             // 
             Appearance.Options.UseFont = true;
-            AutoScaleDimensions = new SizeF(9F, 19F);
+            AutoScaleDimensions = new SizeF(11F, 24F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1282, 747);
+            ClientSize = new Size(1282, 828);
             Controls.Add(container);
             Controls.Add(barDockControlLeft);
             Controls.Add(barDockControlRight);
