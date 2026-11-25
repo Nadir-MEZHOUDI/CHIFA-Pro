@@ -17,6 +17,7 @@ namespace CHIFA.Pro.Mobile
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MobileLinkForm));
             lblTitle = new LabelControl();
             _lblIntro = new LabelControl();
             _qr = new PictureEdit();
@@ -35,18 +36,20 @@ namespace CHIFA.Pro.Mobile
             ((System.ComponentModel.ISupportInitialize)_qr.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)_lstDevices).BeginInit();
             SuspendLayout();
-            //
+            // 
             // lblTitle
-            //
+            // 
             lblTitle.Appearance.Font = new Font("Segoe UI", 15F, FontStyle.Bold);
             lblTitle.Appearance.Options.UseFont = true;
-            lblTitle.Location = new Point(24, 18);
+            lblTitle.Location = new Point(30, 22);
+            lblTitle.Margin = new Padding(4);
             lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(208, 35);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "Lier un téléphone";
-            //
+            // 
             // _lblIntro
-            //
+            // 
             _lblIntro.Appearance.Font = new Font("Segoe UI", 9.75F);
             _lblIntro.Appearance.ForeColor = Color.DimGray;
             _lblIntro.Appearance.Options.UseFont = true;
@@ -54,143 +57,168 @@ namespace CHIFA.Pro.Mobile
             _lblIntro.Appearance.Options.UseTextOptions = true;
             _lblIntro.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             _lblIntro.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblIntro.Location = new Point(24, 56);
+            _lblIntro.Location = new Point(30, 70);
+            _lblIntro.Margin = new Padding(4);
             _lblIntro.Name = "_lblIntro";
-            _lblIntro.Size = new Size(592, 42);
+            _lblIntro.Size = new Size(740, 52);
             _lblIntro.TabIndex = 1;
             _lblIntro.Text = "1. Sur le téléphone, scannez le QR code ou ouvrez l'adresse du site\r\n2. Saisissez le code ci-dessous. Il ne sert qu'une fois : le téléphone reste ensuite connecté.";
-            //
+            // 
             // _qr
-            //
-            _qr.Location = new Point(24, 110);
+            // 
+            _qr.Location = new Point(30, 138);
+            _qr.Margin = new Padding(4);
             _qr.Name = "_qr";
             _qr.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             _qr.Properties.ReadOnly = true;
             _qr.Properties.ShowMenu = false;
             _qr.Properties.SizeMode = DevExpress.XtraEditors.Controls.PictureSizeMode.Zoom;
-            _qr.Size = new Size(190, 190);
+            _qr.Size = new Size(238, 238);
             _qr.TabIndex = 2;
-            //
+            // 
             // _lblCode
-            //
+            // 
             _lblCode.Appearance.Font = new Font("Consolas", 34F, FontStyle.Bold);
             _lblCode.Appearance.ForeColor = Color.FromArgb(14, 124, 102);
             _lblCode.Appearance.Options.UseFont = true;
             _lblCode.Appearance.Options.UseForeColor = true;
             _lblCode.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblCode.Location = new Point(236, 120);
+            _lblCode.Location = new Point(295, 150);
+            _lblCode.Margin = new Padding(4);
             _lblCode.Name = "_lblCode";
-            _lblCode.Size = new Size(380, 64);
+            _lblCode.Size = new Size(475, 80);
             _lblCode.TabIndex = 3;
-            //
+            // 
             // _lblExpiry
-            //
+            // 
             _lblExpiry.Appearance.Font = new Font("Segoe UI", 9.75F);
             _lblExpiry.Appearance.Options.UseFont = true;
             _lblExpiry.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblExpiry.Location = new Point(240, 186);
+            _lblExpiry.Location = new Point(300, 232);
+            _lblExpiry.Margin = new Padding(4);
             _lblExpiry.Name = "_lblExpiry";
-            _lblExpiry.Size = new Size(376, 22);
+            _lblExpiry.Size = new Size(470, 28);
             _lblExpiry.TabIndex = 4;
-            //
+            // 
             // _lblStatus
-            //
+            // 
             _lblStatus.Appearance.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold);
             _lblStatus.Appearance.Options.UseFont = true;
             _lblStatus.Appearance.Options.UseTextOptions = true;
             _lblStatus.Appearance.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Top;
             _lblStatus.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             _lblStatus.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblStatus.Location = new Point(240, 214);
+            _lblStatus.Location = new Point(300, 268);
+            _lblStatus.Margin = new Padding(4);
             _lblStatus.Name = "_lblStatus";
-            _lblStatus.Size = new Size(376, 44);
+            _lblStatus.Size = new Size(470, 55);
             _lblStatus.TabIndex = 5;
-            //
+            // 
             // _btnNewCode
-            //
-            _btnNewCode.Location = new Point(240, 264);
+            // 
+            _btnNewCode.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnNewCode.Appearance.Options.UseFont = true;
+            _btnNewCode.ImageOptions.Image = (Image)resources.GetObject("_btnNewCode.ImageOptions.Image");
+            _btnNewCode.Location = new Point(300, 330);
+            _btnNewCode.Margin = new Padding(4);
             _btnNewCode.Name = "_btnNewCode";
-            _btnNewCode.Size = new Size(160, 32);
+            _btnNewCode.Size = new Size(200, 40);
             _btnNewCode.TabIndex = 6;
             _btnNewCode.Text = "Nouveau code";
             _btnNewCode.Click += BtnNewCode_Click;
-            //
+            // 
             // lblDevices
-            //
+            // 
             lblDevices.Appearance.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblDevices.Appearance.Options.UseFont = true;
-            lblDevices.Location = new Point(24, 320);
+            lblDevices.Location = new Point(30, 400);
+            lblDevices.Margin = new Padding(4);
             lblDevices.Name = "lblDevices";
+            lblDevices.Size = new Size(131, 25);
             lblDevices.TabIndex = 7;
             lblDevices.Text = "Téléphones liés";
-            //
+            // 
             // _lstDevices
-            //
-            _lstDevices.Appearance.Font = new Font("Segoe UI", 9.75F);
+            // 
+            _lstDevices.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
             _lstDevices.Appearance.Options.UseFont = true;
-            _lstDevices.Location = new Point(24, 346);
+            _lstDevices.Location = new Point(30, 432);
+            _lstDevices.Margin = new Padding(4);
             _lstDevices.Name = "_lstDevices";
-            _lstDevices.Size = new Size(592, 130);
+            _lstDevices.Size = new Size(740, 162);
             _lstDevices.TabIndex = 8;
             _lstDevices.SelectedIndexChanged += LstDevices_SelectedIndexChanged;
-            //
+            // 
             // _btnRemove
-            //
+            // 
+            _btnRemove.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnRemove.Appearance.Options.UseFont = true;
             _btnRemove.Enabled = false;
-            _btnRemove.Location = new Point(24, 484);
+            _btnRemove.ImageOptions.Image = (Image)resources.GetObject("_btnRemove.ImageOptions.Image");
+            _btnRemove.Location = new Point(30, 605);
+            _btnRemove.Margin = new Padding(4);
             _btnRemove.Name = "_btnRemove";
-            _btnRemove.Size = new Size(190, 30);
+            _btnRemove.Size = new Size(238, 38);
             _btnRemove.TabIndex = 9;
             _btnRemove.Text = "Retirer ce téléphone";
             _btnRemove.Click += BtnRemove_Click;
-            //
+            // 
             // _lblService
-            //
+            // 
             _lblService.Appearance.Font = new Font("Segoe UI", 9.5F);
             _lblService.Appearance.Options.UseFont = true;
             _lblService.Appearance.Options.UseTextOptions = true;
             _lblService.Appearance.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
             _lblService.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             _lblService.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblService.Location = new Point(24, 524);
+            _lblService.Location = new Point(30, 655);
+            _lblService.Margin = new Padding(4);
             _lblService.Name = "_lblService";
-            _lblService.Size = new Size(420, 40);
+            _lblService.Size = new Size(525, 50);
             _lblService.TabIndex = 10;
-            //
+            // 
             // _btnService
-            //
-            _btnService.Location = new Point(456, 528);
+            // 
+            _btnService.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnService.Appearance.Options.UseFont = true;
+            _btnService.ImageOptions.Image = (Image)resources.GetObject("_btnService.ImageOptions.Image");
+            _btnService.Location = new Point(570, 660);
+            _btnService.Margin = new Padding(4);
             _btnService.Name = "_btnService";
-            _btnService.Size = new Size(160, 30);
+            _btnService.Size = new Size(200, 38);
             _btnService.TabIndex = 11;
             _btnService.Text = "Installer le service";
             _btnService.Click += BtnService_Click;
-            //
+            // 
             // _btnClose
-            //
-            _btnClose.Location = new Point(486, 562);
+            // 
+            _btnClose.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnClose.Appearance.Options.UseFont = true;
+            _btnClose.ImageOptions.Image = (Image)resources.GetObject("_btnClose.ImageOptions.Image");
+            _btnClose.Location = new Point(570, 702);
+            _btnClose.Margin = new Padding(4);
             _btnClose.Name = "_btnClose";
-            _btnClose.Size = new Size(130, 30);
+            _btnClose.Size = new Size(200, 38);
             _btnClose.TabIndex = 12;
             _btnClose.Text = "Fermer";
             _btnClose.Click += BtnClose_Click;
-            //
+            // 
             // _clock
-            //
+            // 
             _clock.Interval = 1000;
             _clock.Tick += Clock_Tick;
-            //
+            // 
             // _devicesPoll
-            //
+            // 
             _devicesPoll.Interval = 5000;
             _devicesPoll.Tick += DevicesPoll_Tick;
-            //
+            // 
             // MobileLinkForm
-            //
-            AutoScaleDimensions = new SizeF(96F, 96F);
+            // 
+            AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = _btnClose;
-            ClientSize = new Size(640, 600);
+            ClientSize = new Size(792, 755);
             Controls.Add(lblTitle);
             Controls.Add(_lblIntro);
             Controls.Add(_qr);
@@ -205,6 +233,8 @@ namespace CHIFA.Pro.Mobile
             Controls.Add(_btnService);
             Controls.Add(_btnClose);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            IconOptions.Image = (Image)resources.GetObject("MobileLinkForm.IconOptions.Image");
+            Margin = new Padding(4);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "MobileLinkForm";
