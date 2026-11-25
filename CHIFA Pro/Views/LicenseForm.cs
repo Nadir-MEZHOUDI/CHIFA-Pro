@@ -24,7 +24,6 @@ public sealed partial class LicenseForm : XtraForm
             ShowInTaskbar = true;
             StartPosition = FormStartPosition.CenterScreen;
         }
-        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
         ShowState(client.Current);
     }
 

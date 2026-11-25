@@ -22,7 +22,6 @@ public sealed partial class ConnectionForm : XtraForm
             ShowInTaskbar = true;
             StartPosition = FormStartPosition.CenterScreen;
         }
-        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
 
         var host = new NpgsqlConnectionStringBuilder(ChifaDb.ConString).Host;
         var local = AppSettings.Default.IsServer || DbChecker.IsLocalHost(host);

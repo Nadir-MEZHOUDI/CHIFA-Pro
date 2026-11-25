@@ -21,7 +21,6 @@ public sealed partial class MobileLinkForm : XtraForm
     public MobileLinkForm()
     {
         InitializeComponent();
-        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
         _lblIntro.Text =
             $"1. Sur le téléphone, scannez le QR code ou ouvrez {MobileLink.PhoneHost}{Environment.NewLine}" +
             "2. Saisissez le code ci-dessous. Il ne sert qu'une fois : le téléphone reste ensuite connecté.";

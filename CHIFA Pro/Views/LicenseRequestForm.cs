@@ -12,7 +12,6 @@ public sealed partial class LicenseRequestForm : XtraForm
     {
         InitializeComponent();
         _client = client;
-        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
     }
 
     private async void LicenseRequestForm_Shown(object? sender, EventArgs e) => await FillAsync();
