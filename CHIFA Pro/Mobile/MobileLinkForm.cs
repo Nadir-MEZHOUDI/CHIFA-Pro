@@ -1,5 +1,4 @@
 using CHIFA.Contract;
-using DevExpress.Utils;
 using QRCoder;
 
 namespace CHIFA.Pro.Mobile;
@@ -8,23 +7,9 @@ namespace CHIFA.Pro.Mobile;
 /// « Application mobile »: shows a one-time code (and its QR code) that a phone enters once to be linked
 /// to this pharmacy, and the phones already linked. Every opening, and « Nouveau code », gives a new code.
 /// </summary>
-public sealed class MobileLinkForm : XtraForm
+public sealed partial class MobileLinkForm : XtraForm
 {
     private static readonly Color Teal = Color.FromArgb(14, 124, 102);
-
-    private readonly LabelControl _lblIntro = new();
-    private readonly PictureEdit _qr = new();
-    private readonly LabelControl _lblCode = new();
-    private readonly LabelControl _lblExpiry = new();
-    private readonly LabelControl _lblStatus = new();
-    private readonly SimpleButton _btnNewCode = new() { Text = "Nouveau code" };
-    private readonly ListBoxControl _lstDevices = new();
-    private readonly SimpleButton _btnRemove = new() { Text = "Retirer ce téléphone" };
-    private readonly LabelControl _lblService = new();
-    private readonly SimpleButton _btnService = new();
-    private readonly SimpleButton _btnClose = new() { Text = "Fermer" };
-    private readonly System.Windows.Forms.Timer _clock = new() { Interval = 1000 };
-    private readonly System.Windows.Forms.Timer _devicesPoll = new() { Interval = 5000 };
 
     /// <summary>Not asked again during this session of SmartCHIFA once the user refused the Windows prompt.</summary>
     private static bool _serviceDeclined;
@@ -35,96 +20,36 @@ public sealed class MobileLinkForm : XtraForm
 
     public MobileLinkForm()
     {
-        BuildLayout();
-        Shown += async (_, _) =>
-        {
-            await NewCodeAsync();
-            ShowService();
-            // Linked: make the phone work with SmartCHIFA closed too, or bring the service up to date.
-            if (_code is not null && !_serviceDeclined && AgentService.State is AgentServiceState.NotInstalled or AgentServiceState.Outdated)
-                await InstallServiceAsync();
-        };
-        FormClosed += (_, _) =>
-        {
-            _clock.Dispose();
-            _devicesPoll.Dispose();
-        };
-    }
-
-    private void BuildLayout()
-    {
-        Text = "Application mobile";
-        ClientSize = new Size(640, 600);
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        MaximizeBox = false;
-        MinimizeBox = false;
-        ShowInTaskbar = false;
-        StartPosition = FormStartPosition.CenterParent;
+        InitializeComponent();
         try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
-
-        var title = new LabelControl { Text = "Lier un téléphone", Location = new Point(24, 18) };
-        title.Appearance.Font = new Font("Segoe UI", 15f, FontStyle.Bold);
-
-        _lblIntro.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblIntro.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        _lblIntro.Appearance.Font = new Font("Segoe UI", 9.75f);
-        _lblIntro.Appearance.ForeColor = Color.DimGray;
         _lblIntro.Text =
             $"1. Sur le téléphone, scannez le QR code ou ouvrez {MobileLink.PhoneHost}{Environment.NewLine}" +
             "2. Saisissez le code ci-dessous. Il ne sert qu'une fois : le téléphone reste ensuite connecté.";
-        _lblIntro.SetBounds(24, 56, 592, 42);
-
-        _qr.SetBounds(24, 110, 190, 190);
-        _qr.Properties.SizeMode = DevExpress.XtraEditors.Controls.PictureSizeMode.Zoom;
-        _qr.Properties.ShowMenu = false;
-        _qr.Properties.ReadOnly = true;
-        _qr.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
-
-        _lblCode.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblCode.Appearance.Font = new Font("Consolas", 34f, FontStyle.Bold);
-        _lblCode.Appearance.ForeColor = Teal;
-        _lblCode.SetBounds(236, 120, 380, 64);
-
-        _lblExpiry.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblExpiry.Appearance.Font = new Font("Segoe UI", 9.75f);
-        _lblExpiry.SetBounds(240, 186, 376, 22);
-
-        _lblStatus.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblStatus.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        _lblStatus.Appearance.TextOptions.VAlignment = VertAlignment.Top;
-        _lblStatus.Appearance.Font = new Font("Segoe UI", 9.75f, FontStyle.Bold);
-        _lblStatus.SetBounds(240, 214, 376, 44);
-
-        _btnNewCode.SetBounds(240, 264, 160, 32);
-
-        var devicesTitle = new LabelControl { Text = "Téléphones liés", Location = new Point(24, 320) };
-        devicesTitle.Appearance.Font = new Font("Segoe UI", 11f, FontStyle.Bold);
-        _lstDevices.SetBounds(24, 346, 592, 130);
-        _lstDevices.Appearance.Font = new Font("Segoe UI", 9.75f);
-
-        _btnRemove.SetBounds(24, 484, 190, 30);
-
-        _lblService.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblService.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        _lblService.Appearance.TextOptions.VAlignment = VertAlignment.Center;
-        _lblService.Appearance.Font = new Font("Segoe UI", 9.5f);
-        _lblService.SetBounds(24, 524, 420, 40);
-        _btnService.SetBounds(456, 528, 160, 30);
-
-        _btnClose.SetBounds(486, 562, 130, 30);
-
-        _btnNewCode.Click += async (_, _) => await NewCodeAsync();
-        _btnRemove.Click += async (_, _) => await RemoveSelectedAsync();
-        _btnClose.Click += (_, _) => Close();
-        _btnService.Click += async (_, _) => await InstallServiceAsync();
-        _lstDevices.SelectedIndexChanged += (_, _) => _btnRemove.Enabled = !_busy && SelectedDevice() is not null;
-        _clock.Tick += (_, _) => ShowExpiry();
-        _devicesPoll.Tick += async (_, _) => await PollDevicesAsync();
-
-        Controls.AddRange([title, _lblIntro, _qr, _lblCode, _lblExpiry, _lblStatus, _btnNewCode, devicesTitle, _lstDevices, _btnRemove, _lblService, _btnService, _btnClose]);
-        CancelButton = _btnClose;
-        _btnRemove.Enabled = false;
     }
+
+    private async void MobileLinkForm_Shown(object? sender, EventArgs e)
+    {
+        await NewCodeAsync();
+        ShowService();
+        // Linked: make the phone work with SmartCHIFA closed too, or bring the service up to date.
+        if (_code is not null && !_serviceDeclined && AgentService.State is AgentServiceState.NotInstalled or AgentServiceState.Outdated)
+            await InstallServiceAsync();
+    }
+
+    private async void BtnNewCode_Click(object? sender, EventArgs e) => await NewCodeAsync();
+
+    private async void BtnRemove_Click(object? sender, EventArgs e) => await RemoveSelectedAsync();
+
+    private async void BtnService_Click(object? sender, EventArgs e) => await InstallServiceAsync();
+
+    private void BtnClose_Click(object? sender, EventArgs e) => Close();
+
+    private void LstDevices_SelectedIndexChanged(object? sender, EventArgs e) =>
+        _btnRemove.Enabled = !_busy && SelectedDevice() is not null;
+
+    private void Clock_Tick(object? sender, EventArgs e) => ShowExpiry();
+
+    private async void DevicesPoll_Tick(object? sender, EventArgs e) => await PollDevicesAsync();
 
     private async Task NewCodeAsync()
     {
