@@ -1,5 +1,3 @@
-using DevExpress.Utils;
-
 namespace CHIFA.Pro.Views;
 
 /// <summary>
@@ -10,87 +8,29 @@ namespace CHIFA.Pro.Views;
 /// SmartApp's approval the dialog checks every few seconds and unlocks SmartCHIFA as soon as it is approved.
 /// </para>
 /// </summary>
-public sealed class LicenseForm : XtraForm
+public sealed partial class LicenseForm : XtraForm
 {
-    private static readonly TimeSpan RequestPollInterval = TimeSpan.FromSeconds(15);
-
     private readonly LicenseClient _client;
     private readonly bool _startup;
-
-    private readonly LabelControl _lblStatus = new();
-    private readonly LabelControl _lblDetails = new();
-    private readonly LabelControl _lblSerial = new() { Text = "Vous avez déjà un numéro de série ?" };
-    private readonly TextEdit _txtSerial = new();
-    private readonly SimpleButton _btnActivate = new() { Text = "Activer" };
-    private readonly SimpleButton _btnRefresh = new() { Text = "Vérifier en ligne" };
-    private readonly SimpleButton _btnRequest = new() { Text = "Demander une licence" };
-    private readonly SimpleButton _btnClose = new();
-    private readonly System.Windows.Forms.Timer _pollTimer = new();
     private bool _busy;
 
     internal LicenseForm(LicenseClient client, bool startup)
     {
+        InitializeComponent();
         _client = client;
         _startup = startup;
-        BuildLayout();
+        if (startup)
+        {
+            ShowInTaskbar = true;
+            StartPosition = FormStartPosition.CenterScreen;
+        }
+        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
         ShowState(client.Current);
     }
 
     private PendingLicenseRequest? Pending => _client.Current.IsValid ? null : _client.PendingRequest;
 
-    private void BuildLayout()
-    {
-        Text = "Licence SmartCHIFA";
-        ClientSize = new Size(580, 366);
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        MaximizeBox = false;
-        MinimizeBox = false;
-        ShowInTaskbar = _startup;
-        StartPosition = _startup ? FormStartPosition.CenterScreen : FormStartPosition.CenterParent;
-        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
-
-        var title = new LabelControl { Text = "Licence SmartCHIFA", Location = new Point(24, 18) };
-        title.Appearance.Font = new Font("Segoe UI", 15f, FontStyle.Bold);
-
-        _lblStatus.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblStatus.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        _lblStatus.Appearance.Font = new Font("Segoe UI", 10.5f, FontStyle.Bold);
-        _lblStatus.SetBounds(24, 58, 532, 44);
-
-        _lblDetails.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblDetails.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        _lblDetails.Appearance.TextOptions.VAlignment = VertAlignment.Top;
-        _lblDetails.Appearance.Font = new Font("Segoe UI", 9.5f);
-        _lblDetails.Appearance.ForeColor = Color.DimGray;
-        _lblDetails.SetBounds(24, 108, 532, 100);
-
-        _btnRequest.SetBounds(24, 212, 532, 32);
-        _btnRequest.Appearance.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
-
-        _lblSerial.Location = new Point(24, 254);
-        _txtSerial.SetBounds(24, 274, 390, 30);
-        _txtSerial.Properties.CharacterCasing = CharacterCasing.Upper;
-        _txtSerial.Properties.MaxLength = 40;
-        _txtSerial.Properties.NullValuePrompt = "XXXXX-XXXXX-XXXXX-XXXXX-XXXXX";
-        _txtSerial.Properties.Appearance.Font = new Font("Consolas", 12f);
-        _txtSerial.ToolTip = "Un numéro de série ne fonctionne que sur un seul ordinateur.";
-        _btnActivate.SetBounds(426, 273, 130, 32);
-
-        _btnRefresh.SetBounds(24, 322, 150, 30);
-        _btnClose.SetBounds(426, 322, 130, 30);
-
-        _btnActivate.Click += BtnActivate_Click;
-        _btnRefresh.Click += BtnRefresh_Click;
-        _btnRequest.Click += BtnRequest_Click;
-        _btnClose.Click += BtnClose_Click;
-
-        _pollTimer.Interval = (int)RequestPollInterval.TotalMilliseconds;
-        _pollTimer.Tick += async (_, _) => await PollRequestAsync();
-        FormClosed += (_, _) => _pollTimer.Dispose();
-
-        Controls.AddRange([title, _lblStatus, _lblDetails, _btnRequest, _lblSerial, _txtSerial, _btnActivate, _btnRefresh, _btnClose]);
-        AcceptButton = _btnActivate;
-    }
+    private async void PollTimer_Tick(object? sender, EventArgs e) => await PollRequestAsync();
 
     private void ShowState(LicenseState state, string? note = null)
     {
