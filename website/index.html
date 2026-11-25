@@ -45,8 +45,8 @@ header.scrolled{border-color:var(--line)}
 .logo{display:flex;align-items:center;gap:10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;text-decoration:none;letter-spacing:-.02em}
 .logo b{color:var(--emerald)}
 .logo img{width:34px;height:34px;display:block}
-.nav-links{display:flex;gap:26px;margin-inline-start:auto;font-weight:600;font-size:15px}
-.nav-links a{text-decoration:none;color:var(--muted)}
+.nav-links{display:flex;gap:22px;margin-inline-start:auto;font-weight:600;font-size:15px}
+.nav-links a{text-decoration:none;color:var(--muted);white-space:nowrap}
 .nav-links a:hover{color:var(--ink)}
 .nav-cta{display:flex;gap:10px;align-items:center}
 .lang{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font:700 14px var(--f-body);cursor:pointer}
@@ -160,6 +160,24 @@ section{padding:96px 0}
 @media (max-width:960px){.mobile{grid-template-columns:1fr;padding:48px 24px}}
 @media (max-width:560px){.mobile-visual .phone + .phone{display:none}}
 
+/* download + how-to */
+.dl{display:grid;grid-template-columns:1fr 1.5fr;gap:40px;align-items:start}
+.dl-card{background:var(--pine);color:#fff;border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);position:sticky;top:96px}
+.dl-card .eyebrow{color:var(--mint)}
+.dl-card h2{font-size:clamp(28px,3.2vw,38px);font-weight:800;margin:12px 0 12px}
+.dl-card p{color:rgba(255,255,255,.78);margin:0 0 24px}
+.dl-card .btn{width:100%;justify-content:center;font-size:16px;padding:16px 22px}
+.dl-meta{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0;padding:0;list-style:none}
+.dl-meta li{font-size:12.5px;font-weight:700;background:rgba(255,255,255,.08);border-radius:999px;padding:4px 10px}
+.dl-card small{display:block;margin-top:16px;font-size:13px;color:rgba(255,255,255,.65)}
+.howto{list-style:none;margin:0;padding:0;display:grid;gap:12px;counter-reset:s}
+.howto li{counter-increment:s;display:grid;grid-template-columns:40px 1fr;gap:16px;background:var(--card);border-radius:14px;padding:20px 22px;box-shadow:0 1px 2px rgba(11,59,46,.05)}
+.howto li::before{content:counter(s);width:36px;height:36px;border-radius:50%;background:var(--mint-soft);color:var(--emerald);display:grid;place-items:center;font:800 16px var(--f-display)}
+.howto strong{display:block;font-size:17px;margin-bottom:4px}
+.howto span{color:var(--muted);font-size:15px}
+.howto kbd{font:700 13px var(--f-body);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--pine-2);white-space:nowrap;unicode-bidi:isolate}
+@media (max-width:900px){.dl{grid-template-columns:1fr}.dl-card{position:static}}
+
 /* gallery */
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .tab{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 16px;font:700 14px var(--f-body);cursor:pointer;color:var(--muted)}
@@ -237,6 +255,7 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
   <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
 </svg>
 
 <header id="top">
@@ -246,6 +265,7 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
       <span>Smart<b>CHIFA</b></span>
     </a>
     <nav class="nav-links" id="menu">
+      <a href="#telecharger" data-i18n="nav.download">Télécharger</a>
       <a href="#fonctionnalites" data-i18n="nav.features">Fonctionnalités</a>
       <a href="#mobile" data-i18n="nav.mobile">Mobile</a>
       <a href="#apercu" data-i18n="nav.gallery">Aperçu</a>
@@ -272,8 +292,8 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
         <h1 style="margin-top:16px" data-i18n-html="hero.title">Votre officine CHIFA, <em>pilotée au dinar près.</em></h1>
         <p class="lead" data-i18n="hero.lead">SmartCHIFA lit directement votre base CHIFA et transforme chaque facture en décisions : bordereaux vérifiés avant dépôt, rejets récupérés, psychotropes tracés — sur votre PC et sur votre téléphone.</p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#essai"><span data-i18n="hero.cta1">Essayer 30 jours gratuitement</span><svg class="arrow"><use href="#i-arrow"/></svg></a>
-          <a class="btn btn-ghost" href="#apercu" data-i18n="hero.cta2">Voir l'application</a>
+          <a class="btn btn-primary" href="https://nadirsmartapp.blob.core.windows.net/chifa-pro/CHIFA.Pro-win-Setup.exe" download><svg><use href="#i-download"/></svg><span data-i18n="hero.dl">Télécharger pour Windows</span></a>
+          <a class="btn btn-ghost" href="#telecharger" data-i18n="hero.cta2">Comment l'installer ?</a>
         </div>
         <ul class="checks">
           <li><svg><use href="#i-check"/></svg><span data-i18n="hero.c1">Aucune ressaisie</span></li>
@@ -313,7 +333,38 @@ footer{padding:48px 0;color:var(--muted);font-size:14px}
   </div>
 </div>
 
-<section id="fonctionnalites">
+<section id="telecharger">
+  <div class="wrap dl">
+    <div class="dl-card reveal">
+      <span class="eyebrow" data-i18n="dl.eyebrow">Téléchargement</span>
+      <h2 data-i18n="dl.title">Installez SmartCHIFA en quelques minutes.</h2>
+      <p data-i18n="dl.p">Un seul fichier à lancer sur le PC où se trouve CHIFA officine. Les mises à jour arrivent ensuite toutes seules.</p>
+      <a class="btn btn-primary" href="https://nadirsmartapp.blob.core.windows.net/chifa-pro/CHIFA.Pro-win-Setup.exe" download><svg><use href="#i-download"/></svg><span data-i18n="dl.btn">Télécharger SmartCHIFA</span></a>
+      <ul class="dl-meta">
+        <li>Windows 10 / 11</li>
+        <li data-i18n="dl.size">≈ 85 Mo</li>
+        <li data-i18n="dl.auto">Mises à jour automatiques</li>
+      </ul>
+      <small data-i18n="dl.help">Besoin d'aide ? Notre équipe peut faire l'installation à distance.</small>
+    </div>
+    <div class="reveal">
+      <div class="sec-head" style="margin-bottom:24px">
+        <span class="eyebrow" data-i18n="how.eyebrow">Mode d'emploi</span>
+        <h2 data-i18n="how.title">Comment ça marche ?</h2>
+      </div>
+      <ol class="howto">
+        <li><div><strong data-i18n="how.s1">Téléchargez l'installateur</strong><span data-i18n-html="how.s1p">Cliquez sur <kbd>Télécharger SmartCHIFA</kbd> et enregistrez le fichier sur le PC de l'officine.</span></div></li>
+        <li><div><strong data-i18n="how.s2">Lancez l'installation</strong><span data-i18n-html="how.s2p">Double-cliquez sur le fichier. Si Windows affiche « Windows a protégé votre ordinateur », cliquez sur <kbd>Informations complémentaires</kbd> puis <kbd>Exécuter quand même</kbd>. Un raccourci est créé sur le Bureau.</span></div></li>
+        <li><div><strong data-i18n="how.s3">Activez votre licence</strong><span data-i18n-html="how.s3p">Au premier lancement, cliquez sur <kbd>Demander une licence</kbd> et remplissez le formulaire. Vous avez déjà un numéro de série ? Saisissez-le puis cliquez sur <kbd>Activer</kbd>.</span></div></li>
+        <li><div><strong data-i18n="how.s4">Connectez la base CHIFA_OFFICINE</strong><span data-i18n-html="how.s4p">Glissez l'icône CHIFA_OFFICINE du Bureau dans la fenêtre (ou <kbd>Parcourir…</kbd>), puis <kbd>Tester</kbd> et <kbd>Enregistrer</kbd>. Vos factures apparaissent aussitôt.</span></div></li>
+        <li><div><strong data-i18n="how.s5">Pilotez votre officine</strong><span data-i18n="how.s5p">Utilisez le menu à gauche : Accueil, Factures, Bordereaux, Psychotropes, Statistiques… Choisissez la période en haut de chaque écran.</span></div></li>
+        <li><div><strong data-i18n="how.s6">Liez votre téléphone (facultatif)</strong><span data-i18n-html="how.s6p">Ouvrez <kbd>Application mobile</kbd> dans le menu, scannez le QR code avec votre téléphone et saisissez le code affiché.</span></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="fonctionnalites" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow" data-i18n="feat.eyebrow">Fonctionnalités</span>
@@ -572,7 +623,16 @@ const AR = {
   "hero.eyebrow":"للصيدليات الجزائرية · CNAS و CASNOS",
   "hero.title":"صيدليتك تحت السيطرة، <em>حتى آخر دينار.</em>",
   "hero.lead":"يقرأ SmartCHIFA قاعدة بيانات الشفاء مباشرة ويحوّل كل فاتورة إلى قرار: جداول إرسال مُراجعة قبل الإيداع، مرفوضات مُسترجعة، ومؤثرات عقلية مُتتبَّعة — على حاسوبك وعلى هاتفك.",
-  "hero.cta1":"جرّبه مجاناً لمدة 30 يوماً","hero.cta2":"شاهد التطبيق",
+  "hero.dl":"تحميل لنظام ويندوز","hero.cta2":"كيف أثبّته؟","nav.download":"تحميل",
+  "dl.eyebrow":"التحميل","dl.title":"ثبّت SmartCHIFA في دقائق.","dl.p":"ملف واحد تشغّله على الحاسوب الذي يوجد فيه برنامج الشفاء. بعد ذلك تصل التحديثات تلقائياً.",
+  "dl.btn":"تحميل SmartCHIFA","dl.size":"≈ 85 ميغابايت","dl.auto":"تحديثات تلقائية","dl.help":"تحتاج مساعدة؟ يمكن لفريقنا التثبيت عن بُعد.",
+  "how.eyebrow":"طريقة الاستعمال","how.title":"كيف يعمل؟",
+  "how.s1":"حمّل ملف التثبيت","how.s1p":"اضغط على <kbd>تحميل SmartCHIFA</kbd> واحفظ الملف على حاسوب الصيدلية.",
+  "how.s2":"شغّل التثبيت","how.s2p":"انقر مرتين على الملف. إذا ظهرت رسالة حماية ويندوز (SmartScreen)، اضغط <kbd>Informations complémentaires</kbd> ثم <kbd>Exécuter quand même</kbd>. يُنشأ اختصار على سطح المكتب.",
+  "how.s3":"فعّل رخصتك","how.s3p":"عند أول تشغيل، اضغط <kbd>Demander une licence</kbd> واملأ الاستمارة. لديك رقم تسلسلي؟ أدخله ثم اضغط <kbd>Activer</kbd>.",
+  "how.s4":"اربط قاعدة CHIFA_OFFICINE","how.s4p":"اسحب أيقونة CHIFA_OFFICINE من سطح المكتب إلى النافذة (أو <kbd>Parcourir…</kbd>)، ثم <kbd>Tester</kbd> و <kbd>Enregistrer</kbd>. تظهر فواتيرك فوراً.",
+  "how.s5":"أدِر صيدليتك","how.s5p":"استعمل القائمة على اليسار: الرئيسية، الفواتير، جداول الإرسال، المؤثرات العقلية، الإحصائيات… واختر الفترة أعلى كل شاشة.",
+  "how.s6":"اربط هاتفك (اختياري)","how.s6p":"افتح <kbd>Application mobile</kbd> من القائمة، امسح رمز QR بهاتفك وأدخل الرمز الظاهر.",
   "hero.c1":"بدون إعادة إدخال","hero.c2":"بياناتك تبقى عندك","hero.c3":"تحديثات تلقائية",
   "hero.alt":"لوحة تحكم SmartCHIFA: رقم الأعمال وعدد الفواتير يومياً",
   "f1.n":"30 يوماً","f1.t":"تجربة مجانية بدون التزام","f2.t":"وكل مراكز الدفع","f3.n":"حاسوب + هاتف","f3.t":"مُضمَّن في كل الصيغ","f4.t":"واجهة بالفرنسية والعربية",
