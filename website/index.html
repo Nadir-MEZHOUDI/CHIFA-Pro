@@ -153,6 +153,13 @@ section{padding:96px 0}
 .mobile-visual .phone{position:static;width:210px}
 .mobile-visual .phone + .phone{margin-top:48px;opacity:.95}
 .mobile-visual .ph-top{background:#082A21}
+.phone-shot{display:block;width:100%;border-radius:23px}
+.pocket{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:40px}
+.pocket figure{margin:0;display:grid;gap:16px;justify-items:center;align-content:start;text-align:center}
+.pocket .phone{position:static;width:100%;max-width:230px}
+.pocket figcaption strong{display:block;font-size:18px}
+.pocket figcaption span{color:var(--muted);font-size:15px}
+@media (max-width:960px){.pocket{grid-template-columns:repeat(2,1fr)}}
 .ph-list .ph-row{border-bottom:1px solid var(--line);padding:4px 0}
 .ph-list .ph-row:last-child{border:0}
 .tag{font-size:8px;font-weight:800;padding:1px 6px;border-radius:999px;background:var(--mint-soft);color:var(--emerald)}
@@ -472,50 +479,33 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
       <div>
         <span class="eyebrow" data-i18n="mob.eyebrow">Application mobile incluse</span>
         <h2 data-i18n="mob.title">Votre pharmacie, dans votre poche.</h2>
-        <p data-i18n="mob.p">En congé, au grossiste ou à la maison : consultez le chiffre du jour, les bordereaux, les rejets et les psychotropes depuis votre téléphone — en temps réel.</p>
+        <p data-i18n="mob.p">En congé, au grossiste ou à la maison : chiffre du jour, statistiques, patients, ordonnances, médicaments et rejets depuis votre téléphone — en temps réel.</p>
         <div class="flow">
           <div class="step"><b>1</b><div><strong data-i18n="mob.s1">Un petit agent sur le PC de l'officine</strong><span data-i18n="mob.s1p">Il se connecte en sortie, de façon chiffrée. Aucun port à ouvrir sur votre routeur.</span></div></div>
           <div class="step"><b>2</b><div><strong data-i18n="mob.s2">Ouvrez SmartCHIFA dans le navigateur</strong><span data-i18n="mob.s2p">Ajoutez-le à l'écran d'accueil : il s'utilise comme une application, Android ou iPhone.</span></div></div>
           <div class="step"><b>3</b><div><strong data-i18n="mob.s3">Vos données ne sont jamais stockées en ligne</strong><span data-i18n="mob.s3p">Les chiffres sont lus à la demande depuis votre officine, puis affichés sur votre téléphone.</span></div></div>
         </div>
       </div>
-      <div class="mobile-visual" aria-hidden="true">
-        <div class="phone">
-          <div class="phone-screen">
-            <div class="ph-top"><small>Aujourd'hui</small><strong>84 312 DA</strong></div>
-            <div class="ph-body">
-              <div class="ph-card"><h4>Top médicaments</h4>
-                <div class="ph-row"><span>DIAMICRON</span><span>123</span></div><div class="ph-bar" style="width:100%"></div>
-                <div class="ph-row"><span>BANDELETTE GLUC.</span><span>82</span></div><div class="ph-bar" style="width:66%"></div>
-                <div class="ph-row"><span>NOVOFORMINE</span><span>81</span></div><div class="ph-bar" style="width:65%"></div>
-                <div class="ph-row"><span>PHYSIOPHORMINE</span><span>39</span></div><div class="ph-bar" style="width:32%"></div>
-              </div>
-              <div class="ph-card"><h4>Factures par heure</h4>
-                <div class="ph-hours"><span style="height:30%"></span><span style="height:95%;background:var(--emerald)"></span><span style="height:50%"></span><span style="height:44%"></span><span style="height:30%"></span><span style="height:80%"></span><span style="height:90%;background:var(--emerald)"></span><span style="height:60%"></span></div>
-              </div>
-            </div>
-            <div class="ph-nav"><i></i><i></i><i></i><i></i><i></i></div>
-          </div>
-        </div>
-        <div class="phone">
-          <div class="phone-screen">
-            <div class="ph-top"><small>Bordereaux</small><strong>12 ce mois</strong></div>
-            <div class="ph-body">
-              <div class="ph-card ph-list"><h4>Derniers dépôts</h4>
-                <div class="ph-row"><span>N° 2026-118 · CNAS</span><span class="tag">Payé</span></div>
-                <div class="ph-row"><span>N° 2026-117 · CNAS</span><span class="tag">Payé</span></div>
-                <div class="ph-row"><span>N° 2026-116 · CASNOS</span><span class="tag" style="background:#FDF0DA;color:#A86A0C">Déposé</span></div>
-                <div class="ph-row"><span>N° 2026-115 · CNAS</span><span class="tag r">2 rejets</span></div>
-              </div>
-              <div class="ph-card ph-list"><h4>Rejets à corriger</h4>
-                <div class="ph-row"><span>Durée dépassée</span><span>3</span></div>
-                <div class="ph-row"><span>Droits expirés</span><span>1</span></div>
-              </div>
-            </div>
-            <div class="ph-nav"><i></i><i></i><i></i><i></i><i></i></div>
-          </div>
-        </div>
+      <div class="mobile-visual">
+        <div class="phone"><img class="phone-shot" src="assets/mobile/m-home.jpg" alt="Accueil de l'application mobile SmartCHIFA : total facturé du mois, part caisse, majorations" data-i18n-alt="mob.alt1" loading="lazy"></div>
+        <div class="phone"><img class="phone-shot" src="assets/mobile/m-stats.jpg" alt="Statistiques mensuelles sur le téléphone : chiffre d'affaires, marge estimée et majorations" data-i18n-alt="mob.alt2" loading="lazy"></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section id="poche" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow" data-i18n="pk.eyebrow">Sur votre téléphone</span>
+      <h2 data-i18n="pk.title">Tout ce qu'il vous faut, dans votre main, à tout moment.</h2>
+      <p data-i18n="pk.sub">Patients, médicaments, ordonnances : tout ce qui concerne votre clientèle, où que vous soyez. Captures réelles d'une officine (noms des patients masqués).</p>
+    </div>
+    <div class="pocket">
+      <figure class="reveal"><div class="phone"><img class="phone-shot" src="assets/mobile/m-patients.jpg" alt="" loading="lazy"></div><figcaption><strong data-i18n="pk.c1">Vos patients</strong><span data-i18n="pk.c1p">Historique de chaque assuré et chroniques à relancer.</span></figcaption></figure>
+      <figure class="reveal"><div class="phone"><img class="phone-shot" src="assets/mobile/m-facture.jpg" alt="" loading="lazy"></div><figcaption><strong data-i18n="pk.c2">Chaque ordonnance</strong><span data-i18n="pk.c2p">Montant, part caisse, médecin, bordereau et médicaments délivrés.</span></figcaption></figure>
+      <figure class="reveal"><div class="phone"><img class="phone-shot" src="assets/mobile/m-meds.jpg" alt="" loading="lazy"></div><figcaption><strong data-i18n="pk.c3">Vos médicaments</strong><span data-i18n="pk.c3p">Boîtes délivrées, patients et chiffre par produit.</span></figcaption></figure>
+      <figure class="reveal"><div class="phone"><img class="phone-shot" src="assets/mobile/m-factures.jpg" alt="" loading="lazy"></div><figcaption><strong data-i18n="pk.c4">Factures en direct</strong><span data-i18n="pk.c4p">Les dernières factures, dès qu'elles sont saisies.</span></figcaption></figure>
     </div>
   </div>
 </section>
@@ -752,10 +742,12 @@ const AR = {
   "t7.h":"إحصائيات شاملة","t7.p":"يومية، أسبوعية، شهرية وسنوية — حسب المنتج والزبون وجدول الإرسال.",
   "t8.h":"مدوّنة الأدوية","t8.p":"الاسم العلمي، الاسم التجاري، الجرعة، الشكل، السعر المرجعي والجنيسات — بحث فوري.",
   "t9.h":"المستخدمون والنسخ الاحتياطي","t9.p":"حساب لكل موظف، نسخ احتياطي واسترجاع مدمجان، وتحديثات في الخلفية.",
-  "mob.eyebrow":"تطبيق الهاتف مُضمَّن","mob.title":"صيدليتك في جيبك.","mob.p":"في عطلة، عند الموزّع أو في البيت: اطّلع على رقم اليوم وجداول الإرسال والمرفوضات والمؤثرات العقلية من هاتفك — في الوقت الحقيقي.",
+  "mob.eyebrow":"تطبيق الهاتف مُضمَّن","mob.title":"صيدليتك في جيبك.","mob.p":"في عطلة، عند الموزّع أو في البيت: رقم اليوم، الإحصائيات، المرضى، الوصفات، الأدوية والمرفوضات من هاتفك — في الوقت الحقيقي.","mob.alt1":"الشاشة الرئيسية لتطبيق الهاتف: مجموع الفواتير للشهر وحصة الصندوق والزيادات","mob.alt2":"الإحصائيات الشهرية على الهاتف: رقم الأعمال والهامش التقديري والزيادات",
   "mob.s1":"وكيل صغير على حاسوب الصيدلية","mob.s1p":"يتصل نحو الخارج باتصال مشفّر. لا حاجة لفتح أي منفذ في الراوتر.",
   "mob.s2":"افتح SmartCHIFA في المتصفح","mob.s2p":"أضفه إلى الشاشة الرئيسية ليعمل كتطبيق، على أندرويد أو آيفون.",
   "mob.s3":"بياناتك لا تُخزَّن على الإنترنت أبداً","mob.s3p":"تُقرأ الأرقام عند الطلب من صيدليتك ثم تُعرض على هاتفك.",
+  "pk.eyebrow":"على هاتفك","pk.title":"كل ما تحتاج إليه بين يديك، في هاتفك وفي أي وقت.","pk.sub":"المرضى، الأدوية والوصفات: كل ما يتعلق بزبائنك، أينما كنت. لقطات حقيقية من صيدلية (أسماء المرضى مخفية).",
+  "pk.c1":"مرضاك","pk.c1p":"سجل كل مؤمَّن والمرضى المزمنون الواجب تذكيرهم.","pk.c2":"كل وصفة","pk.c2p":"المبلغ، حصة الصندوق، الطبيب، الجدول والأدوية المصروفة.","pk.c3":"أدويتك","pk.c3p":"العلب المصروفة، عدد المرضى ورقم الأعمال لكل دواء.","pk.c4":"الفواتير مباشرة","pk.c4p":"آخر الفواتير فور إدخالها.",
   "gal.eyebrow":"لمحة","gal.title":"لقطات حقيقية، لا تصاميم وهمية.","gal.t1":"الرئيسية","gal.t2":"برج المراقبة","gal.t3":"الأدوية",
   "gal.c1":"وصول مباشر لكل وحدة، مع رقم الأعمال وعدد الفواتير لآخر سبعة أيام.","gal.c2":"ساعات الذروة وأكثر الأدوية صرفاً، لتنظيم الفريق والطلبيات.","gal.c3":"مدوّنة كاملة: الاسم العلمي، الجرعة، الشكل، السعر المرجعي والجنيسات.",
   "why.eyebrow":"لماذا SmartCHIFA","why.title":"محلي أولاً. على الإنترنت متى شئت.","why.sub":"الحلول السحابية بالكامل تعتمد على اتصالك وتستضيف بياناتك في مكان آخر. SmartCHIFA يعمل داخل صيدليتك.",
