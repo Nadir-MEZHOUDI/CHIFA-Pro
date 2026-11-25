@@ -1,116 +1,24 @@
-using DevExpress.Utils;
-
 namespace CHIFA.Pro.Views;
 
 /// <summary>
 /// Asks SmartApp for a license without a serial. The pharmacy's details come from the CHIFA database
 /// (Paramètres de l'officine); the phone number is required so SmartApp can call about the payment.
 /// </summary>
-public sealed class LicenseRequestForm : XtraForm
+public sealed partial class LicenseRequestForm : XtraForm
 {
-    private static readonly string[] Wilayas =
-    [
-        "01 Adrar", "02 Chlef", "03 Laghouat", "04 Oum El Bouaghi", "05 Batna", "06 Béjaïa", "07 Biskra", "08 Béchar",
-        "09 Blida", "10 Bouira", "11 Tamanrasset", "12 Tébessa", "13 Tlemcen", "14 Tiaret", "15 Tizi Ouzou", "16 Alger",
-        "17 Djelfa", "18 Jijel", "19 Sétif", "20 Saïda", "21 Skikda", "22 Sidi Bel Abbès", "23 Annaba", "24 Guelma",
-        "25 Constantine", "26 Médéa", "27 Mostaganem", "28 M'Sila", "29 Mascara", "30 Ouargla", "31 Oran", "32 El Bayadh",
-        "33 Illizi", "34 Bordj Bou Arréridj", "35 Boumerdès", "36 El Tarf", "37 Tindouf", "38 Tissemsilt", "39 El Oued",
-        "40 Khenchela", "41 Souk Ahras", "42 Tipaza", "43 Mila", "44 Aïn Defla", "45 Naâma", "46 Aïn Témouchent",
-        "47 Ghardaïa", "48 Relizane", "49 Timimoun", "50 Bordj Badji Mokhtar", "51 Ouled Djellal", "52 Béni Abbès",
-        "53 In Salah", "54 In Guezzam", "55 Touggourt", "56 Djanet", "57 El M'Ghair", "58 El Meniaa"
-    ];
-
     private readonly LicenseClient _client;
-
-    private readonly TextEdit _txtFullName = new();
-    private readonly TextEdit _txtPhone = new();
-    private readonly TextEdit _txtPharmacy = new();
-    private readonly TextEdit _txtEmail = new();
-    private readonly ComboBoxEdit _cboWilaya = new();
-    private readonly TextEdit _txtAddress = new();
-    private readonly TextEdit _txtCodePs = new();
-    private readonly MemoEdit _txtMessage = new();
-    private readonly LabelControl _lblError = new();
-    private readonly SimpleButton _btnSend = new() { Text = "Envoyer la demande" };
-    private readonly SimpleButton _btnCancel = new() { Text = "Annuler", DialogResult = DialogResult.Cancel };
 
     internal LicenseRequestForm(LicenseClient client)
     {
+        InitializeComponent();
         _client = client;
-        BuildLayout();
-        Shown += async (_, _) => await FillAsync();
+        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
     }
+
+    private async void LicenseRequestForm_Shown(object? sender, EventArgs e) => await FillAsync();
 
     /// <summary>The request was sent; the license dialog shows it as pending.</summary>
     public LicenseRequestResult? Result { get; private set; }
-
-    private void BuildLayout()
-    {
-        Text = "Demande de licence SmartCHIFA";
-        ClientSize = new Size(600, 520);
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        MaximizeBox = false;
-        MinimizeBox = false;
-        ShowInTaskbar = false;
-        StartPosition = FormStartPosition.CenterParent;
-        try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch (ArgumentException) { }
-
-        var title = new LabelControl { Text = "Demander une licence", Location = new Point(24, 16) };
-        title.Appearance.Font = new Font("Segoe UI", 14f, FontStyle.Bold);
-
-        var intro = new LabelControl
-        {
-            Text = "Vérifiez vos informations puis envoyez la demande. SmartApp vous appelle pour le paiement de " +
-                   "l'abonnement ; dès qu'il est validé, SmartCHIFA s'active tout seul sur ce poste, sans numéro de série à saisir.",
-            AutoSizeMode = LabelAutoSizeMode.None
-        };
-        intro.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        intro.Appearance.ForeColor = Color.DimGray;
-        intro.SetBounds(24, 50, 552, 40);
-
-        Controls.AddRange([title, intro]);
-
-        var y = 100;
-        AddRow("Nom et prénom du pharmacien *", _txtFullName, ref y, 160);
-        AddRow("Téléphone * (pour le paiement)", _txtPhone, ref y, 40);
-        AddRow("Pharmacie", _txtPharmacy, ref y, 160);
-        AddRow("Email", _txtEmail, ref y, 256);
-        AddRow("Wilaya", _cboWilaya, ref y, 64);
-        AddRow("Adresse", _txtAddress, ref y, 256);
-        AddRow("Code PS", _txtCodePs, ref y, 64);
-
-        var lblMessage = new LabelControl { Text = "Message (facultatif)", Location = new Point(24, y + 6) };
-        _txtMessage.SetBounds(230, y, 346, 54);
-        _txtMessage.Properties.MaxLength = 1000;
-        Controls.AddRange([lblMessage, _txtMessage]);
-        y += 64;
-
-        _cboWilaya.Properties.Items.AddRange(Wilayas);
-        _cboWilaya.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.Standard;
-        _txtPhone.Properties.NullValuePrompt = "05 / 06 / 07 XX XX XX XX";
-
-        _lblError.AutoSizeMode = LabelAutoSizeMode.None;
-        _lblError.Appearance.TextOptions.WordWrap = WordWrap.Wrap;
-        _lblError.Appearance.ForeColor = Color.Crimson;
-        _lblError.SetBounds(24, y, 552, 34);
-
-        _btnSend.SetBounds(316, 474, 160, 32);
-        _btnCancel.SetBounds(486, 474, 90, 32);
-        _btnSend.Click += BtnSend_Click;
-
-        Controls.AddRange([_lblError, _btnSend, _btnCancel]);
-        AcceptButton = _btnSend;
-        CancelButton = _btnCancel;
-    }
-
-    private void AddRow(string label, TextEdit editor, ref int y, int maxLength)
-    {
-        var lbl = new LabelControl { Text = label, Location = new Point(24, y + 6) };
-        editor.SetBounds(230, y, 346, 26);
-        editor.Properties.MaxLength = maxLength;
-        Controls.AddRange([lbl, editor]);
-        y += 36;
-    }
 
     /// <summary>Last sent details first, otherwise the pharmacy's details from the CHIFA database.</summary>
     private async Task FillAsync()
