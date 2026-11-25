@@ -16,6 +16,7 @@ namespace CHIFA.Pro.Views
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             lblTitle = new LabelControl();
             _txtPassword = new TextEdit();
             _lblHint = new LabelControl();
@@ -24,69 +25,86 @@ namespace CHIFA.Pro.Views
             _btnCancel = new SimpleButton();
             ((System.ComponentModel.ISupportInitialize)_txtPassword.Properties).BeginInit();
             SuspendLayout();
-            //
+            // 
             // lblTitle
-            //
+            // 
             lblTitle.Appearance.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
             lblTitle.Appearance.Options.UseFont = true;
-            lblTitle.Location = new Point(24, 18);
+            lblTitle.Location = new Point(11, 7);
+            lblTitle.Margin = new Padding(4);
             lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(272, 28);
             lblTitle.TabIndex = 0;
             lblTitle.Text = "Mot de passe administrateur";
-            //
+            // 
             // _txtPassword
-            //
-            _txtPassword.Location = new Point(24, 56);
+            // 
+            _txtPassword.Location = new Point(30, 48);
+            _txtPassword.Margin = new Padding(4);
             _txtPassword.Name = "_txtPassword";
+            _txtPassword.Properties.Appearance.Font = new Font("Tahoma", 12F);
+            _txtPassword.Properties.Appearance.Options.UseFont = true;
             _txtPassword.Properties.UseSystemPasswordChar = true;
-            _txtPassword.Size = new Size(372, 28);
+            _txtPassword.Size = new Size(465, 30);
             _txtPassword.TabIndex = 1;
-            //
+            // 
             // _lblHint
-            //
+            // 
             _lblHint.Appearance.ForeColor = Color.DimGray;
             _lblHint.Appearance.Options.UseForeColor = true;
             _lblHint.Appearance.Options.UseTextOptions = true;
             _lblHint.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             _lblHint.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblHint.Location = new Point(24, 92);
+            _lblHint.LineVisible = true;
+            _lblHint.Location = new Point(30, 76);
+            _lblHint.Margin = new Padding(4);
             _lblHint.Name = "_lblHint";
-            _lblHint.Size = new Size(372, 20);
+            _lblHint.Size = new Size(465, 56);
             _lblHint.TabIndex = 2;
-            //
+            // 
             // _lblError
-            //
+            // 
             _lblError.Appearance.ForeColor = Color.Firebrick;
             _lblError.Appearance.Options.UseForeColor = true;
-            _lblError.Location = new Point(24, 116);
+            _lblError.Location = new Point(30, 145);
+            _lblError.Margin = new Padding(4);
             _lblError.Name = "_lblError";
+            _lblError.Size = new Size(0, 16);
             _lblError.TabIndex = 3;
-            //
+            // 
             // _btnOk
-            //
-            _btnOk.Location = new Point(170, 150);
+            // 
+            _btnOk.Appearance.Font = new Font("Tahoma", 10F);
+            _btnOk.Appearance.Options.UseFont = true;
+            _btnOk.ImageOptions.Image = (Image)resources.GetObject("_btnOk.ImageOptions.Image");
+            _btnOk.Location = new Point(218, 145);
+            _btnOk.Margin = new Padding(4);
             _btnOk.Name = "_btnOk";
-            _btnOk.Size = new Size(110, 32);
+            _btnOk.Size = new Size(138, 38);
             _btnOk.TabIndex = 4;
             _btnOk.Text = "Connexion";
             _btnOk.Click += BtnOk_Click;
-            //
+            // 
             // _btnCancel
-            //
+            // 
+            _btnCancel.Appearance.Font = new Font("Tahoma", 10F);
+            _btnCancel.Appearance.Options.UseFont = true;
             _btnCancel.DialogResult = DialogResult.Cancel;
-            _btnCancel.Location = new Point(286, 150);
+            _btnCancel.ImageOptions.Image = (Image)resources.GetObject("_btnCancel.ImageOptions.Image");
+            _btnCancel.Location = new Point(364, 145);
+            _btnCancel.Margin = new Padding(4);
             _btnCancel.Name = "_btnCancel";
-            _btnCancel.Size = new Size(110, 32);
+            _btnCancel.Size = new Size(138, 38);
             _btnCancel.TabIndex = 5;
             _btnCancel.Text = "Annuler";
-            //
+            // 
             // LoginForm
-            //
+            // 
             AcceptButton = _btnOk;
-            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = _btnCancel;
-            ClientSize = new Size(420, 200);
+            ClientSize = new Size(509, 191);
             Controls.Add(lblTitle);
             Controls.Add(_txtPassword);
             Controls.Add(_lblHint);
@@ -94,6 +112,8 @@ namespace CHIFA.Pro.Views
             Controls.Add(_btnOk);
             Controls.Add(_btnCancel);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            IconOptions.Image = (Image)resources.GetObject("LoginForm.IconOptions.Image");
+            Margin = new Padding(4);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "LoginForm";
