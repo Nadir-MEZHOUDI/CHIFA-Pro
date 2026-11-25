@@ -27,7 +27,10 @@ public sealed partial class LicenseForm : XtraForm
         ShowState(client.Current);
     }
 
-    private PendingLicenseRequest? Pending => _client.Current.IsValid ? null : _client.PendingRequest;
+    private bool _trialRefused;
+
+    /// <summary>The license request of this computer; a trial keeps it so the paid license can replace the trial.</summary>
+    private PendingLicenseRequest? Pending => _client.Current is { IsValid: true, IsTrial: false } ? null : _client.PendingRequest;
 
     private async void PollTimer_Tick(object? sender, EventArgs e) => await PollRequestAsync();
 
@@ -51,7 +54,18 @@ public sealed partial class LicenseForm : XtraForm
         }
 
         var license = state.License;
-        if (license is not null)
+        if (license is not null && state.IsTrial)
+        {
+            lines.Add($"Version d'essai gratuite : {license.Customer}");
+            if (license.ExpiresAt is { } end)
+            {
+                var days = state.DaysRemaining(DateTimeOffset.UtcNow) ?? 0;
+                lines.Add($"Essai valable jusqu'au : {end.LocalDateTime:dd/MM/yyyy à HH:mm}" +
+                          (days >= 0 ? $" ({days} jour(s) restants)" : string.Empty));
+            }
+            lines.Add("Pour continuer après l'essai, demandez une licence ou saisissez votre numéro de série.");
+        }
+        else if (license is not null)
         {
             lines.Add($"Client : {license.Customer}");
             lines.Add($"Édition : {license.Edition}");
@@ -67,10 +81,11 @@ public sealed partial class LicenseForm : XtraForm
         lines.Add($"Identifiant du poste : {_client.MachineId[..Math.Min(12, _client.MachineId.Length)].ToUpperInvariant()}");
         _lblDetails.Text = string.Join(Environment.NewLine, lines);
 
-        var notLicensed = !state.IsValid;
-        _lblSerial.Visible = _txtSerial.Visible = _btnActivate.Visible = _btnRequest.Visible = notLicensed;
+        var canBuy = !state.IsValid || state.IsTrial;
+        _lblSerial.Visible = _txtSerial.Visible = _btnActivate.Visible = _btnRequest.Visible = canBuy;
+        _btnTrial.Visible = !state.IsValid && !state.IsTrial && !_trialRefused;
         _btnRequest.Text = pending is null ? "Demander une licence (sans numéro de série)" : "Modifier ma demande";
-        AcceptButton = notLicensed ? _btnActivate : _btnClose;
+        AcceptButton = canBuy ? _btnActivate : _btnClose;
         _btnRefresh.Visible = license is not null || pending is not null;
         _btnClose.Text = !_startup ? "Fermer" : state.IsValid ? "Continuer" : "Quitter";
 
@@ -97,6 +112,32 @@ public sealed partial class LicenseForm : XtraForm
         }
 
         await RunAsync(() => _client.RefreshAsync(force: true), "La licence a été vérifiée en ligne.");
+    }
+
+    private void BtnTrial_Click(object? sender, EventArgs e)
+    {
+        using var form = new LicenseRequestForm(_client, trial: true);
+        if (form.ShowDialog(this) != DialogResult.OK || form.TrialState is not { IsValid: true } state)
+        {
+            if (_client.Current.ErrorCode is SmartApp.Licensing.Core.LicenseErrorCodes.TrialUsed or SmartApp.Licensing.Core.LicenseErrorCodes.TrialUnavailable)
+            {
+                _trialRefused = true;
+                ShowState(_client.Current);
+            }
+            return;
+        }
+
+        ShowState(state);
+        var end = state.License?.ExpiresAt is { } trialEnd ? $" jusqu'au {trialEnd.LocalDateTime:dd/MM/yyyy à HH:mm}" : string.Empty;
+        XtraMessageBox.Show(this,
+            $"Votre essai gratuit a commencé : SmartCHIFA fonctionne sur ce poste{end}.\n\n" +
+            "Pour continuer ensuite, demandez une licence depuis le menu « Licence ».",
+            Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        if (_startup)
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
     }
 
     private void BtnRequest_Click(object? sender, EventArgs e)

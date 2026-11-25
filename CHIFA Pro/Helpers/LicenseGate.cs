@@ -76,8 +76,9 @@ internal static class LicenseGate
         if (!state.IsValid && state.License is not null)
             state = RefreshNow();
 
-        // A license request was sent from this computer: if SmartApp approved it, the license installs now.
-        if (!state.IsValid && _client.PendingRequest is not null)
+        // A license request was sent from this computer: if SmartApp approved it, the license installs now
+        // (it also replaces a running trial).
+        if ((!state.IsValid || state.IsTrial) && _client.PendingRequest is not null)
             state = CheckRequestNow();
 
         if (!state.IsValid)
@@ -138,7 +139,7 @@ internal static class LicenseGate
         var license = State is { IsValid: true } s ? s.License : null;
         if (license is null) return null;
         var until = license.ExpiresAt is { } end ? $" · jusqu'au {end.LocalDateTime:dd/MM/yyyy}" : string.Empty;
-        return $"{license.Customer}{until}";
+        return State!.IsTrial ? $"Version d'essai{until}" : $"{license.Customer}{until}";
     }
 
     public static void Dispose()
@@ -200,6 +201,17 @@ internal static class LicenseGate
         var days = state.DaysRemaining(DateTimeOffset.UtcNow);
         if (!state.IsValid || days is null || days > ExpiryWarningDays) return;
 
+        if (state.IsTrial)
+        {
+            XtraMessageBox.Show(
+                $"Version d'essai gratuite : il reste {Math.Max(0, days.Value)} jour(s), jusqu'au " +
+                $"{state.License!.ExpiresAt!.Value.LocalDateTime:dd/MM/yyyy à HH:mm}.\n\n" +
+                "Pour continuer ensuite, ouvrez le menu « Licence » et demandez une licence : " +
+                "SmartApp vous appelle pour le paiement.",
+                "Essai gratuit SmartCHIFA", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
         XtraMessageBox.Show(
             $"Votre abonnement SmartCHIFA se termine le {state.License!.ExpiresAt!.Value.LocalDateTime:dd/MM/yyyy} " +
             $"(dans {Math.Max(0, days.Value)} jour(s)).\n\nContactez SmartApp pour le renouveler : " +
@@ -238,6 +250,15 @@ internal static class LicenseText
     public static string Describe(LicenseState state)
     {
         ArgumentNullException.ThrowIfNull(state);
+        if (state.IsTrial && state.License?.ExpiresAt is { } trialEnd)
+        {
+            if (state.Status == LicenseStatus.Valid)
+                return $"Version d'essai gratuite jusqu'au {trialEnd.LocalDateTime:dd/MM/yyyy à HH:mm}.";
+            if (state.Status == LicenseStatus.Expired)
+                return $"Votre essai gratuit s'est terminé le {trialEnd.LocalDateTime:dd/MM/yyyy}. " +
+                       "Demandez une licence pour continuer à utiliser SmartCHIFA.";
+        }
+
         var fromError = DescribeError(state.ErrorCode);
         if (fromError is not null) return fromError;
 
@@ -245,7 +266,7 @@ internal static class LicenseText
         return state.Status switch
         {
             LicenseStatus.Valid => end is null ? "Licence valide." : $"Licence valide jusqu'au {end}.",
-            LicenseStatus.NotActivated => "Ce poste n'est pas encore activé. Demandez une licence à SmartApp, ou saisissez le numéro de série fourni.",
+            LicenseStatus.NotActivated => "Ce poste n'est pas encore activé. Commencez l'essai gratuit de 7 jours, demandez une licence à SmartApp, ou saisissez le numéro de série fourni.",
             LicenseStatus.Expired => $"Votre abonnement a pris fin le {end}. Après renouvellement, cliquez sur « Vérifier en ligne ».",
             LicenseStatus.RefreshRequired => "La licence doit être vérifiée en ligne. Connectez ce poste à Internet puis cliquez sur « Vérifier en ligne ».",
             LicenseStatus.Revoked => "Ce numéro de série a été révoqué. Contactez SmartApp.",
@@ -272,6 +293,8 @@ internal static class LicenseText
             "unknown_product" => "Cette application n'est pas disponible à l'activation. Contactez SmartApp.",
             "invalid_request" => "Demande incomplète : le nom et le téléphone sont obligatoires.",
             "request_not_found" => "Votre demande n'existe plus. Envoyez une nouvelle demande.",
+            "trial_used" => "L'essai gratuit a déjà été utilisé sur cet ordinateur. Demandez une licence pour continuer.",
+            "trial_unavailable" => "L'essai gratuit n'est pas disponible pour le moment. Demandez une licence.",
             null => null,
             _ => "Le serveur de licences a répondu par une erreur. Réessayez plus tard."
         };

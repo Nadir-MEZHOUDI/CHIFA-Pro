@@ -1,18 +1,32 @@
 namespace CHIFA.Pro.Views;
 
 /// <summary>
-/// Asks SmartApp for a license without a serial. The pharmacy's details come from the CHIFA database
-/// (Paramètres de l'officine); the phone number is required so SmartApp can call about the payment.
+/// Asks SmartApp for a license without a serial, or starts the free trial (<c>trial</c>). The pharmacy's
+/// details come from the CHIFA database (Paramètres de l'officine); the phone number is required so
+/// SmartApp can call about the payment.
 /// </summary>
 public sealed partial class LicenseRequestForm : XtraForm
 {
     private readonly LicenseClient _client;
+    private readonly bool _trial;
 
-    internal LicenseRequestForm(LicenseClient client)
+    internal LicenseRequestForm(LicenseClient client, bool trial = false)
     {
         InitializeComponent();
         _client = client;
+        _trial = trial;
+        if (trial)
+        {
+            Text = lblTitle.Text = "Essai gratuit de 7 jours";
+            lblIntro.Text = "Vérifiez vos informations puis commencez l'essai : SmartCHIFA s'active tout de suite sur ce poste " +
+                            "pour 7 jours, sans paiement. Un seul essai par ordinateur.";
+            lblPhone.Text = "Téléphone *";
+            _btnSend.Text = "Commencer l'essai";
+        }
     }
+
+    /// <summary>The trial license installed by « Commencer l'essai ».</summary>
+    public LicenseState? TrialState { get; private set; }
 
     private async void LicenseRequestForm_Shown(object? sender, EventArgs e) => await FillAsync();
 
@@ -87,7 +101,9 @@ public sealed partial class LicenseRequestForm : XtraForm
         var digits = new string(_txtPhone.Text.Where(char.IsDigit).ToArray());
         if (digits.Length < 9)
         {
-            _lblError.Text = "Saisissez un numéro de téléphone valide : SmartApp vous appelle pour le paiement.";
+            _lblError.Text = _trial
+                ? "Saisissez un numéro de téléphone valide."
+                : "Saisissez un numéro de téléphone valide : SmartApp vous appelle pour le paiement.";
             _txtPhone.Focus();
             return;
         }
@@ -105,6 +121,22 @@ public sealed partial class LicenseRequestForm : XtraForm
         try
         {
             SetBusy(true);
+            if (_trial)
+            {
+                var state = await _client.StartTrialAsync(info);
+                if (!state.IsValid || !state.IsTrial)
+                {
+                    _lblError.Text = LicenseText.DescribeError(state.ErrorCode) ?? state.Message;
+                    return;
+                }
+
+                Program.Telemetry?.TrackFeatureUsed("license.trial.started");
+                TrialState = state;
+                DialogResult = DialogResult.OK;
+                Close();
+                return;
+            }
+
             var result = await _client.SubmitRequestAsync(info);
             if (result.Outcome != LicenseRequestOutcome.Pending)
             {
