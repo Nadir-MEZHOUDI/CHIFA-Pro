@@ -61,6 +61,10 @@ namespace CHIFA.Pro.Views
             accCenters = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accOfficine = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accParametres = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accLogin = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accSecurity = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accLicence = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accMobile = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             barDockControlTop = new DevExpress.XtraBars.BarDockControl();
             barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
             barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
@@ -112,7 +116,7 @@ namespace CHIFA.Pro.Views
             // accordionControl1
             // 
             accordionControl1.Dock = DockStyle.Left;
-            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accAssures, accPsychotropes, accStatistics, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres });
+            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accLogin, accSecurity, accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accAssures, accPsychotropes, accStatistics, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres, accLicence, accMobile });
             accordionControl1.Location = new Point(0, 0);
             accordionControl1.Margin = new Padding(5, 6, 5, 6);
             accordionControl1.Name = "accordionControl1";
@@ -325,7 +329,39 @@ namespace CHIFA.Pro.Views
             accParametres.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accParametres.Text = "PARAMÈTRES";
             accParametres.Click += accParametres_Click;
-            // 
+            //
+            // accLogin
+            //
+            accLogin.ImageOptions.Image = (Image)resources.GetObject("accLogin.ImageOptions.Image");
+            accLogin.Name = "accLogin";
+            accLogin.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accLogin.Text = "CONNEXION ADMIN";
+            accLogin.Click += accLogin_Click;
+            //
+            // accSecurity
+            //
+            accSecurity.ImageOptions.Image = (Image)resources.GetObject("accSecurity.ImageOptions.Image");
+            accSecurity.Name = "accSecurity";
+            accSecurity.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accSecurity.Text = "SÉCURITÉ";
+            accSecurity.Click += accSecurity_Click;
+            //
+            // accLicence
+            //
+            accLicence.ImageOptions.Image = (Image)resources.GetObject("accLicence.ImageOptions.Image");
+            accLicence.Name = "accLicence";
+            accLicence.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accLicence.Text = "LICENCE";
+            accLicence.Click += accLicence_Click;
+            //
+            // accMobile
+            //
+            accMobile.ImageOptions.Image = (Image)resources.GetObject("accMobile.ImageOptions.Image");
+            accMobile.Name = "accMobile";
+            accMobile.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accMobile.Text = "APPLICATION MOBILE";
+            accMobile.Click += accMobile_Click;
+            //
             // barDockControlTop
             // 
             barDockControlTop.CausesValidation = false;
@@ -690,6 +726,10 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraBars.Navigation.AccordionControlElement accMedicaments;
         private DevExpress.XtraBars.Navigation.AccordionControlSeparator accordionControlSeparator4;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accParametres;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accLogin;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accSecurity;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accLicence;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accMobile;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accStatistics;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsBordereaux;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accStatisticsYearly;
