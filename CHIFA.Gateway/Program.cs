@@ -91,6 +91,21 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
 
+// Cloudflare turns the phone app's "no-cache" (index.html, service worker, unversioned scripts) into a 4-hour
+// browser cache, so phones would keep the old version; it leaves "private" responses alone.
+app.Use((context, next) =>
+{
+    var response = context.Response;
+    response.OnStarting(() =>
+    {
+        var cacheControl = response.Headers.CacheControl.ToString();
+        if (cacheControl == "no-cache" || (cacheControl.Length == 0 && response.ContentType?.StartsWith("text/html") == true))
+            response.Headers.CacheControl = "private, no-cache";
+        return Task.CompletedTask;
+    });
+    return next();
+});
+
 app.MapGet("/health", () => Results.Ok("ok")).AllowAnonymous();
 app.MapHub<AgentConnectionHub>(AgentHub.Route);
 app.MapAuthEndpoints();

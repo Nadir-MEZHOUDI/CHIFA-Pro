@@ -112,7 +112,57 @@
         })();
     </script>
     <script src="_framework/blazor.webassembly.js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });</script>
+    <script>
+        (async () => {
+            if (!('serviceWorker' in navigator)) return;
+            const sw = navigator.serviceWorker;
+            const openedAt = Date.now();
+            let pending = null, applied = false, banner = null;
+
+            // Reload only after this page asked a new version to take over, so a first install or a reload can never loop.
+            sw.addEventListener('controllerchange', () => { if (applied) location.reload(); });
+
+            const apply = () => {
+                if (!pending || applied) return;
+                applied = true;
+                pending.postMessage({ type: 'SKIP_WAITING' });
+            };
+            const editing = () => document.activeElement?.matches('input, textarea, select') ?? false;
+            // While the pharmacist is typing, the update waits for their tap (or the next start of the app).
+            const show = () => {
+                banner ??= Object.assign(document.body.appendChild(document.createElement('div')), { className: 'update-banner', role: 'status' });
+                if (editing()) {
+                    banner.innerHTML = '<span>Nouvelle version disponible</span><button type="button" class="button small">Mettre à jour</button>';
+                    banner.querySelector('button').onclick = apply;
+                } else {
+                    banner.innerHTML = '<span>Nouvelle version disponible — mise à jour…</span>';
+                    setTimeout(() => editing() ? show() : apply(), 2500);
+                }
+            };
+            const offer = (worker) => {
+                if (pending === worker) return;
+                pending = worker;
+                if (Date.now() - openedAt < 10000) apply();
+                else show();
+            };
+            const watch = (registration) => {
+                if (registration.waiting && sw.controller) offer(registration.waiting);
+                registration.addEventListener('updatefound', () => {
+                    const worker = registration.installing;
+                    worker?.addEventListener('statechange', () => {
+                        if (worker.state === 'installed' && sw.controller) offer(worker);
+                    });
+                });
+            };
+
+            const registration = await sw.register('service-worker.js', { updateViaCache: 'none' });
+            watch(registration);
+            const check = () => registration.update().catch(() => { });
+            check();
+            setInterval(check, 30 * 60 * 1000);
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+        })();
+    </script>
 </body>
 
 </html>
