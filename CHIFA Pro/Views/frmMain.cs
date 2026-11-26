@@ -469,7 +469,8 @@ public partial class FrmMain : XtraForm
     {
         try
         {
-            var db = new ChifaDb();
+            // Undisposed, the connection never went back to the pool: one leaked server connection per refresh.
+            await using var db = new ChifaDb();
             var bords = await db.Bordereaus
                 .Where(x => x.Etat == 'O')
                 .Select(x => new BordNotification

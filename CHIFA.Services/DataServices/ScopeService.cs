@@ -61,7 +61,7 @@ public class ScopeService
             .ToList();
     }
 
-    public async ValueTask<IEnumerable<PsychotropeDto>> GetPsychotropesAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null)
+    public async ValueTask<IEnumerable<PsychotropeDto>> GetPsychotropesAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null, CancellationToken cancellationToken = default)
     {
         var activePeriod = period ?? Period;
         var start = activePeriod.Start;
@@ -123,7 +123,7 @@ public class ScopeService
             })
             // Regulatory register: every dispensing of the period must be listed, never truncated.
             .OrderByDescending(p => p.DateDelivrance)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return list.Select(d => new PsychotropeDto

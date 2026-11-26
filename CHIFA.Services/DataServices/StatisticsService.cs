@@ -10,7 +10,7 @@ public class StatisticsService
 
     public readonly Period Period = new();
 
-    public async ValueTask<ScopeDashboardDto> GetScopeDashboardAsync(Period? period = null)
+    public async ValueTask<ScopeDashboardDto> GetScopeDashboardAsync(Period? period = null, CancellationToken cancellationToken = default)
     {
         var activePeriod = period ?? Period;
         await using var db = new ChifaDb();
@@ -31,14 +31,14 @@ public class StatisticsService
                 CountFact = g.Count(),
                 DistinctAssures = g.CountExt(f => f.NumAssure, Sql.AggregateModifier.Distinct)
             })
-            .FirstOrDefaultAsync()
+            .FirstOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var totalBoxes = await db.DetailFacts
             .Where(d => d.Facture.DateFact != null)
             .Where(d => (activePeriod.Start == null || d.Facture.DateFact >= activePeriod.Start) &&
                         (activePeriod.EndExclusive == null || d.Facture.DateFact < activePeriod.EndExclusive))
-            .SumAsync(d => (decimal?)d.Qte)
+            .SumAsync(d => (decimal?)d.Qte, cancellationToken)
             .ConfigureAwait(false) ?? 0m;
 
         var hourlyRaw = await facturesQuery
@@ -49,7 +49,7 @@ public class StatisticsService
                 Count = g.Count(),
                 Total = g.Sum(f => f.MontFact) ?? 0m
             })
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var hourlyList = Enumerable.Range(8, 14)
@@ -76,7 +76,7 @@ public class StatisticsService
                 MontantMaj = g.Sum(f => f.MontMaj) ?? 0m
             })
             .OrderByDescending(c => c.MontantTotal)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var topProducts = await db.DetailFacts
@@ -94,7 +94,7 @@ public class StatisticsService
             })
             .OrderByDescending(p => p.QuantiteTotale)
             .Take(10)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return new ScopeDashboardDto
@@ -223,7 +223,7 @@ public class StatisticsService
     private static string D(DateTime? date, string format) =>
         date?.ToString(format, System.Globalization.CultureInfo.InvariantCulture) ?? "";
 
-    public async ValueTask<IEnumerable<BordStatDto>> BordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = null, Period? period = null)
+    public async ValueTask<IEnumerable<BordStatDto>> BordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = null, Period? period = null, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var start = (period ?? Period).Start;
@@ -250,12 +250,12 @@ public class StatisticsService
                     Virement = x.MontVir
                 })
             .OrderBy(x => x.DateFin)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
         return query;
     }
 
-    public async ValueTask<IEnumerable<YearlyStat>> YearlyAsync(Period? period = null)
+    public async ValueTask<IEnumerable<YearlyStat>> YearlyAsync(Period? period = null, CancellationToken cancellationToken = default)
     {
         Expression<Func<Facture, bool>> predicate = x => true;
 
@@ -278,12 +278,12 @@ public class StatisticsService
                 Beneficiaires = x.CountExt(f => f.NumAssure + "|" + f.RangAd, Sql.AggregateModifier.Distinct)
             })
             .OrderBy(x => x.Year)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
         return list;
     }
 
-    public async ValueTask<IEnumerable<MonthlyStat>> MonthlyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null)
+    public async ValueTask<IEnumerable<MonthlyStat>> MonthlyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var monthlyRows = await db.Factures
@@ -305,7 +305,7 @@ public class StatisticsService
                 Beneficiaires = x.CountExt(f => f.NumAssure + "|" + f.RangAd, Sql.AggregateModifier.Distinct)
             })
             .OrderBy(x => x.DateDebut)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var list = monthlyRows
@@ -329,7 +329,7 @@ public class StatisticsService
         return list;
     }
 
-    public async ValueTask<IEnumerable<WeeklyStat>> WeeklyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null)
+    public async ValueTask<IEnumerable<WeeklyStat>> WeeklyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var weeklyRows = await db.Factures
@@ -348,7 +348,7 @@ public class StatisticsService
                 Beneficiaires = x.CountExt(f => f.NumAssure + "|" + f.RangAd, Sql.AggregateModifier.Distinct)
             })
             .OrderByDescending(x => x.DateDebut)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var query = weeklyRows
@@ -370,7 +370,7 @@ public class StatisticsService
         return query;
     }
 
-    public async ValueTask<IEnumerable<DailyStat>> DailyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null)
+    public async ValueTask<IEnumerable<DailyStat>> DailyAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var query = await db.Factures
@@ -389,12 +389,12 @@ public class StatisticsService
                 Beneficiaires = g.CountExt(f => f.NumAssure + "|" + f.RangAd, Sql.AggregateModifier.Distinct)
             })
             .OrderByDescending(x => x.DateTime)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
         return query;
     }
 
-    public async ValueTask<IEnumerable<ClientsStat>> ByClientAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null)
+    public async ValueTask<IEnumerable<ClientsStat>> ByClientAsync(Expression<Func<Facture, bool>>? predicate = null, Period? period = null, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var factures = db.Factures.Where(predicate.SetPeriod(period ?? Period));
@@ -414,7 +414,7 @@ public class StatisticsService
                 Factures = x.Count()
             })
             .OrderByDescending(x => x.MantFact)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         // Boxes in a second grouped query: as a per-client subquery it rescanned facture for each client.
@@ -423,7 +423,7 @@ public class StatisticsService
                 join d in db.DetailFacts on f.NumFact equals d.NumFact
                 group d by new { f.NumAssure, f.RangAd } into g
                 select new { g.Key.NumAssure, g.Key.RangAd, Qte = g.Sum(d => d.Qte) })
-            .ToDictionaryAsync(x => ((string?)x.NumAssure, (string?)x.RangAd), x => x.Qte)
+            .ToDictionaryAsync(x => ((string?)x.NumAssure, (string?)x.RangAd), x => x.Qte, cancellationToken)
             .ConfigureAwait(false);
 
         return list.Select(x => new ClientsStat
@@ -441,7 +441,7 @@ public class StatisticsService
             })
             .ToList();
     }
-    public async ValueTask<IEnumerable<ProductStat>> ProductsAsync(Expression<Func<DetailFact, bool>>? predicate = null, Period? period = null)
+    public async ValueTask<IEnumerable<ProductStat>> ProductsAsync(Expression<Func<DetailFact, bool>>? predicate = null, Period? period = null, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var query = await db.DetailFacts
@@ -463,7 +463,7 @@ public class StatisticsService
                 Maj = x.Sum(m => m.MajLocal)
             })
             .OrderByDescending(x => x.Qt)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return query;

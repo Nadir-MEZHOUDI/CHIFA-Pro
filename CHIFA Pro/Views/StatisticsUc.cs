@@ -10,7 +10,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 {
     private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
     private readonly HashSet<StatisticsSection> _loadedSections = [];
-    private CancellationTokenSource? _reloadCts;
+    private readonly ReloadCancellation _reloads = new();
     private StatisticsSection _selectedSection = StatisticsSection.Bordereaux;
     private StatisticsView _selectedView = StatisticsView.Table;
     private bool _suspendDateEvents;
@@ -238,10 +238,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         if (_disposed || IsDisposed)
             return new CancellationToken(true);
 
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = new CancellationTokenSource();
-        return _reloadCts.Token;
+        return _reloads.Next();
     }
 
     private void UpdatePeriodFromEditors()
@@ -281,7 +278,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             }
             if (tab.Name is nameof(tabBordereaux) or nameof(tabBordereauxTable))
             {
-                var data = await StatisticsService.Instance.BordereauxAsync();
+                var data = await StatisticsService.Instance.BordereauxAsync(cancellationToken: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
@@ -289,7 +286,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             }
             if (tab.Name is nameof(tabMonthly) or nameof(tabMonthlyTable))
             {
-                var data = await StatisticsService.Instance.MonthlyAsync();
+                var data = await StatisticsService.Instance.MonthlyAsync(cancellationToken: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
@@ -297,7 +294,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             }
             if (tab.Name is nameof(tabWeekly) or nameof(tabWeeklyTable))
             {
-                var data = await StatisticsService.Instance.WeeklyAsync();
+                var data = await StatisticsService.Instance.WeeklyAsync(cancellationToken: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
@@ -305,7 +302,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             }
             if (tab.Name is nameof(tabDaily) or nameof(tabDailyTable))
             {
-                var data = await StatisticsService.Instance.DailyAsync();
+                var data = await StatisticsService.Instance.DailyAsync(cancellationToken: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
@@ -313,7 +310,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             }
             if (tab.Name is nameof(tabClients) or nameof(tabClientsTable))
             {
-                var data = await StatisticsService.Instance.ByClientAsync();
+                var data = await StatisticsService.Instance.ByClientAsync(cancellationToken: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
@@ -321,7 +318,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             }
             if (tab.Name is nameof(tabProducts2) or nameof(tabProductTable))
             {
-                var data = await StatisticsService.Instance.ProductsAsync();
+                var data = await StatisticsService.Instance.ProductsAsync(cancellationToken: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
@@ -329,7 +326,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             }
             if (tab.Name is nameof(tabYearly) or nameof(tabYearlyTable))
             {
-                var data = await StatisticsService.Instance.YearlyAsync();
+                var data = await StatisticsService.Instance.YearlyAsync(cancellationToken: cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
@@ -458,7 +455,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
 
     private async Task ReloadDashboardAsync(CancellationToken cancellationToken)
     {
-        var dashboard = await StatisticsService.Instance.GetScopeDashboardAsync(StatisticsService.Instance.Period);
+        var dashboard = await StatisticsService.Instance.GetScopeDashboardAsync(StatisticsService.Instance.Period, cancellationToken);
 
         if (cancellationToken.IsCancellationRequested) return;
 
@@ -676,9 +673,7 @@ public partial class StatisticsUc : XtraUserControl, INavigable
             return;
         _disposed = true;
 
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = null;
+        _reloads.Stop();
     }
 }
 
