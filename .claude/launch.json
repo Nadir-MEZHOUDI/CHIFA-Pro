@@ -16,7 +16,7 @@
     {
       "name": "mobile",
       "runtimeExecutable": "pwsh",
-      "runtimeArgs": ["-NoProfile", "-Command", "$env:ASPNETCORE_URLS='http://localhost:10652'; $env:ASPNETCORE_ENVIRONMENT='Development'; dotnet run --project CHIFA.Mobile --no-launch-profile"],
+      "runtimeArgs": ["-NoProfile", "-Command", "$env:ASPNETCORE_URLS='http://localhost:' + ($env:PORT ?? '10652'); $env:ASPNETCORE_ENVIRONMENT='Development'; dotnet run --project CHIFA.Mobile --no-launch-profile"],
       "port": 10652
     }
   ]
