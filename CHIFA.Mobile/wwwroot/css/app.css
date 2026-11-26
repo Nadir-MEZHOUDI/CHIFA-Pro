@@ -487,6 +487,100 @@ body:has(.login) {
 .login input.code-input::placeholder { color: var(--line); font-weight: 600; }
 .login .hint { font-size: .8rem; color: var(--muted); line-height: 1.5; margin: .4rem 0 0; }
 
+.link-guide {
+    margin: 1.1rem 0 .2rem;
+    padding: .9rem 1rem .9rem 2.2rem;
+    border-radius: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    font-size: .86rem;
+    line-height: 1.5;
+    color: var(--text);
+}
+
+.link-guide li + li { margin-top: .35rem; }
+.link-guide li::marker { color: var(--emerald); font-weight: 700; }
+
+.scan-button { display: flex; align-items: center; justify-content: center; gap: .55rem; margin-top: .7rem; }
+.scan-button svg { width: 22px; height: 22px; }
+
+.scan-problem { margin: .4rem 0 0; font-size: .82rem; line-height: 1.45; color: var(--bad); }
+
+.login .or {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: 1rem 0 -.4rem;
+    font-size: .78rem;
+    color: var(--muted);
+    text-align: center;
+}
+
+.login .or::before, .login .or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+
+/* QR code scanner: full screen camera with a frame to aim at SmartCHIFA's code */
+.scanner {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 1.5rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+}
+
+.scanner video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+.scanner-frame {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    width: min(68vw, 280px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 24px;
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .55);
+    outline: 3px solid var(--mint);
+    outline-offset: -3px;
+}
+
+.scanner-frame::after {
+    content: "";
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: var(--mint);
+    box-shadow: 0 0 12px var(--mint);
+    animation: scan-line 2s ease-in-out infinite alternate;
+}
+
+@keyframes scan-line { from { top: 12%; } to { top: 88%; } }
+
+@media (prefers-reduced-motion: reduce) { .scanner-frame::after { animation: none; top: 50%; } }
+
+.scanner-guide {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    max-width: 340px;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #fff;
+    font-size: .88rem;
+    line-height: 1.45;
+}
+
+.scanner-guide strong { font-size: 1.05rem; }
+.scanner-guide b { color: var(--mint); }
+.scanner-notice { margin-top: .3rem; padding: .35rem .8rem; border-radius: 999px; background: rgba(0, 0, 0, .6); color: #ffd27a; font-weight: 600; }
+
+.scanner-cancel { position: relative; min-width: 12rem; }
+
 .link-button {
     align-self: center;
     margin-top: .6rem;

@@ -130,6 +130,72 @@
         })();
     </script>
     <script>
+        // Reads the QR code shown in SmartCHIFA, menu « Application mobile ». The camera's own BarcodeDetector
+        // where it exists (Android), jsQR otherwise (iPhone), loaded only then.
+        window.chifa.scanner = (() => {
+            let session = 0, stream = null, timer = 0;
+
+            const loadJsQr = () => window.jsQR ? Promise.resolve() : new Promise((ok, fail) =>
+                document.head.appendChild(Object.assign(document.createElement('script'), { src: 'lib/jsQR.js', onload: ok, onerror: fail })));
+
+            const reader = async (video) => {
+                if ('BarcodeDetector' in window && (await BarcodeDetector.getSupportedFormats()).includes('qr_code')) {
+                    const detector = new BarcodeDetector({ formats: ['qr_code'] });
+                    return async () => (await detector.detect(video))[0]?.rawValue;
+                }
+                await loadJsQr();
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d', { willReadFrequently: true });
+                return async () => {
+                    const scale = Math.min(1, 720 / Math.max(video.videoWidth, video.videoHeight));
+                    const width = canvas.width = Math.round(video.videoWidth * scale);
+                    const height = canvas.height = Math.round(video.videoHeight * scale);
+                    if (!width || !height) return null;
+                    context.drawImage(video, 0, 0, width, height);
+                    return jsQR(context.getImageData(0, 0, width, height).data, width, height, { inversionAttempts: 'dontInvert' })?.data;
+                };
+            };
+
+            const stop = () => {
+                session++;
+                clearTimeout(timer);
+                stream?.getTracks().forEach(track => track.stop());
+                stream = null;
+            };
+
+            // Returns 'ok', 'denied' (camera refused) or 'unavailable'. Each value read goes to OnScanned
+            // until it answers true.
+            const start = async (video, ref) => {
+                stop();
+                const current = session;
+                if (!navigator.mediaDevices?.getUserMedia) return 'unavailable';
+                let read;
+                try { read = await reader(video); } catch { return 'unavailable'; }
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+                } catch (e) {
+                    return e.name === 'NotAllowedError' || e.name === 'SecurityError' ? 'denied' : 'unavailable';
+                }
+                if (current !== session) { stream.getTracks().forEach(track => track.stop()); return 'ok'; }
+
+                video.srcObject = stream;
+                await video.play().catch(() => { });
+                const tick = async () => {
+                    if (current !== session) return;
+                    let value = null;
+                    try { if (video.readyState >= 2) value = await read(); } catch { }
+                    if (current !== session) return;
+                    if (value && await ref.invokeMethodAsync('OnScanned', value)) { stop(); return; }
+                    timer = setTimeout(tick, 180);
+                };
+                tick();
+                return 'ok';
+            };
+
+            return { start, stop };
+        })();
+    </script>
+    <script>
         (() => {
             const screen = document.getElementById('offline');
             const retry = screen.querySelector('.offline-retry');

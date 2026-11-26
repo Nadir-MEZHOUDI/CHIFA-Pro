@@ -1,6 +1,7 @@
 @page "/login"
 @layout EmptyLayout
 @using System.Text.RegularExpressions
+@implements IAsyncDisposable
 @inject Api Api
 @inject Session Session
 @inject NavigationManager Nav
@@ -13,12 +14,26 @@
 
     @if (!_withPassword)
     {
+        <ol class="link-guide">
+            <li>Sur l'ordinateur de la pharmacie, ouvrez <strong>SmartCHIFA</strong>, menu <strong>Application mobile</strong>.</li>
+            <li>Touchez <strong>Scanner le QR code</strong> et visez le QR code affiché à l'écran.</li>
+        </ol>
+
+        <button class="button scan-button" type="button" disabled="@_busy" @onclick="StartScan">
+            <svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 8h3v3H8zM13 13h3v3h-3zM13 8h3M8 16h3" /></svg>
+            Scanner le QR code
+        </button>
+
+        @if (_scanProblem is not null)
+        {
+            <p class="scan-problem" role="alert">@_scanProblem</p>
+        }
+
+        <p class="or">ou saisissez le code affiché sous le QR code</p>
+
         <EditForm Model="this" OnSubmit="LinkAsync" FormName="link">
-            <label>
-                Code affiché dans SmartCHIFA
-                <input class="code-input" value="@_code" @oninput="CodeChanged" placeholder="ABCD-2345" maxlength="9"
-                       autocomplete="one-time-code" autocapitalize="characters" autocorrect="off" spellcheck="false" />
-            </label>
+            <input class="code-input" value="@_code" @oninput="CodeChanged" placeholder="ABCD-2345" maxlength="9" aria-label="Code affiché dans SmartCHIFA"
+                   autocomplete="one-time-code" autocapitalize="characters" autocorrect="off" spellcheck="false" />
 
             @if (_error is not null)
             {
@@ -30,10 +45,7 @@
             </button>
         </EditForm>
 
-        <p class="hint">
-            Sur l'ordinateur de la pharmacie, ouvrez SmartCHIFA, menu <strong>Application mobile</strong>.
-            Le code ne sert qu'une fois : le téléphone reste ensuite connecté.
-        </p>
+        <p class="hint">Le code ne sert qu'une fois : le téléphone reste ensuite connecté.</p>
         <p class="hint">Sur iPhone, ajoutez d'abord l'application à l'écran d'accueil, puis liez-la depuis l'icône.</p>
         <button class="link-button" @onclick="() => { _withPassword = true; _error = null; }">Se connecter avec un identifiant</button>
     }
@@ -62,6 +74,23 @@
     }
 </div>
 
+@if (_scanning)
+{
+    <div class="scanner" role="dialog" aria-modal="true" aria-label="Scanner le QR code">
+        <video @ref="_video" playsinline muted autoplay></video>
+        <div class="scanner-frame" aria-hidden="true"></div>
+        <div class="scanner-guide">
+            <strong>Visez le QR code de SmartCHIFA</strong>
+            <span>Sur l'ordinateur de la pharmacie, menu <b>Application mobile</b>.</span>
+            @if (_scanNotice is not null)
+            {
+                <span class="scanner-notice" role="status">@_scanNotice</span>
+            }
+        </div>
+        <button class="button secondary scanner-cancel" type="button" @onclick="StopScanAsync">Annuler</button>
+    </div>
+}
+
 @code {
     /// <summary>Set by the QR code shown in SmartCHIFA: the phone links without typing.</summary>
     [SupplyParameterFromQuery(Name = "code")]
@@ -73,6 +102,13 @@
     private string Password { get; set; } = "";
     private bool _busy;
     private ApiException? _error;
+
+    private bool _scanning;
+    private bool _startScanner;
+    private string? _scanNotice;
+    private string? _scanProblem;
+    private ElementReference _video;
+    private DotNetObjectReference<Login>? _self;
 
     private bool IsComplete => Regex.IsMatch(_code, "^[A-Z0-9]{4}-[A-Z0-9]{4}$");
 
@@ -90,6 +126,64 @@
             Nav.NavigateTo("");
     }
 
+    private void StartScan()
+    {
+        _scanProblem = null;
+        _scanNotice = null;
+        _error = null;
+        _scanning = true;
+        _startScanner = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The <video> the camera plays in exists only once the scanner has rendered.
+        if (!_startScanner) return;
+        _startScanner = false;
+        _self ??= DotNetObjectReference.Create(this);
+        var result = await Js.InvokeAsync<string>("chifa.scanner.start", _video, _self);
+        if (result == "ok") return;
+
+        _scanning = false;
+        _scanProblem = result == "denied"
+            ? "L'accès à la caméra a été refusé. Autorisez la caméra pour SmartCHIFA dans les réglages du téléphone, ou saisissez le code."
+            : "La caméra n'est pas disponible sur cet appareil. Saisissez le code affiché sous le QR code.";
+        StateHasChanged();
+    }
+
+    /// <summary>Called for each QR code the camera reads; true stops the camera.</summary>
+    [JSInvokable]
+    public async Task<bool> OnScanned(string value)
+    {
+        if (!_scanning) return true;
+        if (CodeIn(value) is not { } code)
+        {
+            _scanNotice = "Ce QR code n'est pas celui de SmartCHIFA.";
+            StateHasChanged();
+            return false;
+        }
+
+        _scanning = false;
+        _code = code;
+        StateHasChanged();
+        _ = LinkAsync();
+        return true;
+    }
+
+    private async Task StopScanAsync()
+    {
+        _scanning = false;
+        await Js.InvokeVoidAsync("chifa.scanner.stop");
+    }
+
+    /// <summary>The code in SmartCHIFA's QR code (a link ending in ?code=ABCD-2345), or a bare code.</summary>
+    private static string? CodeIn(string value)
+    {
+        var query = Regex.Match(value, "[?&]code=([^&#]+)");
+        var raw = query.Success ? Uri.UnescapeDataString(query.Groups[1].Value) : value.Trim();
+        return Regex.IsMatch(raw, "^[A-Za-z0-9]{4}-?[A-Za-z0-9]{4}$") ? Format(raw) : null;
+    }
+
     private void CodeChanged(ChangeEventArgs e) => _code = Format(e.Value?.ToString());
 
     /// <summary>Upper case, the dash added after four characters, whatever was typed or pasted.</summary>
@@ -103,6 +197,7 @@
     {
         _busy = true;
         _error = null;
+        StateHasChanged();
         try
         {
             await Api.PairAsync(_code, DeviceName(await Js.InvokeAsync<string>("chifa.userAgent")));
@@ -115,6 +210,7 @@
         finally
         {
             _busy = false;
+            StateHasChanged();
         }
     }
 
@@ -135,6 +231,18 @@
         {
             _busy = false;
         }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await Js.InvokeVoidAsync("chifa.scanner.stop");
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        _self?.Dispose();
     }
 
     /// <summary>Shown in SmartCHIFA's list of linked phones.</summary>
