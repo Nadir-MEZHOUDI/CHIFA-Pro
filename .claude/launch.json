@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "website",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path'),r=p.join(process.cwd(),'website'),t={'.html':'text/html; charset=utf-8','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml'};h.createServer((q,s)=>{let u=decodeURIComponent(q.url.split('?')[0]);if(u.endsWith('/'))u+='index.html';const x=p.join(r,u);if(!x.startsWith(r))return s.writeHead(403).end();f.readFile(x,(e,d)=>{if(e)return s.writeHead(404).end();s.writeHead(200,{'Content-Type':t[p.extname(x)]||'application/octet-stream'}).end(d)})}).listen(5180,'127.0.0.1')"],
+      "port": 5180
+    },
+    {
+      "name": "gateway",
+      "runtimeExecutable": "pwsh",
+      "runtimeArgs": ["-NoProfile", "-Command", "$env:ConnectionStrings__Gateway=[Environment]::GetEnvironmentVariable('ConnectionStrings__Gateway','User'); $env:Gateway__AdminKey=[guid]::NewGuid().ToString('N'); $env:Jwt__SigningKey=[guid]::NewGuid().ToString('N')+[guid]::NewGuid().ToString('N'); dotnet run --project CHIFA.Gateway --launch-profile CHIFA.Gateway --urls http://localhost:8309"],
+      "port": 8309
+    },
+    {
+      "name": "mobile",
+      "runtimeExecutable": "pwsh",
+      "runtimeArgs": ["-NoProfile", "-Command", "$env:ASPNETCORE_URLS='http://localhost:10652'; $env:ASPNETCORE_ENVIRONMENT='Development'; dotnet run --project CHIFA.Mobile --no-launch-profile"],
+      "port": 10652
+    }
+  ]
+}
