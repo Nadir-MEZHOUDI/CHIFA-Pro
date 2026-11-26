@@ -535,7 +535,7 @@ body:has(.login) {
 .update-banner span:only-child { padding-right: .4rem; }
 
 /* No internet screen (index.html) */
-.offline {
+.offline-screen {
     position: fixed;
     inset: 0;
     z-index: 2000;
@@ -547,7 +547,7 @@ body:has(.login) {
         var(--bg);
     animation: offline-in .25s ease-out;
 }
-.offline[hidden] { display: none; }
+.offline-screen[hidden] { display: none; }
 
 .offline-card {
     width: 100%;
@@ -590,8 +590,8 @@ body:has(.login) {
 }
 .offline-ring + .offline-ring { animation-delay: 1.2s; }
 
-.offline h1 { font-family: var(--f-display); font-size: 1.6rem; line-height: 1.15; margin: 0; color: var(--text); }
-.offline p { margin: 0; color: var(--muted); line-height: 1.55; font-size: .95rem; }
+.offline-screen h1 { font-family: var(--f-display); font-size: 1.6rem; line-height: 1.15; margin: 0; color: var(--text); }
+.offline-screen p { margin: 0; color: var(--muted); line-height: 1.55; font-size: .95rem; }
 
 .offline-tips {
     list-style: none;
@@ -631,13 +631,49 @@ body:has(.login) {
 
 .offline-status { min-height: 1.2em; font-size: .82rem; font-weight: 600; color: var(--muted); }
 
+/* Pharmacy PC offline (PharmacyOffline.razor): same look, inside the page instead of over it. */
+.offline-screen.pharmacy-offline {
+    position: static;
+    inset: auto;
+    z-index: auto;
+    min-height: calc(100dvh - 180px);
+    padding: 1rem 0 2rem;
+    background: none;
+}
+.pharmacy-offline .offline-ring { border-color: color-mix(in srgb, var(--bad) 40%, transparent); }
+.offline-badge {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bad);
+    border: 3px solid var(--bg);
+}
+
+.last-seen {
+    width: 100%;
+    margin-top: .6rem;
+    padding: .9rem 1rem;
+    border-radius: var(--radius);
+    background: var(--bad-soft);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .15rem;
+}
+.last-seen span { font-size: .74rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--bad); }
+.last-seen strong { font-family: var(--f-display); font-size: 1.35rem; color: var(--text); }
+.last-seen small { font-size: .82rem; color: var(--muted); }
+
 @keyframes offline-in { from { opacity: 0; } }
 @keyframes offline-pulse {
     from { transform: scale(1); opacity: 1; }
     to { transform: scale(1.9); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .offline, .offline-ring { animation: none; }
+    .offline-screen, .offline-ring { animation: none; }
 }
 
 /* Lists and details */

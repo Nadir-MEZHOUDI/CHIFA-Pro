@@ -61,7 +61,16 @@
                 }
             </header>
 
-            <main class="content">@Body</main>
+            <main class="content">
+                @if (PharmacyDown)
+                {
+                    <PharmacyOffline Status="_status!" Retry="RefreshStatusAsync" />
+                }
+                else
+                {
+                    @Body
+                }
+            </main>
         </div>
 
         <nav class="tabbar">
@@ -100,16 +109,27 @@
         _timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
         do
         {
-            try
-            {
-                _status = await Api.StatusAsync();
-                StateHasChanged();
-            }
-            catch (ApiException)
-            {
-            }
+            await RefreshStatusAsync();
         } while (await _timer.WaitForNextTickAsync());
     }
+
+    private async Task RefreshStatusAsync()
+    {
+        try
+        {
+            _status = await Api.StatusAsync();
+            StateHasChanged();
+        }
+        catch (ApiException)
+        {
+        }
+    }
+
+    // These pages are served by the gateway itself, so they keep working while the pharmacy PC is off.
+    private static readonly string[] GatewayPages = ["notifications", "abonnement"];
+
+    private bool PharmacyDown =>
+        _status is { Online: false } && !GatewayPages.Contains(Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#', '/')[0]);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

@@ -1,0 +1,56 @@
+<div class="offline-screen pharmacy-offline" role="status">
+    <div class="offline-card">
+        <div class="offline-art" aria-hidden="true">
+            <span class="offline-ring"></span>
+            <span class="offline-ring"></span>
+            <svg viewBox="0 0 24 24"><path d="M3 4h18v12H3zM8 20h8M12 16v4" /></svg>
+            <span class="offline-badge"></span>
+        </div>
+        <h1>Pharmacie hors ligne</h1>
+        <p>Le PC de <strong>@Status.Name</strong> ne répond pas. Les données de la pharmacie s'afficheront dès qu'il sera de nouveau connecté.</p>
+
+        <div class="last-seen">
+            <span>Dernière connexion</span>
+            <strong>@Fmt.Ago(Status.LastSeenAt)</strong>
+            @if (Status.LastSeenAt is { } seen)
+            {
+                <small>@Fmt.LongDay(seen.ToLocalTime()) @Fmt.Stamp(seen.ToLocalTime())</small>
+            }
+        </div>
+
+        <ul class="offline-tips">
+            <li><svg viewBox="0 0 24 24"><path d="M12 2v10M18.4 6.6a9 9 0 1 1-12.8 0" /></svg>Le PC de la pharmacie est allumé</li>
+            <li><svg viewBox="0 0 24 24"><path d="M3 4h18v12H3zM8 20h8M12 16v4" /></svg>SmartCHIFA est ouvert sur ce PC</li>
+            <li><svg viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16.1a5 5 0 0 1 7 0M12 20h.01M2 8.8a15 15 0 0 1 20 0" /></svg>La pharmacie est connectée à Internet</li>
+        </ul>
+
+        <button type="button" class="button wide" disabled="@_checking" @onclick="RetryAsync">
+            @(_checking ? "Vérification…" : "Réessayer")
+        </button>
+        <span class="offline-status" aria-live="polite">@(_checked ? "Toujours hors ligne. " : "")Vérification automatique toutes les 30 s.</span>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public OfficineStatus Status { get; set; } = default!;
+    [Parameter] public Func<Task>? Retry { get; set; }
+
+    private bool _checking;
+    private bool _checked;
+
+    private async Task RetryAsync()
+    {
+        if (Retry is null)
+            return;
+        _checking = true;
+        try
+        {
+            await Retry();
+        }
+        finally
+        {
+            _checking = false;
+            _checked = true;
+        }
+    }
+}
