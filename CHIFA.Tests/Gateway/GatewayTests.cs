@@ -255,6 +255,22 @@ public class GatewayTests(GatewayFixture gateway)
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
+    [Theory]
+    [InlineData("/")]
+    [InlineData("/factures")]
+    [InlineData("/index.html")]
+    [InlineData("/service-worker.js")]
+    public async Task Phone_app_shell_is_always_revalidated_even_behind_cloudflare(string path)
+    {
+        using var client = gateway.CreateClient();
+
+        var response = await client.GetAsync(path);
+
+        response.EnsureSuccessStatusCode();
+        response.Headers.CacheControl!.Private.Should().BeTrue();
+        response.Headers.CacheControl.NoCache.Should().BeTrue();
+    }
+
     private HubConnection AgentAnsweringInfo(string agentKey, string officine)
     {
         var agent = gateway.CreateAgentConnection(agentKey);
