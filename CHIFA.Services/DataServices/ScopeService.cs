@@ -221,12 +221,30 @@ public class ScopeService
         };
     }
 
-    public async ValueTask<IEnumerable<FactureDto>> GetRecentFacturesLiveAsync(int limit = 50)
+    /// <summary>
+    /// The last factures. Digits match the facture number or the insured's number; words match the
+    /// insured's or the patient's name (every word).
+    /// </summary>
+    public async ValueTask<IEnumerable<FactureDto>> GetRecentFacturesLiveAsync(int limit = 50, string? text = null)
     {
         await using var db = new ChifaDb();
+
+        var factures = db.Factures.AsQueryable();
+        var term = text?.Trim();
+        if (!string.IsNullOrEmpty(term))
+        {
+            if (term.All(char.IsDigit))
+                factures = factures.Where(f => f.NumFact.Contains(term) || f.NumAssure!.StartsWith(term));
+            else
+                foreach (var word in term.ToUpperInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(5))
+                    factures = factures.Where(f =>
+                        (f.Assure.Nom + " " + f.Assure.Prenom).ToUpper().Contains(word) ||
+                        (f.Beneficiaire.Nom + " " + f.Beneficiaire.Prenom).ToUpper().Contains(word));
+        }
+
         // Pick the last factures first: with the joins in the same SELECT, PostgreSQL joined and checked
         // every facture before applying the LIMIT.
-        var numFacts = await db.Factures
+        var numFacts = await factures
             .OrderByDescending(f => f.DateFact)
             .Take(limit)
             .Select(f => f.NumFact)

@@ -6,6 +6,8 @@
     <button class="button secondary small" @onclick="LoadAsync" disabled="@_loading">Actualiser</button>
 </div>
 
+<SearchBox Value="@_search" Placeholder="N° de facture, nom ou N° d'assuré" Search="SearchAsync" />
+
 @if (_error is not null)
 {
     <ErrorBox Error="_error" Retry="LoadAsync" />
@@ -16,7 +18,7 @@ else if (_items is null)
 }
 else if (_items.Count == 0)
 {
-    <div class="empty">Aucune facture.</div>
+    <div class="empty">@(string.IsNullOrEmpty(_search) ? "Aucune facture." : "Aucune facture ne correspond.")</div>
 }
 else
 {
@@ -30,20 +32,35 @@ else
     private List<Facture>? _items;
     private ApiException? _error;
     private bool _loading;
+    private string _search = "";
 
     protected override Task OnInitializedAsync() => LoadAsync();
 
+    private async Task SearchAsync(string text)
+    {
+        if (text == _search)
+            return;
+        _search = text;
+        _items = null;
+        await LoadAsync();
+    }
+
     private async Task LoadAsync()
     {
+        var search = _search;
         _loading = true;
         _error = null;
         try
         {
-            _items = await Api.RecentFacturesAsync();
+            var items = await Api.RecentFacturesAsync(search);
+            if (search != _search)
+                return; // A newer search started while this one was loading.
+            _items = items;
         }
         catch (ApiException ex)
         {
-            _error = ex;
+            if (search == _search)
+                _error = ex;
         }
         finally
         {

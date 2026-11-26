@@ -101,8 +101,8 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
     public Task<Dashboard> DashboardAsync(Period period) =>
         GetAsync<Dashboard>($"api/officine/dashboard?{period.Query}");
 
-    public Task<List<Facture>> RecentFacturesAsync(int take = 50) =>
-        GetAsync<List<Facture>>($"api/officine/factures/recent?take={take}");
+    public Task<List<Facture>> RecentFacturesAsync(string? search = null, int take = 50) =>
+        GetAsync<List<Facture>>($"api/officine/factures/recent?take={take}&q={Uri.EscapeDataString(search ?? "")}");
 
     public Task<Page<Rejet>> RejetsAsync(Period period, int skip) => PageAsync<Rejet>("rejets", period, skip);
 

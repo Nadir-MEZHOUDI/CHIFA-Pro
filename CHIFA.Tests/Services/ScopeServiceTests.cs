@@ -50,4 +50,19 @@ public class ScopeServiceTests : IDisposable
         liveFactures.Should().NotBeNull();
         liveFactures.Count.Should().BeLessThanOrEqualTo(10);
     }
+
+    [Fact]
+    public async Task GetRecentFacturesLiveAsync_FindsByNumFactNumAssureAndName()
+    {
+        var sample = (await _svc.GetRecentFacturesLiveAsync(1)).SingleOrDefault();
+        if (sample is null)
+            return;
+
+        (await _svc.GetRecentFacturesLiveAsync(50, sample.NumFact)).Should().Contain(f => f.NumFact == sample.NumFact);
+        (await _svc.GetRecentFacturesLiveAsync(50, sample.NumAssure)).Should().OnlyContain(f => f.NumAssure!.StartsWith(sample.NumAssure!) || f.NumFact.Contains(sample.NumAssure!));
+
+        var word = sample.Assure?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+        if (word is not null)
+            (await _svc.GetRecentFacturesLiveAsync(50, word.ToLowerInvariant())).Should().Contain(f => f.NumFact == sample.NumFact);
+    }
 }

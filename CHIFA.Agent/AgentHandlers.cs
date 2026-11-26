@@ -37,7 +37,7 @@ public class AgentHandlers(ILogger<AgentHandlers> logger)
                 ToPage((await ScopeService.Instance.GetPsychotropesAsync(ToPeriod(q))).OrderByDescending(p => p.DateDelivrance), q)));
 
         connection.On<PageQuery, IEnumerable<FactureDto>>(AgentMethods.GetRecentFactures, q =>
-            RunAsync(AgentMethods.GetRecentFactures, async () => await ScopeService.Instance.GetRecentFacturesLiveAsync(q.SafeTake)));
+            RunAsync(AgentMethods.GetRecentFactures, async () => await ScopeService.Instance.GetRecentFacturesLiveAsync(q.SafeTake, q.Text)));
 
         connection.On<string, FactureFullDto?>(AgentMethods.GetFacture, numFact =>
             RunAsync(AgentMethods.GetFacture, async () => await PatientService.Instance.GetFactureAsync(numFact)));
