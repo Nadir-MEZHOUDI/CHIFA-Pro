@@ -3,7 +3,9 @@ using CHIFA.Pro.Helpers.Settings;
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
 using LinqToDB.Async;
+using System.Net.Sockets;
 using Velopack;
+using Velopack.Exceptions;
 
 namespace CHIFA.Pro.Views;
 
@@ -311,12 +313,22 @@ public partial class FrmMain : XtraForm
     }
 
 
+    private const string UpdateFeedUrl = "https://nadirsmartapp.blob.core.windows.net/chifa-pro";
+    private static readonly SemaphoreSlim UpdateGate = new(1, 1);
+
     public async Task UpdateAppAsync(bool showMessage = false)
     {
+        if (!await UpdateGate.WaitAsync(0))
+        {
+            if (showMessage)
+                await ShowNotification("Une mise à jour est déjà en cours", "Mise à jour");
+            return;
+        }
+
         try
         {
             progressBar.Visible = true;
-            var mgr = new UpdateManager("https://nadirsmartapp.blob.core.windows.net/chifa-pro");
+            var mgr = new UpdateManager(UpdateFeedUrl);
 
             if (!mgr.IsInstalled)
             {
@@ -339,14 +351,49 @@ public partial class FrmMain : XtraForm
                 mgr.ApplyUpdatesAndRestart(newVersion);
             }
         }
+        catch (Exception ex) when (FindInChain<AcquireLockFailedException>(ex) is not null)
+        {
+            Serilog.Log.Information(ex, "Update skipped: another update operation holds the Velopack lock");
+            if (showMessage)
+                await ShowNotification("Une mise à jour est déjà en cours", "Mise à jour");
+        }
+        catch (Exception ex) when (IsUpdateServerUnreachable(ex))
+        {
+            // The next startup or manual check retries; reporting these would only measure customers' internet.
+            Serilog.Log.Warning(ex, "Update check skipped: update server unreachable");
+            if (showMessage)
+                await ShowNotification("Serveur de mise à jour injoignable. Vérifiez votre connexion Internet et réessayez plus tard.",
+                    "Mise à jour", ToolTipIcon.Warning);
+        }
         catch (Exception ex)
         {
-            ex.Log(false);
+            ex.Log(showMessage);
         }
         finally
         {
             progressBar.Visible = false;
+            UpdateGate.Release();
         }
+    }
+
+    private static bool IsUpdateServerUnreachable(Exception ex) =>
+        FindInChain<HttpRequestException>(ex) is not null ||
+        FindInChain<SocketException>(ex) is not null ||
+        FindInChain<TimeoutException>(ex) is not null ||
+        ex is OperationCanceledException;
+
+    private static T? FindInChain<T>(Exception? ex) where T : Exception
+    {
+        for (; ex is not null; ex = ex.InnerException)
+        {
+            if (ex is T match)
+                return match;
+            if (ex is AggregateException agg)
+                foreach (var inner in agg.InnerExceptions)
+                    if (FindInChain<T>(inner) is { } found)
+                        return found;
+        }
+        return null;
     }
 
 
