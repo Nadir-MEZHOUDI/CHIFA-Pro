@@ -2,6 +2,7 @@ using CHIFA.Services.Dtos;
 using CHIFA.Services.DataServices;
 using DataModel;
 using LinqToDB;
+using LinqToDB.Data;
 using Xunit.Abstractions;
 
 namespace CHIFA.Tests.Services;
@@ -151,6 +152,30 @@ public class ChifaServiceTests : IDisposable
         using var w = StartWatch();
         var p = await _svc.GetFirstOfficineAsync();
         p.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task ReadFirstOfficineAsync_OldSchemaWithoutDateMedicament2_ReadsOtherColumns()
+    {
+        var expected = await _svc.GetFirstOfficineAsync();
+
+        // A temp table shadows public.parametre for this connection only, like an older CHIFA_OFFICINE schema.
+        await using var db = new ChifaDb();
+        await db.ExecuteAsync("create temp table parametre as select * from parametre limit 1");
+        try
+        {
+            await db.ExecuteAsync("alter table pg_temp.parametre drop column date_medicament2");
+
+            var p = await ChifaService.ReadFirstOfficineAsync(db);
+
+            p.Should().NotBeNull();
+            p!.CodePs.Should().Be(expected!.CodePs);
+            p.DateMedicament2.Should().BeNull();
+        }
+        finally
+        {
+            await db.ExecuteAsync("drop table if exists pg_temp.parametre");
+        }
     }
 
     [Fact]

@@ -1,5 +1,7 @@
 ﻿global using LinqToDB;
 using LinqToDB.Async;
+using LinqToDB.Data;
+using Npgsql;
 namespace CHIFA.Services.DataServices;
 
 public class ChifaService
@@ -219,8 +221,57 @@ public class ChifaService
     public async ValueTask<Parametre?> GetFirstOfficineAsync()
     {
         await using var db = new ChifaDb();
-        return await db.Parametres.FirstOrDefaultAsync()
-                .ConfigureAwait(false);
+        return await ReadFirstOfficineAsync(db).ConfigureAwait(false);
+    }
+
+    internal static async ValueTask<Parametre?> ReadFirstOfficineAsync(ChifaDb db)
+    {
+        try
+        {
+            return await db.Parametres.FirstOrDefaultAsync().ConfigureAwait(false);
+        }
+        catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.UndefinedColumn)
+        {
+            var entity = db.MappingSchema.GetEntityDescriptor(typeof(Parametre));
+            var columns = await db.QueryToListAsync<string>(ColumnsSql, ColumnsParameter(entity)).ConfigureAwait(false);
+            return await db.Parametres.Select(ExistingColumnsProjection<Parametre>(entity, columns)).FirstOrDefaultAsync().ConfigureAwait(false);
+        }
+    }
+
+    public Parametre? GetFirstOfficine()
+    {
+        using var db = new ChifaDb();
+        try
+        {
+            return db.Parametres.FirstOrDefault();
+        }
+        catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.UndefinedColumn)
+        {
+            var entity = db.MappingSchema.GetEntityDescriptor(typeof(Parametre));
+            var columns = db.Query<string>(ColumnsSql, ColumnsParameter(entity)).ToList();
+            return db.Parametres.Select(ExistingColumnsProjection<Parametre>(entity, columns)).FirstOrDefault();
+        }
+    }
+
+    // Resolves the table through search_path like the failing query did; regclass works on CHIFA's PostgreSQL 9.x.
+    private const string ColumnsSql =
+        "select attname::text from pg_attribute where attrelid = @table::text::regclass and attnum > 0 and not attisdropped";
+
+    private static DataParameter ColumnsParameter(LinqToDB.Mapping.EntityDescriptor entity) =>
+        new("table", entity.Name.Schema is { } schema ? $"\"{schema}\".\"{entity.Name.Name}\"" : $"\"{entity.Name.Name}\"", DataType.NVarChar);
+
+    /// <summary>
+    /// CHIFA_OFFICINE owns the schema, and older versions of it lack columns CHIFA2.Data maps
+    /// (parametre.date_medicament2...): reads only the mapped columns that this database has.
+    /// </summary>
+    private static Expression<Func<T, T>> ExistingColumnsProjection<T>(LinqToDB.Mapping.EntityDescriptor entity, IEnumerable<string> columns)
+    {
+        var existing = columns.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var row = Expression.Parameter(typeof(T), "x");
+        var bindings = entity.Columns
+            .Where(c => existing.Contains(c.ColumnName))
+            .Select(c => Expression.Bind(c.MemberInfo, Expression.MakeMemberAccess(row, c.MemberInfo)));
+        return Expression.Lambda<Func<T, T>>(Expression.MemberInit(Expression.New(typeof(T)), bindings), row);
     }
 
     public async ValueTask<IEnumerable<Forme>> GetFormesAsync()

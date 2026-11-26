@@ -12,4 +12,8 @@
 		<PackageReference Include="Npgsql" Version="10.*" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="CHIFA.Tests" />
+	</ItemGroup>
+
 </Project>

@@ -27,8 +27,7 @@ public static class FactureReportService
                     {
                         try
                         {
-                            using var db = new ChifaDb();
-                            _officine = db.Parametres.FirstOrDefault();
+                            _officine = ChifaService.Instance.GetFirstOfficine();
                         }
                         catch (Exception ex)
                         {
