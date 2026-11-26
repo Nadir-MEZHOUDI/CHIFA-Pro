@@ -116,9 +116,9 @@ public sealed partial class ConnectionForm : XtraForm
 
     private async Task<bool> TestAsync()
     {
-        if (!IsLocal && string.IsNullOrWhiteSpace(Server))
+        if (!IsLocal && !DbConnectionRules.TryNormalizeHost(Server, out _, out var hostError))
         {
-            ShowStatus("Saisissez le nom ou l'adresse IP du poste serveur.", false);
+            ShowStatus(hostError!, false);
             _cboServer.Focus();
             return false;
         }

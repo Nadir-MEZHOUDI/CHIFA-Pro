@@ -31,12 +31,9 @@ public partial class ParametersUc : XtraUserControl, INavigable
         {
             Cursor.Current = Cursors.WaitCursor;
 
-            var server = rbtServer.Checked ? "localhost" : txtServerName.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(server))
+            if (!DbConnectionRules.TryNormalizeHost(rbtServer.Checked ? "localhost" : txtServerName.Text, out var server, out var hostError))
             {
-                XtraMessageBox.Show("Veuillez sélectionner ou saisir le nom du serveur.", "Paramètres",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                XtraMessageBox.Show(hostError, "Paramètres", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -172,8 +169,14 @@ Vérifiez le nom du serveur ou que PostgreSQL est démarré.",
     {
         try
         {
+            if (!DbConnectionRules.TryNormalizeHost(rbtServer.Checked ? "localhost" : txtServerName.Text, out var server, out var hostError))
+            {
+                XtraMessageBox.Show(hostError, "Paramètres", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             Cursor.Current = Cursors.WaitCursor;
-            var isConnected = await DbChecker.CheckDbConnectionAsync(rbtServer.Checked ? "localhost" : txtServerName.Text);
+            var isConnected = await DbChecker.CheckDbConnectionAsync(server);
 
             if (isConnected)
             {
