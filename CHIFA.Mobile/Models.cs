@@ -268,6 +268,13 @@ public record PushSubscriptionInfo(string Endpoint, string P256dh, string Auth);
 
 public record PushKey(string PublicKey);
 
+/// <param name="Status"><c>unknown</c>, <c>active</c>, <c>trial</c>, <c>expiring</c> or <c>expired</c>.</param>
+/// <param name="CheckedAt">When SmartCHIFA last sent its license to the server.</param>
+public record Subscription(string Status, bool IsTrial, DateTime? ExpiresAt, int? DaysLeft, DateTime? CheckedAt);
+
+/// <param name="IsCurrent">This phone.</param>
+public record PhoneDevice(Guid Id, string Name, DateTime CreatedAt, DateTime? LastSeenAt, bool IsCurrent);
+
 /// <summary>One day of the home chart (today first). <see cref="Marge"/> is estimated like on the desktop home page.</summary>
 public record DayStat(DateTime Date, int Factures, decimal Montant, decimal Maj, decimal Marge);
 

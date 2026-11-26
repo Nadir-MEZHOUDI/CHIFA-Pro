@@ -176,6 +176,19 @@ namespace CHIFA.Gateway.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_seen_at");
 
+                    b.Property<DateTime?>("LicenseCheckedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("license_checked_at");
+
+                    b.Property<string>("LicenseEdition")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("license_edition");
+
+                    b.Property<DateTime?>("LicenseExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("license_expires_at");
+
                     b.Property<Guid?>("LicenseId")
                         .HasColumnType("uuid")
                         .HasColumnName("license_id");

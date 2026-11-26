@@ -20,6 +20,7 @@ public static class LinkEndpoints
         pharmacy.MapPost(LinkRoutes.Codes, CreateCodeAsync);
         pharmacy.MapGet(LinkRoutes.Devices, ListDevicesAsync);
         pharmacy.MapDelete(LinkRoutes.Devices + "/{id:guid}", RemoveDeviceAsync);
+        pharmacy.MapPost(LinkRoutes.License, UpdateLicenseAsync);
     }
 
     /// <summary>
@@ -46,6 +47,7 @@ public static class LinkEndpoints
         {
             pharmacy = new Pharmacy { Name = PharmacyName(license.Customer), LicenseId = license.LicenseId, AgentKeyHash = AgentKeys.Hash(key) };
             db.Pharmacies.Add(pharmacy);
+            KeepLicense(pharmacy, license);
         }
         else if (!pharmacy.IsActive)
         {
@@ -55,6 +57,7 @@ public static class LinkEndpoints
         else
         {
             pharmacy.AgentKeyHash = AgentKeys.Hash(key);
+            KeepLicense(pharmacy, license);
         }
 
         await db.SaveChangesAsync(ct);
@@ -111,12 +114,54 @@ public static class LinkEndpoints
     /// <summary>For a lost or replaced phone: it is signed out on its next request.</summary>
     private static async Task<IResult> RemoveDeviceAsync(Guid id, ClaimsPrincipal user, IDbContextFactory<GatewayDbContext> dbFactory, CancellationToken ct)
     {
+        await using var db = await dbFactory.CreateDbContextAsync(ct);
+        return await RevokeDeviceAsync(db, user.GetPharmacyId(), id, ct) ? Results.NoContent() : Results.NotFound();
+    }
+
+    /// <summary>Signs the phone out at once and stops its notifications. False when the pharmacy has no such active phone.</summary>
+    public static async Task<bool> RevokeDeviceAsync(GatewayDbContext db, Guid pharmacyId, Guid deviceId, CancellationToken ct)
+    {
+        var removed = await db.MobileDevices
+            .Where(d => d.Id == deviceId && d.PharmacyId == pharmacyId && d.RevokedAt == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(d => d.RevokedAt, DateTime.UtcNow), ct);
+        if (removed == 0)
+            return false;
+
+        await db.PushSubscriptions.Where(s => s.DeviceId == deviceId).ExecuteDeleteAsync(ct);
+        return true;
+    }
+
+    /// <summary>
+    /// CHIFA Pro sends its license file again after each online check-in, so the phone shows the current
+    /// end of the subscription. The signature makes the dates trustworthy.
+    /// </summary>
+    private static async Task<IResult> UpdateLicenseAsync(
+        LicenseUpdateRequest request,
+        ClaimsPrincipal user,
+        IDbContextFactory<GatewayDbContext> dbFactory,
+        IOptions<GatewayOptions> options,
+        CancellationToken ct)
+    {
+        var license = LicenseTokens.Verify(request.License, options.Value.LicensePublicKey, options.Value.LicenseProduct, DateTimeOffset.UtcNow, out var error);
+        if (license is null)
+            return Results.Problem(title: error, statusCode: StatusCodes.Status403Forbidden);
+
         var pharmacyId = user.GetPharmacyId();
         await using var db = await dbFactory.CreateDbContextAsync(ct);
-        var removed = await db.MobileDevices
-            .Where(d => d.Id == id && d.PharmacyId == pharmacyId && d.RevokedAt == null)
-            .ExecuteUpdateAsync(s => s.SetProperty(d => d.RevokedAt, DateTime.UtcNow), ct);
-        return removed > 0 ? Results.NoContent() : Results.NotFound();
+        var pharmacy = await db.Pharmacies.FirstAsync(p => p.Id == pharmacyId, ct);
+        if (pharmacy.LicenseId != license.LicenseId)
+            return Results.Problem(title: "Cette licence n'est pas celle de cette pharmacie.", statusCode: StatusCodes.Status403Forbidden);
+
+        KeepLicense(pharmacy, license);
+        await db.SaveChangesAsync(ct);
+        return Results.NoContent();
+    }
+
+    private static void KeepLicense(Pharmacy pharmacy, VerifiedLicense license)
+    {
+        pharmacy.LicenseExpiresAt = license.ExpiresAt?.UtcDateTime;
+        pharmacy.LicenseEdition = license.Edition is { Length: > 50 } edition ? edition[..50] : license.Edition;
+        pharmacy.LicenseCheckedAt = DateTime.UtcNow;
     }
 
     private static string PharmacyName(string? customer)

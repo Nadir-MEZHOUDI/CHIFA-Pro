@@ -139,6 +139,15 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 
     public Task TestPushAsync(string endpoint) => PostAsync("api/push/test", new { endpoint });
 
+    public Task<Subscription> SubscriptionAsync() => GetAsync<Subscription>("api/subscription");
+
+    public Task<List<PhoneDevice>> DevicesAsync() => GetAsync<List<PhoneDevice>>("api/devices");
+
+    public async Task RemoveDeviceAsync(Guid id)
+    {
+        using var _ = await SendAsync(HttpMethod.Delete, $"api/devices/{id}", null);
+    }
+
     private Task<Page<T>> PageAsync<T>(string route, Period period, int skip) =>
         GetAsync<Page<T>>($"api/officine/{route}?{period.Query}&skip={skip}&take={PageSize}");
 

@@ -1,0 +1,205 @@
+@page "/abonnement"
+@inject Api Api
+
+<div class="page-head"><h1>Abonnement et appareils</h1></div>
+
+<section class="card subscription">
+    <div class="card-head">
+        <h2>Abonnement SmartCHIFA</h2>
+        @if (_subscription is { } s)
+        {
+            <span class="tag @BadgeClass(s.Status)">@BadgeText(s.Status)</span>
+        }
+    </div>
+
+    @if (_subscriptionError is not null)
+    {
+        <ErrorBox Error="_subscriptionError" Retry="LoadSubscriptionAsync" />
+    }
+    else if (_subscription is not { } sub)
+    {
+        <Loading Text="Chargement…" />
+    }
+    else if (sub.Status == "unknown")
+    {
+        <p class="muted small">
+            La licence de la pharmacie n'est pas encore connue. Mettez à jour SmartCHIFA sur l'ordinateur de la pharmacie
+            puis ouvrez-le : l'abonnement s'affichera ici.
+        </p>
+    }
+    else
+    {
+        @if (sub.DaysLeft is { } days && sub.Status != "expired")
+        {
+            <div class="sub-days @BadgeClass(sub.Status)">
+                <strong>@days</strong>
+                <span>@(days > 1 ? "jours restants" : "jour restant")</span>
+            </div>
+        }
+        <dl class="facts">
+            <div><dt>Type</dt><dd>@(sub.IsTrial ? "Essai gratuit" : "Abonnement")</dd></div>
+            <div><dt>@(sub.Status == "expired" ? "Terminé le" : "Valable jusqu'au")</dt><dd>@(sub.ExpiresAt is { } end ? Fmt.Date(end.ToLocalTime()) : "Sans limite")</dd></div>
+            <div><dt>Licence vérifiée</dt><dd>@Fmt.Ago(sub.CheckedAt)</dd></div>
+        </dl>
+        @if (Advice(sub) is { } advice)
+        {
+            <p class="hint small @(sub.Status == "expired" ? "bad-text" : "muted")">@advice</p>
+        }
+    }
+</section>
+
+<section class="card">
+    <h2>Téléphones liés@(_devices is { } list ? $" ({list.Count})" : "")</h2>
+
+    @if (_devicesError is not null)
+    {
+        <ErrorBox Error="_devicesError" Retry="LoadDevicesAsync" />
+    }
+    else if (_devices is null)
+    {
+        <Loading Text="Chargement…" />
+    }
+    else if (_devices.Count == 0)
+    {
+        <p class="muted">Aucun téléphone lié.</p>
+    }
+    else
+    {
+        <ul class="lines devices">
+            @foreach (var d in _devices)
+            {
+                <li>
+                    <div class="item-head">
+                        <strong>@d.Name</strong>
+                        @if (d.IsCurrent)
+                        {
+                            <span class="tag ok">Cet appareil</span>
+                        }
+                        else if (_confirming != d.Id)
+                        {
+                            <button class="button secondary small" disabled="@_removing" @onclick="() => AskRemove(d.Id)">Retirer</button>
+                        }
+                    </div>
+                    <div class="item-sub">
+                        <span>Lié le @Fmt.Date(d.CreatedAt.ToLocalTime())</span>
+                        <span>Vu @Fmt.Ago(d.LastSeenAt)</span>
+                    </div>
+                    @if (_confirming == d.Id)
+                    {
+                        <div class="confirm">
+                            <span>Retirer « @d.Name » ? Il sera déconnecté tout de suite.</span>
+                            <div class="notify-actions">
+                                <button class="button small danger" disabled="@_removing" @onclick="() => RemoveAsync(d.Id)">@(_removing ? "Retrait…" : "Retirer")</button>
+                                <button class="button secondary small" disabled="@_removing" @onclick="CancelRemove">Annuler</button>
+                            </div>
+                        </div>
+                    }
+                </li>
+            }
+        </ul>
+    }
+
+    @if (_removeError is not null)
+    {
+        <p class="small bad-text">@_removeError.Title @_removeError.Detail</p>
+    }
+    <p class="hint muted small">
+        Pour lier un autre téléphone, affichez un code dans SmartCHIFA (Application mobile).
+        Pour retirer ce téléphone, utilisez « Se déconnecter » dans le menu.
+    </p>
+</section>
+
+@code {
+    private Subscription? _subscription;
+    private ApiException? _subscriptionError;
+    private List<PhoneDevice>? _devices;
+    private ApiException? _devicesError;
+    private Guid? _confirming;
+    private bool _removing;
+    private ApiException? _removeError;
+
+    protected override Task OnInitializedAsync() => Task.WhenAll(LoadSubscriptionAsync(), LoadDevicesAsync());
+
+    private async Task LoadSubscriptionAsync()
+    {
+        _subscriptionError = null;
+        _subscription = null;
+        try
+        {
+            _subscription = await Api.SubscriptionAsync();
+        }
+        catch (ApiException ex)
+        {
+            _subscriptionError = ex;
+        }
+    }
+
+    private async Task LoadDevicesAsync()
+    {
+        _devicesError = null;
+        _devices = null;
+        try
+        {
+            _devices = await Api.DevicesAsync();
+        }
+        catch (ApiException ex)
+        {
+            _devicesError = ex;
+        }
+    }
+
+    private void AskRemove(Guid id)
+    {
+        _removeError = null;
+        _confirming = id;
+    }
+
+    private void CancelRemove() => _confirming = null;
+
+    private async Task RemoveAsync(Guid id)
+    {
+        _removing = true;
+        _removeError = null;
+        try
+        {
+            await Api.RemoveDeviceAsync(id);
+            _devices?.RemoveAll(d => d.Id == id);
+            _confirming = null;
+        }
+        catch (ApiException ex)
+        {
+            _removeError = ex;
+        }
+        finally
+        {
+            _removing = false;
+        }
+    }
+
+    private static string BadgeText(string status) => status switch
+    {
+        "active" => "Actif",
+        "trial" => "Essai gratuit",
+        "expiring" => "Expire bientôt",
+        "expired" => "Expiré",
+        _ => "Inconnu"
+    };
+
+    private static string BadgeClass(string status) => status switch
+    {
+        "active" => "ok",
+        "trial" => "accent",
+        "expiring" => "warn",
+        "expired" => "bad",
+        _ => ""
+    };
+
+    private static string? Advice(Subscription s) => s.Status switch
+    {
+        "expired" when s.IsTrial => "L'essai gratuit est terminé. Demandez une licence dans SmartCHIFA (menu « Licence ») : SmartApp vous appelle pour le paiement.",
+        "expired" => "Renouvelez l'abonnement auprès de SmartApp, puis cliquez sur « Vérifier en ligne » dans SmartCHIFA.",
+        "expiring" => "Contactez SmartApp pour renouveler l'abonnement : votre numéro de série reste le même.",
+        "trial" => "Pour continuer après l'essai, demandez une licence dans SmartCHIFA (menu « Licence »).",
+        _ => null
+    };
+}

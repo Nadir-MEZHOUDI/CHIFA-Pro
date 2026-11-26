@@ -17,6 +17,7 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
         {
             e.Property(p => p.Name).HasMaxLength(200);
             e.Property(p => p.AgentKeyHash).HasMaxLength(64);
+            e.Property(p => p.LicenseEdition).HasMaxLength(50);
             e.HasIndex(p => p.AgentKeyHash).IsUnique();
             e.HasIndex(p => p.LicenseId).IsUnique();
         });

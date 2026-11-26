@@ -14,10 +14,16 @@ public static class LinkRoutes
 
     /// <summary>Called with the agent key.</summary>
     public const string Devices = "/api/link/devices";
+
+    /// <summary>Called with the agent key: the current license file, so the phone shows the subscription's end.</summary>
+    public const string License = "/api/link/license";
 }
 
 /// <param name="License">Content of the SmartApp license file (<c>license.lic</c>) of this computer.</param>
 public record RegisterPharmacyRequest(string License);
+
+/// <param name="License">Content of <c>license.lic</c> after an online check-in (renewal, new edition).</param>
+public record LicenseUpdateRequest(string License);
 
 /// <summary>The agent key is shown once: CHIFA Pro keeps it to run the agent and ask for codes.</summary>
 public record RegisterPharmacyResponse(Guid PharmacyId, string Name, string AgentKey);

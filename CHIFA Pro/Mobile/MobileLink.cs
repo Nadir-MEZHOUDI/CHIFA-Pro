@@ -32,6 +32,7 @@ internal static class MobileLink
     private static readonly JsonSerializerOptions FileJson = new() { WriteIndented = true };
     private static AgentWorker? _agent;
     private static CancellationTokenSource? _watch;
+    private static string? _reportedLicense;
 
     /// <summary><c>CHIFA_GATEWAY_URL</c> points to a test server.</summary>
     public static string GatewayUrl =>
@@ -105,9 +106,38 @@ internal static class MobileLink
             do
             {
                 await SyncWithServiceAsync();
+                await ReportLicenseAsync();
             } while (await timer.WaitForNextTickAsync(ct));
         }
         catch (OperationCanceledException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Sends the license file when it changed (renewal, trial turned into a paid license), so the phone shows
+    /// the subscription's real end. Only once the pharmacy is registered: it never registers by itself.
+    /// </summary>
+    private static async Task ReportLicenseAsync()
+    {
+        if (Load() is not { } settings || settings.Agent.GatewayUrl != GatewayUrl) return;
+        var license = LicenseGate.LicenseFile();
+        if (license is null || license == _reportedLicense) return;
+
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Post, GatewayUrl + LinkRoutes.License)
+            {
+                Content = JsonContent.Create(new LicenseUpdateRequest(license))
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.Agent.AgentKey);
+            using var response = await Http.SendAsync(request);
+            // Any answer is final for this file (an older server answers 404): only a network error is retried.
+            _reportedLicense = license;
+            if (!response.IsSuccessStatusCode)
+                Log.Warning("Mobile link: the server refused the license ({Status})", (int)response.StatusCode);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
         }
     }
