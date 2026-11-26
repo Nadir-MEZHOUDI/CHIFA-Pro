@@ -46,4 +46,10 @@ public class ChifaDbOptions
 
     public string Host { get; set; } = "localhost";
     public int Port { get; set; } = 5432;
+
+    /// <summary>
+    /// The CHIFA_OFFICINE folder (holding <c>CHIFA_OFFICINE_DB</c>), given by SmartCHIFA. When set and the
+    /// database is on this PC, the service starts CHIFA_OFFICINE's PostgreSQL if it finds it stopped.
+    /// </summary>
+    public string? Folder { get; set; }
 }

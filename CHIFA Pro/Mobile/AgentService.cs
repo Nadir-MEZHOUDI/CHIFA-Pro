@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ServiceProcess;
+using CHIFA.Pro.Helpers.Settings;
 using Npgsql;
 
 namespace CHIFA.Pro.Mobile;
@@ -63,10 +64,14 @@ internal static class AgentService
             throw new MobileLinkException("Les fichiers du service sont absents de cette installation de SmartCHIFA.");
 
         var database = new NpgsqlConnectionStringBuilder(ChifaDb.ConString);
+        // Lets the service start CHIFA_OFFICINE's PostgreSQL when it finds it stopped.
+        var folder = DbChecker.IsChifaFolder(AppSettings.Default.ChifaPath)
+            ? $" -ChifaFolder \"{AppSettings.Default.ChifaPath.TrimEnd('\\', '/')}\""
+            : "";
         var start = new ProcessStartInfo("powershell.exe")
         {
             Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{script}\" -Source \"{ShippedDirectory}\" " +
-                        $"-ChifaHost \"{database.Host}\" -ChifaPort {database.Port}",
+                        $"-ChifaHost \"{database.Host}\" -ChifaPort {database.Port}{folder}",
             UseShellExecute = true,
             Verb = "runas",
             WindowStyle = ProcessWindowStyle.Hidden

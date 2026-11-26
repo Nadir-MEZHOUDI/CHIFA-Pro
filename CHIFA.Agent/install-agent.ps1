@@ -8,7 +8,7 @@
   service runs. Its key comes from %ProgramData%\SmartCHIFA\mobile.json, written by SmartCHIFA when the
   pharmacy is linked.
 
-    .\install-agent.ps1 [-ChifaHost serveur] [-ChifaPort 5432]   install or update, then start
+    .\install-agent.ps1 [-ChifaHost serveur] [-ChifaPort 5432] [-ChifaFolder D:\CHIFA_OFFICINE]   install or update, then start
     .\install-agent.ps1 -Uninstall                                stop and remove
   Windows PowerShell 5.1 compatible: it is what every pharmacy PC has.
 #>
@@ -16,6 +16,7 @@ param(
     [string]$Source = $PSScriptRoot,
     [string]$ChifaHost,
     [int]$ChifaPort = 0,
+    [string]$ChifaFolder,
     [switch]$Uninstall
 )
 
@@ -54,8 +55,9 @@ try {
     if ($previous -and $previous.Chifa) { $settings.Chifa = $previous.Chifa }
     if ($ChifaHost) { $settings.Chifa.Host = $ChifaHost }
     if ($ChifaPort -gt 0) { $settings.Chifa.Port = $ChifaPort }
+    if ($ChifaFolder) { $settings.Chifa | Add-Member -NotePropertyName Folder -NotePropertyValue $ChifaFolder -Force }
     $settings | ConvertTo-Json -Depth 10 | Set-Content $settingsPath -Encoding UTF8
-    Write-Output "CHIFA database: $($settings.Chifa.Host):$($settings.Chifa.Port)"
+    Write-Output "CHIFA database: $($settings.Chifa.Host):$($settings.Chifa.Port), folder: $($settings.Chifa.Folder)"
 
     $exe = Join-Path $target 'CHIFA.Agent.exe'
     sc.exe create $name binPath= "`"$exe`"" start= delayed-auto DisplayName= 'SmartCHIFA - Agent mobile' | Out-Null

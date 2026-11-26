@@ -12,6 +12,8 @@ builder.Services.AddWindowsService(o => o.ServiceName = "CHIFA.Agent");
 builder.Services.AddOptions<AgentOptions>().BindConfiguration(AgentOptions.Section).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<AgentHandlers>();
 builder.Services.AddHostedService<AgentWorker>();
+builder.Services.AddOptions<ChifaDbOptions>().BindConfiguration(ChifaDbOptions.Section);
+builder.Services.AddHostedService<ChifaServerStarter>();
 
 ConfigureChifaDb(builder.Configuration.GetSection(ChifaDbOptions.Section).Get<ChifaDbOptions>() ?? new ChifaDbOptions());
 
