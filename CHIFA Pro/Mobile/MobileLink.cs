@@ -25,10 +25,13 @@ internal static class MobileLink
 {
     private const string DefaultGatewayUrl = "https://chifa-gateway.smartappdz.org";
 
+    private static readonly TimeSpan ServiceCheckInterval = TimeSpan.FromSeconds(30);
     private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(20) };
     private static readonly SemaphoreSlim RegisterLock = new(1, 1);
+    private static readonly SemaphoreSlim AgentLock = new(1, 1);
     private static readonly JsonSerializerOptions FileJson = new() { WriteIndented = true };
     private static AgentWorker? _agent;
+    private static CancellationTokenSource? _watch;
 
     /// <summary><c>CHIFA_GATEWAY_URL</c> points to a test server.</summary>
     public static string GatewayUrl =>
@@ -41,24 +44,71 @@ internal static class MobileLink
 
     public static bool AgentRunsAsService => AgentService.State is AgentServiceState.Running or AgentServiceState.Outdated;
 
-    /// <summary>At startup: answer the linked phones while SmartCHIFA is open.</summary>
+    /// <summary>At startup: answer the linked phones while SmartCHIFA is open and the Windows service does not.</summary>
     public static void StartAgent()
     {
-        if (Load() is { } settings)
-            RestartAgent(settings);
+        if (_watch is not null) return;
+        _watch = new CancellationTokenSource();
+        var token = _watch.Token;
+        _ = Task.Run(() => WatchServiceAsync(token));
     }
 
-    public static async Task StopAgentAsync()
+    /// <summary>When SmartCHIFA closes.</summary>
+    public static async Task ShutdownAsync()
     {
-        var agent = Interlocked.Exchange(ref _agent, null);
-        if (agent is null) return;
+        Interlocked.Exchange(ref _watch, null)?.Cancel();
+        await AgentLock.WaitAsync();
         try
         {
-            await agent.StopAsync(CancellationToken.None);
+            await StopAgentAsync();
         }
         finally
         {
-            agent.Dispose();
+            AgentLock.Release();
+        }
+    }
+
+    /// <summary>Runs SmartCHIFA's own agent exactly when the Windows service is not running.</summary>
+    public static async Task SyncWithServiceAsync()
+    {
+        await AgentLock.WaitAsync();
+        try
+        {
+            if (AgentRunsAsService)
+            {
+                if (_agent is null) return;
+                await StopAgentAsync();
+                Log.Information("Mobile link: the {Service} service answers the phones", AgentService.Name);
+            }
+            else if (_agent is null && Load() is { } settings)
+            {
+                await StartOwnAgentAsync(settings);
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+        finally
+        {
+            AgentLock.Release();
+        }
+    }
+
+    // The service starts about two minutes after Windows (delayed start) and Windows restarts it after a crash:
+    // checking only at startup would leave two agents pushing each other off the gateway, or none at all.
+    private static async Task WatchServiceAsync(CancellationToken ct)
+    {
+        using var timer = new PeriodicTimer(ServiceCheckInterval);
+        try
+        {
+            do
+            {
+                await SyncWithServiceAsync();
+            } while (await timer.WaitForNextTickAsync(ct));
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 
@@ -129,7 +179,7 @@ internal static class MobileLink
             var settings = new Settings(new AgentSettings(GatewayUrl, registered.AgentKey), registered.PharmacyId, registered.Name);
             Save(settings);
             Log.Information("Mobile link: pharmacy {Pharmacy} ({PharmacyId}) registered", registered.Name, registered.PharmacyId);
-            RestartAgent(settings);
+            _ = RestartAgentAsync(settings);
             return settings;
         }
         finally
@@ -138,33 +188,54 @@ internal static class MobileLink
         }
     }
 
-    private static void RestartAgent(Settings settings)
+    /// <summary>After a new key: SmartCHIFA's agent restarts with it; the service reads it from the shared file.</summary>
+    private static async Task RestartAgentAsync(Settings settings)
     {
-        _ = Task.Run(async () =>
+        await AgentLock.WaitAsync();
+        try
         {
-            try
-            {
-                await StopAgentAsync();
-                if (AgentRunsAsService)
-                {
-                    Log.Information("Mobile link: the {Service} service answers the phones", AgentService.Name);
-                    return;
-                }
+            await StopAgentAsync();
+            if (!AgentRunsAsService)
+                await StartOwnAgentAsync(settings);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+        finally
+        {
+            AgentLock.Release();
+        }
+    }
 
-                Microsoft.Extensions.Logging.ILoggerFactory loggers = new SerilogLoggerFactory(Log.Logger);
-                var options = new AgentOptions { GatewayUrl = settings.Agent.GatewayUrl, AgentKey = settings.Agent.AgentKey };
-                var agent = new AgentWorker(
-                    new FixedOptionsMonitor<AgentOptions>(options),
-                    new AgentHandlers(loggers.CreateLogger<AgentHandlers>()),
-                    loggers.CreateLogger<AgentWorker>());
-                _agent = agent;
-                await agent.StartAsync(CancellationToken.None);
-            }
-            catch (Exception ex)
-            {
-                ex.Log();
-            }
-        });
+    /// <summary>Caller holds <see cref="AgentLock"/>.</summary>
+    private static async Task StartOwnAgentAsync(Settings settings)
+    {
+        Microsoft.Extensions.Logging.ILoggerFactory loggers = new SerilogLoggerFactory(Log.Logger);
+        var options = new AgentOptions { GatewayUrl = settings.Agent.GatewayUrl, AgentKey = settings.Agent.AgentKey };
+        var agent = new AgentWorker(
+            new FixedOptionsMonitor<AgentOptions>(options),
+            new AgentHandlers(loggers.CreateLogger<AgentHandlers>()),
+            loggers.CreateLogger<AgentWorker>());
+        _agent = agent;
+        await agent.StartAsync(CancellationToken.None);
+        Log.Information("Mobile link: SmartCHIFA answers the phones");
+    }
+
+    /// <summary>Caller holds <see cref="AgentLock"/>.</summary>
+    private static async Task StopAgentAsync()
+    {
+        var agent = _agent;
+        if (agent is null) return;
+        _agent = null;
+        try
+        {
+            await agent.StopAsync(CancellationToken.None);
+        }
+        finally
+        {
+            agent.Dispose();
+        }
     }
 
     private static Settings? Load()

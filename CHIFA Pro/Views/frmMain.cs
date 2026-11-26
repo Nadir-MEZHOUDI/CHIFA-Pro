@@ -100,7 +100,7 @@ public partial class FrmMain : XtraForm
     private void StartMobileAgent()
     {
         Mobile.MobileLink.StartAgent();
-        FormClosed += async (_, _) => await Mobile.MobileLink.StopAgentAsync();
+        FormClosed += async (_, _) => await Mobile.MobileLink.ShutdownAsync();
     }
 
     private void WatchLicense()

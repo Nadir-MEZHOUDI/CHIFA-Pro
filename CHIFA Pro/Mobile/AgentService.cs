@@ -97,7 +97,7 @@ internal static class AgentService
 
         Log.Information("Agent service installed from {Source}", ShippedDirectory);
         // The service now answers the phones: a second agent in SmartCHIFA would fight it for the connection.
-        await MobileLink.StopAgentAsync();
+        await MobileLink.SyncWithServiceAsync();
     }
 
     /// <summary>Each SmartCHIFA build stamps its own version: a different one means the service runs an older agent.</summary>
