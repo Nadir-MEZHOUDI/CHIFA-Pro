@@ -10,7 +10,7 @@ public partial class BordereauxUc : XtraUserControl, INavigable
         gridView1.SetOptions();
         EnsureMontantAssureColumn();
         gridView1.CustomDrawCell += GridView1_CustomDrawCell;
-        Load += async (_, _) => await gridView1.LoadDataAsync(() => ChifaService.Instance.GetAllBordereauxAsync());
+        Load += async (_, _) => await gridView1.LoadDataAsync(ct => ChifaService.Instance.GetAllBordereauxAsync(cancellationToken: ct));
     }
 
     public string Caption { get; } = "BORDEREAUX";

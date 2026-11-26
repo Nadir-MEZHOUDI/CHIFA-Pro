@@ -8,7 +8,7 @@ namespace CHIFA.Pro.Views;
 public partial class PsychotropesUc : XtraUserControl, INavigable
 {
     private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
-    private CancellationTokenSource? _reloadCts;
+    private readonly ReloadCancellation _reloads = new();
     private readonly Period _period = new();
 
     public string Caption { get; } = "PSYCHOTROPES";
@@ -50,7 +50,7 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
     private async void PsychotropesUc_Load(object? sender, EventArgs e)
     {
         await LoadDateFiltersAsync();
-        await ReloadDataAsync(ResetReloadToken());
+        await ReloadDataAsync(_reloads.Next());
     }
 
     private async Task LoadDateFiltersAsync()
@@ -74,38 +74,23 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
         }
     }
 
-    private void TxtDate_EditValueChanged(object? sender, EventArgs e)
+    private async void TxtDate_EditValueChanged(object? sender, EventArgs e)
     {
-        ScheduleReload();
+        await ScheduleReloadAsync();
     }
 
-    private void ScheduleReload()
+    private async Task ScheduleReloadAsync()
     {
-        var token = ResetReloadToken();
+        var token = _reloads.Next();
 
-        _ = Task.Run(async () =>
+        try
         {
-            try
-            {
-                await Task.Delay(ReloadDebounceDelay, token);
-                if (token.IsCancellationRequested) return;
-
-                if (InvokeRequired)
-                    Invoke(new Action(async () => await ReloadDataAsync(token)));
-                else
-                    await ReloadDataAsync(token);
-            }
-            catch (OperationCanceledException) { }
-            catch (Exception ex) { ex.Log(); }
-        }, token);
-    }
-
-    private CancellationToken ResetReloadToken()
-    {
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = new CancellationTokenSource();
-        return _reloadCts.Token;
+            await Task.Delay(ReloadDebounceDelay, token);
+            await ReloadDataAsync(token);
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     private async Task ReloadDataAsync(CancellationToken cancellationToken)
@@ -118,9 +103,9 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
             _period.To = DateFilter.Value(txtDateTo.EditValue);
 
             Cursor = Cursors.WaitCursor;
-            var data = await ScopeService.Instance.GetPsychotropesAsync(_period);
+            var data = await ScopeService.Instance.GetPsychotropesAsync(_period, cancellationToken: cancellationToken);
 
-            if (cancellationToken.IsCancellationRequested) return;
+            if (cancellationToken.IsCancellationRequested || IsDisposed) return;
 
             gridPsychotropes.DataSource = data;
             viewPsychotropes.BestFitColumns();
@@ -128,13 +113,16 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
             ConfigureColumns();
             ConfigureSummary();
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+        }
         catch (Exception ex)
         {
             ex.Log();
         }
         finally
         {
-            Cursor = Cursors.Default;
+            if (!IsDisposed) Cursor = Cursors.Default;
         }
     }
 
@@ -209,7 +197,7 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
 
     private async void BtnRefresh_ItemClick(object sender, ItemClickEventArgs e)
     {
-        await ReloadDataAsync(ResetReloadToken());
+        await ReloadDataAsync(_reloads.Next());
     }
 
     private void BtnClearDates_ItemClick(object sender, ItemClickEventArgs e)
@@ -225,8 +213,6 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
 
     private void PsychotropesUc_Disposed(object? sender, EventArgs e)
     {
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = null;
+        _reloads.Stop();
     }
 }

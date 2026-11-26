@@ -5,7 +5,7 @@ namespace CHIFA.Pro.Views;
 public partial class FacturesUc : XtraUserControl, INavigable
 {
     private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
-    private CancellationTokenSource? _reloadCts;
+    private readonly ReloadCancellation _reloads = new();
 
     public FacturesUc()
     {
@@ -76,7 +76,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
     {
         if (viewFactures.GetRow(viewFactures.FocusedRowHandle) is FactureDto row)
         {
-            await viewDetails.LoadDataAsync(() => ChifaService.Instance.GetFactureDetailsByIdAsync(row.NumFact!));
+            await viewDetails.LoadDataAsync(ct => ChifaService.Instance.GetFactureDetailsByIdAsync(row.NumFact!, ct));
         }
     }
 
@@ -117,7 +117,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
     private async Task ScheduleFacturesReloadAsync()
     {
-        var cancellationToken = ResetReloadToken();
+        var cancellationToken = _reloads.Next();
 
         try
         {
@@ -131,16 +131,8 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
     private async Task ReloadFacturesImmediateAsync()
     {
-        var cancellationToken = ResetReloadToken();
+        var cancellationToken = _reloads.Next();
         await LoadFacturesAsync(cancellationToken);
-    }
-
-    private CancellationToken ResetReloadToken()
-    {
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = new CancellationTokenSource();
-        return _reloadCts.Token;
     }
 
     private async Task LoadFacturesAsync(CancellationToken cancellationToken)
@@ -171,7 +163,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
             viewFactures.FocusedRowHandle = 0;
             await factureDtoBindingSource.LoadDataAsync(viewFactures,
-                () => ChifaService.Instance.GetAllFacturesAsync(last, ts, period, predicate), cancellationToken);
+                ct => ChifaService.Instance.GetAllFacturesAsync(last, ts, period, predicate, ct), cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -316,8 +308,6 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
     private void FacturesUc_Disposed(object? sender, EventArgs e)
     {
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = null;
+        _reloads.Stop();
     }
 }

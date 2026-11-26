@@ -4,6 +4,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 
+using DevExpress.XtraBars.Alerter;
 using DevExpress.XtraGrid.Views.Grid;
 
 using Npgsql;
@@ -12,39 +13,49 @@ namespace CHIFA.Pro.Helpers;
 
 public static class XtraHelper
 {
-    public static async Task LoadDataAsync<T>(this GridView gridView, Func<ValueTask<IEnumerable<T>>> func)
-        => await LoadDataAsync(gridView, func, CancellationToken.None);
+    /// <summary>One load per grid: starting a new one cancels the query of the previous one.</summary>
+    private static readonly ConditionalWeakTable<GridView, ReloadCancellation> GridLoads = new();
 
-    public static async Task LoadDataAsync<T>(this GridView gridView, Func<ValueTask<IEnumerable<T>>> func,
-        CancellationToken cancellationToken)
+    public static Task LoadDataAsync<T>(this GridView gridView, Func<ValueTask<IEnumerable<T>>> func,
+        CancellationToken cancellationToken = default)
+        => LoadDataAsync(gridView, _ => func(), cancellationToken);
+
+    public static async Task LoadDataAsync<T>(this GridView gridView, Func<CancellationToken, ValueTask<IEnumerable<T>>> func,
+        CancellationToken cancellationToken = default)
     {
         var gridControl = gridView.GridControl;
+        if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
+
+        var gridToken = NextGridLoad(gridView);
+        using var load = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, gridToken);
+        var token = load.Token;
         try
         {
-            if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
-
             gridView.ShowLoadingPanel();
             gridView.OptionsView.BestFitMaxRowCount = 40;
 
             gridControl.DataSource = new List<T>();
 
-            var data = await func.Invoke().ConfigureAwait(false);
+            var data = await func(token).ConfigureAwait(false);
 
-            if (cancellationToken.IsCancellationRequested) return;
+            if (token.IsCancellationRequested) return;
 
             TryInvoke(gridControl, () =>
             {
-                if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
+                if (!CanUseControl(gridControl) || token.IsCancellationRequested) return;
 
                 if (gridControl.DataSource is BindingSource bindingSource)
                     bindingSource.DataSource = data;
                 else
                     gridControl.DataSource = data;
 
-                if (cancellationToken.IsCancellationRequested) return;
+                if (token.IsCancellationRequested) return;
 
                 gridView.BestFitColumns();
             });
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
         }
         catch (Exception ex)
         {
@@ -52,39 +63,45 @@ public static class XtraHelper
         }
         finally
         {
-            TryInvoke(gridControl, () =>
-            {
-                if (CanUseControl(gridControl))
-                    gridView.HideLoadingPanel();
-            });
+            HideLoadingPanel(gridView, gridToken);
         }
     }
 
-    public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
+    public static Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
         Func<ValueTask<IEnumerable<T>>> func, CancellationToken cancellationToken = default)
+        => LoadDataAsync(bindingSource, gridView, _ => func(), cancellationToken);
+
+    public static async Task LoadDataAsync<T>(this BindingSource bindingSource, GridView gridView,
+        Func<CancellationToken, ValueTask<IEnumerable<T>>> func, CancellationToken cancellationToken = default)
     {
         var gridControl = gridView.GridControl;
+        if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
+
+        var gridToken = NextGridLoad(gridView);
+        using var load = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, gridToken);
+        var token = load.Token;
         try
         {
-            if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
-
             gridView.ShowLoadingPanel();
             gridView.OptionsView.BestFitMaxRowCount = 40;
 
-            var data = await func.Invoke().ConfigureAwait(false);
+            var data = await func(token).ConfigureAwait(false);
 
-            if (cancellationToken.IsCancellationRequested) return;
+            if (token.IsCancellationRequested) return;
 
             TryInvoke(gridControl, () =>
             {
-                if (!CanUseControl(gridControl) || cancellationToken.IsCancellationRequested) return;
+                if (!CanUseControl(gridControl) || token.IsCancellationRequested) return;
 
                 bindingSource.DataSource = data;
 
-                if (cancellationToken.IsCancellationRequested) return;
+                if (token.IsCancellationRequested) return;
 
                 gridView.BestFitColumns();
             });
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
         }
         catch (Exception ex)
         {
@@ -92,12 +109,32 @@ public static class XtraHelper
         }
         finally
         {
-            TryInvoke(gridControl, () =>
-            {
-                if (CanUseControl(gridControl))
-                    gridView.HideLoadingPanel();
-            });
+            HideLoadingPanel(gridView, gridToken);
         }
+    }
+
+    private static CancellationToken NextGridLoad(GridView gridView)
+    {
+        var loads = GridLoads.GetValue(gridView, static view =>
+        {
+            var reloads = new ReloadCancellation();
+            if (view.GridControl is { } grid)
+                grid.Disposed += (_, _) => reloads.Stop();
+            return reloads;
+        });
+        return loads.Next();
+    }
+
+    /// <summary>A superseded load leaves the panel to the load that replaced it.</summary>
+    private static void HideLoadingPanel(GridView gridView, CancellationToken gridToken)
+    {
+        if (gridToken.IsCancellationRequested) return;
+
+        TryInvoke(gridView.GridControl, () =>
+        {
+            if (CanUseControl(gridView.GridControl))
+                gridView.HideLoadingPanel();
+        });
     }
 
     private static bool CanUseControl(Control? control)
@@ -136,6 +173,24 @@ public static class XtraHelper
     public static void Log(this Exception ex, bool showMessage = true, [CallerMemberName] string methodName = "",
         [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, bool reportToTelemetry = true)
     {
+        // A load superseded by a newer one, or by its screen closing: nothing went wrong.
+        if (ex is OperationCanceledException)
+        {
+            Serilog.Log.Debug(ex, "Cancelled in {MethodName}", methodName);
+            return;
+        }
+
+        // Server stopped, overloaded or slow: the customer's environment, not a bug. Every open screen
+        // fails at once, so the user gets one notice and telemetry gets nothing.
+        var dbError = DbErrors.Classify(ex);
+        if (dbError != DbErrorKind.None)
+        {
+            Serilog.Log.Warning(ex, "Database {Kind} in method {MethodName}, file {FileName}, line {LineNumber}",
+                dbError, methodName, Path.GetFileName(fileName), lineNumber);
+            if (showMessage) NotifyDatabaseProblem(dbError);
+            return;
+        }
+
         Serilog.Log.Error(ex, "An error occurred in method {MethodName}, file {FileName}, line {LineNumber}", methodName, fileName, lineNumber);
 
         if (reportToTelemetry)
@@ -145,15 +200,35 @@ public static class XtraHelper
 
         var result = ex.Message;
 
-        if (ex is Npgsql.NpgsqlException pg && pg.Message.Contains("Failed to connect"))
-        {
-            return;
-        }
-
         if (Debugger.IsAttached)
             result = $"Method: {methodName}\nFile:{fileName}\nLine:{lineNumber}\n{ex}";
         if (showMessage)
             XtraMessageBox.Show(result, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+
+    private static readonly NoticeThrottle DatabaseNoticeThrottle = new(TimeSpan.FromMinutes(1));
+    private static AlertControl? _databaseAlert;
+
+    /// <summary>A toast that closes by itself, at most once a minute, whatever thread the failure came from.</summary>
+    private static void NotifyDatabaseProblem(DbErrorKind kind)
+    {
+        try
+        {
+            var owner = Application.OpenForms.Cast<Form>()
+                .FirstOrDefault(f => f is { IsDisposed: false, IsHandleCreated: true, Visible: true });
+            if (owner is null || !DatabaseNoticeThrottle.TryEnter(DateTime.UtcNow)) return;
+
+            owner.BeginInvoke(() =>
+            {
+                if (owner.IsDisposed) return;
+                _databaseAlert ??= new AlertControl { AutoFormDelay = 10_000 };
+                _databaseAlert.Show(owner, "Base de données indisponible", DbErrors.UserMessage(kind));
+            });
+        }
+        catch (Exception notifyError) when (notifyError is InvalidOperationException or ObjectDisposedException)
+        {
+            // The form closed meanwhile; the failure is already in the log file.
+        }
     }
 
     private static void LogTelemetry(Exception ex, string methodName, string fileName, int lineNumber)
@@ -244,7 +319,7 @@ public static class XtraHelper
                 Port = port
             };
 
-            ChifaDb.ConString = connection.ConnectionString;
+            ChifaDb.ConString = DatabaseDefaults.ForDesktop(connection.ConnectionString);
             DbChecker.ResetServerState();
         }
         catch (Exception ex)

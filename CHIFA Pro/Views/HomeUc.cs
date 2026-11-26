@@ -51,11 +51,15 @@ public partial class HomeUc : XtraUserControl, INavigable
             Cursor = Cursors.WaitCursor;
             var data = await StatisticsService.Instance.GetThisWeekStatsAsync();
             weekStatBindingSource.DataSource = data;
-            Cursor = Cursors.Default;
         }
         catch (Exception ex)
         {
             ex.Log();
+        }
+        finally
+        {
+            // A server that is down must not leave the wait cursor on the home screen.
+            if (!IsDisposed) Cursor = Cursors.Default;
         }
     }
 

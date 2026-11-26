@@ -19,7 +19,8 @@ public class ChifaService
     /// Open bordereaux are always listed; closed ones when their extraction date is in the period.
     /// Counts and amounts cover all factures of each bordereau, whatever their date.
     /// </summary>
-    public async ValueTask<IEnumerable<BordereauDto>> GetAllBordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = default, Period? period = null)
+    public async ValueTask<IEnumerable<BordereauDto>> GetAllBordereauxAsync(Expression<Func<Bordereau, bool>>? predicate = default, Period? period = null,
+        CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var activePeriod = period ?? Period;
@@ -50,7 +51,7 @@ public class ChifaService
                     MontAss = t.MontAss,
                     Maj = t.Maj
                 })
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return list
@@ -77,7 +78,8 @@ public class ChifaService
             LastFacture = g.Max(m => m.DateFact)
         };
 
-    public async ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period = null, Expression<Func<Facture, bool>>? predicate = default)
+    public async ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period = null, Expression<Func<Facture, bool>>? predicate = default,
+        CancellationToken cancellationToken = default)
     {
         predicate = predicate.SetPeriod(period);
 
@@ -114,13 +116,13 @@ public class ChifaService
             })
             .OrderByDescending(x => x.DateFact)
             .ThenByDescending(x => x.NumFact)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return list;
     }
 
-    public async ValueTask<IEnumerable<BeneficiareDto>> GetBeneficiaresAsync()
+    public async ValueTask<IEnumerable<BeneficiareDto>> GetBeneficiaresAsync(CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
 
@@ -133,14 +135,14 @@ public class ChifaService
                 g.Key.RangAd,
                 MinNumFact = g.Min(f => f.NumFact)
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var minFact = centerByBenef.Select(x => x.MinNumFact).Distinct().ToList();
 
         var centers = await db.Factures
             .Where(f => minFact.Contains(f.NumFact))
             .Select(f => new { f.NumFact, Center = f.Center!.Nom })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var centerByNumFact = centers.ToDictionary(c => c.NumFact, c => c.Center);
         var centerByBenefDict = centerByBenef
@@ -155,7 +157,7 @@ public class ChifaService
                 Beneficiare = a.FullName,
                 Assure = a.Assure!.FullName
             })
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ContinueWith(t =>
             {
                 var rows = t.Result;
@@ -177,7 +179,7 @@ public class ChifaService
             });
     }
 
-    public async ValueTask<BeneficiareDto?> GetBeneficiareByIdAsync(string num, string rang)
+    public async ValueTask<BeneficiareDto?> GetBeneficiareByIdAsync(string num, string rang, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         return await db.Beneficiaires
@@ -187,7 +189,7 @@ public class ChifaService
                 Rang = a.RangAd,
                 Beneficiare = a.FullName,
                 Assure = a.Assure!.FullName
-            }).FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync(cancellationToken);
     }
 
     public async ValueTask<IEnumerable<Centre>> GetCentersAsync()
@@ -196,7 +198,7 @@ public class ChifaService
         return await db.Centres.ToListAsync().ConfigureAwait(false);
     }
 
-    public async ValueTask<IEnumerable<FactureDetailDto>> GetFactureDetailsByIdAsync(string id)
+    public async ValueTask<IEnumerable<FactureDetailDto>> GetFactureDetailsByIdAsync(string id, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         return await db.DetailFacts
@@ -214,7 +216,7 @@ public class ChifaService
                 MajLocal = x.MajLocal,
                 MajSub = x.MajSub,
                 Ts = x.Ts
-            }).ToListAsync()
+            }).ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -316,7 +318,8 @@ public class ChifaService
             .ConfigureAwait(false);
     }
 
-    public async ValueTask<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = default)
+    public async ValueTask<IEnumerable<PatientOfTraitSpec>> GetPatientsOfTraitSpecAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = default,
+        CancellationToken cancellationToken = default)
     {
         predicate = predicate.SetPeriod(period)
             .And(x => (x.Ppa >= MedicalThresholds.HighPriceThreshold && x.Qte >= MedicalThresholds.HighQuantityThreshold) || x.Ts == true || x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays);
@@ -335,13 +338,14 @@ public class ChifaService
                 TS = x.Count(m => m.Ts == true) > 0,
                 LongDuree = x.Count(m => m.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays) > 0
             })
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         return list;
     }
 
-    public async ValueTask<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang, bool proche, Expression<Func<DetailFact?, bool>>? predicate = default, Period? period = null)
+    public async ValueTask<IEnumerable<TraitDetailsDto>> GetPatientTraitementAsync(string noAssure, string rang, bool proche, Expression<Func<DetailFact?, bool>>? predicate = default, Period? period = null,
+        CancellationToken cancellationToken = default)
     {
         predicate ??= _ => true;
         await using var db = new ChifaDb();
@@ -362,7 +366,7 @@ public class ChifaService
                 x.Facture.DateSoin,
                 x.Facture.DateFact
             })
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var list = query
@@ -426,7 +430,7 @@ public class ChifaService
     }
 
     public async ValueTask<IEnumerable<ConsumptionDto>> LoadConsumptionAsync(string noAssure, string rang,
-        bool distinct)
+        bool distinct, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var query = await db.Factures
@@ -446,7 +450,7 @@ public class ChifaService
                 NEnrg = d.NumEnr
             })
             .OrderByDescending(x => x.Date)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
         if (distinct)
             return query;
@@ -493,7 +497,7 @@ public class ChifaService
         return await db.FactureCms.ToListAsync().ConfigureAwait(false);
     }
 
-    public async ValueTask<IEnumerable<FactureDto>> LoadHistoryAsync(string noAssure, string rang)
+    public async ValueTask<IEnumerable<FactureDto>> LoadHistoryAsync(string noAssure, string rang, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
         var query = await db.Factures
@@ -513,7 +517,7 @@ public class ChifaService
                 MontOff = f.MontOff
             })
             .OrderByDescending(x => x.DateFact)
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
         return query;
     }

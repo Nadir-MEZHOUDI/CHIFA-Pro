@@ -58,6 +58,17 @@ public class ChifaServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetAllFacturesAsync_SupersededLoad_StopsWithoutResult()
+    {
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        var load = async () => await _svc.GetAllFacturesAsync(last: false, ts: false, cancellationToken: cts.Token);
+
+        await load.Should().ThrowAsync<OperationCanceledException>();
+    }
+
+    [Fact]
     public async Task GetAllFacturesAsync_WithTsFilter_AppliesPredicate()
     {
         using var w = StartWatch();

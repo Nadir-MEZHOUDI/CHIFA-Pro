@@ -3,7 +3,7 @@ namespace CHIFA.Pro.Views;
 public partial class TraitSpecUc : XtraUserControl, INavigable
 {
     private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
-    private CancellationTokenSource? _reloadCts;
+    private readonly ReloadCancellation _reloads = new();
 
     public string Caption { get; } = "TRAITEMENT SPÉCIFIQUE";
     public Image Image => FrmMain.Image(2);
@@ -96,14 +96,14 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     {
         var procheOnly = (bool)swtchTimeOnly.EditValue;
         var period = CurrentPeriod();
-        return viewDetails.LoadDataAsync(() => ChifaService.Instance.GetPatientTraitementAsync(row.NumAssure!, row.Rang!, procheOnly, period: period));
+        return viewDetails.LoadDataAsync(ct => ChifaService.Instance.GetPatientTraitementAsync(row.NumAssure!, row.Rang!, procheOnly, period: period, cancellationToken: ct));
     }
 
     private Period CurrentPeriod() => DateFilter.ToPeriod(FromDate.EditValue, ToDate.EditValue);
 
     private async Task ScheduleReloadDataAsync()
     {
-        var cancellationToken = ResetReloadToken();
+        var cancellationToken = _reloads.Next();
 
         try
         {
@@ -117,16 +117,8 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private async Task ReloadDataImmediateAsync()
     {
-        var cancellationToken = ResetReloadToken();
+        var cancellationToken = _reloads.Next();
         await LoadDataAsync(cancellationToken);
-    }
-
-    private CancellationToken ResetReloadToken()
-    {
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = new CancellationTokenSource();
-        return _reloadCts.Token;
     }
 
     private async Task LoadDataAsync(CancellationToken cancellationToken)
@@ -143,7 +135,7 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
             var period = CurrentPeriod();
 
-            await viewFectures.LoadDataAsync(() => ChifaService.Instance.GetPatientsOfTraitSpecAsync(period, predicate),
+            await viewFectures.LoadDataAsync(ct => ChifaService.Instance.GetPatientsOfTraitSpecAsync(period, predicate, ct),
                 cancellationToken);
         }
         catch (OperationCanceledException)
@@ -183,8 +175,6 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private void TraitSpecUc_Disposed(object? sender, EventArgs e)
     {
-        _reloadCts?.Cancel();
-        _reloadCts?.Dispose();
-        _reloadCts = null;
+        _reloads.Stop();
     }
 }
