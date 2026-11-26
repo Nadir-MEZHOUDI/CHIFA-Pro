@@ -596,6 +596,19 @@ a.tag { text-decoration: none; }
 .notify p { margin: 0; }
 .bullets { margin: 0 0 .6rem; padding-left: 1.1rem; display: flex; flex-direction: column; gap: .45rem; }
 
+.sub-days { display: flex; align-items: baseline; gap: .45rem; margin-bottom: .8rem; color: var(--ok); }
+.sub-days.warn { color: var(--warn); }
+.sub-days.accent { color: var(--accent); }
+.sub-days strong { font-family: var(--f-display); font-size: 2.4rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+.sub-days span { font-weight: 700; }
+
+.devices li { display: flex; flex-direction: column; gap: .35rem; padding: .7rem 0; }
+.devices li:first-child { padding-top: 0; }
+.devices li:last-child { padding-bottom: 0; }
+.devices .item-head strong { font-family: inherit; white-space: normal; overflow-wrap: anywhere; }
+.devices .confirm { display: flex; flex-direction: column; gap: .5rem; padding: .7rem .8rem; border-radius: 12px; background: var(--bad-soft); color: var(--bad); font-size: .84rem; font-weight: 600; }
+.button.danger { background: var(--bad); color: var(--surface); box-shadow: none; }
+
 @media (min-width: 720px) {
     .kpis { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
     .tiles { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }

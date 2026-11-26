@@ -111,7 +111,8 @@ public sealed class GatewayFixture : IAsyncLifetime
         string product = LicenseProduct,
         DateTimeOffset? expiresAt = null,
         DateTimeOffset? offlineUntil = null,
-        ECDsa? signingKey = null)
+        ECDsa? signingKey = null,
+        string edition = "standard")
     {
         var now = DateTimeOffset.UtcNow;
         var payload = JsonSerializer.SerializeToUtf8Bytes(new
@@ -121,7 +122,7 @@ public sealed class GatewayFixture : IAsyncLifetime
             product,
             serialHint = "ABCDE",
             customer,
-            edition = "standard",
+            edition,
             features = Array.Empty<string>(),
             machineId = "machine",
             issuedAt = now,

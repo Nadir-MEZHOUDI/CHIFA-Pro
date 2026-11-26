@@ -1,5 +1,6 @@
 using System.Threading.RateLimiting;
 using CHIFA.Gateway;
+using CHIFA.Gateway.Features.Account;
 using CHIFA.Gateway.Features.Admin;
 using CHIFA.Gateway.Features.Agents;
 using CHIFA.Gateway.Features.Auth;
@@ -113,6 +114,7 @@ app.MapLinkEndpoints();
 app.MapAdminEndpoints();
 app.MapOfficineEndpoints();
 app.MapPushEndpoints();
+app.MapAccountEndpoints();
 
 // Phone app (CHIFA.Mobile). Unknown API paths stay 404 instead of returning the app's index.html.
 app.MapStaticAssets();
