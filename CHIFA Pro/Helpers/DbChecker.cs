@@ -1,4 +1,5 @@
 using CHIFA.Pro.Helpers.Settings;
+using Microsoft.Win32.SafeHandles;
 using Npgsql;
 
 namespace CHIFA.Pro.Helpers;
@@ -22,10 +23,18 @@ public static class DbChecker
     /// <param name="quiet">Only log to the file: used while waiting for a server that is still starting.</param>
     public static async Task<bool> CheckDbConnectionAsync(string? conStr = null, bool quiet = false)
     {
-        var connectionString = BuildConnectionString(conStr);
         NpgsqlConnection? con = null;
         try
         {
+            var connectionString = BuildConnectionString(conStr);
+            var host = new NpgsqlConnectionStringBuilder(connectionString).Host;
+            if (!DbConnectionRules.TryNormalizeHost(host, out _, out var hostError))
+            {
+                Serilog.Log.Warning("Invalid database host {Host}: {Error}", host, hostError);
+                if (!quiet) XtraMessageBox.Show(hostError, "Connexion", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
             con = new NpgsqlConnection(connectionString);
             await con.OpenAsync();
             return true;
@@ -33,7 +42,7 @@ public static class DbChecker
         catch (Exception ex)
         {
             if (quiet) Serilog.Log.Debug(ex, "Database not reachable yet");
-            else ex.Log();
+            else ex.Log(reportToTelemetry: !DbConnectionRules.IsExpectedConnectionError(ex));
             return false;
         }
         finally
@@ -213,22 +222,45 @@ public static class DbChecker
             .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
             + Path.DirectorySeparatorChar;
 
+        var running = false;
         foreach (var process in Process.GetProcessesByName("postgres"))
         {
-            try
+            using (process)
             {
-                var path = process.MainModule?.FileName;
-                if (path is not null && Path.GetFullPath(path).StartsWith(portableBin, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-            catch (Exception ex)
-            {
-                // A 32/64-bit mismatch or access denied reading MainModule; ignore this process.
-                ex.Log(false);
+                if (running) continue;
+                var path = GetProcessImagePath(process.Id);
+                running = path is not null && Path.GetFullPath(path).StartsWith(portableBin, StringComparison.OrdinalIgnoreCase);
             }
         }
 
-        return false;
+        return running;
+    }
+
+    private const uint ProcessQueryLimitedInformation = 0x1000;
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern SafeProcessHandle OpenProcess(uint desiredAccess, bool inheritHandle, int processId);
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode, EntryPoint = "QueryFullProcessImageNameW")]
+    private static extern bool QueryFullProcessImageName(SafeProcessHandle process, uint flags, [Out] char[] exeName, ref int size);
+
+    /// <summary>
+    /// The executable path of a process, or null when it cannot be read. Unlike <see cref="Process.MainModule"/>,
+    /// this only needs PROCESS_QUERY_LIMITED_INFORMATION, so it works for a postgres run by a service account;
+    /// a process that exited or stays protected is expected and not reported.
+    /// </summary>
+    private static string? GetProcessImagePath(int processId)
+    {
+        using var handle = OpenProcess(ProcessQueryLimitedInformation, false, processId);
+        if (handle.IsInvalid)
+        {
+            Serilog.Log.Debug("Cannot open process {ProcessId}: Win32 error {Error}", processId, Marshal.GetLastWin32Error());
+            return null;
+        }
+
+        var buffer = new char[1024];
+        var size = buffer.Length;
+        return QueryFullProcessImageName(handle, 0, buffer, ref size) ? new string(buffer, 0, size) : null;
     }
     public static async Task RunServerAsync()
     {
@@ -248,10 +280,8 @@ public static class DbChecker
     private static string BackupFileName => $"CHIFA_OFFICINE_{DateTime.Now:dd-MM-yyyy__HH-mm-ss}.backup";
 
     /// <summary>
-    /// Returns true when the portable PostgreSQL tool exists.
-    /// Skips silently when the portable database folder is not installed at all
-    /// (nothing to back up on this machine); system PostgreSQL tools are never used.
-    /// Warns only when the folder exists but the tool is missing (broken installation).
+    /// Returns true when the portable PostgreSQL tool exists; system PostgreSQL tools are never used.
+    /// Otherwise tells the user why the backup/restore they asked for cannot run on this computer.
     /// </summary>
     private static bool EnsureToolExists(string toolPath, string caption)
     {
@@ -260,6 +290,11 @@ public static class DbChecker
         if (!Directory.Exists(AppSettings.Default.ChifaDbFolder))
         {
             Serilog.Log.Information("Portable PostgreSQL not installed at {Folder}; backup/restore skipped.", AppSettings.Default.ChifaDbFolder);
+            MessageBox.Show(
+                $@"Le dossier « CHIFA_OFFICINE_DB » est introuvable sur ce poste :
+{AppSettings.Default.ChifaDbFolder}
+Lancez cette opération depuis le poste serveur où CHIFA_OFFICINE est installé, ou corrigez le chemin CHIFA dans Paramètres.",
+                caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return false;
         }
 
@@ -299,7 +334,7 @@ Vérifiez l'installation du dossier « CHIFA_OFFICINE_DB » dans le chemin CHIFA
                 Arguments = $"""-h "{ChifaDb.Server}" -p {DefaultDbPort} -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """
             };
 
-            Process process = new() { StartInfo = startInfo };
+            using Process process = new() { StartInfo = startInfo };
 
             process.Start();
 

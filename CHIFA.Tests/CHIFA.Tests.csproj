@@ -21,6 +21,11 @@
 </ItemGroup>
 
 <ItemGroup>
+  <!-- The desktop project is WinForms; compile its WinForms-free rules directly. -->
+  <Compile Include="..\CHIFA Pro\Helpers\DbConnectionRules.cs" Link="Linked\DbConnectionRules.cs" />
+</ItemGroup>
+
+<ItemGroup>
   <ProjectReference Include="..\CHIFA.Services\CHIFA.Services.csproj" />
   <ProjectReference Include="..\CHIFA.Gateway\CHIFA.Gateway.csproj" />
   <ProjectReference Include="..\CHIFA.Agent\CHIFA.Agent.csproj" />
