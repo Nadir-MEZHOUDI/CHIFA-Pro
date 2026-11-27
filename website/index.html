@@ -250,7 +250,7 @@ section{padding:96px 0}
 .howto li::before{content:counter(s);width:36px;height:36px;border-radius:50%;background:var(--mint-soft);color:var(--emerald);display:grid;place-items:center;font:800 16px var(--f-display)}
 .howto strong{display:block;font-size:17px;margin-bottom:4px}
 .howto span{color:var(--muted);font-size:15px}
-.howto kbd{font:700 13px var(--f-body);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--pine-2);white-space:nowrap;unicode-bidi:isolate}
+.howto kbd,.feat kbd{font:700 13px var(--f-body);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--pine-2);white-space:nowrap;unicode-bidi:isolate}
 @media (max-width:900px){.dl{grid-template-columns:1fr}.dl-card{position:static}}
 
 /* gallery */
@@ -580,6 +580,39 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
   </div>
 </section>
 
+<section id="securite" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow" data-i18n="sec.eyebrow">Sécurité et confidentialité</span>
+      <h2 data-i18n="sec.title">Vos données restent chez vous. Votre téléphone se lie en quelques secondes.</h2>
+      <p data-i18n="sec.sub">La sécurité sans la complexité : aucun serveur ne stocke vos données, aucun port à ouvrir, aucun réglage réseau. Il suffit de scanner le code affiché à l'écran.</p>
+    </div>
+    <div class="bento">
+      <article class="feat dark wide reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></div>
+        <h3 data-i18n="sec.s1">Vos données ne quittent pas la pharmacie</h3>
+        <p data-i18n="sec.s1p">La base CHIFA et l'historique de vos patients restent sur le PC de l'officine. Rien n'est copié ni hébergé sur un serveur externe : le téléphone affiche uniquement ce que vous consultez, au moment où vous le consultez.</p>
+        <ul><li data-i18n="sec.t1">Aucune copie en ligne</li><li data-i18n="sec.t2">Secret médical respecté</li></ul>
+      </article>
+      <article class="feat wide reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <h3 data-i18n="sec.s2">Aucun port à ouvrir</h3>
+        <p data-i18n="sec.s2p">Pas de réglage du routeur, pas d'adresse IP fixe, pas de technicien réseau. SmartCHIFA se connecte en sortie, comme un navigateur, par un canal chiffré : votre PC reste invisible depuis Internet.</p>
+      </article>
+      <article class="feat wide reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c5 0 9 4.5 10 7a13 13 0 0 1-3 4.1M6.6 6.6A13 13 0 0 0 2 12c1 2.5 5 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></div>
+        <h3 data-i18n="sec.s3">Personne ne voit vos informations</h3>
+        <p data-i18n="sec.s3p">Personne ne peut accéder à vos données sans votre accord : seuls les téléphones que vous avez liés vous-même y ont accès, et vous pouvez en retirer un à tout moment depuis SmartCHIFA.</p>
+      </article>
+      <article class="feat wide reveal">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg></div>
+        <h3 data-i18n="sec.s4">Un QR code, et c'est tout</h3>
+        <p data-i18n-html="sec.s4p">Ouvrez <kbd>Application mobile</kbd> dans SmartCHIFA et scannez avec votre téléphone le QR code affiché à l'écran. Le code ne sert qu'une seule fois et expire au bout de quelques minutes.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section id="apercu" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -850,6 +883,11 @@ const AR = {
   "mob.s3":"بياناتك لا تُخزَّن على الإنترنت أبداً","mob.s3p":"تُقرأ الأرقام عند الطلب من صيدليتك ثم تُعرض على هاتفك.",
   "pk.eyebrow":"على هاتفك","pk.title":"كل ما تحتاج إليه بين يديك، في هاتفك وفي أي وقت.","pk.sub":"المرضى، الأدوية والوصفات: كل ما يتعلق بزبائنك، أينما كنت. لقطات حقيقية من صيدلية (أسماء المرضى مخفية).",
   "pk.c1":"مرضاك","pk.c1p":"سجل كل مؤمَّن والمرضى المزمنون الواجب تذكيرهم.","pk.c2":"كل وصفة","pk.c2p":"المبلغ، حصة الصندوق، الطبيب، الجدول والأدوية المصروفة.","pk.c3":"أدويتك","pk.c3p":"العلب المصروفة، عدد المرضى ورقم الأعمال لكل دواء.","pk.c4":"الفواتير مباشرة","pk.c4p":"آخر الفواتير فور إدخالها.",
+  "sec.eyebrow":"الأمان والخصوصية","sec.title":"بياناتك تبقى عندك، وهاتفك يُربط في ثوانٍ.","sec.sub":"أمان بلا تعقيد: لا خادم يخزّن بياناتك، لا منافذ تُفتح، ولا إعدادات شبكة. كل ما عليك فعله هو مسح الرمز الظاهر على الشاشة.",
+  "sec.s1":"بياناتك لا تغادر الصيدلية","sec.s1p":"قاعدة الشفاء وسجلّ مرضاك يبقيان على حاسوب الصيدلية. لا يُنسخ أي شيء ولا يُخزَّن على خادم خارجي: الهاتف يعرض فقط ما تطّلع عليه، لحظة اطّلاعك عليه.","sec.t1":"لا نسخة على الإنترنت","sec.t2":"احترام السر الطبي",
+  "sec.s2":"لا حاجة لفتح أي منفذ","sec.s2p":"لا إعداد للراوتر، لا عنوان IP ثابت ولا تقني شبكات. يتصل SmartCHIFA نحو الخارج مثل المتصفح عبر قناة مشفّرة، فيبقى حاسوبك غير مرئي من الإنترنت.",
+  "sec.s3":"لا أحد يطّلع على معلوماتك","sec.s3p":"لا يمكن لأي شخص الوصول إلى بياناتك دون إذنك: وحدها الهواتف التي ربطتها بنفسك يمكنها ذلك، ويمكنك إلغاء ربط أي هاتف في أي وقت من SmartCHIFA.",
+  "sec.s4":"رمز QR واحد، وانتهى الأمر","sec.s4p":"افتح <kbd>Application mobile</kbd> في SmartCHIFA وامسح بهاتفك رمز QR الظاهر على الشاشة. الرمز صالح لمرة واحدة فقط وتنتهي صلاحيته بعد بضع دقائق.",
   "gal.eyebrow":"لمحة","gal.title":"لقطات حقيقية، لا تصاميم وهمية.","gal.t1":"الرئيسية","gal.t2":"برج المراقبة","gal.t3":"الأدوية",
   "gal.c1":"وصول مباشر لكل وحدة، مع رقم الأعمال وعدد الفواتير لآخر سبعة أيام.","gal.c2":"ساعات الذروة وأكثر الأدوية صرفاً، لتنظيم الفريق والطلبيات.","gal.c3":"مدوّنة كاملة: الاسم العلمي، الجرعة، الشكل، السعر المرجعي والجنيسات.",
   "why.eyebrow":"لماذا SmartCHIFA","why.title":"محلي أولاً. على الإنترنت متى شئت.","why.sub":"الحلول السحابية بالكامل تعتمد على اتصالك وتستضيف بياناتك في مكان آخر. SmartCHIFA يعمل داخل صيدليتك.",
