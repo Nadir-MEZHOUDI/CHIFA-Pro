@@ -8,7 +8,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const site = path.join(here, "../../website");
 const SITE = "https://smartchifa.smartappdz.org";
 const AR = JSON.parse(fs.readFileSync(path.join(here, "ar.json"), "utf8"));
-let h = fs.readFileSync(path.join(site, "index.html"), "utf8");
+let h = fs.readFileSync(path.join(site, "index.html"), "utf8").replace(/\r\n/g, "\n");
 
 const TITLE = "SmartCHIFA — برنامج الشفاء للصيدليات في الجزائر";
 const DESC = "SmartCHIFA برنامج الشفاء للصيدليات الجزائرية: جداول الإرسال CNAS و CASNOS، المرفوضات، المؤثرات العقلية والإحصائيات على الحاسوب والهاتف. تجربة مجانية 7 أيام.";
