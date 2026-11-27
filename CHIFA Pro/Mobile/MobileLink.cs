@@ -45,6 +45,8 @@ internal static class MobileLink
 
     public static bool AgentRunsAsService => AgentService.State is AgentServiceState.Running or AgentServiceState.Outdated;
 
+    public static bool IsLinked => Load() is not null;
+
     /// <summary>At startup: answer the linked phones while SmartCHIFA is open and the Windows service does not.</summary>
     public static void StartAgent()
     {

@@ -32,6 +32,9 @@ public partial class FrmMain : XtraForm
     /// <summary>« CONNEXION ADMIN » image from the Designer; logged in, the item shows an open lock instead.</summary>
     private readonly Image? _loginImage;
 
+    private static readonly Lazy<Image?> _logoutImage = new(() =>
+        typeof(FrmMain).Assembly.GetManifestResourceStream("CHIFA.Pro.Assets.Unlock_32x32.png") is { } s ? System.Drawing.Image.FromStream(s) : null);
+
     private void accLogin_Click(object sender, EventArgs e)
     {
         if (AccessGuard.IsAdmin)
@@ -72,7 +75,7 @@ public partial class FrmMain : XtraForm
         var admin = AccessGuard.IsAdmin;
         accLogin.Text = admin ? "DÉCONNEXION" : "CONNEXION ADMIN";
         accLogin.ImageOptions.Image = admin
-            ? DevExpress.Images.ImageResourceCache.Default.GetImage("images/richedit/unprotectdocument_32x32.png") ?? _loginImage
+            ? _logoutImage.Value ?? _loginImage
             : _loginImage;
         accSecurity.Visible = admin;
 
@@ -297,10 +300,38 @@ public partial class FrmMain : XtraForm
             await Task.Delay(500);
             _ = LoadServerInfo();
             _ = UpdateAppAsync();
+            await UpdateMobileServiceAsync();
         }
         catch (Exception ex)
         {
             ex.Log();
+        }
+    }
+
+    /// <summary>
+    /// After a SmartCHIFA update the Windows service still runs the previous agent, and keeps answering the
+    /// phones with it. Only an administrator may replace it, so Windows asks once per update.
+    /// </summary>
+    private async Task UpdateMobileServiceAsync()
+    {
+        if (!Mobile.MobileLink.IsLinked || Mobile.AgentService.State != Mobile.AgentServiceState.Outdated)
+            return;
+
+        var answer = XtraMessageBox.Show(this,
+            "SmartCHIFA a été mis à jour. Le service qui répond aux téléphones doit l'être aussi." + Environment.NewLine +
+            "Windows va vous demander l'autorisation.",
+            "Application mobile", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+        if (answer != DialogResult.OK)
+            return;
+
+        try
+        {
+            await Mobile.AgentService.InstallAsync();
+        }
+        catch (Mobile.MobileLinkException ex)
+        {
+            XtraMessageBox.Show(this, ex.Message + Environment.NewLine + "Vous pourrez le faire depuis « Application mobile ».",
+                "Application mobile", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 
