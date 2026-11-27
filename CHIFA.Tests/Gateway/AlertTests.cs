@@ -105,6 +105,58 @@ public class AlertTests
     }
 
     [Fact]
+    public void First_poll_only_records_the_open_bordereaux()
+    {
+        var state = new AlertState { Initialized = true };
+
+        AlertTracker.TrackClosures(state, ["200", "201"]).Should().BeEmpty();
+
+        state.OpenBordereaux.Should().BeEquivalentTo(["200", "201"]);
+    }
+
+    [Fact]
+    public void A_bordereau_that_leaves_the_open_list_is_closed_once()
+    {
+        var state = new AlertState { OpenBordereaux = ["200", "201"] };
+
+        var closed = AlertTracker.TrackClosures(state, ["201", "202"]);
+        var again = AlertTracker.TrackClosures(state, ["201", "202"]);
+
+        closed.Should().Equal("200");
+        again.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Closure_alert_gives_the_factures_and_the_amount_due()
+    {
+        var bordereau = new RejetDto { NumBord = "200", Centre = "CASNOS", NombreFactures = 17, MontantPartCaisse = 12000, MontantMajorations = 500, MontantFae = 85 };
+
+        var alert = AlertTracker.ComputeClosures([bordereau]).Single();
+
+        alert.Should().BeEquivalentTo(new { Key = "closed:200", Title = "Bordereau N° 200 clôturé", Url = "bordereaux" });
+        alert.Body.Should().Contain("17 factures").And.Contain(12585m.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("fr-FR")) + " DA").And.Contain("CASNOS");
+    }
+
+    [Fact]
+    public void A_bordereau_still_open_or_deleted_gives_no_closure_alert()
+    {
+        AlertTracker.ComputeClosures([new RejetDto { NumBord = "200", EstOuvert = true }]).Should().BeEmpty();
+        AlertTracker.ComputeClosures([]).Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Many_closures_at_once_become_one_summary()
+    {
+        var closed = Enumerable.Range(1, AlertTracker.MaxDetailedPayments + 1)
+            .Select(i => new RejetDto { NumBord = $"{i}", NombreFactures = 10, MontantPartCaisse = 1000 });
+
+        var alert = AlertTracker.ComputeClosures(closed).Single();
+
+        alert.Title.Should().Be($"{AlertTracker.MaxDetailedPayments + 1} bordereaux clôturés");
+        alert.Body.Should().StartWith($"{(AlertTracker.MaxDetailedPayments + 1) * 10} factures");
+    }
+
+    [Fact]
     public void Vapid_key_has_the_browser_format()
     {
         var key = PushSender.CreateKey();

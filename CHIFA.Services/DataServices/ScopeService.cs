@@ -61,6 +61,64 @@ public class ScopeService
             .ToList();
     }
 
+    /// <summary>Numbers of the bordereaux still open in CHIFA: cheap, polled every few minutes.</summary>
+    public async ValueTask<List<string>> GetOpenBordereauxAsync()
+    {
+        await using var db = new ChifaDb();
+        return await db.Bordereaus
+            .Where(b => b.Etat == 'O')
+            .Select(b => b.NumBord)
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The given bordereaux with their totals, whatever their dates: CHIFA never fills the closing date, and
+    /// leaves the FTP date empty for bordereaux that are not sent by FTP (CASNOS).
+    /// </summary>
+    public async ValueTask<List<RejetDto>> GetBordereauxByNumAsync(IReadOnlyCollection<string> numBords)
+    {
+        if (numBords.Count == 0)
+            return [];
+
+        await using var db = new ChifaDb();
+        var rows = await (
+                from b in db.Bordereaus
+                where numBords.Contains(b.NumBord)
+                from t in ChifaService.FactureTotals(db).LeftJoin(t => t.NumBord == b.NumBord)
+                select new
+                {
+                    b.NumBord,
+                    Center = b.Center!.Nom,
+                    b.DateCloture,
+                    b.DateDepotFtp,
+                    b.MontVir,
+                    Etat = b.Etat.ToString(),
+                    EstOuvert = b.Etat == 'O',
+                    NombreFactures = (int?)t.Nmbr ?? 0,
+                    PartCaisse = t.MontOff ?? 0m,
+                    Majorations = t.Maj ?? 0m,
+                    Fae = t.Fae ?? 0m
+                })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return rows.Select(b => new RejetDto
+        {
+            NumBord = b.NumBord,
+            Centre = b.Center ?? "Inconnu",
+            DateBord = RejetDto.DateReelle(b.DateCloture, b.DateDepotFtp),
+            DateDepotFtp = b.DateDepotFtp,
+            NombreFactures = b.NombreFactures,
+            MontantPartCaisse = b.PartCaisse,
+            MontantMajorations = b.Majorations,
+            MontantFae = b.Fae,
+            MontantVirement = b.MontVir ?? 0m,
+            EstOuvert = b.EstOuvert,
+            EtatBordereau = b.Etat ?? ""
+        }).ToList();
+    }
+
     public async ValueTask<IEnumerable<PsychotropeDto>> GetPsychotropesAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null, CancellationToken cancellationToken = default)
     {
         var activePeriod = period ?? Period;

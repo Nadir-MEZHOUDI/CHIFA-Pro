@@ -50,6 +50,10 @@ public class AlertTracker(ILogger logger, WatchlistStore watchlist)
             var now = DateTime.Now;
             var alerts = Compute(state, rejets, forecast, now);
 
+            var closed = TrackClosures(state, await ScopeService.Instance.GetOpenBordereauxAsync());
+            if (closed.Count > 0)
+                alerts.AddRange(ComputeClosures(await ScopeService.Instance.GetBordereauxByNumAsync(closed)));
+
             var stamps = await ScopeService.Instance.GetFactureStampsSinceAsync(FacturesSince(state, now));
             var fresh = TrackFactures(state, stamps, now);
             var rules = await watchlist.LoadAsync();
@@ -118,6 +122,39 @@ public class AlertTracker(ILogger logger, WatchlistStore watchlist)
         }
 
         return alerts;
+    }
+
+    /// <summary>
+    /// CHIFA records no closing date: a bordereau is closed when it leaves the open list. Returns the numbers
+    /// that were open at the previous poll and no longer are. The first run only records the open ones.
+    /// </summary>
+    public static List<string> TrackClosures(AlertState state, IEnumerable<string> open)
+    {
+        var now = open.ToHashSet();
+        var closed = state.OpenBordereaux?.Except(now).ToList() ?? [];
+        state.OpenBordereaux = now;
+        return closed;
+    }
+
+    /// <param name="bordereaux">The bordereaux returned by <see cref="TrackClosures"/>; one deleted meanwhile is simply absent.</param>
+    public static List<AgentAlert> ComputeClosures(IEnumerable<RejetDto> bordereaux)
+    {
+        var closed = bordereaux.Where(b => !b.EstOuvert && !string.IsNullOrEmpty(b.NumBord)).OrderBy(b => b.NumBord).ToList();
+        if (closed.Count > MaxDetailedPayments)
+            return
+            [
+                new AgentAlert(
+                    $"closed:{string.Join(',', closed.Select(b => b.NumBord))}",
+                    $"{closed.Count} bordereaux clôturés",
+                    $"{closed.Sum(b => b.NombreFactures)} factures · {Money(closed.Sum(b => b.MontantFacture))} dus par les caisses",
+                    "bordereaux")
+            ];
+
+        return closed.Select(b => new AgentAlert(
+            $"closed:{b.NumBord}",
+            $"Bordereau N° {b.NumBord} clôturé",
+            $"{b.NombreFactures} facture{(b.NombreFactures > 1 ? "s" : "")} · {Money(b.MontantFacture)} dus · {b.Centre}",
+            "bordereaux")).ToList();
     }
 
     public static DateTime FacturesSince(AlertState state, DateTime now) => (state.LastFactureDate ?? now) - FactureOverlap;
@@ -272,6 +309,9 @@ public class AlertState
     public bool Initialized { get; set; }
     public HashSet<string> PaidBordereaux { get; set; } = [];
     public DateTime? LastChronicDay { get; set; }
+
+    /// <summary>Bordereaux open at the last poll; null until the first poll that read them.</summary>
+    public HashSet<string>? OpenBordereaux { get; set; }
 
     public bool FacturesInitialized { get; set; }
     public DateTime? LastFactureDate { get; set; }

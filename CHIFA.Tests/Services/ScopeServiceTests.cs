@@ -32,6 +32,18 @@ public class ScopeServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetBordereauxByNumAsync_ReadsOpenBordereauxWithoutDates()
+    {
+        using var w = StartWatch();
+        var open = await _svc.GetOpenBordereauxAsync();
+        var bordereaux = await _svc.GetBordereauxByNumAsync(open);
+
+        bordereaux.Select(b => b.NumBord).Should().BeEquivalentTo(open);
+        bordereaux.Should().OnlyContain(b => b.EstOuvert);
+        _output.WriteLine(string.Join("\n", bordereaux.Select(b => $"{b.NumBord} {b.Centre} {b.NombreFactures} factures {b.MontantFacture} DA")));
+    }
+
+    [Fact]
     public async Task GetWatchedFacturesAsync_ReadsTheFacturesFoundBySinceQuery()
     {
         using var w = StartWatch();
