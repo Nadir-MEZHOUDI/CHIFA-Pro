@@ -62,6 +62,20 @@ public sealed partial class MobileLinkForm : XtraForm
 
     private async void BtnNewCode_Click(object? sender, EventArgs e) => await NewCodeAsync();
 
+    private void BtnCopy_Click(object? sender, EventArgs e)
+    {
+        if (_code is null) return;
+        try
+        {
+            Clipboard.SetText(_code.Code);
+            SetStatus(("Code copié dans le presse-papiers.", Color.SeaGreen));
+        }
+        catch (System.Runtime.InteropServices.ExternalException)
+        {
+            SetStatus(("Le presse-papiers est occupé : réessayez.", Color.DarkOrange));
+        }
+    }
+
     private async void BtnRemove_Click(object? sender, EventArgs e) => await RemoveSelectedAsync();
 
     private async void BtnService_Click(object? sender, EventArgs e) => await InstallServiceAsync();
@@ -92,6 +106,7 @@ public sealed partial class MobileLinkForm : XtraForm
         if (_code is null) return;
         _lblCode.Text = _code.Code;
         _lblCode.Appearance.ForeColor = Teal;
+        _btnCopy.Enabled = true;
         _qr.Image?.Dispose();
         _qr.Image = QrCode(MobileLink.PhoneUrl(_code.Code));
 
@@ -115,6 +130,7 @@ public sealed partial class MobileLinkForm : XtraForm
 
         _clock.Stop();
         _lblCode.Appearance.ForeColor = Color.Silver;
+        _btnCopy.Enabled = false;
         _qr.Image?.Dispose();
         _qr.Image = null;
         _lblExpiry.Text = "Code expiré : cliquez sur « Nouveau code ».";
@@ -238,6 +254,7 @@ public sealed partial class MobileLinkForm : XtraForm
             _code = null;
             _lblCode.Text = "––––-––––";
             _lblCode.Appearance.ForeColor = Color.Silver;
+            _btnCopy.Enabled = false;
             _qr.Image?.Dispose();
             _qr.Image = null;
             _lblExpiry.Text = string.Empty;

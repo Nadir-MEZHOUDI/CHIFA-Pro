@@ -25,6 +25,7 @@ namespace CHIFA.Pro.Mobile
             _lblExpiry = new LabelControl();
             _lblStatus = new LabelControl();
             _btnNewCode = new SimpleButton();
+            _btnCopy = new SimpleButton();
             lblDevices = new LabelControl();
             _lstDevices = new ListBoxControl();
             _btnRemove = new SimpleButton();
@@ -127,6 +128,20 @@ namespace CHIFA.Pro.Mobile
             _btnNewCode.Text = "Nouveau code";
             _btnNewCode.Click += BtnNewCode_Click;
             // 
+            // _btnCopy
+            // 
+            _btnCopy.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnCopy.Appearance.Options.UseFont = true;
+            _btnCopy.Enabled = false;
+            _btnCopy.ImageOptions.ImageUri.Uri = "Copy;Size16x16";
+            _btnCopy.Location = new Point(510, 330);
+            _btnCopy.Margin = new Padding(4);
+            _btnCopy.Name = "_btnCopy";
+            _btnCopy.Size = new Size(200, 40);
+            _btnCopy.TabIndex = 13;
+            _btnCopy.Text = "Copier le code";
+            _btnCopy.Click += BtnCopy_Click;
+            // 
             // lblDevices
             // 
             lblDevices.Appearance.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
@@ -226,6 +241,7 @@ namespace CHIFA.Pro.Mobile
             Controls.Add(_lblExpiry);
             Controls.Add(_lblStatus);
             Controls.Add(_btnNewCode);
+            Controls.Add(_btnCopy);
             Controls.Add(lblDevices);
             Controls.Add(_lstDevices);
             Controls.Add(_btnRemove);
@@ -255,6 +271,7 @@ namespace CHIFA.Pro.Mobile
         private LabelControl _lblExpiry;
         private LabelControl _lblStatus;
         private SimpleButton _btnNewCode;
+        private SimpleButton _btnCopy;
         private LabelControl lblDevices;
         private ListBoxControl _lstDevices;
         private SimpleButton _btnRemove;
