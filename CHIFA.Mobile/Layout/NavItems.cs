@@ -9,6 +9,7 @@ public sealed record NavItem(string Href, string Label, string Icon, bool InTabB
         new("statistiques", "Statistiques", "M3 3v18h18M7 16v-4M12 16V8M17 16V5"),
         new("factures", "Factures", "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8", InTabBar: true),
         new("patients", "Patients", "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75", InTabBar: true),
+        new("relances", "Chroniques à relancer", "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM12 13v3l2 1.5"),
         new("medicaments", "Médicaments", "M10.5 20.5 3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7zM8.5 8.5l7 7", InTabBar: true, Short: "Médic."),
         new("bordereaux", "Bordereaux", "M3 7h18M3 12h18M3 17h18"),
         new("rejets", "Rejets et paiements", "M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z", InTabBar: true, Short: "Rejets"),
