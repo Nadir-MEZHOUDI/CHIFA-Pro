@@ -12,7 +12,6 @@ let h = fs.readFileSync(path.join(site, "index.html"), "utf8");
 
 const TITLE = "SmartCHIFA — برنامج الشفاء للصيدليات في الجزائر";
 const DESC = "SmartCHIFA برنامج الشفاء للصيدليات الجزائرية: جداول الإرسال CNAS و CASNOS، المرفوضات، المؤثرات العقلية والإحصائيات على الحاسوب والهاتف. تجربة مجانية 7 أيام.";
-const FONTS = "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap";
 
 const escText = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const escAttr = s => escText(s).replace(/"/g, "&quot;");
@@ -61,7 +60,8 @@ once(/<meta property="og:image:alt" content="[^"]*">/, `<meta property="og:image
 once(`<meta property="og:locale" content="fr_DZ">\n<meta property="og:locale:alternate" content="ar_DZ">`, `<meta property="og:locale" content="ar_DZ">\n<meta property="og:locale:alternate" content="fr_DZ">`);
 once(/<meta name="twitter:title" content="[^"]*">/, `<meta name="twitter:title" content="${TITLE}">`);
 once(/<meta name="twitter:description" content="[^"]*">/, `<meta name="twitter:description" content="${escAttr(DESC)}">`);
-h = h.replaceAll(/https:\/\/fonts\.googleapis\.com\/css2\?[^"]*/g, FONTS);
+once(`<link rel="preload" href="/assets/fonts/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>`,
+     `<link rel="preload" href="/assets/fonts/ibm-plex-sans-arabic-700-arabic.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="preload" href="/assets/fonts/ibm-plex-sans-arabic-400-arabic.woff2" as="font" type="font/woff2" crossorigin>`);
 
 const faq = [...h.matchAll(/<summary data-i18n="(q\d)">/g)].map(m => m[1]);
 const faqLd = {

@@ -30,10 +30,8 @@
 <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/logo.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&display=swap"></noscript>
+<link rel="preload" href="/assets/fonts/bricolage-grotesque-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -188,6 +186,16 @@
 }
 </script>
 <style>
+@font-face{font-family:"Bricolage Grotesque";font-weight:600 800;font-display:swap;src:url(/assets/fonts/bricolage-grotesque-latin.woff2) format("woff2")}
+@font-face{font-family:"Manrope";font-weight:400 700;font-display:swap;src:url(/assets/fonts/manrope-latin.woff2) format("woff2")}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-400-arabic.woff2) format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:400;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-400-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:500;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-500-arabic.woff2) format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:500;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-500-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:600;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-600-arabic.woff2) format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:600;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-600-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:700;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-700-arabic.woff2) format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE, U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24, U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47, U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59, U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A, U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89, U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1}
+@font-face{font-family:"IBM Plex Sans Arabic";font-weight:700;font-display:swap;src:url(/assets/fonts/ibm-plex-sans-arabic-700-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 :root{
   --pine:#0B3B2E; --pine-2:#0F4C3B; --emerald:#13A356; --mint:#34D17A; --mint-soft:#DDF6E7;
   --paper:#F6F4EE; --card:#FFFFFF; --ink:#0F1A16; --muted:#55645D; --line:#E2DFD5;
@@ -208,8 +216,8 @@ html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3{letter-spacing:0;line-h
 html[lang="ar"] .eyebrow{letter-spacing:0}
 .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;font-weight:700;text-decoration:none;border:1.5px solid transparent;transition:transform .15s,background .15s,box-shadow .15s;cursor:pointer;font-family:inherit;font-size:15px}
 .btn:hover{transform:translateY(-1px)}
-.btn-primary{background:var(--emerald);color:#fff;box-shadow:0 8px 24px -8px rgba(19,163,86,.6)}
-.btn-primary:hover{background:#0F8F4A}
+.btn-primary{background:#0E8042;color:#fff;box-shadow:0 8px 24px -8px rgba(19,163,86,.6)}
+.btn-primary:hover{background:#0B6E38}
 .btn-ghost{border-color:currentColor}
 .btn svg{width:18px;height:18px}
 html[dir="rtl"] .btn .arrow{transform:scaleX(-1)}
@@ -219,7 +227,7 @@ header{position:sticky;top:0;z-index:50;background:rgba(246,244,238,.85);backdro
 header.scrolled{border-color:var(--line)}
 .nav{display:flex;align-items:center;gap:20px;height:68px}
 .logo{display:flex;align-items:center;gap:10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:21px;text-decoration:none;letter-spacing:-.02em}
-.logo b{color:#0F8F4A}
+.logo b{color:#0E7F41}
 .logo img{width:34px;height:34px;display:block}
 .nav-links{display:flex;gap:18px;margin-inline-start:auto;font-weight:600;font-size:14px}
 .nav-links a{text-decoration:none;color:var(--muted);white-space:nowrap}
