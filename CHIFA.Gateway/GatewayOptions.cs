@@ -38,6 +38,14 @@ public class GatewayOptions
     [Range(1, 1440)]
     public int AlertPollMinutes { get; set; } = 5;
 
+    /// <summary>Phones are told the pharmacy is back online only after it was offline at least this long.</summary>
+    [Range(1, 1440)]
+    public int BackOnlineMinOfflineMinutes { get; set; } = 5;
+
+    /// <summary>At most one "back online" notification per pharmacy in this time.</summary>
+    [Range(1, 1440)]
+    public int BackOnlineCooldownMinutes { get; set; } = 60;
+
     /// <summary>VAPID contact given to the browsers' push services (a mailto: or https: URL).</summary>
     [Required]
     public string PushSubject { get; set; } = "https://smartchifa.smartappdz.org";

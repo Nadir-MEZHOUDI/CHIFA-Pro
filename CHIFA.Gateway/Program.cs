@@ -70,6 +70,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(o =>
 builder.Services.AddProblemDetails();
 builder.Services.AddSingleton<AgentRegistry>();
 builder.Services.AddSingleton<AgentInvoker>();
+builder.Services.AddSingleton<AgentOnlineNotifier>();
 builder.Services.AddHttpClient(nameof(PushSender));
 builder.Services.AddSingleton<PushSender>();
 builder.Services.AddHostedService<AlertPoller>();
