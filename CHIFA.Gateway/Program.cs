@@ -98,11 +98,16 @@ app.UseRateLimiter();
 app.Use((context, next) =>
 {
     var response = context.Response;
+    // The fallback rewrites the path to /index.html before the response starts.
+    var indexable = context.Request.Path.Equals("/login", StringComparison.OrdinalIgnoreCase);
     response.OnStarting(() =>
     {
         var cacheControl = response.Headers.CacheControl.ToString();
         if (cacheControl == "no-cache" || (cacheControl.Length == 0 && response.ContentType?.StartsWith("text/html") == true))
             response.Headers.CacheControl = "private, no-cache";
+        // Every app route serves the same login-gated shell; only /login may show in search, and it points to the website.
+        if (!indexable)
+            response.Headers["X-Robots-Tag"] = "noindex";
         return Task.CompletedTask;
     });
     return next();
