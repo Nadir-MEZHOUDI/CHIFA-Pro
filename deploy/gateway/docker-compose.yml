@@ -15,7 +15,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__Gateway: Host=${POSTGRES_HOST:-postgres};Port=5432;Database=${POSTGRES_DB:-chifa_gateway};Username=${POSTGRES_USER:-chifa_gateway};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      # The pool cap keeps load spikes from using up the shared postgres container's 100 connections.
+      ConnectionStrings__Gateway: Host=${POSTGRES_HOST:-postgres};Port=5432;Database=${POSTGRES_DB:-chifa_gateway};Username=${POSTGRES_USER:-chifa_gateway};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env};Maximum Pool Size=${POSTGRES_MAX_POOL:-20}
       Gateway__AdminKey: ${GATEWAY_ADMIN_KEY:?Set GATEWAY_ADMIN_KEY in .env}
       Jwt__SigningKey: ${JWT_SIGNING_KEY:?Set JWT_SIGNING_KEY in .env}
     networks:
