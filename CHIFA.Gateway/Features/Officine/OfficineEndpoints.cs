@@ -1,9 +1,11 @@
 using System.Security.Claims;
+using CHIFA.Gateway.Features.Account;
 using CHIFA.Gateway.Features.Agents;
 
 namespace CHIFA.Gateway.Features.Officine;
 
-public record OfficineStatus(string Name, bool Online, DateTime? LastSeenAt);
+/// <param name="SubscriptionEnded">The trial or subscription has ended: the other routes answer 402.</param>
+public record OfficineStatus(string Name, bool Online, DateTime? LastSeenAt, bool SubscriptionEnded = false, bool IsTrial = false);
 
 /// <summary>
 /// What the phone can read. Each call is answered live by the pharmacy agent; the gateway stores nothing.
@@ -13,9 +15,10 @@ public static class OfficineEndpoints
 {
     public static void MapOfficineEndpoints(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("/api/officine").RequireAuthorization();
+        var officine = app.MapGroup("/api/officine").RequireAuthorization();
+        officine.MapGet("/status", StatusAsync);
 
-        api.MapGet("/status", StatusAsync);
+        var api = officine.MapGroup("").RequireSubscription();
         api.MapGet("/info", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
             agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetInfo, null, ct));
 
@@ -67,13 +70,11 @@ public static class OfficineEndpoints
     {
         var pharmacyId = user.GetPharmacyId();
         await using var db = await dbFactory.CreateDbContextAsync(ct);
-        var pharmacy = await db.Pharmacies.AsNoTracking()
-            .Where(p => p.Id == pharmacyId)
-            .Select(p => new { p.Name, p.LastSeenAt })
-            .FirstOrDefaultAsync(ct);
+        var pharmacy = await db.Pharmacies.AsNoTracking().FirstOrDefaultAsync(p => p.Id == pharmacyId, ct);
 
         return pharmacy is null
             ? Results.NotFound()
-            : Results.Ok(new OfficineStatus(pharmacy.Name, registry.IsOnline(pharmacyId), pharmacy.LastSeenAt));
+            : Results.Ok(new OfficineStatus(pharmacy.Name, registry.IsOnline(pharmacyId), pharmacy.LastSeenAt,
+                AccountEndpoints.HasEnded(pharmacy, DateTime.UtcNow), AccountEndpoints.IsTrial(pharmacy)));
     }
 }

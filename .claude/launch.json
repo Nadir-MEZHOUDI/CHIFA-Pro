@@ -24,6 +24,12 @@
       "runtimeExecutable": "pwsh",
       "runtimeArgs": ["-NoProfile", "-Command", "$env:ASPNETCORE_URLS='http://localhost:5080'; dotnet run --project artifacts/e2e"],
       "port": 5080
+    },
+    {
+      "name": "e2e-trial-ended",
+      "runtimeExecutable": "pwsh",
+      "runtimeArgs": ["-NoProfile", "-Command", "$env:E2E_LICENSE='trial-ended'; $env:ASPNETCORE_URLS='http://localhost:5080'; dotnet run --project artifacts/e2e"],
+      "port": 5080
     }
   ]
 }

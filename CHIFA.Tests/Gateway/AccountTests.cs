@@ -6,6 +6,8 @@ using CHIFA.Contract;
 using CHIFA.Gateway.Data;
 using CHIFA.Gateway.Features.Account;
 using CHIFA.Gateway.Features.Auth;
+using CHIFA.Gateway.Features.Officine;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -201,6 +203,77 @@ public class AccountTests(GatewayFixture gateway)
         subscription.Status.Should().Be(SubscriptionStates.Expired);
         subscription.IsTrial.Should().BeTrue();
         subscription.DaysLeft.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Ended_trial_stops_the_pharmacy_data_but_keeps_the_account_pages()
+    {
+        var licenseId = Guid.NewGuid();
+        var pharmacy = await gateway.RegisterAsync(GatewayFixture.CreateLicense(licenseId, edition: "trial"));
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On(AgentMethods.GetInfo, () => Task.FromResult(new AgentInfo("Officine", "test", DateTime.Now)));
+        await agent.StartAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey, "Samsung");
+        await EndLicenseAsync(pharmacy.PharmacyId);
+
+        var info = await phone.GetAsync("/api/officine/info");
+        var code = await phone.PostAsync("/api/devices/code", null);
+        var status = await phone.GetFromJsonAsync<OfficineStatus>("/api/officine/status", JsonSerializerOptions.Web);
+
+        info.StatusCode.Should().Be(HttpStatusCode.PaymentRequired);
+        (await info.Content.ReadAsStringAsync()).Should().Contain("Essai gratuit terminé");
+        code.StatusCode.Should().Be(HttpStatusCode.PaymentRequired);
+        status!.Should().BeEquivalentTo(new { Online = true, SubscriptionEnded = true, IsTrial = true });
+        (await SubscriptionAsync(phone)).Status.Should().Be(SubscriptionStates.Expired);
+        (await DevicesAsync(phone)).Should().ContainSingle();
+    }
+
+    [Fact]
+    public async Task Renewed_license_unblocks_the_phone_at_once()
+    {
+        var licenseId = Guid.NewGuid();
+        var pharmacy = await gateway.RegisterAsync(GatewayFixture.CreateLicense(licenseId, edition: "trial"));
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On(AgentMethods.GetInfo, () => Task.FromResult(new AgentInfo("Officine", "test", DateTime.Now)));
+        await agent.StartAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey, "Samsung");
+        await EndLicenseAsync(pharmacy.PharmacyId);
+
+        using var desktop = gateway.CreatePharmacyClient(pharmacy.AgentKey);
+        (await desktop.PostAsJsonAsync(LinkRoutes.License, new LicenseUpdateRequest(GatewayFixture.CreateLicense(licenseId))))
+            .EnsureSuccessStatusCode();
+
+        (await phone.GetAsync("/api/officine/info")).StatusCode.Should().Be(HttpStatusCode.OK);
+        (await phone.GetFromJsonAsync<OfficineStatus>("/api/officine/status", JsonSerializerOptions.Web))!.SubscriptionEnded.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Pharmacy_without_a_known_license_is_never_blocked()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On(AgentMethods.GetInfo, () => Task.FromResult(new AgentInfo("Officine", "test", DateTime.Now)));
+        await agent.StartAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        (await phone.GetAsync("/api/officine/info")).StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public void Paid_license_without_end_date_never_ends()
+    {
+        var pharmacy = new Pharmacy { Name = "P", AgentKeyHash = "h", LicenseEdition = "standard", LicenseCheckedAt = DateTime.UtcNow };
+
+        AccountEndpoints.HasEnded(pharmacy, DateTime.UtcNow.AddYears(10)).Should().BeFalse();
+    }
+
+    // The gateway refuses an expired license file, so the end date is moved back in the database instead.
+    private async Task EndLicenseAsync(Guid pharmacyId)
+    {
+        await using var db = await DbAsync();
+        var pharmacy = await EntityFrameworkQueryableExtensions.SingleAsync(db.Pharmacies, p => p.Id == pharmacyId);
+        pharmacy.LicenseExpiresAt = DateTime.UtcNow.AddMinutes(-1);
+        await db.SaveChangesAsync();
     }
 
     private async Task<HttpClient> LinkPhoneAsync(string agentKey, string name)

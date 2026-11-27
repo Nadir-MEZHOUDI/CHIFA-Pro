@@ -40,8 +40,44 @@ public static class AccountEndpoints
         api.MapGet("/subscription", SubscriptionAsync);
         api.MapGet("/devices", DevicesAsync);
         api.MapDelete("/devices/{id:guid}", RemoveDeviceAsync);
-        api.MapPost("/devices/code", CreateCodeAsync);
+        api.MapPost("/devices/code", CreateCodeAsync).RequireSubscription();
     }
+
+    /// <summary>
+    /// The trial or subscription has ended. Only a license SmartCHIFA sent counts: a pharmacy whose license is
+    /// unknown (added by the admin, older SmartCHIFA) or without an end date is never blocked.
+    /// </summary>
+    public static bool HasEnded(Pharmacy pharmacy, DateTime utcNow) =>
+        pharmacy.LicenseCheckedAt is not null && pharmacy.LicenseExpiresAt is { } end && end <= utcNow;
+
+    public static bool IsTrial(Pharmacy pharmacy) =>
+        string.Equals(pharmacy.LicenseEdition, TrialEdition, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Refuses the request once the trial or subscription has ended. SmartCHIFA itself stops opening then, but
+    /// the CHIFA.Agent service keeps answering, so the gateway is where the phone is stopped. It lifts as soon
+    /// as SmartCHIFA sends the renewed license.
+    /// </summary>
+    public static TBuilder RequireSubscription<TBuilder>(this TBuilder builder) where TBuilder : IEndpointConventionBuilder =>
+        builder.AddEndpointFilter(async (context, next) =>
+        {
+            var http = context.HttpContext;
+            var pharmacyId = http.User.GetPharmacyId();
+            await using var db = await http.RequestServices.GetRequiredService<IDbContextFactory<GatewayDbContext>>()
+                .CreateDbContextAsync(http.RequestAborted);
+            var pharmacy = await db.Pharmacies.AsNoTracking().FirstOrDefaultAsync(p => p.Id == pharmacyId, http.RequestAborted);
+            return pharmacy is not null && HasEnded(pharmacy, DateTime.UtcNow)
+                ? Ended(IsTrial(pharmacy))
+                : await next(context);
+        });
+
+    // 402, not a 5xx: Cloudflare would replace a 502/504 with its own page and the phone would lose the message.
+    private static IResult Ended(bool isTrial) =>
+        Results.Problem(statusCode: StatusCodes.Status402PaymentRequired,
+            title: isTrial ? "Essai gratuit terminé" : "Abonnement terminé",
+            detail: isTrial
+                ? "Demandez une licence dans SmartCHIFA (menu « Licence ») pour consulter à nouveau la pharmacie sur ce téléphone."
+                : "Renouvelez l'abonnement auprès de SmartApp, puis cliquez sur « Vérifier en ligne » dans SmartCHIFA.");
 
     private static async Task<IResult> SubscriptionAsync(ClaimsPrincipal user, IDbContextFactory<GatewayDbContext> dbFactory, CancellationToken ct)
     {
@@ -56,7 +92,7 @@ public static class AccountEndpoints
         if (pharmacy.LicenseCheckedAt is not { } checkedAt)
             return new SubscriptionStatus(SubscriptionStates.Unknown, false, null, null, null);
 
-        var isTrial = string.Equals(pharmacy.LicenseEdition, TrialEdition, StringComparison.OrdinalIgnoreCase);
+        var isTrial = IsTrial(pharmacy);
         if (pharmacy.LicenseExpiresAt is not { } end)
             return new SubscriptionStatus(isTrial ? SubscriptionStates.Trial : SubscriptionStates.Active, isTrial, null, null, checkedAt);
 

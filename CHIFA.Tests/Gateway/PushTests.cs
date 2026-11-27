@@ -98,6 +98,35 @@ public class PushTests(GatewayFixture gateway)
     }
 
     [Fact]
+    public async Task Poller_sends_no_alerts_once_the_license_has_ended()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+        (await phone.PostAsJsonAsync("/api/push/subscribe", Subscription())).EnsureSuccessStatusCode();
+        await using (var db = await gateway.Services.GetRequiredService<IDbContextFactory<GatewayDbContext>>().CreateDbContextAsync())
+        {
+            var row = await EntityFrameworkQueryableExtensions.SingleAsync(db.Pharmacies, p => p.Id == pharmacy.Id);
+            row.LicenseEdition = "trial";
+            row.LicenseCheckedAt = DateTime.UtcNow.AddDays(-1);
+            row.LicenseExpiresAt = DateTime.UtcNow.AddMinutes(-1);
+            await db.SaveChangesAsync();
+        }
+
+        var asked = false;
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On(AgentMethods.GetAlerts, () =>
+        {
+            asked = true;
+            return Task.FromResult(new List<AgentAlert>());
+        });
+        await agent.StartAsync();
+
+        await gateway.Services.GetServices<IHostedService>().OfType<AlertPoller>().Single().PollAsync(CancellationToken.None);
+
+        asked.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task New_routes_reach_the_agent_with_their_arguments()
     {
         var pharmacy = await gateway.CreatePharmacyAsync();

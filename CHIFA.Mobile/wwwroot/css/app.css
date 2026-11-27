@@ -793,7 +793,7 @@ dd .tags, .item-head > .tags { justify-content: flex-end; }
     flex-direction: column;
     gap: .55rem;
 }
-.guest-screen .guest-message p { color: var(--text); font-size: .88rem; }
+.guest-message p { color: var(--text); font-size: .88rem; }
 .guest-message p[lang="ar"] { font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", system-ui, sans-serif; font-size: .98rem; line-height: 1.7; font-weight: 600; }
 
 /* Lists and details */

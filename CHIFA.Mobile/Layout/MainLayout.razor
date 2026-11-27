@@ -60,6 +60,10 @@
                     {
                         <span class="status offline"><span class="dot"></span>Téléphone non lié</span>
                     }
+                    else if (_status is { SubscriptionEnded: true } ended)
+                    {
+                        <span class="status offline"><span class="dot"></span>@(ended.IsTrial ? "Essai gratuit terminé" : "Abonnement terminé")</span>
+                    }
                     else if (_status is { } s)
                     {
                         <span class="status @(s.Online ? "online" : "offline")">
@@ -86,6 +90,10 @@
                     {
                         <GuestScreen PageTitle="@GuestPageTitle" CanInstall="@(_install != "none")" Install="InstallAsync" />
                     }
+                }
+                else if (SubscriptionBlocked)
+                {
+                    <SubscriptionEnded Status="_status!" />
                 }
                 else if (PharmacyDown)
                 {
@@ -170,6 +178,8 @@
         CurrentPage == "" ? null : NavItem.All.FirstOrDefault(i => i.Href == CurrentPage)?.Label ?? "SmartCHIFA";
 
     private bool PharmacyDown => _status is { Online: false } && !GatewayPages.Contains(CurrentPage);
+
+    private bool SubscriptionBlocked => _status is { SubscriptionEnded: true } && !GatewayPages.Contains(CurrentPage);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

@@ -5,7 +5,8 @@ namespace CHIFA.Mobile;
 /// <param name="DeviceToken">Linked phones only: signs in again without a code until logout.</param>
 public record LoginResponse(string AccessToken, DateTime ExpiresAt, string Pharmacy, string? DeviceToken = null);
 
-public record OfficineStatus(string Name, bool Online, DateTime? LastSeenAt);
+/// <param name="SubscriptionEnded">The trial or subscription has ended: the pharmacy's data is refused (402).</param>
+public record OfficineStatus(string Name, bool Online, DateTime? LastSeenAt, bool SubscriptionEnded = false, bool IsTrial = false);
 
 public record AgentInfo(string? Officine, string AgentVersion, DateTime ServerTime);
 
