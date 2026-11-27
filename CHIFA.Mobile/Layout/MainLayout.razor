@@ -31,6 +31,9 @@
                         <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>Installer l'application
                     </button>
                 }
+                <button class="drawer-action" @onclick="() => Pages.Assistance.Share(Js)">
+                    <svg viewBox="0 0 24 24"><path d="M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4" /></svg>Partager l'application
+                </button>
                 <button class="drawer-action" @onclick="SignOutAsync">
                     <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>Se déconnecter
                 </button>
@@ -125,8 +128,8 @@
         }
     }
 
-    // These pages are served by the gateway itself, so they keep working while the pharmacy PC is off.
-    private static readonly string[] GatewayPages = ["notifications", "abonnement"];
+    // These pages don't need the pharmacy PC, so they keep working while it is off.
+    private static readonly string[] GatewayPages = ["notifications", "abonnement", "assistance"];
 
     private bool PharmacyDown =>
         _status is { Online: false } && !GatewayPages.Contains(Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#', '/')[0]);

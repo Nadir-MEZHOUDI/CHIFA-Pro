@@ -14,6 +14,7 @@ public sealed record NavItem(string Href, string Label, string Icon, bool InTabB
         new("rejets", "Rejets et paiements", "M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z", InTabBar: true, Short: "Rejets"),
         new("psychotropes", "Psychotropes", "M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7 15h10"),
         new("notifications", "Notifications", "M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"),
-        new("abonnement", "Abonnement et appareils", "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4")
+        new("abonnement", "Abonnement et appareils", "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4"),
+        new("assistance", "Assistance et contact", "M3 18v-6a9 9 0 0 1 18 0v6M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z")
     ];
 }

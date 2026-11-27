@@ -830,6 +830,12 @@ a.tag { text-decoration: none; }
 .notify-head div { display: flex; flex-direction: column; gap: .15rem; }
 .notify-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
 .notify p { margin: 0; }
+.contacts { display: grid; gap: .6rem; margin: .8rem 0; }
+a.card.link.contact { flex-direction: row; align-items: center; gap: .8rem; }
+.contact > svg { flex: none; width: 40px; height: 40px; padding: 9px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); }
+.contact.whatsapp > svg { background: color-mix(in srgb, #25d366 16%, transparent); color: #128c4a; }
+.contact > span { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+
 .bullets { margin: 0 0 .6rem; padding-left: 1.1rem; display: flex; flex-direction: column; gap: .45rem; }
 
 .sub-days { display: flex; align-items: baseline; gap: .45rem; margin-bottom: .8rem; color: var(--ok); }

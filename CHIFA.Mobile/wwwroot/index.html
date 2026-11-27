@@ -76,6 +76,19 @@
             window.chifa = {
                 userAgent: () => navigator.userAgent,
                 confirm: (text) => window.confirm(text),
+                // The phone's share sheet where there is one; otherwise the link goes to the clipboard.
+                share: async (title, text, url) => {
+                    if (navigator.share) {
+                        try { await navigator.share({ title, text, url }); return; }
+                        catch (e) { if (e.name === 'AbortError') return; }
+                    }
+                    try {
+                        await navigator.clipboard.writeText(`${text}\n${url}`);
+                        alert('Lien copié. Collez-le dans un message pour le partager.');
+                    } catch {
+                        prompt('Copiez ce lien pour le partager :', url);
+                    }
+                },
                 push: {
                     state: async () => {
                         if (!pushSupported()) return ios() && !standalone() ? 'ios-install' : 'unsupported';
