@@ -309,6 +309,32 @@ public class GatewayTests(GatewayFixture gateway)
         response.Headers.CacheControl.NoCache.Should().BeTrue();
     }
 
+    [Theory]
+    [InlineData("/", true)]
+    [InlineData("/factures", true)]
+    [InlineData("/factures/123", true)]
+    [InlineData("/login", false)]
+    public async Task Only_the_login_page_may_be_indexed(string path, bool noindex)
+    {
+        using var client = gateway.CreateClient();
+
+        var response = await client.GetAsync(path);
+
+        response.Headers.TryGetValues("X-Robots-Tag", out var robots).Should().Be(noindex);
+        if (noindex)
+            robots.Should().Equal("noindex");
+    }
+
+    [Fact]
+    public async Task Robots_txt_keeps_crawlers_out_of_the_api()
+    {
+        using var client = gateway.CreateClient();
+
+        var robots = await client.GetStringAsync("/robots.txt");
+
+        robots.Should().Contain("Disallow: /api/").And.Contain("Disallow: /admin").And.Contain("Disallow: /hubs/");
+    }
+
     private HubConnection AgentAnsweringInfo(string agentKey, string officine)
     {
         var agent = gateway.CreateAgentConnection(agentKey);
