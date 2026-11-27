@@ -49,6 +49,10 @@ public class GatewayOptions
     /// <summary>VAPID contact given to the browsers' push services (a mailto: or https: URL).</summary>
     [Required]
     public string PushSubject { get; set; } = "https://smartchifa.smartappdz.org";
+
+    /// <summary>The landing page allowed to read the published reviews from the browser (CORS).</summary>
+    [Required]
+    public string WebsiteOrigin { get; set; } = "https://smartchifa.smartappdz.org";
 }
 
 public class JwtOptions

@@ -1,0 +1,145 @@
+@page "/avis"
+@inject Api Api
+
+<div class="page-head"><h1>Donner mon avis</h1></div>
+
+@if (_loadError is not null)
+{
+    <ErrorBox Error="_loadError" Retry="LoadAsync" />
+}
+else if (_state is not { } state)
+{
+    <Loading Text="Chargement…" />
+}
+else if (state.Sent || _sent)
+{
+    <section class="card review-done">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+        <h2>Merci pour votre avis !</h2>
+        <p class="muted">Il apparaît sur le site de SmartCHIFA et aide d'autres pharmacies à nous découvrir.</p>
+        <a class="button secondary" href="">Retour à l'accueil</a>
+    </section>
+}
+else if (!state.CanReview)
+{
+    <section class="card">
+        <h2>Réservé aux pharmacies abonnées</h2>
+        <p class="muted">
+            Les avis publiés sur le site viennent uniquement de pharmacies avec un abonnement SmartCHIFA actif.
+            Vous pourrez donner le vôtre dès l'activation de votre licence.
+        </p>
+        <a class="button secondary" href="abonnement">Voir mon abonnement</a>
+    </section>
+}
+else
+{
+    <p class="muted small">Votre avis sera publié sur le site de SmartCHIFA. Un seul avis par pharmacie.</p>
+
+    <EditForm Model="this" OnSubmit="SendAsync" FormName="review" class="card review-form">
+        <fieldset class="stars-input">
+            <legend>Votre note</legend>
+            <div class="stars-row">
+                @for (var i = 1; i <= 5; i++)
+                {
+                    var value = i;
+                    <button type="button" class="star @(value <= _stars ? "on" : "")" aria-label="@value sur 5" aria-pressed="@(value == _stars ? "true" : "false")"
+                            @onclick="() => _stars = value">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" /></svg>
+                    </button>
+                }
+            </div>
+            <span class="stars-label">@StarsLabel(_stars)</span>
+        </fieldset>
+
+        <label>
+            Votre commentaire
+            <textarea @bind="Comment" @bind:event="oninput" rows="5" maxlength="1000"
+                      placeholder="Qu'est-ce que SmartCHIFA a changé dans votre pharmacie ?"></textarea>
+            <span class="counter">@(Comment?.Trim().Length ?? 0) / 1000</span>
+        </label>
+
+        <label>
+            Nom affiché
+            <InputText @bind-Value="AuthorName" maxlength="100" autocomplete="organization" />
+        </label>
+
+        <label>
+            Ville <span class="optional">(facultatif)</span>
+            <InputText @bind-Value="City" maxlength="100" autocomplete="address-level2" />
+        </label>
+
+        @if (_sendError is not null)
+        {
+            <ErrorBox Error="_sendError" />
+        }
+
+        <button class="button" type="submit" disabled="@(!CanSend)">@(_busy ? "Envoi…" : "Envoyer mon avis")</button>
+    </EditForm>
+}
+
+@code {
+    private const int MinCommentLength = 10;
+
+    private ReviewState? _state;
+    private ApiException? _loadError;
+    private ApiException? _sendError;
+    private int _stars;
+    private bool _busy;
+    private bool _sent;
+
+    public string? Comment { get; set; }
+    public string? AuthorName { get; set; }
+    public string? City { get; set; }
+
+    private bool CanSend => !_busy && _stars > 0 && (Comment?.Trim().Length ?? 0) >= MinCommentLength && !string.IsNullOrWhiteSpace(AuthorName);
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _loadError = null;
+        _state = null;
+        try
+        {
+            _state = await Api.ReviewStateAsync();
+            AuthorName ??= _state.SuggestedName;
+        }
+        catch (ApiException ex)
+        {
+            _loadError = ex;
+        }
+    }
+
+    private async Task SendAsync()
+    {
+        if (!CanSend)
+            return;
+
+        _busy = true;
+        _sendError = null;
+        try
+        {
+            await Api.SendReviewAsync(new ReviewRequest(_stars, Comment!.Trim(), AuthorName!.Trim(), string.IsNullOrWhiteSpace(City) ? null : City.Trim()));
+            _sent = true;
+            ReviewInvite.Hide();
+        }
+        catch (ApiException ex)
+        {
+            _sendError = ex;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private static string StarsLabel(int stars) => stars switch
+    {
+        1 => "Décevant",
+        2 => "Moyen",
+        3 => "Bien",
+        4 => "Très bien",
+        5 => "Excellent",
+        _ => "Touchez une étoile"
+    };
+}

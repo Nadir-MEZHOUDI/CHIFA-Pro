@@ -7,6 +7,7 @@ using CHIFA.Gateway.Features.Auth;
 using CHIFA.Gateway.Features.Link;
 using CHIFA.Gateway.Features.Officine;
 using CHIFA.Gateway.Features.Push;
+using CHIFA.Gateway.Features.Reviews;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -59,6 +60,9 @@ builder.Services.AddRateLimiter(o =>
         _ => new FixedWindowRateLimiterOptions { PermitLimit = authRequestsPerMinute, Window = TimeSpan.FromMinutes(1) }));
 });
 
+var websiteOrigin = builder.Configuration.GetSection(GatewayOptions.Section).Get<GatewayOptions>()?.WebsiteOrigin ?? new GatewayOptions().WebsiteOrigin;
+builder.Services.AddCors(o => o.AddPolicy(ReviewEndpoints.WebsiteCorsPolicy, p => p.WithOrigins(websiteOrigin).WithMethods("GET")));
+
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
 {
     o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -89,6 +93,7 @@ await using (var db = await app.Services.GetRequiredService<IDbContextFactory<Ga
 app.UseForwardedHeaders();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
@@ -121,6 +126,7 @@ app.MapAdminEndpoints();
 app.MapOfficineEndpoints();
 app.MapPushEndpoints();
 app.MapAccountEndpoints();
+app.MapReviewEndpoints();
 
 // Phone app (CHIFA.Mobile). Unknown API paths stay 404 instead of returning the app's index.html.
 app.MapStaticAssets();

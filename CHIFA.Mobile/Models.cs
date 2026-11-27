@@ -327,3 +327,9 @@ public class Watchlist
 public record WatchedPatient(string NumAssure, string Rang, string? Nom);
 
 public record WatchedMedicament(string NumEnr, string? Nom);
+
+/// <param name="CanReview">Paid subscription: trials and expired pharmacies cannot review.</param>
+/// <param name="Sent">The pharmacy already gave its review.</param>
+public record ReviewState(bool CanReview, bool Sent, string SuggestedName);
+
+public record ReviewRequest(int Stars, string Comment, string AuthorName, string? City);

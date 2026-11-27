@@ -148,6 +148,10 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
         using var _ = await SendAsync(HttpMethod.Delete, $"api/devices/{id}", null);
     }
 
+    public Task<ReviewState> ReviewStateAsync() => GetAsync<ReviewState>("api/review");
+
+    public Task SendReviewAsync(ReviewRequest review) => PostAsync("api/review", review);
+
     public Task<Watchlist> WatchlistAsync() => GetAsync<Watchlist>("api/officine/watchlist");
 
     /// <returns>The rules as the pharmacy computer saved them (cleaned of duplicates and empty values).</returns>

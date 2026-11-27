@@ -266,6 +266,56 @@ namespace CHIFA.Gateway.Data.Migrations
                     b.ToTable("push_subscriptions", (string)null);
                 });
 
+            modelBuilder.Entity("CHIFA.Gateway.Data.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("author_name");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("city");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("comment");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_published");
+
+                    b.Property<Guid>("PharmacyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("pharmacy_id");
+
+                    b.Property<int>("Stars")
+                        .HasColumnType("integer")
+                        .HasColumnName("stars");
+
+                    b.HasKey("Id")
+                        .HasName("pk_reviews");
+
+                    b.HasIndex("PharmacyId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_reviews_pharmacy_id");
+
+                    b.ToTable("reviews", (string)null);
+                });
+
             modelBuilder.Entity("CHIFA.Gateway.Data.VapidKey", b =>
                 {
                     b.Property<int>("Id")
@@ -342,6 +392,18 @@ namespace CHIFA.Gateway.Data.Migrations
                         .HasConstraintName("fk_push_subscriptions_pharmacies_pharmacy_id");
 
                     b.Navigation("Device");
+
+                    b.Navigation("Pharmacy");
+                });
+
+            modelBuilder.Entity("CHIFA.Gateway.Data.Review", b =>
+                {
+                    b.HasOne("CHIFA.Gateway.Data.Pharmacy", "Pharmacy")
+                        .WithMany()
+                        .HasForeignKey("PharmacyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reviews_pharmacies_pharmacy_id");
 
                     b.Navigation("Pharmacy");
                 });

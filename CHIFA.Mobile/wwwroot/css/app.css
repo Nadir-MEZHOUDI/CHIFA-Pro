@@ -949,3 +949,42 @@ a.card.link.contact { flex-direction: row; align-items: center; gap: .8rem; }
 .watch-button.on { background: var(--primary-soft); border-color: transparent; color: var(--primary); }
 .watch-button.on svg { fill: currentColor; }
 .watch-button:disabled { opacity: .6; }
+
+/* Review (« Donner mon avis ») */
+.review-invite { display: flex; flex-direction: column; gap: .6rem; border-color: color-mix(in srgb, var(--emerald) 35%, var(--line)); }
+.review-invite h2 { margin: 0 0 .2rem; }
+.review-invite p { margin: 0; }
+.review-invite-stars { color: #f2a93b; font-size: 1.15rem; letter-spacing: .12em; line-height: 1; }
+
+.review-form { display: flex; flex-direction: column; gap: 1rem; }
+.review-form label { display: flex; flex-direction: column; gap: .4rem; font-size: .84rem; font-weight: 600; color: var(--muted); }
+.review-form .optional { font-weight: 500; }
+.review-form input,
+.review-form textarea {
+    font: inherit;
+    font-size: 16px;
+    padding: .75rem .9rem;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--text);
+    resize: vertical;
+    transition: border-color .15s, box-shadow .15s;
+}
+.review-form input:focus,
+.review-form textarea:focus { outline: none; border-color: var(--emerald); box-shadow: 0 0 0 4px color-mix(in srgb, var(--emerald) 20%, transparent); }
+.review-form .counter { align-self: flex-end; font-size: .72rem; font-weight: 500; }
+
+.stars-input { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: .35rem; }
+.stars-input legend { font-size: .84rem; font-weight: 600; color: var(--muted); margin-bottom: .3rem; }
+.stars-row { display: flex; gap: .2rem; }
+.star { background: none; border: 0; padding: .2rem; cursor: pointer; color: var(--line); -webkit-tap-highlight-color: transparent; }
+.star svg { width: 42px; height: 42px; fill: currentColor; transition: transform .12s, color .12s; }
+.star.on { color: #f2a93b; }
+.star:active svg { transform: scale(.88); }
+.stars-label { font-size: .86rem; font-weight: 700; min-height: 1.2em; }
+
+.review-done { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .5rem; padding: 1.6rem 1.2rem; }
+.review-done svg { width: 52px; height: 52px; padding: 12px; border-radius: 50%; background: var(--primary-soft); color: var(--primary); fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.review-done h2 { margin: .3rem 0 0; }
+.review-done p { margin: 0 0 .6rem; }

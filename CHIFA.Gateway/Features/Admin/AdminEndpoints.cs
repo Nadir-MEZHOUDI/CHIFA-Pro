@@ -31,7 +31,7 @@ public static class AdminEndpoints
         admin.MapPost("/pharmacies/{id:guid}/users", CreateUserAsync);
     }
 
-    private static async ValueTask<object?> RequireAdminKey(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
+    public static async ValueTask<object?> RequireAdminKey(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
         var http = context.HttpContext;
         var expected = http.RequestServices.GetRequiredService<IOptions<GatewayOptions>>().Value.AdminKey;

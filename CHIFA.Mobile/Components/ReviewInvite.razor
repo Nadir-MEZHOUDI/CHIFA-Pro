@@ -1,0 +1,41 @@
+@inject Api Api
+
+@* Asks subscribed pharmacies for their review until they give it. Shows nothing while loading or on error. *@
+@if (_show && !_hidden)
+{
+    <section class="card review-invite">
+        <div class="review-invite-stars" aria-hidden="true">★★★★★</div>
+        <div>
+            <h2>Votre avis compte</h2>
+            <p class="muted small">Notez SmartCHIFA en une minute : votre avis aide d'autres pharmacies à nous découvrir.</p>
+        </div>
+        <div class="notify-actions">
+            <a class="button small" href="avis">Donner mon avis</a>
+            <button class="button secondary small" @onclick="Later">Plus tard</button>
+        </div>
+    </section>
+}
+
+@code {
+    // « Plus tard » and a sent review hide the card until the app is reopened.
+    private static bool _hidden;
+    private bool _show;
+
+    public static void Hide() => _hidden = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_hidden)
+            return;
+        try
+        {
+            var state = await Api.ReviewStateAsync();
+            _show = state.CanReview && !state.Sent;
+        }
+        catch (ApiException)
+        {
+        }
+    }
+
+    private void Later() => _hidden = true;
+}

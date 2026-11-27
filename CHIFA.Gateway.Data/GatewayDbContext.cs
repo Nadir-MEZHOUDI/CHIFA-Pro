@@ -10,6 +10,7 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
     public DbSet<PairingCode> PairingCodes => Set<PairingCode>();
     public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
     public DbSet<VapidKey> VapidKeys => Set<VapidKey>();
+    public DbSet<Review> Reviews => Set<Review>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -55,6 +56,15 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
             e.Property(k => k.Id).ValueGeneratedNever();
             e.Property(k => k.PublicKey).HasMaxLength(100);
             e.Property(k => k.PrivateKey).HasMaxLength(100);
+        });
+
+        b.Entity<Review>(e =>
+        {
+            e.Property(r => r.Comment).HasMaxLength(Review.MaxCommentLength);
+            e.Property(r => r.AuthorName).HasMaxLength(Review.MaxNameLength);
+            e.Property(r => r.City).HasMaxLength(Review.MaxNameLength);
+            e.HasIndex(r => r.PharmacyId).IsUnique();
+            e.HasOne(r => r.Pharmacy).WithMany().OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
