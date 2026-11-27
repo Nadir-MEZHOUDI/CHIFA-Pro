@@ -84,7 +84,7 @@ public sealed partial class ConnectionForm : XtraForm
     /// <summary>A shortcut, CHIFA_OFFICINE.exe or a folder: finds the CHIFA folder, then starts its server.</summary>
     private async Task UseChifaLocationAsync(string path)
     {
-        var folder = FindChifaFolder(path);
+        var folder = DbChecker.FindChifaFolder(path);
         if (folder is null)
         {
             ShowStatus("Cette icône ne mène pas à CHIFA_OFFICINE : le dossier « CHIFA_OFFICINE_DB » est introuvable à côté du programme.", false);
@@ -94,22 +94,6 @@ public sealed partial class ConnectionForm : XtraForm
         _chifaPath = folder;
         UpdateMode();
         await TestAsync();
-    }
-
-    private static string? FindChifaFolder(string path)
-    {
-        if (path.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase))
-            path = ShellShortcut.GetTarget(path) ?? string.Empty;
-
-        var folder = Directory.Exists(path) ? path : File.Exists(path) ? Path.GetDirectoryName(path) : null;
-
-        // The shortcut may point inside the installation (e.g. CHIFA_OFFICINE_DB\...): look a few levels up.
-        for (var level = 0; folder is not null && level < 3; level++, folder = Path.GetDirectoryName(folder))
-        {
-            if (DbChecker.IsChifaFolder(folder)) return folder;
-        }
-
-        return null;
     }
 
     private async void BtnTest_Click(object? sender, EventArgs e) => await TestAsync();

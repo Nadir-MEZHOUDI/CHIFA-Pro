@@ -14,6 +14,9 @@ internal static class LicenseGate
     public const string Product = "chifa-pro";
     public const int ExpiryWarningDays = 15;
 
+    /// <summary>The trial lasts 7 days and its end date is in the window title, so it only warns at the very end.</summary>
+    public const int TrialWarningDays = 2;
+
     private const string ProductionEndpoint = "https://license.smartappdz.org";
 
     // Public key of the SmartApp licensing server. It only verifies licenses; it cannot create them.
@@ -199,7 +202,7 @@ internal static class LicenseGate
     private static void WarnIfExpiringSoon(LicenseState state)
     {
         var days = state.DaysRemaining(DateTimeOffset.UtcNow);
-        if (!state.IsValid || days is null || days > ExpiryWarningDays) return;
+        if (!state.IsValid || days is null || days > (state.IsTrial ? TrialWarningDays : ExpiryWarningDays)) return;
 
         if (state.IsTrial)
         {

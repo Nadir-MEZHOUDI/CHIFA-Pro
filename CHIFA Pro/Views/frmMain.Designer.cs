@@ -57,6 +57,8 @@ namespace CHIFA.Pro.Views
             accMedicaments = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accFormes = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accActes = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accReferentiels = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accAdministration = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accordionControlSeparator4 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             accUsers = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accCenters = new DevExpress.XtraBars.Navigation.AccordionControlElement();
@@ -117,13 +119,13 @@ namespace CHIFA.Pro.Views
             // accordionControl1
             // 
             accordionControl1.Dock = DockStyle.Left;
-            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accLogin, accSecurity, accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accAssures, accPsychotropes, accStatistics, accordionControlSeparator5, accLN, accCM, accRachat, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres, accLicence, accMobile });
+            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accAssures, accPsychotropes, accordionControlSeparator5, accLN, accCM, accRachat, accordionControlSeparator2, accStatistics, accReferentiels, accAdministration, accordionControlSeparator4, accMobile, accordionControlSeparator3, accLogin });
             accordionControl1.Location = new Point(0, 0);
             accordionControl1.Margin = new Padding(5, 6, 5, 6);
             accordionControl1.Name = "accordionControl1";
             accordionControl1.ScrollBarMode = DevExpress.XtraBars.Navigation.ScrollBarMode.Auto;
             accordionControl1.ShowFilterControl = DevExpress.XtraBars.Navigation.ShowFilterControl.Auto;
-            accordionControl1.Size = new Size(270, 802);
+            accordionControl1.Size = new Size(300, 802);
             accordionControl1.TabIndex = 1;
             accordionControl1.ViewType = DevExpress.XtraBars.Navigation.AccordionControlViewType.HamburgerMenu;
             // 
@@ -156,7 +158,7 @@ namespace CHIFA.Pro.Views
             accTrtSps.ImageOptions.Image = (Image)resources.GetObject("accTrtSps.ImageOptions.Image");
             accTrtSps.Name = "accTrtSps";
             accTrtSps.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
-            accTrtSps.Text = "TRTMNT SPCFQ";
+            accTrtSps.Text = "TRAITEMENTS SPÉCIFIQUES";
             accTrtSps.Click += accFactures_Click;
             // 
             // accBordereaux
@@ -186,7 +188,7 @@ namespace CHIFA.Pro.Views
             // accStatistics
             // 
             accStatistics.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accStatisticsBordereaux, accStatisticsYearly, accStatisticsMonthly, accStatisticsWeekly, accStatisticsDaily, accStatisticsProducts, accStatisticsClients, accDahsboard });
-            accStatistics.Expanded = true;
+            accStatistics.Expanded = false;
             accStatistics.ImageOptions.Image = (Image)resources.GetObject("accStatistics.ImageOptions.Image");
             accStatistics.Name = "accStatistics";
             accStatistics.Text = "STATISTIQUES";
@@ -278,7 +280,23 @@ namespace CHIFA.Pro.Views
             // accordionControlSeparator2
             // 
             accordionControlSeparator2.Name = "accordionControlSeparator2";
-            // 
+            //
+            // accReferentiels
+            //
+            accReferentiels.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accMedicaments, accFormes, accActes, accCenters });
+            accReferentiels.Expanded = false;
+            accReferentiels.ImageOptions.Image = (Image)resources.GetObject("accMedicaments.ImageOptions.Image");
+            accReferentiels.Name = "accReferentiels";
+            accReferentiels.Text = "RÉFÉRENTIELS";
+            //
+            // accAdministration
+            //
+            accAdministration.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accOfficine, accUsers, accParametres, accLicence, accSecurity });
+            accAdministration.Expanded = false;
+            accAdministration.ImageOptions.Image = (Image)resources.GetObject("accParametres.ImageOptions.Image");
+            accAdministration.Name = "accAdministration";
+            accAdministration.Text = "RÉGLAGES";
+            //
             // accMedicaments
             // 
             accMedicaments.ImageOptions.Image = (Image)resources.GetObject("accMedicaments.ImageOptions.Image");
@@ -375,7 +393,7 @@ namespace CHIFA.Pro.Views
             // 
             barDockControlTop.CausesValidation = false;
             barDockControlTop.Dock = DockStyle.Top;
-            barDockControlTop.Location = new Point(270, 0);
+            barDockControlTop.Location = new Point(300, 0);
             barDockControlTop.Margin = new Padding(5, 4, 5, 4);
             barDockControlTop.Size = new Size(1012, 0);
             // 
@@ -383,7 +401,7 @@ namespace CHIFA.Pro.Views
             // 
             barDockControlBottom.CausesValidation = false;
             barDockControlBottom.Dock = DockStyle.Bottom;
-            barDockControlBottom.Location = new Point(270, 802);
+            barDockControlBottom.Location = new Point(300, 802);
             barDockControlBottom.Margin = new Padding(5, 4, 5, 4);
             barDockControlBottom.Size = new Size(1012, 0);
             // 
@@ -391,7 +409,7 @@ namespace CHIFA.Pro.Views
             // 
             barDockControlLeft.CausesValidation = false;
             barDockControlLeft.Dock = DockStyle.Left;
-            barDockControlLeft.Location = new Point(270, 0);
+            barDockControlLeft.Location = new Point(300, 0);
             barDockControlLeft.Margin = new Padding(5, 4, 5, 4);
             barDockControlLeft.Size = new Size(0, 802);
             // 
@@ -413,21 +431,21 @@ namespace CHIFA.Pro.Views
             // 
             barDockControl1.CausesValidation = false;
             barDockControl1.Dock = DockStyle.Top;
-            barDockControl1.Location = new Point(270, 0);
+            barDockControl1.Location = new Point(300, 0);
             barDockControl1.Size = new Size(1012, 0);
             // 
             // barDockControl2
             // 
             barDockControl2.CausesValidation = false;
             barDockControl2.Dock = DockStyle.Bottom;
-            barDockControl2.Location = new Point(270, 802);
+            barDockControl2.Location = new Point(300, 802);
             barDockControl2.Size = new Size(1012, 0);
             // 
             // barDockControl3
             // 
             barDockControl3.CausesValidation = false;
             barDockControl3.Dock = DockStyle.Left;
-            barDockControl3.Location = new Point(270, 0);
+            barDockControl3.Location = new Point(300, 0);
             barDockControl3.Size = new Size(0, 802);
             // 
             // barDockControl4
@@ -441,7 +459,7 @@ namespace CHIFA.Pro.Views
             // 
             container.Controls.Add(tabContainer);
             container.Dock = DockStyle.Fill;
-            container.Location = new Point(270, 0);
+            container.Location = new Point(300, 0);
             container.Name = "container";
             container.Size = new Size(1012, 802);
             container.TabIndex = 11;
@@ -461,7 +479,7 @@ namespace CHIFA.Pro.Views
             // 
             // toolbarFormControl1
             // 
-            toolbarFormControl1.Location = new Point(270, 0);
+            toolbarFormControl1.Location = new Point(300, 0);
             toolbarFormControl1.Name = "toolbarFormControl1";
             toolbarFormControl1.Size = new Size(1012, 0);
             toolbarFormControl1.TabIndex = 23;
@@ -734,6 +752,8 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraBars.BarDockControl barDockControl4;
         private DevExpress.XtraBars.SkinDropDownButtonItem skinDropDownButtonItem1;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accMedicaments;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accReferentiels;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accAdministration;
         private DevExpress.XtraBars.Navigation.AccordionControlSeparator accordionControlSeparator4;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accParametres;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accLogin;

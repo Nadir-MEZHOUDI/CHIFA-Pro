@@ -28,6 +28,24 @@ public partial class FrmMain : XtraForm
         FormClosed += (_, _) => AccessGuard.Changed -= ApplyAccess;
         ApplyAccess();
         ChangeTitle();
+        TidyMenuGroups();
+    }
+
+    /// <summary>
+    /// Group titles use the item font so « STATISTIQUES » fits on one line, and the groups start folded:
+    /// hiding an item of a group (Licence, Sécurité) unfolds it otherwise.
+    /// </summary>
+    private void TidyMenuGroups()
+    {
+        var font = accordionControl1.Appearance.Item.Normal.GetFont();
+        foreach (var appearance in new[] { accordionControl1.Appearance.Group.Normal, accordionControl1.Appearance.Group.Hovered, accordionControl1.Appearance.Group.Pressed })
+        {
+            appearance.Font = font;
+            appearance.Options.UseFont = true;
+        }
+
+        foreach (var group in new[] { accStatistics, accReferentiels, accAdministration })
+            group.Expanded = false;
     }
 
     /// <summary>« CONNEXION ADMIN » image from the Designer; logged in, the item shows an open lock instead.</summary>

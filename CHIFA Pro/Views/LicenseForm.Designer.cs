@@ -85,12 +85,12 @@ namespace CHIFA.Pro.Views
             _btnTrial.Name = "_btnTrial";
             _btnTrial.Size = new Size(665, 40);
             _btnTrial.TabIndex = 3;
-            _btnTrial.Text = "Essai gratuit de 7 jours (Sans Paiement)";
+            _btnTrial.Text = "Commencer l'essai gratuit de 7 jours (sans paiement)";
             _btnTrial.Click += BtnTrial_Click;
             // 
             // _btnRequest
             // 
-            _btnRequest.Appearance.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            _btnRequest.Appearance.Font = new Font("Segoe UI", 10F);
             _btnRequest.Appearance.Options.UseFont = true;
             _btnRequest.Location = new Point(30, 313);
             _btnRequest.Margin = new Padding(4);

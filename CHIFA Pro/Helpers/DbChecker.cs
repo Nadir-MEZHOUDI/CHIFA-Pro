@@ -105,6 +105,58 @@ public static class DbChecker
         && File.Exists(Path.Combine(folder, "CHIFA_OFFICINE_DB", "bin", "postgres.exe"))
         && File.Exists(Path.Combine(folder, "CHIFA_OFFICINE_DB", "Lancer_Serveur.bat"));
 
+    /// <summary>The CHIFA folder behind a shortcut, CHIFA_OFFICINE.exe or a folder, or <c>null</c>.</summary>
+    internal static string? FindChifaFolder(string path)
+    {
+        if (path.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase))
+            path = ShellShortcut.GetTarget(path) ?? string.Empty;
+
+        var folder = Directory.Exists(path) ? path : File.Exists(path) ? Path.GetDirectoryName(path) : null;
+
+        // The shortcut may point inside the installation (e.g. CHIFA_OFFICINE_DB\...): look a few levels up.
+        for (var level = 0; folder is not null && level < 3; level++, folder = Path.GetDirectoryName(folder))
+        {
+            if (IsChifaFolder(folder)) return folder;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Looks for CHIFA_OFFICINE on this computer: its shortcuts on the Desktop, then a CHIFA_OFFICINE
+    /// folder at the root of each local drive.
+    /// </summary>
+    internal static string? DetectChifaFolder()
+    {
+        try
+        {
+            var desktops = new[]
+            {
+                Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory)
+            };
+            foreach (var desktop in desktops.Where(Directory.Exists))
+            {
+                foreach (var shortcut in Directory.EnumerateFiles(desktop, "*CHIFA*.lnk"))
+                {
+                    if (FindChifaFolder(shortcut) is { } folder) return folder;
+                }
+            }
+
+            foreach (var drive in DriveInfo.GetDrives().Where(d => d is { DriveType: DriveType.Fixed, IsReady: true }))
+            {
+                var folder = Path.Combine(drive.RootDirectory.FullName, "CHIFA_OFFICINE");
+                if (IsChifaFolder(folder)) return folder;
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Serilog.Log.Warning(ex, "CHIFA_OFFICINE detection failed");
+        }
+
+        return null;
+    }
+
     public static bool IsLocalHost(string? host) =>
         string.IsNullOrWhiteSpace(host)
         || host.Equals("localhost", StringComparison.OrdinalIgnoreCase)
@@ -124,6 +176,15 @@ public static class DbChecker
     {
         var connected = Task.Run(() => CheckDbConnectionAsync(quiet: true)).GetAwaiter().GetResult();
 
+        // First start: find CHIFA_OFFICINE by itself so the pharmacist does not have to point to it.
+        var detected = false;
+        if (!connected && IsLocalServer && !IsChifaFolder(AppSettings.Default.ChifaPath)
+            && DetectChifaFolder() is { } found)
+        {
+            AppSettings.Default.ChifaPath = found;
+            detected = true;
+        }
+
         if (!connected && IsLocalServer && IsChifaFolder(AppSettings.Default.ChifaPath))
         {
             DevExpress.XtraSplashScreen.SplashScreenManager.ShowDefaultWaitForm("SmartCHIFA", "Démarrage du serveur CHIFA_OFFICINE…");
@@ -135,6 +196,13 @@ public static class DbChecker
             {
                 DevExpress.XtraSplashScreen.SplashScreenManager.CloseDefaultWaitForm();
             }
+        }
+
+        if (connected && detected)
+        {
+            AppSettings.Default.IsServer = true;
+            AppSettings.Default.Save();
+            XtraHelper.SetServer("localhost");
         }
 
         if (connected)

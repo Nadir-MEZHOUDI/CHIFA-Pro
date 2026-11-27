@@ -24,10 +24,23 @@ public sealed partial class LicenseForm : XtraForm
             ShowInTaskbar = true;
             StartPosition = FormStartPosition.CenterScreen;
         }
+        _lblSerial.Click += LblSerial_Click;
+        Shown += (_, _) => { if (_btnTrial.Visible) _btnTrial.Select(); };
         ShowState(client.Current);
     }
 
     private bool _trialRefused;
+
+    /// <summary>While the trial is offered, the serial field stays folded behind its label so the trial is the obvious choice.</summary>
+    private bool _serialUnfolded;
+
+    private void LblSerial_Click(object? sender, EventArgs e)
+    {
+        if (_serialUnfolded || _txtSerial.Visible) return;
+        _serialUnfolded = true;
+        ShowState(_client.Current);
+        _txtSerial.Focus();
+    }
 
     /// <summary>The license request of this computer; a trial keeps it so the paid license can replace the trial.</summary>
     private PendingLicenseRequest? Pending => _client.Current is { IsValid: true, IsTrial: false } ? null : _client.PendingRequest;
@@ -82,10 +95,16 @@ public sealed partial class LicenseForm : XtraForm
         _lblDetails.Text = string.Join(Environment.NewLine, lines);
 
         var canBuy = !state.IsValid || state.IsTrial;
-        _lblSerial.Visible = _txtSerial.Visible = _btnActivate.Visible = _btnRequest.Visible = canBuy;
-        _btnTrial.Visible = !state.IsValid && !state.IsTrial && !_trialRefused;
+        var offerTrial = !state.IsValid && !state.IsTrial && !_trialRefused;
+        var showSerial = canBuy && (!offerTrial || _serialUnfolded);
+        _btnTrial.Visible = offerTrial;
+        _lblSerial.Visible = _btnRequest.Visible = canBuy;
+        _txtSerial.Visible = _btnActivate.Visible = showSerial;
+        _lblSerial.Text = showSerial ? "Vous avez déjà un numéro de série ?" : "Vous avez déjà un numéro de série ? Cliquez ici.";
+        _lblSerial.Appearance.ForeColor = showSerial ? Color.Empty : Color.RoyalBlue;
+        _lblSerial.Cursor = showSerial ? Cursors.Default : Cursors.Hand;
         _btnRequest.Text = pending is null ? "Demander une licence (sans numéro de série)" : "Modifier ma demande";
-        AcceptButton = canBuy ? _btnActivate : _btnClose;
+        AcceptButton = showSerial ? _btnActivate : offerTrial ? _btnTrial : _btnClose;
         _btnRefresh.Visible = license is not null || pending is not null;
         _btnClose.Text = !_startup ? "Fermer" : state.IsValid ? "Continuer" : "Quitter";
 
