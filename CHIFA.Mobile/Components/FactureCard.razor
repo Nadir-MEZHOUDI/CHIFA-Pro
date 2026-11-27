@@ -4,7 +4,14 @@
         <strong>@Fmt.Money(F.MontFact)</strong>
     </div>
     <div class="item-sub">
-        <span>@Fmt.Stamp(F.DateFact)@(ShowPatient ? $" · N° {F.NumFact}" : "")</span>
+        @if (ShowNumAssure)
+        {
+            <span>Assuré @F.NumAssure-@F.Rang · @Fmt.Date(F.DateFact)</span>
+        }
+        else
+        {
+            <span>@Fmt.Stamp(F.DateFact)@(ShowPatient ? $" · N° {F.NumFact}" : "")</span>
+        }
         <span>Caisse @Fmt.Money(F.MontOff)</span>
     </div>
     <div class="tags">
@@ -34,4 +41,7 @@
 @code {
     [Parameter, EditorRequired] public Facture F { get; set; } = default!;
     [Parameter] public bool ShowPatient { get; set; } = true;
+
+    /// <summary>Shows the insured's number before the day, for lists sorted by it.</summary>
+    [Parameter] public bool ShowNumAssure { get; set; }
 }

@@ -60,6 +60,48 @@ public class ChifaService
             .ToList();
     }
 
+    /// <summary>One bordereau with all its factures, by insured number. Null when it does not exist.</summary>
+    public async ValueTask<BordereauDetailDto?> GetBordereauAsync(string numBord, CancellationToken cancellationToken = default)
+    {
+        BordereauDto? bordereau;
+        await using (var db = new ChifaDb())
+        {
+            bordereau = await db.Bordereaus
+                .Where(b => b.NumBord == numBord)
+                .Select(b => new BordereauDto
+                {
+                    Num = b.NumBord,
+                    Center = b.Center!.Nom,
+                    Virment = b.MontVir,
+                    DateDepotFtp = b.DateDepotFtp,
+                    DateCloture = b.DateCloture,
+                    DateOuverture = b.DateOuverture,
+                    State = b.Etat
+                })
+                .FirstOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        if (bordereau is null)
+            return null;
+
+        var factures = (await GetAllFacturesAsync(null, null, new Period { From = null }, f => f.NumBord == numBord, cancellationToken).ConfigureAwait(false))
+            .OrderBy(f => f.NumAssure, StringComparer.Ordinal)
+            .ThenBy(f => f.Rang, StringComparer.Ordinal)
+            .ThenBy(f => f.DateFact)
+            .ToList();
+
+        // Same totals as the list: computed from the factures already loaded instead of a second scan.
+        bordereau.Nmbr = factures.Count;
+        bordereau.MontOff = factures.Sum(f => f.MontOff ?? 0);
+        bordereau.MontAss = factures.Sum(f => f.MontAss ?? 0);
+        bordereau.Maj = factures.Sum(f => f.Majoration ?? 0);
+        bordereau.FirstFacture = factures.Min(f => f.DateFact);
+        bordereau.LastFacture = factures.Max(f => f.DateFact);
+
+        return new BordereauDetailDto { Bordereau = bordereau, Factures = factures };
+    }
+
     /// <summary>Per-bordereau totals of its factures, whatever their date.</summary>
     internal static IQueryable<FactureTotals> FactureTotals(ChifaDb db) =>
         from f in db.Factures

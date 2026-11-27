@@ -108,6 +108,9 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 
     public Task<Page<Bordereau>> BordereauxAsync(Period period, int skip) => PageAsync<Bordereau>("bordereaux", period, skip);
 
+    public Task<BordereauDetail?> BordereauAsync(string numBord) =>
+        GetAsync<BordereauDetail?>($"api/officine/bordereaux/{Uri.EscapeDataString(numBord)}");
+
     public Task<Page<Psychotrope>> PsychotropesAsync(Period period, int skip) => PageAsync<Psychotrope>("psychotropes", period, skip);
 
     public Task<FactureFull?> FactureAsync(string numFact) =>

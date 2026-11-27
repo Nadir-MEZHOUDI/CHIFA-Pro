@@ -1,0 +1,73 @@
+@page "/bordereaux/{NumBord}"
+@inherits Detail<BordereauDetail>
+
+<div class="page-head">
+    <BackButton Fallback="bordereaux" />
+    <h1>Bordereau N° @NumBord</h1>
+</div>
+
+@if (Error is not null)
+{
+    <ErrorBox Error="Error" Retry="LoadAsync" />
+}
+else if (Loading)
+{
+    <Loading />
+}
+else if (NotFound || Data is null)
+{
+    <div class="empty">Bordereau introuvable.</div>
+}
+else
+{
+    var b = Data.Bordereau;
+    var fae = (b.Nmbr ?? 0) * 5m;
+    var rejete = b.Virment > 0 ? b.MontGlobal - b.Virment : null;
+    <section class="card hero">
+        <span class="label">Montant dû</span>
+        <span class="amount">@Fmt.Money(b.MontGlobal)</span>
+        <span class="muted">@b.Center · @Fmt.Number(b.Nmbr) factures</span>
+    </section>
+
+    <BordereauTags B="b" />
+
+    <section class="kpis">
+        <div class="card kpi"><span class="label">Viré</span><span class="value">@Fmt.Money(b.Virment)</span></div>
+        <div class="card kpi"><span class="label">Rejeté</span><span class="value @(rejete > 0 ? "bad-text" : "")">@(rejete is { } r ? Fmt.Money(r) : "—")</span></div>
+    </section>
+
+    <section class="card">
+        <dl class="facts">
+            <div><dt>Part caisse</dt><dd>@Fmt.Money(b.MontOff)</dd></div>
+            <div><dt>Majorations</dt><dd>@Fmt.Money(b.Maj)</dd></div>
+            <div><dt>FAE</dt><dd>@Fmt.Money(fae)</dd></div>
+            <div><dt>Part assurés</dt><dd>@Fmt.Money(b.MontAss)</dd></div>
+            <div><dt>Factures</dt><dd>@Fmt.Date(b.FirstFacture) → @Fmt.Date(b.LastFacture)</dd></div>
+            <div><dt>Ouvert le</dt><dd>@Fmt.Date(Real(b.DateOuverture))</dd></div>
+            @if (!b.EstOuvert)
+            {
+                <div><dt>Clôturé le</dt><dd>@Fmt.Date(Real(b.DateCloture))</dd></div>
+            }
+            <div><dt>Déposé le</dt><dd>@Fmt.Date(b.Depot)</dd></div>
+        </dl>
+    </section>
+
+    <h2 class="section-title">Factures (@Data.Factures.Count)</h2>
+    @if (Data.Factures.Count == 0)
+    {
+        <div class="empty">Aucune facture.</div>
+    }
+    @foreach (var f in Data.Factures)
+    {
+        <FactureCard F="f" ShowNumAssure="true" />
+    }
+}
+
+@code {
+    [Parameter] public string NumBord { get; set; } = "";
+
+    protected override Task<BordereauDetail?> FetchAsync() => Api.BordereauAsync(NumBord);
+
+    /// <summary>CHIFA writes 01/01/1900 for a date it never set.</summary>
+    private static DateTime? Real(DateTime? date) => date is { Year: > 2000 } d ? d : null;
+}

@@ -34,3 +34,9 @@ public class BordereauDto
     public static bool EstPaiementSuivi(string? centre) =>
         centre is null || !centre.Contains("CASNOS", StringComparison.OrdinalIgnoreCase);
 }
+
+public class BordereauDetailDto
+{
+    public BordereauDto Bordereau { get; set; } = new();
+    public List<FactureDto> Factures { get; set; } = [];
+}

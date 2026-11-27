@@ -6,7 +6,7 @@
 
 @foreach (var b in Items)
 {
-    <article class="card item">
+    <a class="card item link" href="@Bordereau.UrlOf(b.Num ?? "")">
         <div class="item-head">
             <strong>N° @b.Num</strong>
             <strong>@Fmt.Money(b.MontGlobal)</strong>
@@ -15,33 +15,8 @@
             <span>@b.Center · @Fmt.Number(b.Nmbr) factures</span>
             <span>@Fmt.Date(b.FirstFacture) → @Fmt.Date(b.LastFacture)</span>
         </div>
-        <div class="tags">
-            @if (b.EstOuvert)
-            {
-                <span class="tag warn">Ouvert</span>
-            }
-            else
-            {
-                <span class="tag">Clôturé</span>
-            }
-            @if (b.Virment > 0)
-            {
-                <span class="tag ok">Viré @Fmt.Money(b.Virment)</span>
-            }
-            else if (!b.EstOuvert && !b.PaiementSuivi)
-            {
-                <span class="tag" title="CHIFA ne reçoit pas les virements de cette caisse">Paiement non suivi</span>
-            }
-            else if (!b.EstOuvert)
-            {
-                <span class="tag warn">Non payé</span>
-            }
-            @if (b.Depot is { } depot)
-            {
-                <span class="tag">Déposé le @Fmt.Date(depot)</span>
-            }
-        </div>
-    </article>
+        <BordereauTags B="b" />
+    </a>
 }
 
 <ListFooter Count="Items.Count" Total="Total" Loading="Loading" Error="Error" More="LoadMoreAsync" />

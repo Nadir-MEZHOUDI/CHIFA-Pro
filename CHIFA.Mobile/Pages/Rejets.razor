@@ -7,7 +7,7 @@
 
 @foreach (var r in Items)
 {
-    <article class="card item">
+    <a class="card item link" href="@Bordereau.UrlOf(r.NumBord ?? "")">
         <div class="item-head">
             <strong>N° @r.NumBord</strong>
             <span class="tag @Css(r)">@r.StatutRejet</span>
@@ -24,7 +24,7 @@
                 <div class="bad"><dt>Rejeté</dt><dd>@Fmt.Money(r.MontantRejete) (@Fmt.Percent(r.TauxRejet))</dd></div>
             }
         </dl>
-    </article>
+    </a>
 }
 
 <ListFooter Count="Items.Count" Total="Total" Loading="Loading" Error="Error" More="LoadMoreAsync" />

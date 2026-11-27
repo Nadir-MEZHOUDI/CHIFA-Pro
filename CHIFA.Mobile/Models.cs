@@ -81,7 +81,10 @@ public class Bordereau
     public decimal? MontOff { get; init; }
     public decimal? Maj { get; init; }
     public decimal? MontGlobal { get; init; }
+    public decimal? MontAss { get; init; }
     public DateTime? DateDepotFtp { get; init; }
+    public DateTime? DateOuverture { get; init; }
+    public DateTime? DateCloture { get; init; }
 
     /// <summary>False for CASNOS: CHIFA never receives its virements. An agent older than the flag sends nothing: true.</summary>
     public bool PaiementSuivi { get; init; } = true;
@@ -90,6 +93,14 @@ public class Bordereau
 
     /// <summary>CHIFA writes 01/01/1900 when the bordereau was never deposited.</summary>
     public DateTime? Depot => DateDepotFtp is { Year: > 2000 } d ? d : null;
+
+    public static string UrlOf(string num) => $"bordereaux/{Uri.EscapeDataString(num)}";
+}
+
+public class BordereauDetail
+{
+    public Bordereau Bordereau { get; init; } = new();
+    public List<Facture> Factures { get; init; } = [];
 }
 
 public class Rejet

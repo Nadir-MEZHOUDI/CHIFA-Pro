@@ -56,7 +56,16 @@ else
                 <div><dt>Prise en charge</dt><dd><span class="tags"><CoverageTags Taux="f.Taux" Mc="f.Mc" /></span></dd></div>
             }
             <div><dt>Médecin</dt><dd>@(string.Join(" · ", new[] { f.Prescripteur, f.Specialite }.Where(s => !string.IsNullOrWhiteSpace(s))) is { Length: > 0 } m ? m : "—")</dd></div>
-            <div><dt>Bordereau</dt><dd>@(string.IsNullOrWhiteSpace(f.Bordereau) ? "—" : $"N° {f.Bordereau}")</dd></div>
+            <div><dt>Bordereau</dt><dd>
+                @if (string.IsNullOrWhiteSpace(f.Bordereau))
+                {
+                    @("—")
+                }
+                else
+                {
+                    <a href="@Bordereau.UrlOf(f.Bordereau)">N° @f.Bordereau</a>
+                }
+            </dd></div>
             @if (f.Majoration > 0)
             {
                 <div><dt>Majoration</dt><dd>@Fmt.Money(f.Majoration)</dd></div>

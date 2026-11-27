@@ -41,6 +41,9 @@ public class AgentHandlers
             RunAsync(AgentMethods.GetBordereaux, async () =>
                 ToPage((await ChifaService.Instance.GetAllBordereauxAsync(period: ToPeriod(q))).OrderByDescending(b => b.DateOuverture), q)));
 
+        connection.On<string, BordereauDetailDto?>(AgentMethods.GetBordereau, numBord =>
+            RunAsync(AgentMethods.GetBordereau, async () => await ChifaService.Instance.GetBordereauAsync(numBord)));
+
         connection.On<PageQuery, Page<PsychotropeDto>>(AgentMethods.GetPsychotropes, q =>
             RunAsync(AgentMethods.GetPsychotropes, async () =>
                 ToPage((await ScopeService.Instance.GetPsychotropesAsync(ToPeriod(q))).OrderByDescending(p => p.DateDelivrance), q)));

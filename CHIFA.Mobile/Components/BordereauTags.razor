@@ -1,0 +1,30 @@
+<div class="tags">
+    @if (B.EstOuvert)
+    {
+        <span class="tag warn">Ouvert</span>
+    }
+    else
+    {
+        <span class="tag">Clôturé</span>
+    }
+    @if (B.Virment > 0)
+    {
+        <span class="tag ok">Viré @Fmt.Money(B.Virment)</span>
+    }
+    else if (!B.EstOuvert && !B.PaiementSuivi)
+    {
+        <span class="tag" title="CHIFA ne reçoit pas les virements de cette caisse">Paiement non suivi</span>
+    }
+    else if (!B.EstOuvert)
+    {
+        <span class="tag warn">Non payé</span>
+    }
+    @if (B.Depot is { } depot)
+    {
+        <span class="tag">Déposé le @Fmt.Date(depot)</span>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Bordereau B { get; set; } = default!;
+}

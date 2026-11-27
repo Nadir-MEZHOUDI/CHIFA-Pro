@@ -24,6 +24,8 @@ public static class OfficineEndpoints
 
         MapPaged(api, "/rejets", AgentMethods.GetRejets);
         MapPaged(api, "/bordereaux", AgentMethods.GetBordereaux);
+        api.MapGet("/bordereaux/{numBord}", (string numBord, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetBordereau, numBord, ct));
         MapPaged(api, "/psychotropes", AgentMethods.GetPsychotropes);
 
         api.MapGet("/factures/recent", (int? take, string? q, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>

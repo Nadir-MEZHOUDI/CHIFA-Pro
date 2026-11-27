@@ -9,6 +9,7 @@ public static class AgentMethods
     public const string GetDashboard = nameof(GetDashboard);
     public const string GetRejets = nameof(GetRejets);
     public const string GetBordereaux = nameof(GetBordereaux);
+    public const string GetBordereau = nameof(GetBordereau);
     public const string GetPsychotropes = nameof(GetPsychotropes);
     public const string GetRecentFactures = nameof(GetRecentFactures);
     public const string GetFacture = nameof(GetFacture);

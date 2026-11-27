@@ -49,6 +49,38 @@ public class ChifaServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetBordereauAsync_MatchesListTotals_AndSortsFacturesByAssure()
+    {
+        using var w = StartWatch();
+        var all = (await _svc.GetAllBordereauxAsync(period: new Period { From = null })).ToList();
+        var expected = all.First(b => b.Nmbr > 1);
+
+        var detail = await _svc.GetBordereauAsync(expected.Num!);
+
+        detail.Should().NotBeNull();
+        var b = detail!.Bordereau;
+        b.Num.Should().Be(expected.Num);
+        b.Center.Should().Be(expected.Center);
+        b.State.Should().Be(expected.State);
+        b.Nmbr.Should().Be(expected.Nmbr);
+        b.MontOff.Should().Be(expected.MontOff);
+        b.Maj.Should().Be(expected.Maj);
+        b.MontGlobal.Should().Be(expected.MontGlobal);
+        b.FirstFacture.Should().Be(expected.FirstFacture);
+        b.LastFacture.Should().Be(expected.LastFacture);
+
+        detail.Factures.Should().HaveCount(expected.Nmbr!.Value);
+        detail.Factures.Should().OnlyContain(f => f.Bordereau == expected.Num);
+        detail.Factures.Select(f => f.NumAssure).Should().BeInAscendingOrder(StringComparer.Ordinal);
+    }
+
+    [Fact]
+    public async Task GetBordereauAsync_Unknown_ReturnsNull()
+    {
+        (await _svc.GetBordereauAsync("__none__")).Should().BeNull();
+    }
+
+    [Fact]
     public async Task GetAllFacturesAsync_ReturnsRows()
     {
         using var w = StartWatch();
