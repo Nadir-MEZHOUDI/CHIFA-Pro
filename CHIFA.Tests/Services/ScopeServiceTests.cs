@@ -90,5 +90,8 @@ public class ScopeServiceTests : IDisposable
         var word = sample.Assure?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
         if (word is not null)
             (await _svc.GetRecentFacturesLiveAsync(50, word.ToLowerInvariant())).Should().Contain(f => f.NumFact == sample.NumFact);
+
+        if (!string.IsNullOrWhiteSpace(sample.Malade))
+            (await _svc.GetRecentFacturesLiveAsync(50, sample.Malade)).Should().Contain(f => f.NumFact == sample.NumFact);
     }
 }
