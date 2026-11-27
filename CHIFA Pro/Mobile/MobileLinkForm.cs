@@ -30,9 +30,34 @@ public sealed partial class MobileLinkForm : XtraForm
     {
         await NewCodeAsync();
         ShowService();
-        // Linked: make the phone work with SmartCHIFA closed too, or bring the service up to date.
-        if (_code is not null && !_serviceDeclined && AgentService.State is AgentServiceState.NotInstalled or AgentServiceState.Outdated)
-            await InstallServiceAsync();
+        await OfferServiceAsync(null);
+    }
+
+    /// <summary>
+    /// Once a phone is linked, offers the Windows service so the phone also works with SmartCHIFA closed.
+    /// Windows asks for administrator rights, so it is never started before a phone exists, nor without asking.
+    /// </summary>
+    private async Task OfferServiceAsync(string? linkedPhone)
+    {
+        if (_code is null || _devices.Count == 0 || _serviceDeclined) return;
+
+        var state = AgentService.State;
+        if (state is not (AgentServiceState.NotInstalled or AgentServiceState.Outdated)) return;
+
+        var intro = linkedPhone is null ? string.Empty : $"« {linkedPhone} » est maintenant lié à la pharmacie.{Environment.NewLine}{Environment.NewLine}";
+        var question = state == AgentServiceState.Outdated
+            ? "Le service Windows qui répond aux téléphones doit être mis à jour avec cette version de SmartCHIFA."
+            : "Pour que le téléphone fonctionne même quand SmartCHIFA est fermé, installez le service Windows.";
+        var answer = XtraMessageBox.Show(this,
+            intro + question + Environment.NewLine + "Windows va vous demander l'autorisation. Continuer ?",
+            Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        if (answer != DialogResult.Yes)
+        {
+            _serviceDeclined = true;
+            return;
+        }
+
+        await InstallServiceAsync();
     }
 
     private async void BtnNewCode_Click(object? sender, EventArgs e) => await NewCodeAsync();
@@ -109,6 +134,7 @@ public sealed partial class MobileLinkForm : XtraForm
 
             await NewCodeAsync();
             SetStatus(($"« {added[0].Name} » est maintenant lié à la pharmacie.", Color.SeaGreen));
+            await OfferServiceAsync(added[0].Name);
         }
         catch (MobileLinkException)
         {
