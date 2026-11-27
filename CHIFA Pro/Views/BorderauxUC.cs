@@ -47,7 +47,12 @@ public partial class BordereauxUc : XtraUserControl, INavigable
         if (gridView1.GetRow(e.RowHandle) is not BordereauDto row)
             return;
 
-        if (row.MontantRejete > 0)
+        if (!row.PaiementSuivi && !(row.Virment > 0))
+        {
+            if (e.Column.FieldName == "StatutRejet")
+                e.Appearance.ForeColor = Color.Gray;
+        }
+        else if (row.MontantRejete > 0)
         {
             if (e.Column.FieldName is "MontantRejete" or "TauxRejet" or "StatutRejet")
             {

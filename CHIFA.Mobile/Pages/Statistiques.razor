@@ -97,7 +97,7 @@ else
                         }
                         else
                         {
-                            <span class="muted">Non payé</span>
+                            <span class="muted">@(r.PaiementSuivi ? "Non payé" : "Paiement non suivi")</span>
                         }
                     </div>
                 }

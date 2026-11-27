@@ -23,5 +23,14 @@ public class BordereauDto
     public int Etat => State == 'C' ? 2 : State == 'O' ? 1 : 0;
     public decimal? MontGlobal => MontOff + Maj + MFAE;
     public decimal? TauxRejet => MontGlobal > 0 ? (MontantRejete )/ MontGlobal : 0;
-    public string StatutRejet => Virment == 0 ? "Non Payé" : MontantRejete == 0 ? "Sans Rejet" : "Rejet Partiel";
+    public string StatutRejet => !PaiementSuivi && !(Virment > 0) ? PaiementNonSuivi
+        : Virment == 0 ? "Non Payé" : MontantRejete == 0 ? "Sans Rejet" : "Rejet Partiel";
+
+    /// <summary>False for CASNOS (and HORS CASNOS): CHIFA never receives their virements, so "not paid" means nothing.</summary>
+    public bool PaiementSuivi => EstPaiementSuivi(Center);
+
+    public const string PaiementNonSuivi = "Paiement non suivi";
+
+    public static bool EstPaiementSuivi(string? centre) =>
+        centre is null || !centre.Contains("CASNOS", StringComparison.OrdinalIgnoreCase);
 }

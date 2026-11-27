@@ -28,6 +28,9 @@ public record StatRowDto
 
     public decimal? Virement { get; init; }
     public decimal? Ecart { get; init; }
+
+    /// <summary>Bordereaux only: false when CHIFA never receives the caisse's virements (CASNOS).</summary>
+    public bool PaiementSuivi { get; init; } = true;
 }
 
 /// <param name="Count">Rows over the whole period; <see cref="Rows"/> may hold only the first ones.</param>

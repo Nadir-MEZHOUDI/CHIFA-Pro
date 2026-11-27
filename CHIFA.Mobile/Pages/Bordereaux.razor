@@ -28,6 +28,10 @@
             {
                 <span class="tag ok">Viré @Fmt.Money(b.Virment)</span>
             }
+            else if (!b.EstOuvert && !b.PaiementSuivi)
+            {
+                <span class="tag" title="CHIFA ne reçoit pas les virements de cette caisse">Paiement non suivi</span>
+            }
             else if (!b.EstOuvert)
             {
                 <span class="tag warn">Non payé</span>

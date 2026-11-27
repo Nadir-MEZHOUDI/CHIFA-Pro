@@ -83,6 +83,9 @@ public class Bordereau
     public decimal? MontGlobal { get; init; }
     public DateTime? DateDepotFtp { get; init; }
 
+    /// <summary>False for CASNOS: CHIFA never receives its virements. An agent older than the flag sends nothing: true.</summary>
+    public bool PaiementSuivi { get; init; } = true;
+
     public bool EstOuvert => State == 'O';
 
     /// <summary>CHIFA writes 01/01/1900 when the bordereau was never deposited.</summary>
@@ -296,6 +299,7 @@ public class StatRow
     public decimal Brut { get; init; }
     public decimal? Virement { get; init; }
     public decimal? Ecart { get; init; }
+    public bool PaiementSuivi { get; init; } = true;
 }
 
 public record Stats(string Kind, int Count, List<StatRow> Rows, StatRow Totals);

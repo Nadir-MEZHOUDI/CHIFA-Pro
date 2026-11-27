@@ -95,5 +95,22 @@ public class BordereauDtoTests
 
         dto.MontGlobal.Should().Be(1000m + 200m + 50m);
     }
-    
+
+    [Theory]
+    [InlineData("CNAS", true)]
+    [InlineData("HORS CNAS", true)]
+    [InlineData("CASNOS", false)]
+    [InlineData("HORS CASNOS", false)]
+    [InlineData(null, true)]
+    public void Payment_is_tracked_except_for_casnos(string? centre, bool suivi)
+    {
+        BordereauDto.EstPaiementSuivi(centre).Should().Be(suivi);
+    }
+
+    [Fact]
+    public void Unpaid_casnos_bordereau_is_untracked_not_unpaid()
+    {
+        new BordereauDto { Center = "CASNOS", Virment = 0 }.StatutRejet.Should().Be(BordereauDto.PaiementNonSuivi);
+        new BordereauDto { Center = "CNAS", Virment = 0 }.StatutRejet.Should().Be("Non Payé");
+    }
 }

@@ -184,7 +184,7 @@ public class StatisticsService
                 Label = $"Bordereau N° {b.Num}", Short = b.Num, Date = b.DateFin,
                 Detail = $"{b.Center} · {D(b.DateDebut, "dd/MM")} → {D(b.DateFin, "dd/MM/yyyy")}",
                 Factures = b.Factures, Montant = b.MontantFact ?? 0, Caisse = b.MontantOff ?? 0, Maj = b.MontantMaj ?? 0, Marge = b.Marge ?? 0,
-                Virement = b.Virement, Ecart = b.Ecart
+                Virement = b.Virement, Ecart = b.Ecart, PaiementSuivi = BordereauDto.EstPaiementSuivi(b.Center)
             }).OrderBy(r => r.Date),
             "produits" => (await ProductsAsync(period: period).ConfigureAwait(false)).Select(p => new StatRowDto
             {
