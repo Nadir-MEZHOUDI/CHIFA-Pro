@@ -56,8 +56,28 @@ internal static class AgentService
         }
     }
 
+    /// <summary>While true, install-agent.ps1 may be copying from <see cref="ShippedDirectory"/>.</summary>
+    public static bool IsInstalling { get; private set; }
+
     /// <summary>Installs or updates the service. Windows asks the user to confirm (UAC).</summary>
     public static async Task InstallAsync()
+    {
+        IsInstalling = true;
+        try
+        {
+            await RunInstallScriptAsync();
+        }
+        finally
+        {
+            IsInstalling = false;
+        }
+
+        Log.Information("Agent service installed from {Source}", ShippedDirectory);
+        // The service now answers the phones: a second agent in SmartCHIFA would fight it for the connection.
+        await MobileLink.SyncWithServiceAsync();
+    }
+
+    private static async Task RunInstallScriptAsync()
     {
         var script = Path.Combine(ShippedDirectory, "install-agent.ps1");
         if (!File.Exists(script))
@@ -99,10 +119,6 @@ internal static class AgentService
                 throw new MobileLinkException($"L'installation du service a échoué. Détails : {LogFile}");
             }
         }
-
-        Log.Information("Agent service installed from {Source}", ShippedDirectory);
-        // The service now answers the phones: a second agent in SmartCHIFA would fight it for the connection.
-        await MobileLink.SyncWithServiceAsync();
     }
 
     /// <summary>Each SmartCHIFA build stamps its own version: a different one means the service runs an older agent.</summary>

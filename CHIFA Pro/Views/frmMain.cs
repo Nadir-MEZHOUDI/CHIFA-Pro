@@ -1,5 +1,6 @@
 using CHIFA.Pro.Helpers.Settings;
 
+using DevExpress.XtraBars.Alerter;
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
 using LinqToDB.Async;
@@ -300,6 +301,7 @@ public partial class FrmMain : XtraForm
             await Task.Delay(500);
             _ = LoadServerInfo();
             _ = UpdateAppAsync();
+            StartHourlyUpdateCheck();
             await UpdateMobileServiceAsync();
         }
         catch (Exception ex)
@@ -384,7 +386,7 @@ public partial class FrmMain : XtraForm
                 await mgr.DownloadUpdatesAsync(newVersion,
                     i => Invoke(() => progressBar.Value = i));
 
-                mgr.ApplyUpdatesAndRestart(newVersion);
+                ApplyUpdateAndRestart(mgr, newVersion.TargetFullRelease);
             }
         }
         catch (Exception ex) when (FindInChain<AcquireLockFailedException>(ex) is not null)
@@ -410,6 +412,116 @@ public partial class FrmMain : XtraForm
             progressBar.Visible = false;
             UpdateGate.Release();
         }
+    }
+
+    private static readonly TimeSpan UpdateCheckInterval = TimeSpan.FromMinutes(60);
+    private System.Windows.Forms.Timer? _updateTimer;
+    private VelopackAsset? _readyUpdate;
+    private ToolStripStatusLabel? _restartLabel;
+    private AlertControl? _updateAlert;
+
+    /// <summary>Pharmacies leave SmartCHIFA open all day: look for a new version every hour, not only at startup.</summary>
+    private void StartHourlyUpdateCheck()
+    {
+        if (_updateTimer is not null) return;
+        _updateTimer = new System.Windows.Forms.Timer { Interval = (int)UpdateCheckInterval.TotalMilliseconds };
+        _updateTimer.Tick += async (_, _) => await DownloadUpdateInBackgroundAsync();
+        _updateTimer.Start();
+        FormClosed += (_, _) => _updateTimer.Dispose();
+    }
+
+    /// <summary>Downloads quietly and only offers the restart, so nobody is interrupted mid-work.</summary>
+    private async Task DownloadUpdateInBackgroundAsync()
+    {
+        if (!await UpdateGate.WaitAsync(0)) return;
+
+        try
+        {
+            var mgr = new UpdateManager(UpdateFeedUrl);
+            if (!mgr.IsInstalled) return;
+
+            var update = await mgr.CheckForUpdatesAsync();
+            // Already downloaded and offered (or declined) in this run.
+            if (update is null || Equals(update.TargetFullRelease.Version, _readyUpdate?.Version)) return;
+
+            await mgr.DownloadUpdatesAsync(update);
+            _readyUpdate = update.TargetFullRelease;
+            OfferRestart(_readyUpdate.Version.ToString());
+        }
+        catch (Exception ex) when (FindInChain<AcquireLockFailedException>(ex) is not null || IsUpdateServerUnreachable(ex))
+        {
+            Serilog.Log.Warning(ex, "Hourly update check skipped, retrying in {Interval}", UpdateCheckInterval);
+        }
+        catch (Exception ex)
+        {
+            ex.Log(showMessage: false);
+        }
+        finally
+        {
+            UpdateGate.Release();
+        }
+    }
+
+    private void OfferRestart(string version)
+    {
+        if (_restartLabel is null)
+        {
+            _restartLabel = new ToolStripStatusLabel { IsLink = true, ForeColor = Color.DarkGreen };
+            _restartLabel.Click += (_, _) => RestartToUpdate();
+            statusStrip1.Items.Insert(0, _restartLabel);
+        }
+        _restartLabel.Text = $"Redémarrer pour mettre à jour (V {version})";
+
+        if (!Visible)
+        {
+            // In the tray, a downloaded update is applied anyway at the next start.
+            _ = ShowNotification($"La version {version} est prête. Elle sera installée au prochain démarrage.", "Mise à jour");
+            return;
+        }
+
+        if (_updateAlert is null)
+        {
+            _updateAlert = new AlertControl(components) { AutoFormDelay = 15_000 };
+            _updateAlert.AlertClick += (_, _) => RestartToUpdate();
+        }
+        _updateAlert.Show(this, "Mise à jour disponible",
+            $"SmartCHIFA {version} est prêt. Cliquez ici pour redémarrer et mettre à jour.");
+    }
+
+    private void RestartToUpdate()
+    {
+        if (_readyUpdate is null) return;
+        if (!UpdateGate.Wait(0))
+        {
+            _ = ShowNotification("Une mise à jour est déjà en cours", "Mise à jour");
+            return;
+        }
+
+        try
+        {
+            ApplyUpdateAndRestart(new UpdateManager(UpdateFeedUrl), _readyUpdate);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+        finally
+        {
+            UpdateGate.Release();
+        }
+    }
+
+    private void ApplyUpdateAndRestart(UpdateManager mgr, VelopackAsset update)
+    {
+        // install-agent.ps1 copies the service from our agent\ folder, which applying the update replaces.
+        if (Mobile.AgentService.IsInstalling)
+        {
+            Serilog.Log.Information("Update {Version} postponed to the next start: the agent service is being installed", update.Version);
+            _ = ShowNotification("La mise à jour sera installée au prochain démarrage.", "Mise à jour");
+            return;
+        }
+
+        mgr.ApplyUpdatesAndRestart(update);
     }
 
     private static bool IsUpdateServerUnreachable(Exception ex) =>
