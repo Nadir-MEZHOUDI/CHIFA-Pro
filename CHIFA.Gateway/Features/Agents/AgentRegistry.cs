@@ -27,11 +27,10 @@ public class AgentRegistry
             previous.Abort();
     }
 
-    public void Unregister(Guid pharmacyId, string connectionId)
-    {
-        if (_agents.TryGetValue(pharmacyId, out var current) && current.ConnectionId == connectionId)
-            _agents.TryRemove(KeyValuePair.Create(pharmacyId, current));
-    }
+    /// <summary>Returns <c>false</c> when that connection no longer served the pharmacy (a newer agent replaced it).</summary>
+    public bool Unregister(Guid pharmacyId, string connectionId) =>
+        _agents.TryGetValue(pharmacyId, out var current) && current.ConnectionId == connectionId
+        && _agents.TryRemove(KeyValuePair.Create(pharmacyId, current));
 
     /// <summary>Closes the agent connection, e.g. after its key was replaced.</summary>
     public void Disconnect(Guid pharmacyId)
