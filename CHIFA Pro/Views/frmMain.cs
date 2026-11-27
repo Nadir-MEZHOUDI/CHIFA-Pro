@@ -168,6 +168,11 @@ public partial class FrmMain : XtraForm
         sender.NavigateTo<ControlMedicalUc>();
     }
 
+    private void accRachat_Click(object sender, EventArgs e)
+    {
+        sender.NavigateTo<RachatAnticipeUc>();
+    }
+
     private void accFactures_Click(object sender, EventArgs e)
     {
         sender.NavigateTo<TraitSpecUc>();

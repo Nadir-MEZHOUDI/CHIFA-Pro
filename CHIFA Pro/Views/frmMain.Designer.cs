@@ -52,6 +52,7 @@ namespace CHIFA.Pro.Views
             accordionControlSeparator5 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             accLN = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accCM = new DevExpress.XtraBars.Navigation.AccordionControlElement();
+            accRachat = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accordionControlSeparator2 = new DevExpress.XtraBars.Navigation.AccordionControlSeparator();
             accMedicaments = new DevExpress.XtraBars.Navigation.AccordionControlElement();
             accFormes = new DevExpress.XtraBars.Navigation.AccordionControlElement();
@@ -116,7 +117,7 @@ namespace CHIFA.Pro.Views
             // accordionControl1
             // 
             accordionControl1.Dock = DockStyle.Left;
-            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accLogin, accSecurity, accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accAssures, accPsychotropes, accStatistics, accordionControlSeparator5, accLN, accCM, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres, accLicence, accMobile });
+            accordionControl1.Elements.AddRange(new DevExpress.XtraBars.Navigation.AccordionControlElement[] { accLogin, accSecurity, accordionControlSeparator3, acHome, accordionControlSeparator1, accFactures, accTrtSps, accBordereaux, accAssures, accPsychotropes, accStatistics, accordionControlSeparator5, accLN, accCM, accRachat, accordionControlSeparator2, accMedicaments, accFormes, accActes, accordionControlSeparator4, accUsers, accCenters, accOfficine, accParametres, accLicence, accMobile });
             accordionControl1.Location = new Point(0, 0);
             accordionControl1.Margin = new Padding(5, 6, 5, 6);
             accordionControl1.Name = "accordionControl1";
@@ -265,7 +266,15 @@ namespace CHIFA.Pro.Views
             accCM.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accCM.Text = "CONTRÔLE MÉDICAL";
             accCM.Click += accCM_Click;
-            // 
+            //
+            // accRachat
+            //
+            accRachat.ImageOptions.Image = (Image)resources.GetObject("accCM.ImageOptions.Image");
+            accRachat.Name = "accRachat";
+            accRachat.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
+            accRachat.Text = "RACHAT ANTICIPÉ";
+            accRachat.Click += accRachat_Click;
+            //
             // accordionControlSeparator2
             // 
             accordionControlSeparator2.Name = "accordionControlSeparator2";
@@ -708,6 +717,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraBars.Navigation.AccordionControlElement accActes;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accLN;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accCM;
+        private DevExpress.XtraBars.Navigation.AccordionControlElement accRachat;
         private DevExpress.XtraBars.Navigation.AccordionControlSeparator accordionControlSeparator2;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accFactures;
         private DevExpress.XtraBars.Navigation.AccordionControlElement accUsers;
