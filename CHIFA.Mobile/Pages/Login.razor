@@ -1,5 +1,4 @@
 @page "/login"
-@layout EmptyLayout
 @using System.Text.RegularExpressions
 @implements IAsyncDisposable
 @inject Api Api
@@ -7,10 +6,10 @@
 @inject NavigationManager Nav
 @inject IJSRuntime Js
 
+<div class="page-head"><h1>@(_withPassword ? "Se connecter" : "Lier ce téléphone")</h1></div>
+<p class="muted small">Reliez ce téléphone à SmartCHIFA, installé sur le PC de la pharmacie.</p>
+
 <div class="login">
-    <img src="icon-192.png" alt="" class="login-logo" />
-    <h1>Smart<b>CHIFA</b></h1>
-    <p class="muted">Votre pharmacie, partout.</p>
 
     @if (!_withPassword)
     {
@@ -47,9 +46,7 @@
 
         <p class="hint">Le code ne sert qu'une fois : le téléphone reste ensuite connecté.</p>
         <p class="hint">Sur iPhone, ajoutez d'abord l'application à l'écran d'accueil, puis liez-la depuis l'icône.</p>
-        <button class="link-button" @onclick="() => { _withPassword = true; _error = null; }">Se connecter avec un identifiant</button>
-        <a class="link-button" href="">Retour à l'accueil</a>
-    }
+        <button class="link-button" @onclick="() => { _withPassword = true; _error = null; }">Se connecter avec un identifiant</button>    }
     else
     {
         <EditForm Model="this" OnSubmit="SignInAsync" FormName="login">

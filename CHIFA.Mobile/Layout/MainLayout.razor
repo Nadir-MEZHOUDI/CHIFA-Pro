@@ -118,18 +118,32 @@
     protected override void OnInitialized()
     {
         Nav.LocationChanged += OnLocationChanged;
-        if (Session.IsSignedIn)
-            _ = RefreshStatusLoopAsync();
+        SyncStatusLoop();
+    }
+
+    // The login page shares this layout, so the phone can be linked or unlinked without the layout being rebuilt.
+    private void SyncStatusLoop()
+    {
+        if (Session.IsSignedIn && _timer is null)
+        {
+            _timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+            _ = RefreshStatusLoopAsync(_timer);
+        }
+        else if (!Session.IsSignedIn && _timer is not null)
+        {
+            _timer.Dispose();
+            _timer = null;
+            _status = null;
+        }
     }
 
     // The pharmacy can go offline at any time (PC off, no internet): refresh the badge every 30 s.
-    private async Task RefreshStatusLoopAsync()
+    private async Task RefreshStatusLoopAsync(PeriodicTimer timer)
     {
-        _timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
         do
         {
             await RefreshStatusAsync();
-        } while (await _timer.WaitForNextTickAsync());
+        } while (await timer.WaitForNextTickAsync());
     }
 
     private async Task RefreshStatusAsync()
@@ -145,10 +159,10 @@
     }
 
     // These pages don't need the pharmacy PC, so they keep working while it is off.
-    private static readonly string[] GatewayPages = ["notifications", "abonnement", "assistance"];
+    private static readonly string[] GatewayPages = ["notifications", "abonnement", "assistance", "login"];
 
     // An unlinked phone has no pharmacy behind it: these pages work as usual, the others ask to install SmartCHIFA.
-    private static readonly string[] GuestPages = ["assistance"];
+    private static readonly string[] GuestPages = ["assistance", "login"];
 
     private string CurrentPage => Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#', '/')[0];
 
@@ -180,8 +194,7 @@
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
         BackButton.HasInAppHistory = true;
-        if (!_menuOpen)
-            return;
+        SyncStatusLoop();
         _menuOpen = false;
         InvokeAsync(StateHasChanged);
     }
@@ -205,8 +218,7 @@
 
         await Js.InvokeVoidAsync("chifa.push.forget");
         await Api.LogoutAsync();
-        _timer?.Dispose();
-        _status = null;
+        SyncStatusLoop();
         Nav.NavigateTo("");
     }
 
