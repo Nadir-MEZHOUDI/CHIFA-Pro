@@ -1,0 +1,35 @@
+@using System.Text
+@using QRCoder
+
+@* Drawn as one SVG path, so it stays sharp and follows the page's colours. *@
+<svg class="qr" viewBox="0 0 @_size @_size" role="img" aria-label="@Label" shape-rendering="crispEdges">
+    <rect width="@_size" height="@_size" fill="#fff" />
+    <path d="@_path" fill="#000" />
+</svg>
+
+@code {
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+    [Parameter] public string? Label { get; set; }
+
+    private string? _drawn;
+    private int _size;
+    private string _path = "";
+
+    protected override void OnParametersSet()
+    {
+        if (Value == _drawn) return;
+        _drawn = Value;
+
+        using var generator = new QRCodeGenerator();
+        using var data = generator.CreateQrCode(Value, QRCodeGenerator.ECCLevel.M);
+        var modules = data.ModuleMatrix;
+        _size = modules.Count;
+
+        var path = new StringBuilder();
+        for (var y = 0; y < _size; y++)
+            for (var x = 0; x < _size; x++)
+                if (modules[y][x])
+                    path.Append('M').Append(x).Append(' ').Append(y).Append("h1v1h-1z");
+        _path = path.ToString();
+    }
+}

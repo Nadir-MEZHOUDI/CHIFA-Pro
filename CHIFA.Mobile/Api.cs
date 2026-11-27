@@ -146,6 +146,13 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 
     public Task<List<PhoneDevice>> DevicesAsync() => GetAsync<List<PhoneDevice>>("api/devices");
 
+    /// <summary>A code for another phone or browser; it replaces the one shown in SmartCHIFA.</summary>
+    public async Task<LinkCode> NewLinkCodeAsync()
+    {
+        using var response = await SendAsync(HttpMethod.Post, "api/devices/code", null);
+        return (await response.Content.ReadFromJsonAsync<LinkCode>(JsonSerializerOptions.Web))!;
+    }
+
     public async Task RemoveDeviceAsync(Guid id)
     {
         using var _ = await SendAsync(HttpMethod.Delete, $"api/devices/{id}", null);

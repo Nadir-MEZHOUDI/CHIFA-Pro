@@ -84,6 +84,35 @@ public class AccountTests(GatewayFixture gateway)
     }
 
     [Fact]
+    public async Task Linked_phone_gives_a_code_that_links_another_browser_once()
+    {
+        var pharmacy = await gateway.RegisterAsync(GatewayFixture.CreateLicense());
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey, "Samsung");
+
+        var code = (await (await phone.PostAsync("/api/devices/code", null)).EnsureSuccessStatusCode()
+            .Content.ReadFromJsonAsync<PairingCodeResponse>(JsonSerializerOptions.Web))!;
+        using var browser = gateway.CreateClient();
+        var first = await browser.PostAsJsonAsync("/api/auth/pair", new PairRequest(code.Code, "PC Windows"));
+        var again = await browser.PostAsJsonAsync("/api/auth/pair", new PairRequest(code.Code, "PC Windows"));
+
+        first.StatusCode.Should().Be(HttpStatusCode.OK);
+        again.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        code.ExpiresAt.Should().BeAfter(DateTime.UtcNow);
+        (await DevicesAsync(phone)).Select(d => d.Name).Should().BeEquivalentTo("Samsung", "PC Windows");
+    }
+
+    [Fact]
+    public async Task Only_a_signed_in_phone_can_ask_for_a_code()
+    {
+        var pharmacy = await gateway.RegisterAsync(GatewayFixture.CreateLicense());
+        using var anonymous = gateway.CreateClient();
+        using var desktop = gateway.CreatePharmacyClient(pharmacy.AgentKey);
+
+        (await anonymous.PostAsync("/api/devices/code", null)).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        (await desktop.PostAsync("/api/devices/code", null)).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task Devices_and_subscription_require_a_phone_token()
     {
         var pharmacy = await gateway.RegisterAsync(GatewayFixture.CreateLicense());

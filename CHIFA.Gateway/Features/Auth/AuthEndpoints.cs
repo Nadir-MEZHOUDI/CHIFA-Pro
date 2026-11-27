@@ -41,7 +41,7 @@ public static class AuthEndpoints
     {
         var invalid = Results.Problem(
             title: "Code invalide ou expiré.",
-            detail: "Affichez un nouveau code dans SmartCHIFA (Application mobile) puis réessayez.",
+            detail: "Affichez un nouveau code dans SmartCHIFA (Application mobile) ou sur un téléphone déjà lié (Abonnement et appareils), puis réessayez.",
             statusCode: StatusCodes.Status400BadRequest);
 
         var code = PairingCodes.Normalize(request.Code);

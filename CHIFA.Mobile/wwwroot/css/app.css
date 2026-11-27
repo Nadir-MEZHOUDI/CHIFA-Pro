@@ -877,6 +877,18 @@ a.card.link.contact { flex-direction: row; align-items: center; gap: .8rem; }
 .devices .confirm { display: flex; flex-direction: column; gap: .5rem; padding: .7rem .8rem; border-radius: 12px; background: var(--bad-soft); color: var(--bad); font-size: .84rem; font-weight: 600; }
 .button.danger { background: var(--bad); color: var(--surface); box-shadow: none; }
 
+.link-other { display: flex; flex-direction: column; gap: .5rem; }
+.link-other > .button { align-self: flex-start; }
+.link-other h2, .link-other p { margin: 0; }
+.link-code { display: flex; flex-direction: column; align-items: center; gap: .45rem; margin: .4rem 0; }
+.link-code .qr { width: min(240px, 70vw); height: auto; border-radius: 12px; border: 1px solid var(--line); }
+.link-code .code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 1.8rem; font-weight: 700; letter-spacing: .12em; color: var(--pine); user-select: all; }
+.linked-ok { padding: .7rem .8rem; border-radius: 12px; background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); font-weight: 700; font-size: .88rem; }
+
+@media (prefers-color-scheme: dark) {
+    .link-code .code { color: var(--mint); }
+}
+
 @media (min-width: 720px) {
     .kpis { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
     .tiles { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }

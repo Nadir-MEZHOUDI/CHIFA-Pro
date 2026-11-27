@@ -299,6 +299,9 @@ public record Subscription(string Status, bool IsTrial, DateTime? ExpiresAt, int
 /// <param name="IsCurrent">This phone.</param>
 public record PhoneDevice(Guid Id, string Name, DateTime CreatedAt, DateTime? LastSeenAt, bool IsCurrent);
 
+/// <param name="Code">Shown as <c>ABCD-2345</c>, like in SmartCHIFA. One use, a few minutes.</param>
+public record LinkCode(string Code, DateTime ExpiresAt, bool AgentOnline);
+
 /// <summary>One day of the home chart (today first). <see cref="Marge"/> is estimated like on the desktop home page.</summary>
 public record DayStat(DateTime Date, int Factures, decimal Montant, decimal Maj, decimal Marge);
 

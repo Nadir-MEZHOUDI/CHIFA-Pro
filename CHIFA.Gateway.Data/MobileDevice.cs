@@ -19,7 +19,7 @@ public class MobileDevice
     public DateTime? RevokedAt { get; set; }
 }
 
-/// <summary>A one-time code shown in CHIFA Pro. Only one is pending per pharmacy.</summary>
+/// <summary>A one-time code shown in CHIFA Pro or on a linked phone. Only one is pending per pharmacy.</summary>
 public class PairingCode
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();

@@ -104,10 +104,12 @@
         <p class="small bad-text">@_removeError.Title @_removeError.Detail</p>
     }
     <p class="hint muted small">
-        Pour lier un autre téléphone, affichez un code dans SmartCHIFA (Application mobile).
+        Pour lier un autre appareil, affichez un code ci-dessous ou dans SmartCHIFA (Application mobile).
         Pour retirer ce téléphone, utilisez « Se déconnecter » dans le menu.
     </p>
 </section>
+
+<LinkAnotherDevice OnLinked="LoadDevicesAsync" />
 
 @code {
     private Subscription? _subscription;

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using CHIFA.Gateway.Features.Agents;
 using CHIFA.Gateway.Features.Auth;
 using CHIFA.Gateway.Features.Link;
+using Microsoft.Extensions.Options;
 
 namespace CHIFA.Gateway.Features.Account;
 
@@ -39,6 +40,7 @@ public static class AccountEndpoints
         api.MapGet("/subscription", SubscriptionAsync);
         api.MapGet("/devices", DevicesAsync);
         api.MapDelete("/devices/{id:guid}", RemoveDeviceAsync);
+        api.MapPost("/devices/code", CreateCodeAsync);
     }
 
     private static async Task<IResult> SubscriptionAsync(ClaimsPrincipal user, IDbContextFactory<GatewayDbContext> dbFactory, CancellationToken ct)
@@ -90,6 +92,21 @@ public static class AccountEndpoints
         return await LinkEndpoints.RevokeDeviceAsync(db, user.GetPharmacyId(), id, ct)
             ? Results.NoContent()
             : Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Appareil introuvable.", detail: "Il a peut-être déjà été retiré.");
+    }
+
+    /// <summary>
+    /// A linked phone shows a code (and its QR code) for another phone or browser, for when the pharmacist
+    /// is away from the pharmacy computer. Same code as the one CHIFA Pro shows: it replaces it.
+    /// </summary>
+    private static async Task<IResult> CreateCodeAsync(
+        ClaimsPrincipal user,
+        IDbContextFactory<GatewayDbContext> dbFactory,
+        AgentRegistry registry,
+        IOptions<GatewayOptions> options,
+        CancellationToken ct)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync(ct);
+        return Results.Ok(await LinkEndpoints.IssueCodeAsync(db, registry, user.GetPharmacyId(), options.Value.PairingCodeMinutes, ct));
     }
 
     // Phones signed in with a password (before pairing codes) have no device.

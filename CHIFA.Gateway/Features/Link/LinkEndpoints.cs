@@ -67,7 +67,6 @@ public static class LinkEndpoints
         return Results.Ok(new RegisterPharmacyResponse(pharmacy.Id, pharmacy.Name, key));
     }
 
-    /// <summary>A new code replaces the previous one, so only the code on screen works.</summary>
     private static async Task<IResult> CreateCodeAsync(
         ClaimsPrincipal user,
         IDbContextFactory<GatewayDbContext> dbFactory,
@@ -76,11 +75,20 @@ public static class LinkEndpoints
         CancellationToken ct)
     {
         var pharmacyId = user.GetPharmacyId();
-        var now = DateTime.UtcNow;
         await using var db = await dbFactory.CreateDbContextAsync(ct);
+        return Results.Ok(await IssueCodeAsync(db, registry, pharmacyId, options.Value.PairingCodeMinutes, ct));
+    }
+
+    /// <summary>
+    /// Asked by CHIFA Pro or by a phone already linked. A new code replaces the previous one, so only the
+    /// latest code shown works.
+    /// </summary>
+    public static async Task<PairingCodeResponse> IssueCodeAsync(GatewayDbContext db, AgentRegistry registry, Guid pharmacyId, int minutes, CancellationToken ct)
+    {
+        var now = DateTime.UtcNow;
         await db.PairingCodes.Where(c => c.PharmacyId == pharmacyId || c.ExpiresAt < now).ExecuteDeleteAsync(ct);
 
-        var expiresAt = now.AddMinutes(options.Value.PairingCodeMinutes);
+        var expiresAt = now.AddMinutes(minutes);
         for (var attempt = 0; ; attempt++)
         {
             var code = PairingCodes.Generate();
@@ -89,7 +97,7 @@ public static class LinkEndpoints
             try
             {
                 await db.SaveChangesAsync(ct);
-                return Results.Ok(new PairingCodeResponse(PairingCodes.Display(code), expiresAt, registry.IsOnline(pharmacyId)));
+                return new PairingCodeResponse(PairingCodes.Display(code), expiresAt, registry.IsOnline(pharmacyId));
             }
             catch (DbUpdateException) when (attempt < 2)
             {

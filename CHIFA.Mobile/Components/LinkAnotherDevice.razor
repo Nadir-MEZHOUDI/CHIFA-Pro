@@ -1,0 +1,141 @@
+@implements IDisposable
+@inject Api Api
+@inject NavigationManager Nav
+@inject IJSRuntime Js
+
+@* For a pharmacist away from the pharmacy computer: this phone gives the code instead of SmartCHIFA. *@
+<section class="card link-other">
+    <h2>Lier un autre appareil</h2>
+    <p class="muted small">
+        Pas à la pharmacie ? Ouvrez <strong>@Host</strong> dans un autre navigateur ou sur un autre téléphone,
+        puis scannez ce QR code ou saisissez le code.
+    </p>
+
+    @if (_error is not null)
+    {
+        <ErrorBox Error="_error" Retry="NewCodeAsync" />
+    }
+    else if (_linked is not null)
+    {
+        <p class="linked-ok" role="status">« @_linked » est maintenant lié à la pharmacie.</p>
+        <button class="button secondary" @onclick="NewCodeAsync">Lier un autre appareil</button>
+    }
+    else if (_code is null)
+    {
+        <button class="button" disabled="@_busy" @onclick="NewCodeAsync">@(_busy ? "Création…" : "Afficher un code")</button>
+    }
+    else
+    {
+        var left = _code.ExpiresAt.ToUniversalTime() - DateTime.UtcNow;
+        @if (left > TimeSpan.Zero)
+        {
+            <div class="link-code">
+                <QrCode Value="@LinkUrl" Label="QR code pour lier un autre appareil" />
+                <strong class="code">@_code.Code</strong>
+                <span class="muted small">Valable @left.ToString(@"m\:ss") · une seule fois</span>
+            </div>
+            <div class="notify-actions">
+                <button class="button secondary small" @onclick="ShareAsync">Envoyer le lien</button>
+                <button class="button secondary small" disabled="@_busy" @onclick="NewCodeAsync">Nouveau code</button>
+            </div>
+            <p class="hint small bad-text">Ce code ouvre les données de la pharmacie : ne le donnez qu'à une personne de confiance.</p>
+        }
+        else
+        {
+            <p class="small bad-text">Code expiré.</p>
+            <button class="button" disabled="@_busy" @onclick="NewCodeAsync">Nouveau code</button>
+        }
+    }
+</section>
+
+@code {
+    /// <summary>Called when the code was used, so the page shows the new device in its list.</summary>
+    [Parameter] public EventCallback OnLinked { get; set; }
+
+    private LinkCode? _code;
+    private HashSet<Guid> _known = [];
+    private string? _linked;
+    private bool _busy;
+    private ApiException? _error;
+    private Timer? _clock;
+    private int _ticks;
+    private bool _polling;
+
+    private string Host => new Uri(Nav.BaseUri).Host;
+
+    // Opens the login page, which links at once (also what the camera finds when another phone scans it).
+    private string LinkUrl => $"{Nav.BaseUri}login?code={Uri.EscapeDataString(_code!.Code)}";
+
+    private async Task NewCodeAsync()
+    {
+        _busy = true;
+        _error = null;
+        _linked = null;
+        try
+        {
+            var devices = await Api.DevicesAsync();
+            _known = devices.Select(d => d.Id).ToHashSet();
+            _code = await Api.NewLinkCodeAsync();
+            _ticks = 0;
+            _clock ??= new Timer(_ => InvokeAsync(TickAsync), null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    /// <summary>Counts down, and every few seconds checks whether the code was used.</summary>
+    private async Task TickAsync()
+    {
+        if (_code is null || _linked is not null) return;
+        if (_code.ExpiresAt.ToUniversalTime() <= DateTime.UtcNow)
+        {
+            StopClock();
+            StateHasChanged();
+            return;
+        }
+
+        if (++_ticks % 4 == 0 && !_polling)
+        {
+            _polling = true;
+            try
+            {
+                var added = (await Api.DevicesAsync()).FirstOrDefault(d => !_known.Contains(d.Id));
+                if (added is not null)
+                {
+                    _linked = added.Name;
+                    _code = null;
+                    StopClock();
+                    await OnLinked.InvokeAsync();
+                }
+            }
+            catch (ApiException)
+            {
+                // Checked again at the next tick.
+            }
+            finally
+            {
+                _polling = false;
+            }
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task ShareAsync() =>
+        await Js.InvokeVoidAsync("chifa.share", "SmartCHIFA",
+            $"Lien pour ouvrir SmartCHIFA (code {_code!.Code}, valable une seule fois) :", LinkUrl);
+
+    private void StopClock()
+    {
+        _clock?.Dispose();
+        _clock = null;
+    }
+
+    public void Dispose() => StopClock();
+}
