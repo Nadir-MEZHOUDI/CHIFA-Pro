@@ -299,3 +299,17 @@ public class StatRow
 }
 
 public record Stats(string Kind, int Count, List<StatRow> Rows, StatRow Totals);
+
+/// <summary>Watch rules kept on the pharmacy computer: each new facture that matches one is pushed to the phones.</summary>
+public class Watchlist
+{
+    public bool Psychotropes { get; set; }
+    public decimal? MontantMin { get; set; }
+    public int? BoitesMin { get; set; }
+    public List<WatchedPatient> Patients { get; set; } = [];
+    public List<WatchedMedicament> Medicaments { get; set; } = [];
+}
+
+public record WatchedPatient(string NumAssure, string Rang, string? Nom);
+
+public record WatchedMedicament(string NumEnr, string? Nom);

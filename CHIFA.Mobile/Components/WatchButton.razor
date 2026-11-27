@@ -1,0 +1,77 @@
+@inject Api Api
+
+@* Hidden until the watch rules are read: an agent older than the feature has none to show. *@
+@if (_watched is { } watched)
+{
+    <button class="watch-button @(watched ? "on" : "")" disabled="@_busy" @onclick="ToggleAsync"
+            title="@(_error ?? (watched ? "Ne plus être prévenu" : "Être prévenu à chaque ordonnance"))">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" /></svg>
+        <span>@(_error is not null ? "Réessayer" : watched ? "Suivi" : "Suivre")</span>
+    </button>
+}
+
+@code {
+    /// <summary>Set one of the two: the patient or the medicine this page shows.</summary>
+    [Parameter] public WatchedPatient? Patient { get; set; }
+    [Parameter] public WatchedMedicament? Medicament { get; set; }
+
+    private bool? _watched;
+    private bool _busy;
+    private string? _error;
+    private string? _loadedKey;
+
+    private string Key => Patient is { } p ? $"p:{p.NumAssure}/{p.Rang}" : $"m:{Medicament?.NumEnr}";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Key == _loadedKey)
+            return;
+        _loadedKey = Key;
+        _watched = null;
+        _error = null;
+        try
+        {
+            _watched = Contains(await Api.WatchlistAsync());
+        }
+        catch (ApiException)
+        {
+            _watched = null;
+        }
+    }
+
+    private async Task ToggleAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            // Read again just before saving, so a change made meanwhile on another phone is kept.
+            var list = await Api.WatchlistAsync();
+            if (Contains(list))
+            {
+                list.Patients.RemoveAll(Matches);
+                list.Medicaments.RemoveAll(Matches);
+            }
+            else if (Patient is not null)
+                list.Patients.Add(Patient);
+            else if (Medicament is not null)
+                list.Medicaments.Add(Medicament);
+
+            _watched = Contains(await Api.SaveWatchlistAsync(list));
+        }
+        catch (ApiException ex)
+        {
+            _error = ex.Title;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private bool Contains(Watchlist list) => list.Patients.Any(Matches) || list.Medicaments.Any(Matches);
+
+    private bool Matches(WatchedPatient p) => Patient is not null && p.NumAssure == Patient.NumAssure && p.Rang == Patient.Rang;
+
+    private bool Matches(WatchedMedicament m) => Medicament is not null && m.NumEnr == Medicament.NumEnr;
+}

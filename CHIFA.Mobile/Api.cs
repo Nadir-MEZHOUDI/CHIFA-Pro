@@ -148,6 +148,15 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
         using var _ = await SendAsync(HttpMethod.Delete, $"api/devices/{id}", null);
     }
 
+    public Task<Watchlist> WatchlistAsync() => GetAsync<Watchlist>("api/officine/watchlist");
+
+    /// <returns>The rules as the pharmacy computer saved them (cleaned of duplicates and empty values).</returns>
+    public async Task<Watchlist> SaveWatchlistAsync(Watchlist watchlist)
+    {
+        using var response = await SendAsync(HttpMethod.Put, "api/officine/watchlist", watchlist);
+        return (await response.Content.ReadFromJsonAsync<Watchlist>(JsonSerializerOptions.Web))!;
+    }
+
     private Task<Page<T>> PageAsync<T>(string route, Period period, int skip) =>
         GetAsync<Page<T>>($"api/officine/{route}?{period.Query}&skip={skip}&take={PageSize}");
 

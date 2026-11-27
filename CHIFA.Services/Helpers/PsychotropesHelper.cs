@@ -59,6 +59,18 @@ public static class PsychotropesHelper
         .Union(PsychotropesReglementesDciCodes)
         .ToList();
 
+    /// <summary>Same rule as the SQL filter of <c>ScopeService.GetPsychotropesAsync</c>, for rows already read.</summary>
+    public static bool IsPsychotrope(char? tableau, string? codeDci)
+    {
+        if (tableau == 'B')
+            return true;
+        if (string.IsNullOrWhiteSpace(codeDci))
+            return false;
+        var code = codeDci.Trim();
+        return ExplicitDciCodes.Contains(code, StringComparer.OrdinalIgnoreCase) ||
+               (PsychotropeDciPrefixes.Any(p => code.StartsWith(p, StringComparison.OrdinalIgnoreCase)) && !ExcludedDciCodes.Contains(code));
+    }
+
     public static string GetCategorie(string? codeDci)
     {
         if (string.IsNullOrWhiteSpace(codeDci)) return "Autre";

@@ -32,6 +32,20 @@ public class ScopeServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetWatchedFacturesAsync_ReadsTheFacturesFoundBySinceQuery()
+    {
+        using var w = StartWatch();
+        var stamps = await _svc.GetFactureStampsSinceAsync(new DateTime(2000, 1, 1), limit: 20);
+        var factures = await _svc.GetWatchedFacturesAsync(stamps.Select(s => s.NumFact).ToList());
+
+        stamps.Should().NotBeEmpty();
+        factures.Select(f => f.NumFact).Should().BeEquivalentTo(stamps.Select(s => s.NumFact));
+        factures.Should().OnlyContain(f => f.Lignes.Count > 0);
+        _output.WriteLine(string.Join("\n", factures.Select(f =>
+            $"{f.NumFact} {f.DateFact:g} {f.Malade} {f.MontFact} DA {f.Boites} boîtes psy={f.Lignes.Count(l => l.Psychotrope)}")));
+    }
+
+    [Fact]
     public async Task GetChronicForecastsAsync_ReturnsForecastSummary()
     {
         using var w = StartWatch();

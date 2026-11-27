@@ -47,6 +47,14 @@ public static class OfficineEndpoints
             StatsQuery.All.Contains(kind)
                 ? await agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetStats, new StatsQuery(kind, from, to), ct)
                 : Results.NotFound());
+
+        api.MapGet("/watchlist", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetWatchlist, null, ct));
+        api.MapPut("/watchlist", (Watchlist watchlist, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            watchlist.Patients.Count > Watchlist.MaxItems || watchlist.Medicaments.Count > Watchlist.MaxItems
+                ? Task.FromResult(Results.Problem(statusCode: StatusCodes.Status400BadRequest,
+                    title: $"Au plus {Watchlist.MaxItems} patients et {Watchlist.MaxItems} médicaments suivis."))
+                : agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.SaveWatchlist, watchlist, ct));
     }
 
     private static void MapPaged(RouteGroupBuilder api, string route, string method) =>

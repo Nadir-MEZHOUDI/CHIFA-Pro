@@ -11,11 +11,20 @@ namespace CHIFA.Agent;
 /// <summary>
 /// Answers the gateway with the same services CHIFA.Pro uses. Only the methods registered here can be called.
 /// </summary>
-public class AgentHandlers(ILogger<AgentHandlers> logger)
+public class AgentHandlers
 {
     private static readonly string Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0";
 
-    private readonly AlertTracker _alerts = new(logger);
+    private readonly ILogger<AgentHandlers> logger;
+    private readonly WatchlistStore _watchlist;
+    private readonly AlertTracker _alerts;
+
+    public AgentHandlers(ILogger<AgentHandlers> logger)
+    {
+        this.logger = logger;
+        _watchlist = new WatchlistStore(logger);
+        _alerts = new AlertTracker(logger, _watchlist);
+    }
 
     public void Register(HubConnection connection)
     {
@@ -72,6 +81,22 @@ public class AgentHandlers(ILogger<AgentHandlers> logger)
             RunAsync(AgentMethods.GetStats, () => StatisticsService.Instance.GetStatsAsync(q.Kind, ToPeriod(q.From, q.To))));
 
         connection.On(AgentMethods.GetAlerts, () => RunAsync(AgentMethods.GetAlerts, _alerts.GetNewAlertsAsync));
+
+        connection.On(AgentMethods.GetWatchlist, () => RunAsync(AgentMethods.GetWatchlist, _watchlist.LoadAsync));
+
+        connection.On<Watchlist, Watchlist>(AgentMethods.SaveWatchlist, w =>
+            RunAsync(AgentMethods.SaveWatchlist, async () =>
+            {
+                try
+                {
+                    return await _watchlist.SaveAsync(w);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    logger.LogError(ex, "Could not save {Path}", WatchlistStore.Path);
+                    throw new HubException("Impossible d'enregistrer la surveillance sur l'ordinateur de la pharmacie.");
+                }
+            }));
     }
 
     private static async Task<AgentInfo> GetInfoAsync()
@@ -107,6 +132,10 @@ public class AgentHandlers(ILogger<AgentHandlers> logger)
         try
         {
             return await action();
+        }
+        catch (HubException)
+        {
+            throw;
         }
         catch (Exception ex) when (ex is NpgsqlException or TimeoutException)
         {

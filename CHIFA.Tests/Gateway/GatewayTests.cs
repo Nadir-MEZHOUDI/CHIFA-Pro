@@ -44,6 +44,44 @@ public class GatewayTests(GatewayFixture gateway)
     }
 
     [Fact]
+    public async Task Phone_reads_and_saves_the_watchlist_kept_by_the_agent()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        var stored = new Watchlist();
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On(AgentMethods.GetWatchlist, () => Task.FromResult(stored));
+        agent.On<Watchlist, Watchlist>(AgentMethods.SaveWatchlist, w => Task.FromResult(stored = WatchlistStore.Normalize(w)));
+        await agent.StartAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        // The shape CHIFA.Mobile sends: its own mutable class, camelCase.
+        var put = await phone.PutAsJsonAsync("/api/officine/watchlist", new
+        {
+            psychotropes = true,
+            montantMin = 5000m,
+            boitesMin = (int?)null,
+            patients = new[] { new { numAssure = "123", rang = "00", nom = "BENALI" } },
+            medicaments = new[] { new { numEnr = "A1", nom = "DOLIPRANE" }, new { numEnr = "A1", nom = "DOLIPRANE" } }
+        });
+        var read = await phone.GetFromJsonAsync<Watchlist>("/api/officine/watchlist", JsonSerializerOptions.Web);
+
+        put.StatusCode.Should().Be(HttpStatusCode.OK);
+        read.Should().BeEquivalentTo(new Watchlist(true, 5000m, null, [new("123", "00", "BENALI")], [new("A1", "DOLIPRANE")]));
+    }
+
+    [Fact]
+    public async Task Too_long_a_watchlist_is_refused_before_reaching_the_agent()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+        var medicaments = Enumerable.Range(0, Watchlist.MaxItems + 1).Select(i => new WatchedMedicament($"M{i}", null)).ToList();
+
+        var response = await phone.PutAsJsonAsync("/api/officine/watchlist", new Watchlist(Medicaments: medicaments), JsonSerializerOptions.Web);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
     public async Task Phone_only_reaches_its_own_pharmacy()
     {
         var mine = await gateway.CreatePharmacyAsync();

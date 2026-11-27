@@ -880,3 +880,46 @@ a.card.link.contact { flex-direction: row; align-items: center; gap: .8rem; }
     .content > a.card.item { height: 100%; }
     h1 { font-size: 1.7rem; }
 }
+
+/* Watch rules (Notifications) and the « Suivre » button of the patient and medicine pages */
+.watch { display: flex; flex-direction: column; gap: .7rem; }
+.watch h2 { margin-bottom: .2rem; }
+.watch h3 { font-size: .9rem; font-weight: 700; margin: .5rem 0 0; }
+.watch p { margin: 0; }
+.watch-check { display: flex; align-items: center; gap: .6rem; font-weight: 600; }
+.watch-check input { width: 20px; height: 20px; accent-color: var(--primary-strong); }
+.watch-field { display: flex; align-items: center; gap: .5rem; font-size: .9rem; }
+.watch-field span:first-child { flex: 1; }
+.watch-field input {
+    width: 7.5rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 16px;
+    padding: .5rem .6rem;
+    text-align: right;
+}
+.watch-field input:focus { outline: none; border-color: var(--primary); }
+.watch-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .35rem 0; border-bottom: 1px solid var(--line); }
+.watch-row a { min-width: 0; overflow-wrap: anywhere; color: var(--text); text-decoration: none; font-weight: 600; }
+
+.watch-button {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    font: inherit;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: .4rem .75rem;
+}
+.watch-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.watch-button.on { background: var(--primary-soft); border-color: transparent; color: var(--primary); }
+.watch-button.on svg { fill: currentColor; }
+.watch-button:disabled { opacity: .6; }

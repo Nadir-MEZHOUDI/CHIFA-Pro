@@ -276,4 +276,57 @@ public class ScopeService
             .ToListAsync()
             .ConfigureAwait(false);
     }
+
+    /// <summary>Number and date of the factures dated from <paramref name="since"/>: cheap, polled every few minutes.</summary>
+    public async ValueTask<List<(string NumFact, DateTime DateFact)>> GetFactureStampsSinceAsync(DateTime since, int limit = 500)
+    {
+        await using var db = new ChifaDb();
+        var rows = await db.Factures
+            .Where(f => f.DateFact >= since)
+            .OrderBy(f => f.DateFact)
+            .Take(limit)
+            .Select(f => new { f.NumFact, f.DateFact })
+            .ToListAsync()
+            .ConfigureAwait(false);
+        return rows.Select(r => (r.NumFact, r.DateFact!.Value)).ToList();
+    }
+
+    public async ValueTask<List<WatchedFactureDto>> GetWatchedFacturesAsync(IReadOnlyCollection<string> numFacts)
+    {
+        if (numFacts.Count == 0)
+            return [];
+
+        await using var db = new ChifaDb();
+        var factures = await db.Factures
+            .Where(f => numFacts.Contains(f.NumFact))
+            .Select(f => new WatchedFactureDto
+            {
+                NumFact = f.NumFact,
+                DateFact = f.DateFact!.Value,
+                NumAssure = f.NumAssure,
+                Rang = f.RangAd,
+                Malade = f.Beneficiaire.FullName,
+                MontFact = f.MontFact ?? 0
+            })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var lignes = await db.DetailFacts
+            .Where(d => numFacts.Contains(d.NumFact))
+            .Select(d => new { d.NumFact, d.NumEnr, d.Medicament.NomCom, d.Qte, d.Medicament.Tableau, d.Medicament.CodeDci })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var byFacture = lignes.ToLookup(l => l.NumFact);
+        foreach (var facture in factures)
+            facture.Lignes = byFacture[facture.NumFact].Select(l => new WatchedLigneDto
+            {
+                NumEnr = l.NumEnr ?? "",
+                Nom = l.NomCom,
+                Qte = l.Qte,
+                Psychotrope = PsychotropesHelper.IsPsychotrope(l.Tableau, l.CodeDci)
+            }).ToList();
+
+        return factures.OrderBy(f => f.DateFact).ToList();
+    }
 }

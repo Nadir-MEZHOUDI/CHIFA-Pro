@@ -4,6 +4,10 @@
 <div class="page-head">
     <BackButton Fallback="patients" />
     <h1>@(Data?.Nom ?? "Patient")</h1>
+    @if (Data is { } d)
+    {
+        <WatchButton Patient="new(d.NumAssure, d.Rang, d.Nom)" />
+    }
 </div>
 
 @if (Error is not null)

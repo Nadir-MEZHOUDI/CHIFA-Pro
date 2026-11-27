@@ -22,6 +22,11 @@ public static class AgentMethods
 
     /// <summary>Polled by the gateway for phone notifications. Each alert is returned only once.</summary>
     public const string GetAlerts = nameof(GetAlerts);
+
+    public const string GetWatchlist = nameof(GetWatchlist);
+
+    /// <summary>The only write: it changes the agent's own watch file, never the CHIFA database.</summary>
+    public const string SaveWatchlist = nameof(SaveWatchlist);
 }
 
 public static class AgentHub
@@ -59,3 +64,27 @@ public record StatsQuery(string Kind, DateTime? From, DateTime? To)
 /// <param name="Key">Stable identity of the event: the agent never returns the same key twice.</param>
 /// <param name="Url">Page of the phone app to open, relative to its root (e.g. <c>rejets</c>).</param>
 public record AgentAlert(string Key, string Title, string Body, string Url);
+
+/// <summary>
+/// What the pharmacist wants to hear about as soon as a facture is made. Kept on the pharmacy computer.
+/// </summary>
+/// <param name="MontantMin">Alert on a facture of at least this amount (DA); null = off.</param>
+/// <param name="BoitesMin">Alert on a facture of at least this many boxes; null = off.</param>
+public record Watchlist(
+    bool Psychotropes = false,
+    decimal? MontantMin = null,
+    int? BoitesMin = null,
+    List<WatchedPatient>? Patients = null,
+    List<WatchedMedicament>? Medicaments = null)
+{
+    public const int MaxItems = 200;
+
+    public List<WatchedPatient> Patients { get; init; } = Patients ?? [];
+    public List<WatchedMedicament> Medicaments { get; init; } = Medicaments ?? [];
+
+    public bool IsEmpty => !Psychotropes && MontantMin is null && BoitesMin is null && Patients.Count == 0 && Medicaments.Count == 0;
+}
+
+public record WatchedPatient(string NumAssure, string Rang, string? Nom);
+
+public record WatchedMedicament(string NumEnr, string? Nom);

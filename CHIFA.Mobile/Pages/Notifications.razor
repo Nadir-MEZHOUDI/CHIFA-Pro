@@ -37,8 +37,66 @@
         <li><strong>Bordereau payé</strong> : dès que le virement de la CNAS est enregistré.</li>
         <li><strong>Rejet</strong> : quand un virement est inférieur au montant dû, avec le montant rejeté.</li>
         <li><strong>Malades chroniques</strong> : chaque matin, ceux en retard ou attendus aujourd'hui.</li>
+        <li><strong>Surveillance</strong> : à chaque ordonnance qui correspond à une règle ci-dessous.</li>
     </ul>
     <p class="muted small">Les alertes partent de l'ordinateur de la pharmacie : il doit être allumé et connecté.</p>
+</section>
+
+<section class="card watch">
+    <h2>Surveillance des ventes</h2>
+    @if (_watch is null)
+    {
+        <p class="muted small">@(_watchError ?? "Chargement…")</p>
+    }
+    else
+    {
+        <label class="watch-check">
+            <input type="checkbox" @bind="_watch.Psychotropes" />
+            <span>Chaque psychotrope délivré</span>
+        </label>
+        <label class="watch-field">
+            <span>Ordonnance d'au moins</span>
+            <input type="number" inputmode="decimal" min="0" step="500" placeholder="—" @bind="_watch.MontantMin" />
+            <span>DA</span>
+        </label>
+        <label class="watch-field">
+            <span>Ordonnance d'au moins</span>
+            <input type="number" inputmode="numeric" min="0" step="1" placeholder="—" @bind="_watch.BoitesMin" />
+            <span>boîtes</span>
+        </label>
+
+        <h3>Patients suivis</h3>
+        @if (_watch.Patients.Count == 0)
+        {
+            <p class="muted small">Aucun. Ouvrez la fiche d'un patient et touchez « Suivre ».</p>
+        }
+        @foreach (var p in _watch.Patients)
+        {
+            <div class="watch-row">
+                <a href="@Patients.PatientUrl(p.NumAssure, p.Rang)">@(p.Nom ?? p.NumAssure) <span class="muted small">· @p.NumAssure · @p.Rang</span></a>
+                <button class="button secondary small" @onclick="() => _watch.Patients.Remove(p)">Retirer</button>
+            </div>
+        }
+
+        <h3>Médicaments suivis</h3>
+        @if (_watch.Medicaments.Count == 0)
+        {
+            <p class="muted small">Aucun. Ouvrez la fiche d'un médicament et touchez « Suivre ».</p>
+        }
+        @foreach (var m in _watch.Medicaments)
+        {
+            <div class="watch-row">
+                <a href="medicaments/@Uri.EscapeDataString(m.NumEnr)">@(m.Nom ?? m.NumEnr)</a>
+                <button class="button secondary small" @onclick="() => _watch.Medicaments.Remove(m)">Retirer</button>
+            </div>
+        }
+
+        <button class="button wide" @onclick="SaveWatchAsync" disabled="@_busy">Enregistrer</button>
+        @if (_watchMessage is not null)
+        {
+            <p class="small @(_watchMessageIsError ? "bad-text" : "ok-text")">@_watchMessage</p>
+        }
+    }
 </section>
 
 @code {
@@ -46,6 +104,43 @@
     private bool _busy;
     private string? _message;
     private bool _messageIsError;
+    private Watchlist? _watch;
+    private string? _watchError;
+    private string? _watchMessage;
+    private bool _watchMessageIsError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _watch = await Api.WatchlistAsync();
+        }
+        catch (ApiException ex)
+        {
+            _watchError = ex.Detail is null ? ex.Title : $"{ex.Title} {ex.Detail}";
+        }
+    }
+
+    private async Task SaveWatchAsync()
+    {
+        if (_watch is null)
+            return;
+        _busy = true;
+        _watchMessage = null;
+        try
+        {
+            _watch = await Api.SaveWatchlistAsync(_watch);
+            (_watchMessage, _watchMessageIsError) = ("Surveillance enregistrée sur l'ordinateur de la pharmacie.", false);
+        }
+        catch (ApiException ex)
+        {
+            (_watchMessage, _watchMessageIsError) = (ex.Detail is null ? ex.Title : $"{ex.Title} {ex.Detail}", true);
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
 
     private string StateText => _state switch
     {
