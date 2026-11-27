@@ -1,0 +1,69 @@
+@* Shown to a phone not yet linked to a pharmacy: the welcome screen on Accueil, and in place of every page that needs the pharmacy PC. *@
+@inject NavigationManager Nav
+@inject IJSRuntime Js
+
+<div class="offline-screen guest-screen">
+    <div class="offline-card">
+        @if (PageTitle is null)
+        {
+            <img class="guest-logo" src="icon-192.png" alt="" />
+            <h1 class="guest-welcome" lang="ar" dir="rtl">مرحبا بك في <bdi>SmartCHIFA</bdi></h1>
+            <p class="guest-sub">Bienvenue sur SmartCHIFA, votre pharmacie dans votre poche.</p>
+
+            @if (CanInstall)
+            {
+                <button type="button" class="button wide" @onclick="Install">
+                    <svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>Installer l'application
+                </button>
+            }
+            <button type="button" class="button wide @(CanInstall ? "secondary" : "")" @onclick="Link">
+                <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" /></svg>Lier ce téléphone
+            </button>
+        }
+        else
+        {
+            <div class="offline-art" aria-hidden="true">
+                <span class="offline-ring"></span>
+                <span class="offline-ring"></span>
+                <svg viewBox="0 0 24 24"><path d="M3 4h18v12H3zM8 20h8M12 16v4" /></svg>
+            </div>
+            <h1>@PageTitle</h1>
+            <p>Cette page affiche les données de votre pharmacie. Elle a besoin de <strong>SmartCHIFA</strong> installé sur le PC de la pharmacie.</p>
+        }
+
+        <div class="guest-message">
+            <p lang="ar" dir="rtl">ثبّت برنامج <bdi>SmartCHIFA</bdi> على حاسوب الصيدلية ثم اربط هاتفك، لتستفيد من جميع ميزات تطبيق الهاتف: الفواتير، المرفوضات، المرضى، المؤثرات العقلية والإحصائيات.</p>
+            <p>Installez SmartCHIFA sur le PC de la pharmacie, puis liez ce téléphone pour profiter de toutes les fonctions : factures, rejets, patients, psychotropes et statistiques, où que vous soyez.</p>
+        </div>
+
+        <ul class="offline-tips">
+            <li><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>Installez SmartCHIFA sur le PC de la pharmacie</li>
+            <li><svg viewBox="0 0 24 24"><path d="M3 4h18v12H3zM8 20h8M12 16v4" /></svg>Ouvrez le menu Application mobile</li>
+            <li><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M8 8h3v3H8zM13 13h3v3h-3z" /></svg>Scannez le QR code avec ce téléphone</li>
+        </ul>
+
+        @if (PageTitle is not null)
+        {
+            <button type="button" class="button wide" @onclick="Link">Lier ce téléphone</button>
+        }
+        <a class="button wide secondary" href="@DownloadUrl" target="_blank" rel="noopener">Télécharger SmartCHIFA pour PC</a>
+        <button type="button" class="link-button" @onclick="SendToPcAsync">Envoyer le lien de téléchargement vers le PC</button>
+    </div>
+</div>
+
+@code {
+    /// <summary>The page the phone tried to open; null for the welcome screen.</summary>
+    [Parameter] public string? PageTitle { get; set; }
+
+    [Parameter] public bool CanInstall { get; set; }
+
+    [Parameter] public EventCallback Install { get; set; }
+
+    private const string DownloadUrl = $"{Pages.Assistance.Website}/#telecharger";
+
+    private void Link() => Nav.NavigateTo("login");
+
+    private async Task SendToPcAsync() =>
+        await Js.InvokeVoidAsync("chifa.share", "SmartCHIFA pour PC",
+            "Téléchargez SmartCHIFA sur le PC de la pharmacie :", DownloadUrl);
+}

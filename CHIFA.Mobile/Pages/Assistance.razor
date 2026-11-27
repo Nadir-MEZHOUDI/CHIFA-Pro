@@ -41,7 +41,7 @@
     private const string WhatsApp = "213671716666";
 
     private string WhatsAppUrl =>
-        $"https://wa.me/{WhatsApp}?text={Uri.EscapeDataString($"Bonjour, ici {Session.Current?.Pharmacy} (SmartCHIFA mobile). J'ai besoin d'aide avec SmartCHIFA.")}";
+        $"https://wa.me/{WhatsApp}?text={Uri.EscapeDataString($"Bonjour{(Session.Current is { } s ? $", ici {s.Pharmacy}" : "")} (SmartCHIFA mobile). J'ai besoin d'aide avec SmartCHIFA.")}";
 
     private async Task ShareAsync() => await Share(Js);
 

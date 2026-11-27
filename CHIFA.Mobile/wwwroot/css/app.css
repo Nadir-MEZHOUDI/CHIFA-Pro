@@ -770,6 +770,40 @@ body:has(.login) {
     .offline-screen, .offline-ring { animation: none; }
 }
 
+/* Phone not linked yet (GuestScreen.razor): welcome screen and pages that need the pharmacy PC. */
+.offline-screen.guest-screen {
+    position: static;
+    inset: auto;
+    z-index: auto;
+    min-height: calc(100dvh - 180px);
+    padding: .5rem 0 1.5rem;
+    background: none;
+}
+.guest-screen .button { display: flex; align-items: center; justify-content: center; gap: .5rem; text-decoration: none; }
+.guest-screen .button svg { width: 19px; height: 19px; }
+.guest-screen .link-button { margin-top: 0; }
+.guest-logo { width: 88px; height: 88px; margin: .5rem 0 .3rem; filter: drop-shadow(0 10px 18px rgba(11, 59, 46, .18)); }
+.guest-screen h1.guest-welcome {
+    font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", system-ui, sans-serif;
+    font-size: 1.85rem;
+    letter-spacing: 0;
+    line-height: 1.35;
+}
+.guest-welcome bdi { font-family: var(--f-display); color: var(--emerald); letter-spacing: -.02em; }
+.guest-screen p.guest-sub { margin-bottom: .6rem; }
+.guest-message {
+    width: 100%;
+    margin-top: .4rem;
+    padding: .9rem 1rem;
+    border-radius: var(--radius);
+    background: var(--primary-soft);
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+}
+.guest-screen .guest-message p { color: var(--text); font-size: .88rem; }
+.guest-message p[lang="ar"] { font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", system-ui, sans-serif; font-size: .98rem; line-height: 1.7; font-weight: 600; }
+
 /* Lists and details */
 a.card.link, a.line { color: inherit; text-decoration: none; display: flex; flex-direction: column; gap: .4rem; }
 a.card.link { transition: border-color .15s, transform .15s; }

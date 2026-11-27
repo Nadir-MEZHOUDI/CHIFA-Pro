@@ -5,15 +5,13 @@
 @inject NavigationManager Nav
 @inject IJSRuntime Js
 
-@if (Session.IsSignedIn)
-{
-    <div class="shell @(_menuOpen ? "menu-open" : "")" @onkeydown="OnKeyDown">
+<div class="shell @(_menuOpen ? "menu-open" : "")" @onkeydown="OnKeyDown">
         <aside class="drawer" id="menu" aria-label="Menu">
             <div class="drawer-brand">
                 <img src="icon-192.png" alt="" />
                 <div>
                     <strong>SmartCHIFA</strong>
-                    <span>@Session.Current!.Pharmacy</span>
+                    <span>@(Session.Current?.Pharmacy ?? "Téléphone non lié")</span>
                 </div>
             </div>
             <nav class="drawer-nav">
@@ -34,9 +32,18 @@
                 <button class="drawer-action" @onclick="() => Pages.Assistance.Share(Js)">
                     <svg viewBox="0 0 24 24"><path d="M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4" /></svg>Partager l'application
                 </button>
-                <button class="drawer-action" @onclick="SignOutAsync">
-                    <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>Se déconnecter
-                </button>
+                @if (Session.IsSignedIn)
+                {
+                    <button class="drawer-action" @onclick="SignOutAsync">
+                        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>Se déconnecter
+                    </button>
+                }
+                else
+                {
+                    <button class="drawer-action" @onclick="@(() => Nav.NavigateTo("login"))">
+                        <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" /></svg>Lier ce téléphone
+                    </button>
+                }
             </div>
         </aside>
         <div class="drawer-backdrop" @onclick="CloseMenu"></div>
@@ -48,8 +55,12 @@
                 </button>
                 <img class="topbar-logo" src="icon-192.png" alt="" />
                 <div class="topbar-title">
-                    <span class="pharmacy">@Session.Current!.Pharmacy</span>
-                    @if (_status is { } s)
+                    <span class="pharmacy">@(Session.Current?.Pharmacy ?? "SmartCHIFA")</span>
+                    @if (!Session.IsSignedIn)
+                    {
+                        <span class="status offline"><span class="dot"></span>Téléphone non lié</span>
+                    }
+                    else if (_status is { } s)
                     {
                         <span class="status @(s.Online ? "online" : "offline")">
                             <span class="dot"></span>@(s.Online ? "Pharmacie en ligne" : $"Hors ligne · vue {Fmt.Ago(s.LastSeenAt)}")
@@ -65,7 +76,18 @@
             </header>
 
             <main class="content">
-                @if (PharmacyDown)
+                @if (!Session.IsSignedIn)
+                {
+                    if (GuestPages.Contains(CurrentPage))
+                    {
+                        @Body
+                    }
+                    else
+                    {
+                        <GuestScreen PageTitle="@GuestPageTitle" CanInstall="@(_install != "none")" Install="InstallAsync" />
+                    }
+                }
+                else if (PharmacyDown)
                 {
                     <PharmacyOffline Status="_status!" Retry="RefreshStatusAsync" />
                 }
@@ -85,7 +107,6 @@
             }
         </nav>
     </div>
-}
 
 @code {
     private OfficineStatus? _status;
@@ -96,14 +117,9 @@
 
     protected override void OnInitialized()
     {
-        if (!Session.IsSignedIn)
-        {
-            Nav.NavigateTo("login");
-            return;
-        }
-
         Nav.LocationChanged += OnLocationChanged;
-        _ = RefreshStatusLoopAsync();
+        if (Session.IsSignedIn)
+            _ = RefreshStatusLoopAsync();
     }
 
     // The pharmacy can go offline at any time (PC off, no internet): refresh the badge every 30 s.
@@ -131,12 +147,19 @@
     // These pages don't need the pharmacy PC, so they keep working while it is off.
     private static readonly string[] GatewayPages = ["notifications", "abonnement", "assistance"];
 
-    private bool PharmacyDown =>
-        _status is { Online: false } && !GatewayPages.Contains(Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#', '/')[0]);
+    // An unlinked phone has no pharmacy behind it: these pages work as usual, the others ask to install SmartCHIFA.
+    private static readonly string[] GuestPages = ["assistance"];
+
+    private string CurrentPage => Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#', '/')[0];
+
+    private string? GuestPageTitle =>
+        CurrentPage == "" ? null : NavItem.All.FirstOrDefault(i => i.Href == CurrentPage)?.Label ?? "SmartCHIFA";
+
+    private bool PharmacyDown => _status is { Online: false } && !GatewayPages.Contains(CurrentPage);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender || !Session.IsSignedIn)
+        if (!firstRender)
             return;
 
         _self = DotNetObjectReference.Create(this);
@@ -182,7 +205,9 @@
 
         await Js.InvokeVoidAsync("chifa.push.forget");
         await Api.LogoutAsync();
-        Nav.NavigateTo("login");
+        _timer?.Dispose();
+        _status = null;
+        Nav.NavigateTo("");
     }
 
     public void Dispose()
