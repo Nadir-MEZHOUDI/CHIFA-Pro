@@ -48,16 +48,28 @@
         "@type": "PostalAddress",
         "addressCountry": "DZ"
       },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+213671716666",
-        "contactType": "customer support",
-        "areaServed": "DZ",
-        "availableLanguage": [
-          "fr",
-          "ar"
-        ]
-      }
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+213671716666",
+          "contactType": "customer support",
+          "areaServed": "DZ",
+          "availableLanguage": [
+            "fr",
+            "ar"
+          ]
+        },
+        {
+          "@type": "ContactPoint",
+          "telephone": "+213699980099",
+          "contactType": "customer support",
+          "areaServed": "DZ",
+          "availableLanguage": [
+            "fr",
+            "ar"
+          ]
+        }
+      ]
     },
     {
       "@type": "WebSite",
@@ -461,7 +473,7 @@ html[lang="ar"] .pay-row small{letter-spacing:0;text-transform:none}
 .ccard .ic{width:46px;height:46px;border-radius:12px;background:var(--mint-soft);color:var(--emerald);display:grid;place-items:center;margin-bottom:10px}
 .ccard .ic svg{width:24px;height:24px}
 .ccard small{color:var(--muted);font-weight:700;font-size:14px}
-.ccard .num{font:800 26px var(--f-display);letter-spacing:-.01em}
+.ccard .num{font:800 26px var(--f-display);letter-spacing:-.01em;color:inherit;text-decoration:none}
 .ccard p{margin:0 0 18px;color:var(--muted);font-size:15px}
 .ccard .btn{margin-top:auto;justify-content:center}
 .ccard.wa{background:#E7F8EE}
@@ -584,7 +596,49 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
   </div>
 </div>
 
-<section id="telecharger">
+<section id="poche">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow" data-i18n="pk.eyebrow">Sur votre téléphone</span>
+      <h2 data-i18n="pk.title">Tout ce qu'il vous faut, dans votre main, à tout moment.</h2>
+      <p data-i18n="pk.sub">Patients, médicaments, ordonnances : tout ce qui concerne votre clientèle, où que vous soyez. Captures réelles d'une officine (noms des patients masqués).</p>
+    </div>
+    <div class="pocket">
+      <figure class="reveal"><div class="phone"><img class="phone-shot" src="/assets/mobile/m-patients.webp" width="450" height="975" alt="Historique d'un patient dans l'application mobile SmartCHIFA" data-i18n-alt="pk.alt1" loading="lazy"></div><figcaption><strong data-i18n="pk.c1">Vos patients</strong><span data-i18n="pk.c1p">Historique de chaque assuré et chroniques à relancer.</span></figcaption></figure>
+      <figure class="reveal"><div class="phone"><img class="phone-shot" src="/assets/mobile/m-facture.webp" width="450" height="975" alt="Détail d'une ordonnance CHIFA sur le téléphone" data-i18n-alt="pk.alt2" loading="lazy"></div><figcaption><strong data-i18n="pk.c2">Chaque ordonnance</strong><span data-i18n="pk.c2p">Montant, part caisse, médecin, bordereau et médicaments délivrés.</span></figcaption></figure>
+      <figure class="reveal"><div class="phone"><img class="phone-shot" src="/assets/mobile/m-meds.webp" width="450" height="975" alt="Médicaments délivrés et chiffre par produit sur le téléphone" data-i18n-alt="pk.alt3" loading="lazy"></div><figcaption><strong data-i18n="pk.c3">Vos médicaments</strong><span data-i18n="pk.c3p">Boîtes délivrées, patients et chiffre par produit.</span></figcaption></figure>
+      <figure class="reveal"><div class="phone"><img class="phone-shot" src="/assets/mobile/m-factures.webp" width="450" height="975" alt="Liste des factures CHIFA sur le téléphone" data-i18n-alt="pk.alt4" loading="lazy"></div><figcaption><strong data-i18n="pk.c4">Factures en direct</strong><span data-i18n="pk.c4p">Les dernières factures, dès qu'elles sont saisies.</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="apercu" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow" data-i18n="gal.eyebrow">Aperçu</span>
+      <h2 data-i18n="gal.title">De vraies captures, pas des maquettes.</h2>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-shot="0" data-i18n="gal.t1">Accueil</button>
+      <button class="tab" role="tab" aria-selected="false" data-shot="1" data-i18n="gal.t2">Tour de contrôle</button>
+      <button class="tab" role="tab" aria-selected="false" data-shot="2" data-i18n="gal.t3">Médicaments</button>
+    </div>
+    <figure class="shot on" style="margin:0">
+      <div class="window"><div class="window-bar"><i></i><i></i><i></i></div><img src="/assets/home.webp" srcset="/assets/home-800.webp 800w, /assets/home.webp 1525w" sizes="(max-width: 1212px) 100vw, 1180px" width="1525" height="755" loading="lazy" alt="Accueil SmartCHIFA" data-i18n-alt="gal.alt1"></div>
+      <figcaption data-i18n="gal.c1">Accès direct à chaque module, avec le chiffre et le nombre de factures des sept derniers jours.</figcaption>
+    </figure>
+    <figure class="shot" style="margin:0">
+      <div class="window"><div class="window-bar"><i></i><i></i><i></i></div><img src="/assets/scope.webp" srcset="/assets/scope-800.webp 800w, /assets/scope.webp 1525w" sizes="(max-width: 1212px) 100vw, 1180px" width="1525" height="755" loading="lazy" alt="Tour de contrôle SmartCHIFA" data-i18n-alt="gal.alt2"></div>
+      <figcaption data-i18n="gal.c2">Heures de pointe et médicaments les plus délivrés, pour organiser l'équipe et les commandes.</figcaption>
+    </figure>
+    <figure class="shot" style="margin:0">
+      <div class="window"><div class="window-bar"><i></i><i></i><i></i></div><img src="/assets/medications.webp" srcset="/assets/medications-800.webp 800w, /assets/medications.webp 1525w" sizes="(max-width: 1212px) 100vw, 1180px" width="1525" height="755" loading="lazy" alt="Nomenclature des médicaments dans SmartCHIFA" data-i18n-alt="gal.alt3"></div>
+      <figcaption data-i18n="gal.c3">Nomenclature complète : DCI, dosage, forme, tarif de référence et génériques.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="telecharger" style="padding-top:0">
   <div class="wrap dl">
     <div class="dl-card reveal">
       <span class="eyebrow" data-i18n="dl.eyebrow">Téléchargement</span>
@@ -699,22 +753,6 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
   </div>
 </section>
 
-<section id="poche" style="padding-top:0">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow" data-i18n="pk.eyebrow">Sur votre téléphone</span>
-      <h2 data-i18n="pk.title">Tout ce qu'il vous faut, dans votre main, à tout moment.</h2>
-      <p data-i18n="pk.sub">Patients, médicaments, ordonnances : tout ce qui concerne votre clientèle, où que vous soyez. Captures réelles d'une officine (noms des patients masqués).</p>
-    </div>
-    <div class="pocket">
-      <figure class="reveal"><div class="phone"><img class="phone-shot" src="/assets/mobile/m-patients.webp" width="450" height="975" alt="Historique d'un patient dans l'application mobile SmartCHIFA" data-i18n-alt="pk.alt1" loading="lazy"></div><figcaption><strong data-i18n="pk.c1">Vos patients</strong><span data-i18n="pk.c1p">Historique de chaque assuré et chroniques à relancer.</span></figcaption></figure>
-      <figure class="reveal"><div class="phone"><img class="phone-shot" src="/assets/mobile/m-facture.webp" width="450" height="975" alt="Détail d'une ordonnance CHIFA sur le téléphone" data-i18n-alt="pk.alt2" loading="lazy"></div><figcaption><strong data-i18n="pk.c2">Chaque ordonnance</strong><span data-i18n="pk.c2p">Montant, part caisse, médecin, bordereau et médicaments délivrés.</span></figcaption></figure>
-      <figure class="reveal"><div class="phone"><img class="phone-shot" src="/assets/mobile/m-meds.webp" width="450" height="975" alt="Médicaments délivrés et chiffre par produit sur le téléphone" data-i18n-alt="pk.alt3" loading="lazy"></div><figcaption><strong data-i18n="pk.c3">Vos médicaments</strong><span data-i18n="pk.c3p">Boîtes délivrées, patients et chiffre par produit.</span></figcaption></figure>
-      <figure class="reveal"><div class="phone"><img class="phone-shot" src="/assets/mobile/m-factures.webp" width="450" height="975" alt="Liste des factures CHIFA sur le téléphone" data-i18n-alt="pk.alt4" loading="lazy"></div><figcaption><strong data-i18n="pk.c4">Factures en direct</strong><span data-i18n="pk.c4p">Les dernières factures, dès qu'elles sont saisies.</span></figcaption></figure>
-    </div>
-  </div>
-</section>
-
 <section id="securite" style="padding-top:0">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -745,32 +783,6 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
         <p data-i18n-html="sec.s4p">Ouvrez <kbd>Application mobile</kbd> dans SmartCHIFA et scannez avec votre téléphone le QR code affiché à l'écran. Le code ne sert qu'une seule fois et expire au bout de quelques minutes.</p>
       </article>
     </div>
-  </div>
-</section>
-
-<section id="apercu" style="padding-top:0">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow" data-i18n="gal.eyebrow">Aperçu</span>
-      <h2 data-i18n="gal.title">De vraies captures, pas des maquettes.</h2>
-    </div>
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true" data-shot="0" data-i18n="gal.t1">Accueil</button>
-      <button class="tab" role="tab" aria-selected="false" data-shot="1" data-i18n="gal.t2">Tour de contrôle</button>
-      <button class="tab" role="tab" aria-selected="false" data-shot="2" data-i18n="gal.t3">Médicaments</button>
-    </div>
-    <figure class="shot on" style="margin:0">
-      <div class="window"><div class="window-bar"><i></i><i></i><i></i></div><img src="/assets/home.webp" srcset="/assets/home-800.webp 800w, /assets/home.webp 1525w" sizes="(max-width: 1212px) 100vw, 1180px" width="1525" height="755" loading="lazy" alt="Accueil SmartCHIFA" data-i18n-alt="gal.alt1"></div>
-      <figcaption data-i18n="gal.c1">Accès direct à chaque module, avec le chiffre et le nombre de factures des sept derniers jours.</figcaption>
-    </figure>
-    <figure class="shot" style="margin:0">
-      <div class="window"><div class="window-bar"><i></i><i></i><i></i></div><img src="/assets/scope.webp" srcset="/assets/scope-800.webp 800w, /assets/scope.webp 1525w" sizes="(max-width: 1212px) 100vw, 1180px" width="1525" height="755" loading="lazy" alt="Tour de contrôle SmartCHIFA" data-i18n-alt="gal.alt2"></div>
-      <figcaption data-i18n="gal.c2">Heures de pointe et médicaments les plus délivrés, pour organiser l'équipe et les commandes.</figcaption>
-    </figure>
-    <figure class="shot" style="margin:0">
-      <div class="window"><div class="window-bar"><i></i><i></i><i></i></div><img src="/assets/medications.webp" srcset="/assets/medications-800.webp 800w, /assets/medications.webp 1525w" sizes="(max-width: 1212px) 100vw, 1180px" width="1525" height="755" loading="lazy" alt="Nomenclature des médicaments dans SmartCHIFA" data-i18n-alt="gal.alt3"></div>
-      <figcaption data-i18n="gal.c3">Nomenclature complète : DCI, dosage, forme, tarif de référence et génériques.</figcaption>
-    </figure>
   </div>
 </section>
 
@@ -860,19 +872,20 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
   <div class="wrap">
     <div class="sec-head center reveal">
       <span class="eyebrow" data-i18n="pay.eyebrow">Paiement</span>
-      <h2 data-i18n="pay.title">Payez par CCP ou BaridiMob.</h2>
-      <p data-i18n="pay.sub">Réglez votre licence par versement au bureau de poste ou par virement BaridiMob, puis envoyez-nous le reçu. Votre licence est activée dès réception.</p>
+      <h2 data-i18n="pay.title">Payez par CCP, BaridiMob ou virement bancaire.</h2>
+      <p data-i18n="pay.sub">Réglez votre licence par versement au bureau de poste, par virement BaridiMob ou par virement bancaire, puis envoyez-nous le reçu. Votre licence est activée dès réception.</p>
     </div>
     <div class="pay reveal">
       <div class="pay-card">
-        <h3><svg><use href="#i-card"/></svg><span data-i18n="pay.card">Compte CCP — Algérie Poste</span></h3>
+        <h3><svg><use href="#i-card"/></svg><span data-i18n="pay.card">Comptes CCP et bancaire</span></h3>
         <div class="pay-row"><div><small data-i18n="pay.holder">Titulaire</small><b class="ltr" data-c="holder"></b></div></div>
         <div class="pay-row"><div><small data-i18n="pay.ccp">N° CCP / Clé</small><b class="ltr" data-c="ccp"></b></div><button class="copy" type="button" data-copy="ccp" data-i18n="pay.copy">Copier</button></div>
         <div class="pay-row"><div><small data-i18n="pay.rip">RIP (pour virement BaridiMob)</small><b class="ltr" data-c="rip"></b></div><button class="copy" type="button" data-copy="rip" data-i18n="pay.copy">Copier</button></div>
+        <div class="pay-row"><div><small data-i18n="pay.rib">RIB BADR (pour virement bancaire)</small><b class="ltr" data-c="rib"></b></div><button class="copy" type="button" data-copy="rib" data-i18n="pay.copy">Copier</button></div>
       </div>
       <ol class="howto">
         <li><div><strong data-i18n="pay.s1">Demandez votre licence</strong><span data-i18n-html="pay.s1p">Dans SmartCHIFA, cliquez sur <kbd>Demander une licence</kbd> et envoyez le formulaire.</span></div></li>
-        <li><div><strong data-i18n="pay.s2">Payez le montant de votre formule</strong><span data-i18n="pay.s2p">Versement au bureau de poste sur le N° CCP, ou virement BaridiMob vers le RIP.</span></div></li>
+        <li><div><strong data-i18n="pay.s2">Payez le montant de votre formule</strong><span data-i18n="pay.s2p">Versement au bureau de poste sur le N° CCP, virement BaridiMob vers le RIP, ou virement bancaire vers le RIB BADR.</span></div></li>
         <li><div><strong data-i18n="pay.s3">Envoyez le reçu sur WhatsApp</strong><span data-i18n="pay.s3p">Une photo du reçu avec le nom de votre pharmacie suffit. Nous activons la licence et vous prévenons.</span></div></li>
       </ol>
     </div>
@@ -934,14 +947,16 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
       <div class="ccard">
         <div class="ic"><svg><use href="#i-phone"/></svg></div>
         <small data-i18n="ct.phone">Téléphone</small>
-        <span class="num ltr" data-c="phone"></span>
+        <a class="num ltr" data-tel="phone" data-c="phone"></a>
+        <a class="num ltr" data-tel="phone2" data-c="phone2"></a>
         <p data-i18n="ct.phonep">Pour l'installation, la licence ou toute autre question.</p>
         <a class="btn btn-ghost" data-tel style="color:var(--pine)"><svg><use href="#i-phone"/></svg><span data-i18n="ct.call">Appeler</span></a>
       </div>
       <div class="ccard wa">
         <div class="ic"><svg><use href="#i-wa"/></svg></div>
         <small>WhatsApp</small>
-        <span class="num ltr" data-c="whatsappDisplay"></span>
+        <a class="num ltr" data-wa="whatsapp" data-c="whatsappDisplay" target="_blank" rel="noopener"></a>
+        <a class="num ltr" data-wa="whatsapp2" data-c="whatsappDisplay2" target="_blank" rel="noopener"></a>
         <p data-i18n="ct.wap">Écrivez-nous à tout moment, avec captures d'écran ou reçus de paiement.</p>
         <a class="btn btn-wa" data-wa target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span data-i18n="ct.wa">Écrire sur WhatsApp</span></a>
       </div>
@@ -985,16 +1000,20 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
 const CONTACT = {
   phone: "06 71 71 66 66",
   whatsapp: "213671716666",           // wa.me: international, without + or the leading 0
+  phone2: "06 99 98 00 99",
   whatsappDisplay: "06 71 71 66 66",
+  whatsapp2: "213699980099",
+  whatsappDisplay2: "06 99 98 00 99",
   holder: "MEZHOUDI Hadj Nadir",
   ccp: "14692319 / 50",
-  rip: "00799999 0014692319 49"
+  rip: "00799999 0014692319 49",
+  rib: "003 00656 0000131300 03"
 };
 const WA_MSG = { fr: "Bonjour, je suis intéressé(e) par SmartCHIFA.", ar: "السلام عليكم، أنا مهتم بتطبيق SmartCHIFA." };
 function applyContact(lang){
   document.querySelectorAll("[data-c]").forEach(n => n.textContent = CONTACT[n.dataset.c]);
-  document.querySelectorAll("[data-tel]").forEach(a => a.href = "tel:" + CONTACT.phone.replace(/\s/g, ""));
-  document.querySelectorAll("[data-wa]").forEach(a => a.href = "https://wa.me/" + CONTACT.whatsapp + "?text=" + encodeURIComponent(WA_MSG[lang] || WA_MSG.fr));
+  document.querySelectorAll("[data-tel]").forEach(a => a.href = "tel:" + (CONTACT[a.dataset.tel] || CONTACT.phone).replace(/\s/g, ""));
+  document.querySelectorAll("[data-wa]").forEach(a => a.href = "https://wa.me/" + (CONTACT[a.dataset.wa] || CONTACT.whatsapp) + "?text=" + encodeURIComponent(WA_MSG[lang] || WA_MSG.fr));
 }
 
 const LANG = document.documentElement.lang;
@@ -1004,7 +1023,7 @@ if (LANG === "fr") try { if (localStorage.getItem("sc-lang") === "ar") location.
 
 document.querySelectorAll("[data-copy]").forEach(b => b.onclick = async () => {
   const v = CONTACT[b.dataset.copy];
-  try { await navigator.clipboard.writeText(b.dataset.copy === "rip" ? v.replace(/\s/g, "") : v); } catch { return; }
+  try { await navigator.clipboard.writeText(/^ri[pb]$/.test(b.dataset.copy) ? v.replace(/\s/g, "") : v); } catch { return; }
   const label = b.textContent;
   b.textContent = LANG === "ar" ? "تم النسخ" : "Copié";
   b.classList.add("done");
