@@ -57,8 +57,16 @@ public class PatientService
             .Take(take)
             .ToListAsync()
             .ConfigureAwait(false);
+
+        var coverage = await Coverage.LoadAsync(db, items.Select(p => p.NumAssure).Distinct().ToList()).ConfigureAwait(false);
+        foreach (var p in items)
+            (p.Taux, p.TauxVarie, p.Mc) = Of(coverage, p.NumAssure, p.Rang);
         return (total, items);
     }
+
+    private static (int? Taux, bool TauxVarie, bool Mc) Of(
+        Dictionary<(string NumAssure, string Rang), PatientCoverage> coverage, string numAssure, string rang) =>
+        coverage.TryGetValue((numAssure, rang), out var c) ? (c.Taux, c.TauxVarie, c.Mc) : (null, false, false);
 
     public async ValueTask<PatientDetailDto?> GetPatientAsync(string numAssure, string rang)
     {
@@ -112,6 +120,9 @@ public class PatientService
             .ConfigureAwait(false);
         patient.Centre = last?.Centre;
         patient.DateFinDroit = last?.DateFinDroitBenef ?? last?.DateFinDroit;
+
+        var coverage = await Coverage.LoadAsync(db, [numAssure]).ConfigureAwait(false);
+        (patient.Taux, patient.TauxVarie, patient.Mc) = Of(coverage, numAssure, rang);
 
         patient.Traitements = (await ChifaService.Instance.LoadConsumptionAsync(numAssure, rang, distinct: false).ConfigureAwait(false))
             .OfType<ConsumptionGroupedDto>()
@@ -300,7 +311,9 @@ public class PatientService
                 MontFact = f.MontFact,
                 MontOff = f.MontOff,
                 MontAss = f.MontAs,
-                Majoration = f.MontMaj
+                Majoration = f.MontMaj,
+                Taux = Coverage.Percent(f.Taux),
+                Mc = Coverage.IsChronicOrdonnance(f.TypeOrd)
             })
             .FirstOrDefaultAsync()
             .ConfigureAwait(false);

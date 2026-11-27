@@ -55,7 +55,10 @@ else
         <a class="card item link" href="@PatientUrl(p.NumAssure, p.Rang)">
             <div class="item-head">
                 <strong>@(p.Nom ?? "—")</strong>
-                <span class="tag">@Fmt.Number(p.NombreFactures) fact.</span>
+                <span class="tags">
+                    <CoverageTags Taux="p.Taux" TauxVarie="p.TauxVarie" Mc="p.Mc" Compact="true" />
+                    <span class="tag">@Fmt.Number(p.NombreFactures) fact.</span>
+                </span>
             </div>
             <div class="item-sub">
                 <span>@p.NumAssure · rang @p.Rang@(p.Rang != "00" && !string.IsNullOrWhiteSpace(p.Assure) ? $" · ayant droit de {p.Assure}" : "")</span>

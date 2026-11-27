@@ -19,6 +19,7 @@ public class FactureDto
     public string? Rang { get; set; }
     public string? Specialite { get; set; }
     public bool? TS { get; set; }
+    public int? Taux { get; set; }
     public string? Time => DateFact.HasValue ? TimeOnly.FromDateTime(DateFact.Value).ToShortTimeString() : "";
     public string JourSemaine => DateFact?.ToString("dddd", frCulture).ToUpper() ?? string.Empty;
 

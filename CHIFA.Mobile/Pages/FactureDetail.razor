@@ -51,6 +51,10 @@ else
             }
             <div><dt>N° assuré</dt><dd>@f.NumAssure · rang @f.Rang</dd></div>
             <div><dt>Caisse</dt><dd>@(f.Centre ?? "—")</dd></div>
+            @if (CoverageTags.Any(f.Taux, f.Mc))
+            {
+                <div><dt>Prise en charge</dt><dd><span class="tags"><CoverageTags Taux="f.Taux" Mc="f.Mc" /></span></dd></div>
+            }
             <div><dt>Médecin</dt><dd>@(string.Join(" · ", new[] { f.Prescripteur, f.Specialite }.Where(s => !string.IsNullOrWhiteSpace(s))) is { Length: > 0 } m ? m : "—")</dd></div>
             <div><dt>Bordereau</dt><dd>@(string.IsNullOrWhiteSpace(f.Bordereau) ? "—" : $"N° {f.Bordereau}")</dd></div>
             @if (f.Majoration > 0)

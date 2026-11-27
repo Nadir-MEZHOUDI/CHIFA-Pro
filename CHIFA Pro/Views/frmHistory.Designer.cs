@@ -42,18 +42,21 @@ namespace CHIFA.Pro.Views
             colMajoration = new DevExpress.XtraGrid.Columns.GridColumn();
             colSpecialite = new DevExpress.XtraGrid.Columns.GridColumn();
             colBordereau = new DevExpress.XtraGrid.Columns.GridColumn();
+            colTaux = new DevExpress.XtraGrid.Columns.GridColumn();
             dataLayoutControl1 = new DevExpress.XtraDataLayout.DataLayoutControl();
             NumAssureTextEdit = new TextEdit();
             BeneficiareBindingSource = new BindingSource(components);
             AssureNameTextEdit = new TextEdit();
             MaladeTextEdit = new TextEdit();
             RangTextEdit = new TextEdit();
+            CouvertureTextEdit = new TextEdit();
             Root = new DevExpress.XtraLayout.LayoutControlGroup();
             footerDataControl = new DevExpress.XtraLayout.LayoutControlGroup();
             ItemForNumAssure = new DevExpress.XtraLayout.LayoutControlItem();
             ItemForAssureName = new DevExpress.XtraLayout.LayoutControlItem();
             ItemForMalade = new DevExpress.XtraLayout.LayoutControlItem();
             ItemForRang = new DevExpress.XtraLayout.LayoutControlItem();
+            ItemForCouverture = new DevExpress.XtraLayout.LayoutControlItem();
             patientDtoBindingSource = new BindingSource(components);
             gridDetails2 = new DevExpress.XtraGrid.GridControl();
             factureDetailDtoBindingSource = new BindingSource(components);
@@ -93,12 +96,14 @@ namespace CHIFA.Pro.Views
             ((System.ComponentModel.ISupportInitialize)AssureNameTextEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)MaladeTextEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)RangTextEdit.Properties).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)CouvertureTextEdit.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)Root).BeginInit();
             ((System.ComponentModel.ISupportInitialize)footerDataControl).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemForNumAssure).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemForAssureName).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemForMalade).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ItemForRang).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ItemForCouverture).BeginInit();
             ((System.ComponentModel.ISupportInitialize)patientDtoBindingSource).BeginInit();
             ((System.ComponentModel.ISupportInitialize)gridDetails2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)factureDetailDtoBindingSource).BeginInit();
@@ -129,7 +134,7 @@ namespace CHIFA.Pro.Views
             // 
             // gridHistFactures
             // 
-            gridHistFactures.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNumFact, colDateFact, colDateSoin, colMontFact, colMontAss, colMontOff, colMajoration, colSpecialite, colBordereau });
+            gridHistFactures.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colNumFact, colDateFact, colDateSoin, colMontFact, colMontAss, colMontOff, colMajoration, colSpecialite, colBordereau, colTaux });
             gridHistFactures.DetailHeight = 382;
             gridHistFactures.GridControl = gridHistory;
             gridHistFactures.Name = "gridHistFactures";
@@ -226,13 +231,28 @@ namespace CHIFA.Pro.Views
             colBordereau.Visible = true;
             colBordereau.VisibleIndex = 0;
             colBordereau.Width = 104;
-            // 
+            //
+            // colTaux
+            //
+            colTaux.AppearanceCell.Options.UseTextOptions = true;
+            colTaux.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            colTaux.Caption = "Taux";
+            colTaux.DisplayFormat.FormatString = "{0} %";
+            colTaux.DisplayFormat.FormatType = DevExpress.Utils.FormatType.Custom;
+            colTaux.FieldName = "Taux";
+            colTaux.MinWidth = 27;
+            colTaux.Name = "colTaux";
+            colTaux.Visible = true;
+            colTaux.VisibleIndex = 9;
+            colTaux.Width = 70;
+            //
             // dataLayoutControl1
-            // 
+            //
             dataLayoutControl1.Controls.Add(NumAssureTextEdit);
             dataLayoutControl1.Controls.Add(AssureNameTextEdit);
             dataLayoutControl1.Controls.Add(MaladeTextEdit);
             dataLayoutControl1.Controls.Add(RangTextEdit);
+            dataLayoutControl1.Controls.Add(CouvertureTextEdit);
             dataLayoutControl1.DataSource = BeneficiareBindingSource;
             dataLayoutControl1.Dock = DockStyle.Bottom;
             dataLayoutControl1.Location = new Point(0, 557);
@@ -287,9 +307,23 @@ namespace CHIFA.Pro.Views
             RangTextEdit.Name = "RangTextEdit";
             RangTextEdit.Properties.ReadOnly = true;
             RangTextEdit.Properties.UseReadOnlyAppearance = false;
-            RangTextEdit.Size = new Size(528, 24);
+            RangTextEdit.Size = new Size(200, 24);
             RangTextEdit.StyleController = dataLayoutControl1;
             RangTextEdit.TabIndex = 7;
+            //
+            // CouvertureTextEdit
+            //
+            CouvertureTextEdit.DataBindings.Add(new Binding("EditValue", BeneficiareBindingSource, "Couverture", true));
+            CouvertureTextEdit.Location = new Point(1110, 30);
+            CouvertureTextEdit.Name = "CouvertureTextEdit";
+            CouvertureTextEdit.Properties.Appearance.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            CouvertureTextEdit.Properties.Appearance.Options.UseFont = true;
+            CouvertureTextEdit.Properties.ReadOnly = true;
+            CouvertureTextEdit.Properties.UseReadOnlyAppearance = false;
+            CouvertureTextEdit.Size = new Size(200, 24);
+            CouvertureTextEdit.StyleController = dataLayoutControl1;
+            CouvertureTextEdit.TabIndex = 8;
+            CouvertureTextEdit.ToolTip = "Taux de prise en charge de la dernière facture · MC = malade chronique";
             // 
             // Root
             // 
@@ -305,7 +339,7 @@ namespace CHIFA.Pro.Views
             // 
             footerDataControl.AllowDrawBackground = false;
             footerDataControl.GroupBordersVisible = false;
-            footerDataControl.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { ItemForNumAssure, ItemForAssureName, ItemForMalade, ItemForRang });
+            footerDataControl.Items.AddRange(new DevExpress.XtraLayout.BaseLayoutItem[] { ItemForNumAssure, ItemForAssureName, ItemForMalade, ItemForRang, ItemForCouverture });
             footerDataControl.Location = new Point(0, 0);
             footerDataControl.Name = "footerDataControl";
             footerDataControl.Size = new Size(1312, 82);
@@ -342,9 +376,18 @@ namespace CHIFA.Pro.Views
             ItemForRang.Control = RangTextEdit;
             ItemForRang.Location = new Point(656, 28);
             ItemForRang.Name = "ItemForRang";
-            ItemForRang.Size = new Size(656, 54);
+            ItemForRang.Size = new Size(328, 54);
             ItemForRang.Text = "Rang";
             ItemForRang.TextSize = new Size(120, 17);
+            //
+            // ItemForCouverture
+            //
+            ItemForCouverture.Control = CouvertureTextEdit;
+            ItemForCouverture.Location = new Point(984, 28);
+            ItemForCouverture.Name = "ItemForCouverture";
+            ItemForCouverture.Size = new Size(328, 54);
+            ItemForCouverture.Text = "Taux / MC";
+            ItemForCouverture.TextSize = new Size(120, 17);
             // 
             // gridDetails2
             // 
@@ -619,12 +662,14 @@ namespace CHIFA.Pro.Views
             ((System.ComponentModel.ISupportInitialize)AssureNameTextEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)MaladeTextEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)RangTextEdit.Properties).EndInit();
+            ((System.ComponentModel.ISupportInitialize)CouvertureTextEdit.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)Root).EndInit();
             ((System.ComponentModel.ISupportInitialize)footerDataControl).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemForNumAssure).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemForAssureName).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemForMalade).EndInit();
             ((System.ComponentModel.ISupportInitialize)ItemForRang).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ItemForCouverture).EndInit();
             ((System.ComponentModel.ISupportInitialize)patientDtoBindingSource).EndInit();
             ((System.ComponentModel.ISupportInitialize)gridDetails2).EndInit();
             ((System.ComponentModel.ISupportInitialize)factureDetailDtoBindingSource).EndInit();
@@ -657,6 +702,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colMajoration;
         private DevExpress.XtraGrid.Columns.GridColumn colSpecialite;
         private DevExpress.XtraGrid.Columns.GridColumn colBordereau;
+        private DevExpress.XtraGrid.Columns.GridColumn colTaux;
         private BindingSource factureDetailDtoBindingSource;
         private DevExpress.XtraGrid.Columns.GridColumn colCode;
         private DevExpress.XtraGrid.Columns.GridColumn colMedicament;
@@ -686,10 +732,12 @@ namespace CHIFA.Pro.Views
         private TextEdit AssureNameTextEdit;
         private TextEdit MaladeTextEdit;
         private TextEdit RangTextEdit;
+        private TextEdit CouvertureTextEdit;
         private DevExpress.XtraLayout.LayoutControlItem ItemForNumAssure;
         private DevExpress.XtraLayout.LayoutControlItem ItemForAssureName;
         private DevExpress.XtraLayout.LayoutControlItem ItemForMalade;
         private DevExpress.XtraLayout.LayoutControlItem ItemForRang;
+        private DevExpress.XtraLayout.LayoutControlItem ItemForCouverture;
         private BindingSource consumptionDtoBindingSource;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn4;
         private DevExpress.XtraGrid.Columns.GridColumn gridColumn5;

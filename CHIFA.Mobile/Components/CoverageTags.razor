@@ -1,0 +1,21 @@
+@* An agent older than these fields leaves them null: nothing is shown then. *@
+@if (Taux is { } taux)
+{
+    var varie = TauxVarie == true;
+    <span class="tag @(taux >= 100 ? "taux-full" : "")" title="Taux de prise en charge@(varie ? " de la dernière facture" : "")">@taux %@(varie ? Compact ? "*" : " (dernière facture)" : "")</span>
+}
+@if (Mc == true)
+{
+    <span class="tag mc" title="Malade chronique">MC</span>
+}
+
+@code {
+    [Parameter] public int? Taux { get; set; }
+    [Parameter] public bool? TauxVarie { get; set; }
+    [Parameter] public bool? Mc { get; set; }
+
+    /// <summary>For lists: a varying rate is marked with * instead of spelled out.</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    public static bool Any(int? taux, bool? mc) => taux is not null || mc == true;
+}

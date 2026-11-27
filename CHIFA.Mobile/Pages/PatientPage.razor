@@ -34,6 +34,10 @@ else
                 <div><dt>Assuré</dt><dd>@p.Assure</dd></div>
             }
             <div><dt>Caisse</dt><dd>@(p.Centre ?? "—")</dd></div>
+            @if (CoverageTags.Any(p.Taux, p.Mc))
+            {
+                <div><dt>Prise en charge</dt><dd><span class="tags"><CoverageTags Taux="p.Taux" TauxVarie="p.TauxVarie" Mc="p.Mc" /></span></dd></div>
+            }
             <div><dt>Fin de droits</dt><dd class="@(droitsFinis ? "bad-text" : "")">@Fmt.Date(p.DateFinDroit)@(droitsFinis ? " · expirés" : "")</dd></div>
             <div><dt>Visites</dt><dd>@Fmt.Number(p.NombreFactures) factures · @Fmt.Date(p.PremiereVisite) → @Fmt.Date(p.DerniereVisite)</dd></div>
             <div><dt>Total facturé</dt><dd>@Fmt.Money(p.MontantTotal)</dd></div>

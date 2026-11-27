@@ -33,6 +33,8 @@ namespace CHIFA.Pro.Views
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssuresUc));
             colRang = new DevExpress.XtraGrid.Columns.GridColumn();
             colFactures = new DevExpress.XtraGrid.Columns.GridColumn();
+            colTaux = new DevExpress.XtraGrid.Columns.GridColumn();
+            colMc = new DevExpress.XtraGrid.Columns.GridColumn();
             gridAssures = new DevExpress.XtraGrid.GridControl();
             beneficiareDtoBindingSource = new BindingSource(components);
             gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -76,7 +78,31 @@ namespace CHIFA.Pro.Views
             colFactures.Name = "colFactures";
             colFactures.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "Factures", "SUM={0:0.##}") });
             colFactures.Width = 40;
-            // 
+            //
+            // colTaux
+            //
+            colTaux.AppearanceCell.Options.UseTextOptions = true;
+            colTaux.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            colTaux.Caption = "Taux";
+            colTaux.FieldName = "TauxLibelle";
+            colTaux.MinWidth = 11;
+            colTaux.Name = "colTaux";
+            colTaux.ToolTip = "Taux de prise en charge de la dernière facture";
+            colTaux.Visible = true;
+            colTaux.VisibleIndex = 5;
+            colTaux.Width = 90;
+            //
+            // colMc
+            //
+            colMc.Caption = "MC";
+            colMc.FieldName = "Mc";
+            colMc.MinWidth = 11;
+            colMc.Name = "colMc";
+            colMc.ToolTip = "Malade chronique";
+            colMc.Visible = true;
+            colMc.VisibleIndex = 6;
+            colMc.Width = 40;
+            //
             // gridAssures
             // 
             gridAssures.DataSource = beneficiareDtoBindingSource;
@@ -96,7 +122,7 @@ namespace CHIFA.Pro.Views
             // 
             // gridView1
             // 
-            gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCenter, colNumAssure, colBeneficiare, colAssure, colRang, colFactures });
+            gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCenter, colNumAssure, colBeneficiare, colAssure, colRang, colTaux, colMc, colFactures });
             gridView1.DetailHeight = 284;
             gridView1.FixedLineWidth = 3;
             gridFormatRule1.Name = "Format0";
@@ -302,6 +328,8 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colFactures;
         private DevExpress.XtraGrid.Columns.GridColumn colNumAssure;
         private DevExpress.XtraGrid.Columns.GridColumn colRang;
+        private DevExpress.XtraGrid.Columns.GridColumn colTaux;
+        private DevExpress.XtraGrid.Columns.GridColumn colMc;
         private DevExpress.XtraBars.Ribbon.RibbonControl ribbonControl1;
         private DevExpress.XtraBars.BarEditItem barEditItem1;
         private DevExpress.XtraBars.BarEditItem barEditItem2;
