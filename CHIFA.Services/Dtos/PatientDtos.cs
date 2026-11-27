@@ -11,6 +11,15 @@ public class PatientRowDto
 
     public DateTime? DerniereVisite { get; set; }
     public int NombreFactures { get; set; }
+
+    /// <summary>80 or 100 (%), from the last facture. Null when unknown, or from an agent older than this field.</summary>
+    public int? Taux { get; set; }
+
+    /// <summary>Older factures were at another rate.</summary>
+    public bool? TauxVarie { get; set; }
+
+    /// <summary>Chronic-disease patient (maladie chronique).</summary>
+    public bool? Mc { get; set; }
 }
 
 public class PatientDetailDto
@@ -23,6 +32,15 @@ public class PatientDetailDto
 
     /// <summary>End of the patient's CNAS rights, from the last facture.</summary>
     public DateTime? DateFinDroit { get; set; }
+
+    /// <summary>80 or 100 (%), from the last facture. Null when unknown, or from an agent older than this field.</summary>
+    public int? Taux { get; set; }
+
+    /// <summary>Older factures were at another rate.</summary>
+    public bool? TauxVarie { get; set; }
+
+    /// <summary>Chronic-disease patient (maladie chronique).</summary>
+    public bool? Mc { get; set; }
 
     public DateTime? PremiereVisite { get; set; }
     public DateTime? DerniereVisite { get; set; }
@@ -131,5 +149,12 @@ public class FactureFullDto
     public decimal? MontOff { get; set; }
     public decimal? MontAss { get; set; }
     public decimal? Majoration { get; set; }
+
+    /// <summary>80 or 100 (%).</summary>
+    public int? Taux { get; set; }
+
+    /// <summary>A chronic-disease ordonnance (type_ord 2 or 3).</summary>
+    public bool? Mc { get; set; }
+
     public List<FactureDetailDto> Lignes { get; set; } = [];
 }

@@ -142,6 +142,8 @@ public class FactureFull
     public decimal? MontOff { get; init; }
     public decimal? MontAss { get; init; }
     public decimal? Majoration { get; init; }
+    public int? Taux { get; init; }
+    public bool? Mc { get; init; }
     public List<FactureLigne> Lignes { get; init; } = [];
 }
 
@@ -166,6 +168,11 @@ public class PatientRow
     public string? Assure { get; init; }
     public DateTime? DerniereVisite { get; init; }
     public int NombreFactures { get; init; }
+
+    /// <summary>80 or 100 (%), from the last facture. Null when the agent is older than this field.</summary>
+    public int? Taux { get; init; }
+    public bool? TauxVarie { get; init; }
+    public bool? Mc { get; init; }
 }
 
 public class PatientDetail
@@ -176,6 +183,9 @@ public class PatientDetail
     public string? Assure { get; init; }
     public string? Centre { get; init; }
     public DateTime? DateFinDroit { get; init; }
+    public int? Taux { get; init; }
+    public bool? TauxVarie { get; init; }
+    public bool? Mc { get; init; }
     public DateTime? PremiereVisite { get; init; }
     public DateTime? DerniereVisite { get; init; }
     public int NombreFactures { get; init; }

@@ -7,4 +7,9 @@ public class BeneficiareDto
     public string? NumAssure { get;init; }
     public string? Rang { get;init; }
     public string? Center { get; init; }
+    public int? Taux { get; init; }
+    public bool TauxVarie { get; init; }
+    public bool Mc { get; init; }
+    public string? TauxLibelle => Coverage.Label(Taux, TauxVarie);
+    public string Couverture => string.Join(" · ", new[] { TauxLibelle, Mc ? "MC" : null }.OfType<string>());
 }

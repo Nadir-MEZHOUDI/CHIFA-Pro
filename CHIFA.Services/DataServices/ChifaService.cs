@@ -149,6 +149,8 @@ public class ChifaService
             .Where(x => x.MinNumFact != null && centerByNumFact.ContainsKey(x.MinNumFact))
             .ToDictionary(x => (x.NumAssure, x.RangAd), x => centerByNumFact[x.MinNumFact!]);
 
+        var coverage = await Coverage.LoadAsync(db, null, cancellationToken);
+
         return await db.Beneficiaires
             .Select(a => new
             {
@@ -164,6 +166,7 @@ public class ChifaService
                 var list = new List<BeneficiareDto>(rows.Count);
                 foreach (var r in rows)
                 {
+                    var c = coverage.GetValueOrDefault((r.NumAssure!, r.Rang!));
                     list.Add(new BeneficiareDto
                     {
                         NumAssure = r.NumAssure,
@@ -172,7 +175,10 @@ public class ChifaService
                         Assure = r.Assure,
                         Center = (r.NumAssure != null && r.Rang != null
                                   && centerByBenefDict.TryGetValue((r.NumAssure, r.Rang), out var nom))
-                            ? nom : ""
+                            ? nom : "",
+                        Taux = c?.Taux,
+                        TauxVarie = c?.TauxVarie ?? false,
+                        Mc = c?.Mc ?? false
                     });
                 }
                 return (IEnumerable<BeneficiareDto>)list;
@@ -182,14 +188,21 @@ public class ChifaService
     public async ValueTask<BeneficiareDto?> GetBeneficiareByIdAsync(string num, string rang, CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
-        return await db.Beneficiaires
-            .Where(x => x.NumAssure == num && x.RangAd == rang).Select(a => new BeneficiareDto
-            {
-                NumAssure = a.NumAssure,
-                Rang = a.RangAd,
-                Beneficiare = a.FullName,
-                Assure = a.Assure!.FullName
-            }).FirstOrDefaultAsync(cancellationToken);
+        var coverage = (await Coverage.LoadAsync(db, [num], cancellationToken)).GetValueOrDefault((num, rang));
+        var benef = await db.Beneficiaires
+            .Where(x => x.NumAssure == num && x.RangAd == rang)
+            .Select(a => new { a.NumAssure, a.RangAd, Beneficiare = a.FullName, Assure = a.Assure!.FullName })
+            .FirstOrDefaultAsync(cancellationToken);
+        return benef is null ? null : new BeneficiareDto
+        {
+            NumAssure = benef.NumAssure,
+            Rang = benef.RangAd,
+            Beneficiare = benef.Beneficiare,
+            Assure = benef.Assure,
+            Taux = coverage?.Taux,
+            TauxVarie = coverage?.TauxVarie ?? false,
+            Mc = coverage?.Mc ?? false
+        };
     }
 
     public async ValueTask<IEnumerable<Centre>> GetCentersAsync()
@@ -511,6 +524,7 @@ public class ChifaService
                 Specialite = f.Specialite!.Libelle,
                 TS = f.DetailFacts.Any(x => x.Ts == true),
                 LongDuree = f.DetailFacts.Any(x => x.DureeTrait >= MedicalThresholds.LongTreatmentDurationDays),
+                Taux = Coverage.Percent(f.Taux),
                 MontFact = f.MontFact,
                 Majoration = f.MontMajFae,
                 MontAss = f.MontAs,
