@@ -18,6 +18,12 @@
       "runtimeExecutable": "pwsh",
       "runtimeArgs": ["-NoProfile", "-Command", "$env:ASPNETCORE_URLS='http://localhost:' + ($env:PORT ?? '10652'); $env:ASPNETCORE_ENVIRONMENT='Development'; dotnet run --project CHIFA.Mobile --no-launch-profile"],
       "port": 10652
+    },
+    {
+      "name": "e2e",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "artifacts/e2e"],
+      "port": 5080
     }
   ]
 }
