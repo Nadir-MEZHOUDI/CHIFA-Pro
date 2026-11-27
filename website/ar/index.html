@@ -349,6 +349,12 @@ section{padding:96px 0}
 .step b{flex:none;width:28px;height:28px;border-radius:50%;background:var(--mint);color:var(--pine);display:grid;place-items:center;font-size:14px}
 .step strong{display:block}
 .step span{font-size:14px;color:rgba(255,255,255,.7)}
+.app-qr{display:flex;gap:18px;align-items:center;margin-top:24px;background:#fff;color:var(--pine);border-radius:18px;padding:14px;padding-inline-end:20px;text-decoration:none;max-width:440px;transition:transform .2s}
+.app-qr:hover{transform:translateY(-2px)}
+.app-qr img{flex:none;width:120px;height:120px;display:block}
+.app-qr strong{display:block;font-size:17px}
+.app-qr span{display:block;font-size:14px;color:#4b5f57;margin-top:4px}
+.app-qr .url{color:var(--emerald);font-weight:600;white-space:nowrap;margin-top:8px;direction:ltr;unicode-bidi:embed}
 .mobile-visual{display:flex;justify-content:center;gap:18px}
 .mobile-visual .phone{position:static;width:210px}
 .mobile-visual .phone + .phone{margin-top:48px;opacity:.95}
@@ -746,6 +752,7 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
           <div class="step"><b>2</b><div><strong data-i18n="mob.s2">افتح SmartCHIFA في المتصفح</strong><span data-i18n="mob.s2p">أضفه إلى الشاشة الرئيسية ليعمل كتطبيق، على أندرويد أو آيفون.</span></div></div>
           <div class="step"><b>3</b><div><strong data-i18n="mob.s3">بياناتك لا تُخزَّن على الإنترنت أبداً</strong><span data-i18n="mob.s3p">تُقرأ الأرقام عند الطلب من صيدليتك ثم تُعرض على هاتفك.</span></div></div>
         </div>
+        <a class="app-qr" href="https://chifa-gateway.smartappdz.org/" target="_blank" rel="noopener"><img src="/assets/app-qr.svg" width="120" height="120" alt="رمز QR لفتح تطبيق SmartCHIFA على الويب" data-i18n-alt="mob.qralt" loading="lazy"><div><strong data-i18n="mob.qr">امسح الرمز لفتح التطبيق</strong><span data-i18n="mob.qrp">وجّه كاميرا هاتفك نحو هذا الرمز ليفتح تطبيق SmartCHIFA مباشرة.</span><span class="url">chifa-gateway.smartappdz.org</span></div></a>
       </div>
       <div class="mobile-visual">
         <div class="phone"><img class="phone-shot" src="/assets/mobile/m-home.webp" width="450" height="975" alt="الشاشة الرئيسية لتطبيق الهاتف: مجموع الفواتير للشهر وحصة الصندوق والزيادات" data-i18n-alt="mob.alt1" loading="lazy"></div>

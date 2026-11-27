@@ -347,6 +347,12 @@ section{padding:96px 0}
 .step b{flex:none;width:28px;height:28px;border-radius:50%;background:var(--mint);color:var(--pine);display:grid;place-items:center;font-size:14px}
 .step strong{display:block}
 .step span{font-size:14px;color:rgba(255,255,255,.7)}
+.app-qr{display:flex;gap:18px;align-items:center;margin-top:24px;background:#fff;color:var(--pine);border-radius:18px;padding:14px;padding-inline-end:20px;text-decoration:none;max-width:440px;transition:transform .2s}
+.app-qr:hover{transform:translateY(-2px)}
+.app-qr img{flex:none;width:120px;height:120px;display:block}
+.app-qr strong{display:block;font-size:17px}
+.app-qr span{display:block;font-size:14px;color:#4b5f57;margin-top:4px}
+.app-qr .url{color:var(--emerald);font-weight:600;white-space:nowrap;margin-top:8px;direction:ltr;unicode-bidi:embed}
 .mobile-visual{display:flex;justify-content:center;gap:18px}
 .mobile-visual .phone{position:static;width:210px}
 .mobile-visual .phone + .phone{margin-top:48px;opacity:.95}
@@ -744,6 +750,7 @@ footer{padding:48px 0 96px;color:var(--muted);font-size:14px}
           <div class="step"><b>2</b><div><strong data-i18n="mob.s2">Ouvrez SmartCHIFA dans le navigateur</strong><span data-i18n="mob.s2p">Ajoutez-le à l'écran d'accueil : il s'utilise comme une application, Android ou iPhone.</span></div></div>
           <div class="step"><b>3</b><div><strong data-i18n="mob.s3">Vos données ne sont jamais stockées en ligne</strong><span data-i18n="mob.s3p">Les chiffres sont lus à la demande depuis votre officine, puis affichés sur votre téléphone.</span></div></div>
         </div>
+        <a class="app-qr" href="https://chifa-gateway.smartappdz.org/" target="_blank" rel="noopener"><img src="/assets/app-qr.svg" width="120" height="120" alt="QR code vers l'application web SmartCHIFA" data-i18n-alt="mob.qralt" loading="lazy"><div><strong data-i18n="mob.qr">Scannez pour ouvrir l'application</strong><span data-i18n="mob.qrp">Pointez l'appareil photo de votre téléphone sur ce code : l'application SmartCHIFA s'ouvre directement.</span><span class="url">chifa-gateway.smartappdz.org</span></div></a>
       </div>
       <div class="mobile-visual">
         <div class="phone"><img class="phone-shot" src="/assets/mobile/m-home.webp" width="450" height="975" alt="Accueil de l'application mobile SmartCHIFA : total facturé du mois, part caisse, majorations" data-i18n-alt="mob.alt1" loading="lazy"></div>
