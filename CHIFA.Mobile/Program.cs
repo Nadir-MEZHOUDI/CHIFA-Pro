@@ -9,6 +9,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddSingleton<Session>();
 builder.Services.AddScoped<Api>();
+builder.Services.AddScoped<CHIFA.Mobile.Admin.AdminApi>();
 
 var host = builder.Build();
 await host.Services.GetRequiredService<Session>().LoadAsync();

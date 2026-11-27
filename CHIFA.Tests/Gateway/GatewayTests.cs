@@ -271,6 +271,7 @@ public class GatewayTests(GatewayFixture gateway)
     [Theory]
     [InlineData("/")]
     [InlineData("/rejets")]
+    [InlineData("/console/pharmacies")]
     public async Task Phone_app_is_served_on_its_routes(string path)
     {
         using var client = gateway.CreateClient();

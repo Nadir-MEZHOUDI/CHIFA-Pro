@@ -22,6 +22,40 @@ namespace CHIFA.Gateway.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CHIFA.Gateway.Data.DeviceActivity", b =>
+                {
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("device_id");
+
+                    b.Property<DateOnly>("Day")
+                        .HasColumnType("date")
+                        .HasColumnName("day");
+
+                    b.Property<int>("ActiveMinutes")
+                        .HasColumnType("integer")
+                        .HasColumnName("active_minutes");
+
+                    b.Property<Guid>("PharmacyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("pharmacy_id");
+
+                    b.Property<int>("Requests")
+                        .HasColumnType("integer")
+                        .HasColumnName("requests");
+
+                    b.HasKey("DeviceId", "Day")
+                        .HasName("pk_device_activities");
+
+                    b.HasIndex("Day")
+                        .HasDatabaseName("ix_device_activities_day");
+
+                    b.HasIndex("PharmacyId", "Day")
+                        .HasDatabaseName("ix_device_activities_pharmacy_id_day");
+
+                    b.ToTable("device_activities", (string)null);
+                });
+
             modelBuilder.Entity("CHIFA.Gateway.Data.MobileDevice", b =>
                 {
                     b.Property<Guid>("Id")
@@ -338,6 +372,18 @@ namespace CHIFA.Gateway.Data.Migrations
                         .HasName("pk_vapid_keys");
 
                     b.ToTable("vapid_keys", (string)null);
+                });
+
+            modelBuilder.Entity("CHIFA.Gateway.Data.DeviceActivity", b =>
+                {
+                    b.HasOne("CHIFA.Gateway.Data.MobileDevice", "Device")
+                        .WithMany()
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_device_activities_mobile_devices_device_id");
+
+                    b.Navigation("Device");
                 });
 
             modelBuilder.Entity("CHIFA.Gateway.Data.MobileDevice", b =>

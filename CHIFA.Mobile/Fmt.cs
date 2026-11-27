@@ -39,6 +39,10 @@ public static class Fmt
 
     public static string Stamp(DateTime? value) => value?.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) ?? "—";
 
+    /// <summary>"45 min", "3 h 05".</summary>
+    public static string Minutes(int minutes) =>
+        minutes < 60 ? $"{minutes} min" : $"{minutes / 60} h {minutes % 60:00}";
+
     public static string Ago(DateTime? utc)
     {
         if (utc is not { } value)

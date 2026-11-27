@@ -1,0 +1,161 @@
+@page "/console"
+@layout AdminLayout
+@implements IDisposable
+@inject AdminApi Admin
+
+<PageTitle>Console · SmartCHIFA</PageTitle>
+
+<div class="page-head">
+    <h1>Tableau de bord</h1>
+    @if (_refreshedAt is { } at)
+    {
+        <span class="muted small">Actualisé à @at.ToString("HH:mm:ss")</span>
+    }
+</div>
+
+@if (_error is not null)
+{
+    <ErrorBox Error="_error" Retry="LoadAsync" />
+}
+else if (_overview is not { } o || _online is not { } online)
+{
+    <Loading Text="Chargement…" />
+}
+else
+{
+    <section class="tiles console-tiles">
+        <a class="tile c0" href="console/pharmacies"><span class="label">Pharmacies</span><span class="value">@o.Pharmacies</span></a>
+        <div class="tile c1"><span class="label">PC en ligne</span><span class="value">@o.PharmaciesOnline</span></div>
+        <div class="tile c2"><span class="label">Pharmacies avec téléphone</span><span class="value">@o.PharmaciesWithPhones</span></div>
+        <div class="tile c3"><span class="label">Téléphones liés</span><span class="value">@o.LinkedPhones</span></div>
+        <div class="tile c4"><span class="label">Téléphones en ligne</span><span class="value">@o.PhonesOnline</span></div>
+        <div class="tile c5"><span class="label">Actifs aujourd'hui</span><span class="value">@o.ActivePhonesToday</span></div>
+        <div class="tile c6"><span class="label">Actifs 7 jours</span><span class="value">@o.ActivePhones7Days <small class="muted">· @o.ActivePharmacies7Days pharm.</small></span></div>
+        <div class="tile c7"><span class="label">Actifs 30 jours</span><span class="value">@o.ActivePhones30Days</span></div>
+    </section>
+
+    <section class="card">
+        <div class="card-head">
+            <h2>30 derniers jours</h2>
+        </div>
+        <div class="chips small">
+            @foreach (var (key, label) in Metrics)
+            {
+                <button class="chip @(_metric == key ? "active" : "")" @onclick="() => _metric = key">@label</button>
+            }
+        </div>
+        <BarChart Bars="Bars(o.Days)" Selected="_day" OnSelect="i => _day = i" />
+        @if (_day >= 0 && _day < o.Days.Count)
+        {
+            var d = o.Days[_day];
+            <p class="chart-pick muted">
+                <strong>@Fmt.LongDay(d.Day.ToDateTime(TimeOnly.MinValue)) @d.Day.ToString("dd/MM")</strong> :
+                @d.ActivePhones téléphone(s), @d.ActivePharmacies pharmacie(s), @Fmt.Minutes(d.Minutes) d'utilisation, @Fmt.Number(d.Requests) requêtes
+            </p>
+        }
+    </section>
+
+    <div class="console-duo">
+        <section class="card">
+            <h2>PC en ligne (@online.Pharmacies.Count)</h2>
+            @if (online.Pharmacies.Count == 0)
+            {
+                <p class="muted">Aucune pharmacie connectée.</p>
+            }
+            else
+            {
+                <ul class="lines console-list">
+                    @foreach (var p in online.Pharmacies)
+                    {
+                        <li>
+                            <a href="console/pharmacies/@p.Id"><span class="online-dot"></span>@p.Name</a>
+                            <span class="muted small">depuis @Since(p.Since)</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <section class="card">
+            <h2>Téléphones en ligne (@online.Phones.Count)</h2>
+            @if (online.Phones.Count == 0)
+            {
+                <p class="muted">Aucun téléphone n'utilise l'application en ce moment.</p>
+            }
+            else
+            {
+                <ul class="lines console-list">
+                    @foreach (var p in online.Phones)
+                    {
+                        <li>
+                            <span><span class="online-dot"></span><strong>@p.Name</strong> · <a href="console/pharmacies/@p.PharmacyId">@p.Pharmacy</a></span>
+                            <span class="muted small">@Fmt.Ago(p.LastSeenAt)</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </div>
+}
+
+@code {
+    private static readonly (string Key, string Label)[] Metrics =
+        [("phones", "Téléphones actifs"), ("pharmacies", "Pharmacies actives"), ("minutes", "Minutes d'utilisation")];
+
+    private UsageOverview? _overview;
+    private OnlineNow? _online;
+    private ApiException? _error;
+    private DateTime? _refreshedAt;
+    private string _metric = "phones";
+    // The last of the 30 bars: today.
+    private int _day = 29;
+    private PeriodicTimer? _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Admin.LoadAsync();
+        if (!Admin.IsSignedIn)
+            return;
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        _ = RefreshLoopAsync(_timer);
+    }
+
+    // "Online now" changes all the time: refresh while the page is open.
+    private async Task RefreshLoopAsync(PeriodicTimer timer)
+    {
+        do
+        {
+            await LoadAsync();
+            StateHasChanged();
+        } while (await timer.WaitForNextTickAsync());
+    }
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            var overview = Admin.OverviewAsync();
+            var online = Admin.OnlineAsync();
+            (_overview, _online) = (await overview, await online);
+            _error = null;
+            _refreshedAt = DateTime.Now;
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+    }
+
+    private IReadOnlyList<BarChart.Bar> Bars(List<UsageDay> days) => days
+        .Select(d =>
+        {
+            var value = _metric switch { "pharmacies" => d.ActivePharmacies, "minutes" => d.Minutes, _ => d.ActivePhones };
+            return new BarChart.Bar(d.Day.ToString("dd"), d.Day.ToString("dd/MM"), [value], value == 0 ? null : value.ToString());
+        })
+        .ToList();
+
+    private static string Since(DateTime? utc) =>
+        utc is { } at ? at.ToLocalTime().ToString(at.ToLocalTime().Date == DateTime.Today ? "HH:mm" : "dd/MM HH:mm") : "—";
+
+    public void Dispose() => _timer?.Dispose();
+}

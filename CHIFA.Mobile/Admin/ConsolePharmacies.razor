@@ -1,0 +1,153 @@
+@page "/console/pharmacies"
+@layout AdminLayout
+@inject AdminApi Admin
+@inject NavigationManager Nav
+
+<PageTitle>Pharmacies · Console SmartCHIFA</PageTitle>
+
+<div class="page-head"><h1>Pharmacies@(_rows is { } r ? $" ({Shown.Count()}/{r.Count})" : "")</h1></div>
+
+<SearchBox Placeholder="Nom de la pharmacie" Search="s => _search = s" />
+
+<div class="chips">
+    @foreach (var (key, label) in Filters)
+    {
+        <button class="chip @(_filter == key ? "active" : "")" @onclick="() => _filter = key">@label</button>
+    }
+</div>
+
+@if (_error is not null)
+{
+    <ErrorBox Error="_error" Retry="LoadAsync" />
+}
+else if (_rows is null)
+{
+    <Loading Text="Chargement…" />
+}
+else
+{
+    <div class="card console-table-wrap">
+        <table class="console-table">
+            <thead>
+                <tr>
+                    @foreach (var (key, label) in Columns)
+                    {
+                        <th class="@(key == "name" ? "" : "num")" @onclick="() => SortBy(key)">
+                            @label@(_sort == key ? (_descending ? " ↓" : " ↑") : "")
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Shown)
+                {
+                    <tr @onclick="@(() => Nav.NavigateTo($"console/pharmacies/{p.Id}"))">
+                        <td>
+                            <strong>@p.Name</strong>
+                            @if (!p.IsActive)
+                            {
+                                <span class="tag bad">Désactivée</span>
+                            }
+                        </td>
+                        <td class="num">
+                            @if (p.Online)
+                            {
+                                <span class="tag ok">En ligne</span>
+                            }
+                            else
+                            {
+                                <span class="muted small">@Fmt.Ago(p.LastSeenAt)</span>
+                            }
+                        </td>
+                        <td class="num">@p.LinkedPhones@(p.PhonesOnline > 0 ? $" · {p.PhonesOnline} en ligne" : "")</td>
+                        <td class="num">@Fmt.Ago(p.LastPhoneUse)</td>
+                        <td class="num">@p.ActiveDays30</td>
+                        <td class="num">@Fmt.Minutes(p.Minutes30)</td>
+                        <td class="num"><span class="tag @LicenseClass(p)">@License(p)</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private static readonly (string Key, string Label)[] Filters =
+        [("all", "Toutes"), ("online", "PC en ligne"), ("phones", "Avec téléphone"), ("nophone", "Sans téléphone"), ("used", "Actives 30 j")];
+
+    private static readonly (string Key, string Label)[] Columns =
+        [("name", "Pharmacie"), ("pc", "PC"), ("phones", "Téléphones"), ("lastuse", "Dernière utilisation"), ("days", "Jours actifs (30 j)"), ("minutes", "Temps (30 j)"), ("license", "Licence")];
+
+    private List<PharmacyUsage>? _rows;
+    private ApiException? _error;
+    private string _search = "";
+    private string _filter = "all";
+    private string _sort = "lastuse";
+    private bool _descending = true;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            _rows = await Admin.PharmaciesAsync();
+            _error = null;
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+    }
+
+    private IEnumerable<PharmacyUsage> Shown
+    {
+        get
+        {
+            var rows = (_rows ?? []).Where(p => _filter switch
+            {
+                "online" => p.Online,
+                "phones" => p.LinkedPhones > 0,
+                "nophone" => p.LinkedPhones == 0,
+                "used" => p.ActiveDays30 > 0,
+                _ => true
+            });
+            if (_search.Length > 0)
+                rows = rows.Where(p => p.Name.Contains(_search, StringComparison.OrdinalIgnoreCase));
+
+            Func<PharmacyUsage, object?> key = _sort switch
+            {
+                "pc" => p => p.Online ? DateTime.MaxValue : p.LastSeenAt,
+                "phones" => p => p.LinkedPhones,
+                "lastuse" => p => p.LastPhoneUse,
+                "days" => p => p.ActiveDays30,
+                "minutes" => p => p.Minutes30,
+                "license" => p => p.LicenseExpiresAt,
+                _ => p => p.Name
+            };
+            return _descending ? rows.OrderByDescending(key) : rows.OrderBy(key);
+        }
+    }
+
+    private void SortBy(string key)
+    {
+        _descending = _sort == key ? !_descending : key != "name";
+        _sort = key;
+    }
+
+    private static string License(PharmacyUsage p) => p switch
+    {
+        { LicenseEdition: null, LicenseExpiresAt: null } => "Inconnue",
+        { LicenseExpiresAt: null } => p.LicenseEdition == "trial" ? "Essai" : "Sans limite",
+        { LicenseExpiresAt: { } end } => $"{(p.LicenseEdition == "trial" ? "Essai" : "Abonnement")} · {Fmt.Date(end.ToLocalTime())}"
+    };
+
+    private static string LicenseClass(PharmacyUsage p) => p.LicenseExpiresAt switch
+    {
+        { } end when end < DateTime.UtcNow => "bad",
+        { } end when end < DateTime.UtcNow.AddDays(15) => "warn",
+        _ when p.LicenseEdition == "trial" => "accent",
+        _ when p.LicenseEdition is null => "",
+        _ => "ok"
+    };
+}

@@ -13,6 +13,8 @@ public class AgentRegistry
 
     public bool IsOnline(Guid pharmacyId) => _agents.ContainsKey(pharmacyId);
 
+    public IReadOnlyCollection<Guid> OnlinePharmacies => [.. _agents.Keys];
+
     public void Register(Guid pharmacyId, HubCallerContext context)
     {
         HubCallerContext? previous = null;

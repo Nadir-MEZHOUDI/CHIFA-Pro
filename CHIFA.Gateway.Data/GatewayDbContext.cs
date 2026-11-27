@@ -11,6 +11,7 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
     public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
     public DbSet<VapidKey> VapidKeys => Set<VapidKey>();
     public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<DeviceActivity> DeviceActivities => Set<DeviceActivity>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -65,6 +66,14 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
             e.Property(r => r.City).HasMaxLength(Review.MaxNameLength);
             e.HasIndex(r => r.PharmacyId).IsUnique();
             e.HasOne(r => r.Pharmacy).WithMany().OnDelete(DeleteBehavior.Cascade);
+        });
+
+        b.Entity<DeviceActivity>(e =>
+        {
+            e.HasKey(a => new { a.DeviceId, a.Day });
+            e.HasIndex(a => a.Day);
+            e.HasIndex(a => new { a.PharmacyId, a.Day });
+            e.HasOne(a => a.Device).WithMany().OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

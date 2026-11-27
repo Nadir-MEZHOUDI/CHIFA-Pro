@@ -8,6 +8,7 @@ using CHIFA.Gateway.Features.Link;
 using CHIFA.Gateway.Features.Officine;
 using CHIFA.Gateway.Features.Push;
 using CHIFA.Gateway.Features.Reviews;
+using CHIFA.Gateway.Features.Usage;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -78,6 +79,8 @@ builder.Services.AddSingleton<AgentOnlineNotifier>();
 builder.Services.AddHttpClient(nameof(PushSender));
 builder.Services.AddSingleton<PushSender>();
 builder.Services.AddHostedService<AlertPoller>();
+builder.Services.AddSingleton<PhoneActivity>();
+builder.Services.AddHostedService<PhoneActivityFlusher>();
 builder.Services.AddSingleton<IPasswordHasher<MobileUser>, PasswordHasher<MobileUser>>();
 
 var app = builder.Build();
@@ -127,6 +130,7 @@ app.MapOfficineEndpoints();
 app.MapPushEndpoints();
 app.MapAccountEndpoints();
 app.MapReviewEndpoints();
+app.MapUsageEndpoints();
 
 // Phone app (CHIFA.Mobile). Unknown API paths stay 404 instead of returning the app's index.html.
 app.MapStaticAssets();

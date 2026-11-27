@@ -1,0 +1,126 @@
+@page "/console/pharmacies/{Id:guid}"
+@layout AdminLayout
+@inject AdminApi Admin
+
+<PageTitle>@(_detail?.Pharmacy.Name ?? "Pharmacie") · Console SmartCHIFA</PageTitle>
+
+<div class="page-head">
+    <a class="link-more" href="console/pharmacies">‹ Pharmacies</a>
+</div>
+
+@if (_error is not null)
+{
+    <ErrorBox Error="_error" Retry="LoadAsync" />
+}
+else if (_detail is not { Pharmacy: var p } d)
+{
+    <Loading Text="Chargement…" />
+}
+else
+{
+    <div class="page-head">
+        <h1>@p.Name</h1>
+        <span class="tag @(p.Online ? "ok" : "bad")">@(p.Online ? "PC en ligne" : "PC hors ligne")</span>
+    </div>
+
+    <div class="console-duo">
+        <section class="card">
+            <h2>Pharmacie</h2>
+            <dl class="facts">
+                <div><dt>Inscrite le</dt><dd>@Fmt.Date(p.CreatedAt.ToLocalTime())</dd></div>
+                <div><dt>PC @(p.Online ? "connecté" : "vu")</dt><dd>@Fmt.Stamp(p.LastSeenAt?.ToLocalTime())</dd></div>
+                <div><dt>Licence</dt><dd>@(p.LicenseEdition ?? "inconnue")@(p.LicenseExpiresAt is { } end ? $" · jusqu'au {Fmt.Date(end.ToLocalTime())}" : "")</dd></div>
+                <div><dt>État</dt><dd>@(p.IsActive ? "Active" : "Désactivée")</dd></div>
+            </dl>
+        </section>
+
+        <section class="card">
+            <h2>Application mobile (30 jours)</h2>
+            <dl class="facts">
+                <div><dt>Téléphones liés</dt><dd>@p.LinkedPhones@(p.PhonesOnline > 0 ? $" · {p.PhonesOnline} en ligne" : "")</dd></div>
+                <div><dt>Dernière utilisation</dt><dd>@Fmt.Ago(p.LastPhoneUse)</dd></div>
+                <div><dt>Jours actifs</dt><dd>@p.ActiveDays30 / 30</dd></div>
+                <div><dt>Temps d'utilisation</dt><dd>@Fmt.Minutes(p.Minutes30)</dd></div>
+                <div><dt>Requêtes</dt><dd>@Fmt.Number(p.Requests30)</dd></div>
+            </dl>
+        </section>
+    </div>
+
+    <section class="card">
+        <h2>Minutes d'utilisation par jour</h2>
+        <BarChart Bars="Bars(d.Days)" />
+    </section>
+
+    <section class="card console-table-wrap">
+        <h2>Téléphones et navigateurs (@d.Devices.Count)</h2>
+        @if (d.Devices.Count == 0)
+        {
+            <p class="muted">Aucun téléphone n'a jamais été lié.</p>
+        }
+        else
+        {
+            <table class="console-table">
+                <thead>
+                    <tr>
+                        <th>Appareil</th><th class="num">État</th><th class="num">Lié le</th><th class="num">Vu</th>
+                        <th class="num">Jours actifs</th><th class="num">Temps</th><th class="num">Requêtes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var device in d.Devices)
+                    {
+                        <tr class="@(device.RevokedAt is null ? "" : "revoked")">
+                            <td><strong>@device.Name</strong></td>
+                            <td class="num">
+                                @if (device.RevokedAt is { } revoked)
+                                {
+                                    <span class="tag">Retiré le @Fmt.Date(revoked.ToLocalTime())</span>
+                                }
+                                else if (device.Online)
+                                {
+                                    <span class="tag ok">En ligne</span>
+                                }
+                                else
+                                {
+                                    <span class="tag accent">Lié</span>
+                                }
+                            </td>
+                            <td class="num">@Fmt.Date(device.CreatedAt.ToLocalTime())</td>
+                            <td class="num">@Fmt.Ago(device.LastSeenAt)</td>
+                            <td class="num">@device.ActiveDays30</td>
+                            <td class="num">@Fmt.Minutes(device.Minutes30)</td>
+                            <td class="num">@Fmt.Number(device.Requests30)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private PharmacyUsageDetail? _detail;
+    private ApiException? _error;
+
+    protected override Task OnParametersSetAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        try
+        {
+            _detail = await Admin.PharmacyAsync(Id);
+            _error = null;
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+    }
+
+    private static IReadOnlyList<BarChart.Bar> Bars(List<UsageDay> days) => days
+        .Select(d => new BarChart.Bar(d.Day.ToString("dd"), $"{d.Day:dd/MM} : {Fmt.Minutes(d.Minutes)}, {d.ActivePhones} téléphone(s)",
+            [d.Minutes], d.Minutes == 0 ? null : d.Minutes.ToString()))
+        .ToList();
+}

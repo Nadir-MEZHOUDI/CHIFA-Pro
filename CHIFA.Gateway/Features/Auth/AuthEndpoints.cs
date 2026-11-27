@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using CHIFA.Gateway.Features.Agents;
 using CHIFA.Gateway.Features.Link;
+using CHIFA.Gateway.Features.Usage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -121,7 +122,13 @@ public static class AuthEndpoints
         var active = await db.MobileDevices.AnyAsync(
             d => d.Id == deviceId && d.RevokedAt == null && d.Pharmacy.IsActive, context.HttpContext.RequestAborted);
         if (!active)
+        {
             context.Fail("This phone was unlinked.");
+            return;
+        }
+
+        context.HttpContext.RequestServices.GetRequiredService<PhoneActivity>()
+            .Touch(deviceId, context.Principal!.GetPharmacyId(), DateTime.UtcNow);
     }
 
     private static Claim[] DeviceClaims(MobileDevice device) =>

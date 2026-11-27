@@ -1,0 +1,79 @@
+@inherits LayoutComponentBase
+@inject AdminApi Admin
+@inject NavigationManager Nav
+
+<div class="console">
+    <header class="topbar console-bar">
+        <img class="console-logo" src="icon-192.png" alt="" />
+        <div class="topbar-title">
+            <span class="pharmacy">Console SmartCHIFA</span>
+            <span class="status"><span class="dot"></span>Utilisation de l'application mobile</span>
+        </div>
+        @if (Admin.IsSignedIn)
+        {
+            <nav class="console-nav">
+                <NavLink href="console" Match="NavLinkMatch.All">Tableau de bord</NavLink>
+                <NavLink href="console/pharmacies">Pharmacies</NavLink>
+                <button class="console-out" @onclick="SignOutAsync">Quitter</button>
+            </nav>
+        }
+    </header>
+
+    <main class="console-content">
+        @if (!_loaded)
+        {
+            <Loading Text="Chargement…" />
+        }
+        else if (!Admin.IsSignedIn)
+        {
+            <div class="login">
+                <div class="page-head"><h1>Accès administrateur</h1></div>
+                <p class="muted small">Saisissez la clé admin du gateway (Gateway:AdminKey). Elle reste dans ce navigateur.</p>
+                <form @onsubmit="SignInAsync" @onsubmit:preventDefault>
+                    <label>
+                        Clé admin
+                        <input type="password" @bind="_key" autocomplete="current-password" spellcheck="false" />
+                    </label>
+                    @if (_error is not null)
+                    {
+                        <p class="small bad-text" role="alert">@_error</p>
+                    }
+                    <button class="button" type="submit" disabled="@(_busy || string.IsNullOrWhiteSpace(_key))">@(_busy ? "Vérification…" : "Entrer")</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            @Body
+        }
+    </main>
+</div>
+
+@code {
+    private bool _loaded;
+    private bool _busy;
+    private string? _key;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Admin.LoadAsync();
+        _loaded = true;
+    }
+
+    private async Task SignInAsync()
+    {
+        _busy = true;
+        _error = null;
+        if (!await Admin.SignInAsync(_key ?? ""))
+            _error = "Clé refusée.";
+        _key = null;
+        _busy = false;
+    }
+
+    private async Task SignOutAsync()
+    {
+        await Admin.SignOutAsync();
+        Nav.NavigateTo("console");
+    }
+}
