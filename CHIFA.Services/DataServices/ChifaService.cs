@@ -175,7 +175,8 @@ public class ChifaService
             {
                 g.Key.NumAssure,
                 g.Key.RangAd,
-                MinNumFact = g.Min(f => f.NumFact)
+                MinNumFact = g.Min(f => f.NumFact),
+                FinDroit = g.Max(f => f.DateFinDroitBenef ?? f.DateFinDroit)
             })
             .ToListAsync(cancellationToken);
 
@@ -187,6 +188,7 @@ public class ChifaService
             .ToListAsync(cancellationToken);
 
         var centerByNumFact = centers.ToDictionary(c => c.NumFact, c => c.Center);
+        var finDroitByBenef = centerByBenef.ToDictionary(x => (x.NumAssure!, x.RangAd!), x => x.FinDroit);
         var centerByBenefDict = centerByBenef
             .Where(x => x.MinNumFact != null && centerByNumFact.ContainsKey(x.MinNumFact))
             .ToDictionary(x => (x.NumAssure, x.RangAd), x => centerByNumFact[x.MinNumFact!]);
@@ -220,7 +222,8 @@ public class ChifaService
                             ? nom : "",
                         Taux = c?.Taux,
                         TauxVarie = c?.TauxVarie ?? false,
-                        Mc = c?.Mc ?? false
+                        Mc = c?.Mc ?? false,
+                        DateFinDroit = finDroitByBenef.GetValueOrDefault((r.NumAssure!, r.Rang!))
                     });
                 }
                 return (IEnumerable<BeneficiareDto>)list;

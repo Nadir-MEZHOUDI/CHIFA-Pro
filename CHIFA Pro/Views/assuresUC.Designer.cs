@@ -35,6 +35,7 @@ namespace CHIFA.Pro.Views
             colFactures = new DevExpress.XtraGrid.Columns.GridColumn();
             colTaux = new DevExpress.XtraGrid.Columns.GridColumn();
             colMc = new DevExpress.XtraGrid.Columns.GridColumn();
+            colFinDroit = new DevExpress.XtraGrid.Columns.GridColumn();
             gridAssures = new DevExpress.XtraGrid.GridControl();
             beneficiareDtoBindingSource = new BindingSource(components);
             gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -103,6 +104,21 @@ namespace CHIFA.Pro.Views
             colMc.VisibleIndex = 6;
             colMc.Width = 40;
             //
+            // colFinDroit
+            //
+            colFinDroit.AppearanceCell.Options.UseTextOptions = true;
+            colFinDroit.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            colFinDroit.Caption = "Fin droit";
+            colFinDroit.DisplayFormat.FormatString = "dd/MM/yyyy";
+            colFinDroit.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            colFinDroit.FieldName = "DateFinDroit";
+            colFinDroit.MinWidth = 11;
+            colFinDroit.Name = "colFinDroit";
+            colFinDroit.ToolTip = "Fin de droits CNAS (dernière facture)";
+            colFinDroit.Visible = true;
+            colFinDroit.VisibleIndex = 7;
+            colFinDroit.Width = 80;
+            //
             // gridAssures
             // 
             gridAssures.DataSource = beneficiareDtoBindingSource;
@@ -122,7 +138,7 @@ namespace CHIFA.Pro.Views
             // 
             // gridView1
             // 
-            gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCenter, colNumAssure, colBeneficiare, colAssure, colRang, colTaux, colMc, colFactures });
+            gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] { colCenter, colNumAssure, colBeneficiare, colAssure, colRang, colTaux, colMc, colFinDroit, colFactures });
             gridView1.DetailHeight = 284;
             gridView1.FixedLineWidth = 3;
             gridFormatRule1.Name = "Format0";
@@ -330,6 +346,7 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraGrid.Columns.GridColumn colRang;
         private DevExpress.XtraGrid.Columns.GridColumn colTaux;
         private DevExpress.XtraGrid.Columns.GridColumn colMc;
+        private DevExpress.XtraGrid.Columns.GridColumn colFinDroit;
         private DevExpress.XtraBars.Ribbon.RibbonControl ribbonControl1;
         private DevExpress.XtraBars.BarEditItem barEditItem1;
         private DevExpress.XtraBars.BarEditItem barEditItem2;

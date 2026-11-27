@@ -10,6 +10,7 @@ public class BeneficiareDto
     public int? Taux { get; init; }
     public bool TauxVarie { get; init; }
     public bool Mc { get; init; }
+    public DateTime? DateFinDroit { get; init; }
     public string? TauxLibelle => Coverage.Label(Taux, TauxVarie);
     public string Couverture => string.Join(" · ", new[] { TauxLibelle, Mc ? "MC" : null }.OfType<string>());
 }

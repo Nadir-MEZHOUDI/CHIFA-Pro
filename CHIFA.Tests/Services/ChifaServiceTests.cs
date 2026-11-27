@@ -119,6 +119,15 @@ public class ChifaServiceTests : IDisposable
         rows[0].NumAssure.Should().NotBeNullOrEmpty();
         rows[0].Rang.Should().NotBeNullOrEmpty();
         rows.Should().OnlyContain(r => r.Center != null);
+        rows.Should().Contain(r => r.DateFinDroit != null);
+    }
+
+    [Fact]
+    public async Task GetBeneficiaresAsync_FinDroitMatchesPatientPage()
+    {
+        var sample = (await _svc.GetBeneficiaresAsync()).First(r => r.DateFinDroit != null);
+        var patient = await PatientService.Instance.GetPatientAsync(sample.NumAssure!, sample.Rang!);
+        sample.DateFinDroit.Should().Be(patient!.DateFinDroit);
     }
 
     [Fact]

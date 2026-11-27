@@ -6,6 +6,11 @@ public partial class AssuresUc : XtraUserControl, INavigable
     {
         InitializeComponent();
         gridView1.SetOptions();
+        gridView1.RowCellStyle += (_, e) =>
+        {
+            if (e.Column == colFinDroit && e.CellValue is DateTime fin && fin.Date < DateTime.Today)
+                e.Appearance.ForeColor = Color.Red;
+        };
         Load += async (_, _) => await gridView1.LoadDataAsync(ChifaService.Instance.GetBeneficiaresAsync);
     }
 
