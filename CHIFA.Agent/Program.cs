@@ -19,17 +19,12 @@ ConfigureChifaDb(builder.Configuration.GetSection(ChifaDbOptions.Section).Get<Ch
 
 await builder.Build().RunAsync();
 
+// Same pool and timeout limits as SmartCHIFA: the agent shares the pharmacy's PostgreSQL server with it.
 static void ConfigureChifaDb(ChifaDbOptions options)
 {
-    if (!string.IsNullOrWhiteSpace(options.ConnectionString))
-    {
-        ChifaDb.ConString = options.ConnectionString;
-        return;
-    }
+    var connectionString = !string.IsNullOrWhiteSpace(options.ConnectionString)
+        ? options.ConnectionString
+        : new NpgsqlConnectionStringBuilder(ChifaDb.ConString) { Host = options.Host, Port = options.Port }.ConnectionString;
 
-    ChifaDb.ConString = new NpgsqlConnectionStringBuilder(ChifaDb.ConString)
-    {
-        Host = options.Host,
-        Port = options.Port
-    }.ConnectionString;
+    ChifaDb.ConString = CHIFA.Services.Helpers.DatabaseDefaults.ForDesktop(connectionString);
 }

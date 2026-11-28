@@ -41,7 +41,9 @@ public class AlertTracker(ILogger logger, WatchlistStore watchlist)
         await _lock.WaitAsync();
         try
         {
-            var state = _state ??= await LoadAsync();
+            // The helpers below mark things as reported as they go: work on a copy, kept only once every
+            // query has succeeded, so a failure halfway does not swallow the alerts of the next poll.
+            var state = (_state ??= await LoadAsync()).Clone();
             var rejets = await ScopeService.Instance.GetRejetsAsync(new Period { From = DateTime.Today.AddMonths(-6) });
             var forecast = DateTime.Now.Hour >= ChronicReminderHour && state.LastChronicDay != DateTime.Today
                 ? await ScopeService.Instance.GetChronicForecastsAsync()
@@ -60,6 +62,7 @@ public class AlertTracker(ILogger logger, WatchlistStore watchlist)
             if (fresh.Count > 0 && !rules.IsEmpty)
                 alerts.AddRange(ComputeWatch(rules, await ScopeService.Instance.GetWatchedFacturesAsync(fresh)));
 
+            _state = state;
             await SaveAsync(state);
             return alerts;
         }
@@ -318,4 +321,7 @@ public class AlertState
 
     /// <summary>Factures already looked at, with their date, within <see cref="AlertTracker.FactureOverlap"/>.</summary>
     public Dictionary<string, DateTime> SeenFactures { get; set; } = [];
+
+    // Through JSON, like the saved file: a property added later is copied without touching this.
+    public AlertState Clone() => JsonSerializer.Deserialize<AlertState>(JsonSerializer.Serialize(this))!;
 }

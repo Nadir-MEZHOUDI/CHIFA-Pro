@@ -157,6 +157,27 @@ public class AlertTests
     }
 
     [Fact]
+    public void A_poll_works_on_a_copy_so_a_failure_halfway_reports_nothing_as_seen()
+    {
+        var kept = new AlertState();
+        AlertTracker.Compute(kept, [Paid("100", 5000)], null, Morning);
+        AlertTracker.TrackClosures(kept, ["200"]);
+        AlertTracker.TrackFactures(kept, [("F1", Morning)], Morning);
+
+        // What a poll does before a later query throws: nothing of it may reach the kept state.
+        var poll = kept.Clone();
+        AlertTracker.Compute(poll, [Paid("100", 5000), Paid("101", 3000)], null, Morning);
+        AlertTracker.TrackClosures(poll, []);
+        AlertTracker.TrackFactures(poll, [("F1", Morning), ("F2", Morning)], Morning);
+
+        kept.PaidBordereaux.Should().BeEquivalentTo(["100"]);
+        kept.OpenBordereaux.Should().BeEquivalentTo(["200"]);
+        kept.SeenFactures.Keys.Should().BeEquivalentTo(["F1"]);
+        AlertTracker.Compute(kept, [Paid("100", 5000), Paid("101", 3000)], null, Morning)
+            .Should().ContainSingle(a => a.Key == "paid:101");
+    }
+
+    [Fact]
     public void Vapid_key_has_the_browser_format()
     {
         var key = PushSender.CreateKey();
