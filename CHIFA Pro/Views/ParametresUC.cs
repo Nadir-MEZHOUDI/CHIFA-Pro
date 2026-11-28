@@ -1,15 +1,89 @@
 using CHIFA.Pro.Helpers.Settings;
+using DevExpress.LookAndFeel;
+using DevExpress.Skins;
+using DevExpress.XtraEditors.Controls;
+using DevExpress.XtraLayout.Utils;
 
 namespace CHIFA.Pro.Views;
 
 public partial class ParametersUc : XtraUserControl, INavigable
 {
+    /// <summary>The modern vector skins only: the older raster ones look dated next to WXI.</summary>
+    private static readonly string[] Themes =
+        ["WXI", "Office 2019 Colorful", "Office 2019 White", "Office 2019 Dark Gray", "Office 2019 Black", "The Bezier", "Basic"];
+
+    private readonly ComboBoxEdit _theme = new() { Name = "cmbTheme" };
+    private readonly ComboBoxEdit _palette = new() { Name = "cmbPalette" };
+    private bool _fillingPalettes;
+
     public string Caption { get; } = "PARAMÈTRES";
     public Image Image => FrmMain.Image(14);
 
     public ParametersUc()
     {
         InitializeComponent();
+        AddAppearanceGroup();
+    }
+
+    private const string DefaultPalette = "Par défaut";
+
+    /// <summary>Thème + couleurs, applied and saved at once (no need to press Enregistrer).</summary>
+    private void AddAppearanceGroup()
+    {
+        _theme.Properties.TextEditStyle = TextEditStyles.DisableTextEditor;
+        _palette.Properties.TextEditStyle = TextEditStyles.DisableTextEditor;
+        _theme.Properties.Items.AddRange(Themes.Where(t => SkinManager.Default.Skins[t] is not null).ToArray());
+
+        var group = layoutControlGroup1.AddGroup("APPARENCE", layoutControlGroup2, InsertType.Top);
+        var themeItem = group.AddItem("Thème", _theme);
+        group.AddItem("Couleurs", _palette, themeItem, InsertType.Right);
+
+        _theme.EditValue = UserLookAndFeel.Default.SkinName;
+        FillPalettes();
+
+        _theme.SelectedIndexChanged += (_, _) =>
+        {
+            UserLookAndFeel.Default.SetSkinStyle(_theme.Text);
+            FillPalettes();
+            SaveTheme();
+        };
+        _palette.SelectedIndexChanged += (_, _) =>
+        {
+            if (_fillingPalettes) return;
+            if (_palette.Text is DefaultPalette or "")
+                UserLookAndFeel.Default.SetSkinStyle(_theme.Text);
+            else
+                UserLookAndFeel.Default.SetSkinStyle(_theme.Text, _palette.Text);
+            SaveTheme();
+        };
+    }
+
+    /// <summary>A palette-only change raises no StyleChanged, so Program's handler would not save it.</summary>
+    private static void SaveTheme()
+    {
+        AppSettings.Default.Skin = UserLookAndFeel.Default.SkinName;
+        AppSettings.Default.SkinPalette = UserLookAndFeel.Default.ActiveSvgPaletteName ?? "";
+        AppSettings.Default.Save();
+    }
+
+    private void FillPalettes()
+    {
+        _fillingPalettes = true;
+        try
+        {
+            var names = CommonSkins.GetSkin(UserLookAndFeel.Default).CustomSvgPalettes.Keys.Select(k => k.Name).ToArray();
+            _palette.Properties.Items.Clear();
+            if (names.Length > 0)
+                _palette.Properties.Items.Add(DefaultPalette);
+            _palette.Properties.Items.AddRange(names);
+            var active = UserLookAndFeel.Default.ActiveSvgPaletteName;
+            _palette.EditValue = names.Contains(active) ? active : names.Length > 0 ? DefaultPalette : null;
+            _palette.Enabled = names.Length > 0;
+        }
+        finally
+        {
+            _fillingPalettes = false;
+        }
     }
 
     private async void btnSave_Click(object sender, EventArgs e)
