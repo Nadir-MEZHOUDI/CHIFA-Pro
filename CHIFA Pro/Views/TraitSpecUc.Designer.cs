@@ -485,6 +485,7 @@ namespace CHIFA.Pro.Views
             viewDetails.OptionsEditForm.PopupEditFormWidth = 915;
             viewDetails.OptionsView.ShowFooter = true;
             viewDetails.OptionsView.ShowGroupPanel = false;
+            viewDetails.CustomDrawCell += gridView2_CustomDrawCell;
             // 
             // colCodeDci
             // 

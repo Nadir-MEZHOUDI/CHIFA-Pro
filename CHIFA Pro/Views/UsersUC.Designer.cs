@@ -219,16 +219,15 @@ namespace CHIFA.Pro.Views
             // 
             // LASTCHANGEDateEdit
             // 
-            LASTCHANGEDateEdit.DataBindings.Add(new Binding("ReadOnly", UserBindingSource, "Admin", true));
+            LASTCHANGEDateEdit.DataBindings.Add(new Binding("EditValue", UserBindingSource, "Admin", true));
             LASTCHANGEDateEdit.EditValue = null;
             LASTCHANGEDateEdit.Location = new Point(10, 116);
             LASTCHANGEDateEdit.Margin = new Padding(2, 2, 2, 2);
             LASTCHANGEDateEdit.Name = "LASTCHANGEDateEdit";
             LASTCHANGEDateEdit.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.Default;
-            LASTCHANGEDateEdit.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
-            LASTCHANGEDateEdit.Properties.EditFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
             LASTCHANGEDateEdit.Properties.OffText = "Utilisateur";
             LASTCHANGEDateEdit.Properties.OnText = "Administrateur";
+            LASTCHANGEDateEdit.Properties.ReadOnly = true;
             LASTCHANGEDateEdit.Size = new Size(203, 24);
             LASTCHANGEDateEdit.StyleController = dataLayoutControl1;
             LASTCHANGEDateEdit.TabIndex = 6;
