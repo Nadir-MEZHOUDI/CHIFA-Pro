@@ -89,6 +89,52 @@ steps:
     targetType: 'inline'
     script: 'vpk pack -u CHIFA.Pro -v $(FileVersion) -p $(Build.ArtifactStagingDirectory)/publish --icon $(Build.ArtifactStagingDirectory)/publish/icon.ico  -e CHIFA.Pro.exe --outputDir $(Build.ArtifactStagingDirectory)/Releases --packTitle SmartCHIFA'
 
+# vpk download only fetches the latest release, so the uploaded feed listed one delta and any PC that
+# missed a build re-downloaded the ~90 MB full package. Keep the older deltas (still in the container)
+# in the feed so Velopack can chain them; it falls back to the full package if the chain is broken.
+- task: PowerShell@2
+  displayName: 'Keep delta history in the feed'
+  inputs:
+    targetType: 'inline'
+    pwsh: true
+    script: |
+      $url = "https://nadirsmartapp.blob.core.windows.net/chifa-pro"
+      $feedPath = "$(Build.ArtifactStagingDirectory)/Releases/releases.win.json"
+      $maxOlderDeltas = 9  # Velopack's MaximumDeltasBeforeFallback defaults to 10, the new delta included
+
+      $feed = Get-Content $feedPath -Raw | ConvertFrom-Json
+      $newest = $feed.Assets | ForEach-Object { [version]$_.Version } | Sort-Object -Descending | Select-Object -First 1
+      $inFeed = @($feed.Assets.FileName)
+
+      $known = @{}
+      try { (Invoke-RestMethod "$url/releases.win.json").Assets | Where-Object Type -eq 'Delta' | ForEach-Object { $known[$_.FileName] = $_ } }
+      catch { Write-Warning "Remote feed unreadable: $_" }
+
+      $listing = (Invoke-WebRequest "$url`?restype=container&comp=list&prefix=CHIFA.Pro-" -UseBasicParsing).Content
+      $blobs = ([xml]$listing.TrimStart([char]0xFEFF)).EnumerationResults.Blobs.Blob.Name
+
+      $older = $blobs |
+        Where-Object { $_ -match '^CHIFA\.Pro-(\d+\.\d+\.\d+)-delta\.nupkg$' -and $_ -notin $inFeed } |
+        ForEach-Object { [pscustomobject]@{ Name = $_; Version = [version]($_ -replace '^CHIFA\.Pro-(.+)-delta\.nupkg$', '$1') } } |
+        Where-Object { $_.Version -lt $newest } |
+        Sort-Object Version -Descending | Select-Object -First $maxOlderDeltas
+
+      $extra = foreach ($d in $older) {
+        if ($known.ContainsKey($d.Name)) { $known[$d.Name]; continue }
+        $tmp = Join-Path ([IO.Path]::GetTempPath()) $d.Name
+        Invoke-WebRequest "$url/$($d.Name)" -OutFile $tmp -UseBasicParsing
+        [pscustomobject]@{
+          PackageId = 'CHIFA.Pro'; Version = $d.Version.ToString(); Type = 'Delta'; FileName = $d.Name
+          SHA1 = (Get-FileHash $tmp -Algorithm SHA1).Hash; SHA256 = (Get-FileHash $tmp -Algorithm SHA256).Hash
+          Size = (Get-Item $tmp).Length
+        }
+        Remove-Item $tmp
+      }
+
+      $feed.Assets = @($feed.Assets) + @($extra)
+      $feed | ConvertTo-Json -Depth 5 | Set-Content $feedPath
+      Write-Host "Feed now lists $(@($feed.Assets).Count) assets, deltas: $((@($feed.Assets) | Where-Object Type -eq 'Delta').Version -join ', ')"
+
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Build Artifacts
