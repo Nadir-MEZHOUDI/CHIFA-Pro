@@ -27,30 +27,18 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
     /// <summary>Links this phone with the code shown in SmartCHIFA.</summary>
     public async Task PairAsync(string code, string deviceName)
     {
-        HttpResponseMessage response;
-        try
+        using var response = await PostAnonymousAsync("api/auth/pair", new { code, deviceName });
+        if (response.StatusCode == HttpStatusCode.OK)
         {
-            response = await http.PostAsJsonAsync("api/auth/pair", new { code, deviceName });
-        }
-        catch (HttpRequestException)
-        {
-            throw Unreachable();
+            await session.SignInAsync((await response.Content.ReadFromJsonAsync<LoginResponse>(JsonSerializerOptions.Web))!);
+            return;
         }
 
-        using (response)
-        {
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                await session.SignInAsync((await response.Content.ReadFromJsonAsync<LoginResponse>(JsonSerializerOptions.Web))!);
-                return;
-            }
+        if (response.StatusCode == HttpStatusCode.TooManyRequests)
+            throw TooManyAttempts();
 
-            if (response.StatusCode == HttpStatusCode.TooManyRequests)
-                throw new ApiException("Trop de tentatives.", "Réessayez dans une minute.");
-
-            var problem = await ReadProblemAsync(response);
-            throw new ApiException(problem?.Title ?? "Liaison impossible.", problem?.Detail ?? $"Erreur {(int)response.StatusCode}.");
-        }
+        var problem = await ReadProblemAsync(response);
+        throw new ApiException(problem?.Title ?? "Liaison impossible.", problem?.Detail ?? $"Erreur {(int)response.StatusCode}.");
     }
 
     /// <summary>Unlinks this phone on the server too, so its saved token cannot be reused.</summary>
@@ -62,10 +50,10 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
             {
                 using var request = new HttpRequestMessage(HttpMethod.Post, "api/auth/logout");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", session.Current!.AccessToken);
-                using var _ = await http.SendAsync(request);
+                using var _ = await ReachAsync(request);
             }
         }
-        catch (Exception ex) when (ex is HttpRequestException or ApiException)
+        catch (ApiException)
         {
             // Offline: the phone still forgets its token.
         }
@@ -75,21 +63,12 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 
     public async Task<LoginResponse> LoginAsync(string userName, string password)
     {
-        HttpResponseMessage response;
-        try
-        {
-            response = await http.PostAsJsonAsync("api/auth/login", new { userName, password });
-        }
-        catch (HttpRequestException)
-        {
-            throw Unreachable();
-        }
-
+        using var response = await PostAnonymousAsync("api/auth/login", new { userName, password });
         return response.StatusCode switch
         {
             HttpStatusCode.OK => (await response.Content.ReadFromJsonAsync<LoginResponse>(JsonSerializerOptions.Web))!,
             HttpStatusCode.Unauthorized => throw new ApiException("Nom d'utilisateur ou mot de passe incorrect."),
-            HttpStatusCode.TooManyRequests => throw new ApiException("Trop de tentatives.", "Réessayez dans une minute."),
+            HttpStatusCode.TooManyRequests => throw TooManyAttempts(),
             _ => throw new ApiException("Connexion impossible.", $"Erreur {(int)response.StatusCode}.")
         };
     }
@@ -229,15 +208,19 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", session.Current!.AccessToken);
         if (body is not null)
             request.Content = JsonContent.Create(body, options: JsonSerializerOptions.Web);
-        try
-        {
-            return await http.SendAsync(request);
-        }
-        catch (HttpRequestException)
-        {
-            throw Unreachable();
-        }
+        return await ReachAsync(request);
     }
+
+    /// <summary>The calls made without an access token: linking, signing in, renewing.</summary>
+    private async Task<HttpResponseMessage> PostAnonymousAsync(string url, object body)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Content = JsonContent.Create(body, options: JsonSerializerOptions.Web);
+        return await ReachAsync(request);
+    }
+
+    private Task<HttpResponseMessage> ReachAsync(HttpRequestMessage request) =>
+        ApiHttp.SendAsync(http, request, "Vérifiez la connexion internet du téléphone.");
 
     /// <summary>
     /// New access token from the device token. False when the phone is no longer linked. Pages load several
@@ -261,28 +244,16 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
         if (session.DeviceToken is not { } deviceToken)
             return false;
 
-        HttpResponseMessage response;
-        try
-        {
-            response = await http.PostAsJsonAsync("api/auth/device", new { deviceToken });
-        }
-        catch (HttpRequestException)
-        {
-            throw Unreachable();
-        }
+        using var response = await PostAnonymousAsync("api/auth/device", new { deviceToken });
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+            return false;
+        if (response.StatusCode == HttpStatusCode.TooManyRequests)
+            throw TooManyAttempts();
+        if (response.StatusCode != HttpStatusCode.OK)
+            throw new ApiException("Serveur indisponible.", $"Erreur {(int)response.StatusCode}. Réessayez plus tard.");
 
-        using (response)
-        {
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                return false;
-            if (response.StatusCode == HttpStatusCode.TooManyRequests)
-                throw new ApiException("Trop de tentatives.", "Réessayez dans une minute.");
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new ApiException("Serveur indisponible.", $"Erreur {(int)response.StatusCode}. Réessayez plus tard.");
-
-            await session.RenewAsync((await response.Content.ReadFromJsonAsync<LoginResponse>(JsonSerializerOptions.Web))!);
-            return true;
-        }
+        await session.RenewAsync((await response.Content.ReadFromJsonAsync<LoginResponse>(JsonSerializerOptions.Web))!);
+        return true;
     }
 
     private async Task<ApiException> SignedOutAsync()
@@ -295,8 +266,7 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
             : new ApiException("Session expirée.", "Reconnectez-vous.");
     }
 
-    private static ApiException Unreachable() =>
-        new("Serveur injoignable.", "Vérifiez la connexion internet du téléphone.");
+    private static ApiException TooManyAttempts() => new("Trop de tentatives.", "Réessayez dans une minute.");
 
     private static async Task<Problem?> ReadProblemAsync(HttpResponseMessage response)
     {
@@ -311,6 +281,27 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
     }
 
     private sealed record Problem(string? Title, string? Detail);
+}
+
+internal static class ApiHttp
+{
+    /// <summary>Sends the request; a network failure or the HttpClient timeout becomes an <see cref="ApiException"/>.</summary>
+    public static async Task<HttpResponseMessage> SendAsync(HttpClient http, HttpRequestMessage request, string unreachableDetail)
+    {
+        try
+        {
+            return await http.SendAsync(request);
+        }
+        catch (HttpRequestException)
+        {
+            throw new ApiException("Serveur injoignable.", unreachableDetail);
+        }
+        // No call passes a cancellation token, so a cancellation is the HttpClient timeout.
+        catch (OperationCanceledException)
+        {
+            throw new ApiException("Délai dépassé.", "L'ordinateur de la pharmacie ou la connexion est trop lent. Réessayez.");
+        }
+    }
 }
 
 /// <summary>A date range picked on screen, sent as whole days.</summary>

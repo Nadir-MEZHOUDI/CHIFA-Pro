@@ -8,16 +8,10 @@
     <a class="link-more" href="console/pharmacies">‹ Pharmacies</a>
 </div>
 
-@if (_error is not null)
-{
-    <ErrorBox Error="_error" Retry="LoadAsync" />
-}
-else if (_detail is not { Pharmacy: var p } d)
-{
-    <Loading Text="Chargement…" />
-}
-else
-{
+<Remote @ref="_remote" Fetch="() => Admin.PharmacyAsync(Id)" Loaded="(PharmacyUsageDetail detail) => _detail = detail" LoadingText="Chargement…" Context="d">
+    @{
+        var p = d.Pharmacy;
+    }
     <div class="page-head">
         <h1>@p.Name</h1>
         <span class="tag @(p.Online ? "ok" : "bad")">@(p.Online ? "PC en ligne" : "PC hors ligne")</span>
@@ -96,27 +90,25 @@ else
             </table>
         }
     </section>
-}
+</Remote>
 
 @code {
     [Parameter] public Guid Id { get; set; }
 
+    // Set by the Remote, for the browser tab's title.
     private PharmacyUsageDetail? _detail;
-    private ApiException? _error;
+    private Remote<PharmacyUsageDetail>? _remote;
+    private Guid _shownId;
 
-    protected override Task OnParametersSetAsync() => LoadAsync();
-
-    private async Task LoadAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        try
-        {
-            _detail = await Admin.PharmacyAsync(Id);
-            _error = null;
-        }
-        catch (ApiException ex)
-        {
-            _error = ex;
-        }
+        if (Id == _shownId)
+            return;
+        _shownId = Id;
+        _detail = null;
+        // Before the first render the Remote does not exist yet: it loads this pharmacy when it starts.
+        if (_remote is not null)
+            await _remote.ReloadAsync();
     }
 
     private static IReadOnlyList<BarChart.Bar> Bars(List<UsageDay> days) => days

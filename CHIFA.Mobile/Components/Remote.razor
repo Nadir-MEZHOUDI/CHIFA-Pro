@@ -1,0 +1,82 @@
+@typeparam T
+
+@if (_error is not null)
+{
+    <ErrorBox Error="_error" Retry="ReloadAsync" />
+}
+else if (!_hasData)
+{
+    @if (LoadingText is null)
+    {
+        <Loading />
+    }
+    else
+    {
+        <Loading Text="@LoadingText" />
+    }
+}
+else
+{
+    @ChildContent(_data!)
+}
+
+@code {
+    /// <summary>Called on first render and on each reload; it reads the page's current choices (period, search…).</summary>
+    [Parameter, EditorRequired] public Func<Task<T>> Fetch { get; set; } = default!;
+
+    [Parameter, EditorRequired] public RenderFragment<T> ChildContent { get; set; } = default!;
+
+    [Parameter] public string? LoadingText { get; set; }
+
+    /// <summary>For the parts of the page outside this component that show the data (a count in a title…).</summary>
+    [Parameter] public EventCallback<T> Loaded { get; set; }
+
+    private T? _data;
+    private bool _hasData;
+    private ApiException? _error;
+
+    // Bumped on each call: a reply arriving after a newer call started (the user changed the period) is dropped.
+    private int _generation;
+
+    protected override Task OnInitializedAsync() => ReloadAsync();
+
+    /// <summary>Shows the loading state and fetches again.</summary>
+    public Task ReloadAsync()
+    {
+        _data = default;
+        _hasData = false;
+        _error = null;
+        StateHasChanged();
+        return FetchAsync();
+    }
+
+    /// <summary>Fetches again while still showing what is on screen until the reply arrives.</summary>
+    public Task RefreshAsync() => FetchAsync();
+
+    private async Task FetchAsync()
+    {
+        var generation = ++_generation;
+        T data;
+        try
+        {
+            data = await Fetch();
+        }
+        catch (ApiException ex)
+        {
+            if (generation == _generation)
+            {
+                _error = ex;
+                StateHasChanged();
+            }
+            return;
+        }
+
+        if (generation != _generation)
+            return;
+        _data = data;
+        _hasData = true;
+        _error = null;
+        await Loaded.InvokeAsync(data);
+        StateHasChanged();
+    }
+}

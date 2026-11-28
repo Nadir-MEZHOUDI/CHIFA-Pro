@@ -16,16 +16,7 @@
     }
 </div>
 
-@if (_error is not null)
-{
-    <ErrorBox Error="_error" Retry="LoadAsync" />
-}
-else if (_rows is null)
-{
-    <Loading Text="Chargement…" />
-}
-else
-{
+<Remote Fetch="Admin.PharmaciesAsync" Loaded="(List<PharmacyUsage> rows) => _rows = rows" LoadingText="Chargement…">
     <div class="card console-table-wrap">
         <table class="console-table">
             <thead>
@@ -69,7 +60,7 @@ else
             </tbody>
         </table>
     </div>
-}
+</Remote>
 
 @code {
     private static readonly (string Key, string Label)[] Filters =
@@ -78,27 +69,12 @@ else
     private static readonly (string Key, string Label)[] Columns =
         [("name", "Pharmacie"), ("pc", "PC"), ("phones", "Téléphones"), ("lastuse", "Dernière utilisation"), ("days", "Jours actifs (30 j)"), ("minutes", "Temps (30 j)"), ("license", "Licence")];
 
+    // Set by the Remote: the title counts the rows too.
     private List<PharmacyUsage>? _rows;
-    private ApiException? _error;
     private string _search = "";
     private string _filter = "all";
     private string _sort = "lastuse";
     private bool _descending = true;
-
-    protected override Task OnInitializedAsync() => LoadAsync();
-
-    private async Task LoadAsync()
-    {
-        try
-        {
-            _rows = await Admin.PharmaciesAsync();
-            _error = null;
-        }
-        catch (ApiException ex)
-        {
-            _error = ex;
-        }
-    }
 
     private IEnumerable<PharmacyUsage> Shown
     {

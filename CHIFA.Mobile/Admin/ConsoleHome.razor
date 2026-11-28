@@ -13,16 +13,10 @@
     }
 </div>
 
-@if (_error is not null)
-{
-    <ErrorBox Error="_error" Retry="LoadAsync" />
-}
-else if (_overview is not { } o || _online is not { } online)
-{
-    <Loading Text="Chargement…" />
-}
-else
-{
+<Remote @ref="_remote" Fetch="FetchAsync" Loaded="(Snapshot _) => _refreshedAt = DateTime.Now" LoadingText="Chargement…" Context="snapshot">
+    @{
+        var (o, online) = snapshot;
+    }
     <section class="tiles console-tiles">
         <a class="tile c0" href="console/pharmacies"><span class="label">Pharmacies</span><span class="value">@o.Pharmacies</span></a>
         <div class="tile c1"><span class="label">PC en ligne</span><span class="value">@o.PharmaciesOnline</span></div>
@@ -96,20 +90,20 @@ else
             }
         </section>
     </div>
-}
+</Remote>
 
 @code {
     private static readonly (string Key, string Label)[] Metrics =
         [("phones", "Téléphones actifs"), ("pharmacies", "Pharmacies actives"), ("minutes", "Minutes d'utilisation")];
 
-    private UsageOverview? _overview;
-    private OnlineNow? _online;
-    private ApiException? _error;
+    private Remote<Snapshot>? _remote;
     private DateTime? _refreshedAt;
     private string _metric = "phones";
     // The last of the 30 bars: today.
     private int _day = 29;
     private PeriodicTimer? _timer;
+
+    private sealed record Snapshot(UsageOverview Overview, OnlineNow Online);
 
     protected override async Task OnInitializedAsync()
     {
@@ -120,34 +114,28 @@ else
         _ = RefreshLoopAsync(_timer);
     }
 
-    // "Online now" changes all the time: refresh while the page is open.
+    // "Online now" changes all the time: refresh while the page is open, keeping the figures on screen meanwhile.
     private async Task RefreshLoopAsync(PeriodicTimer timer)
     {
-        do
+        while (await timer.WaitForNextTickAsync())
         {
-            await LoadAsync();
-            StateHasChanged();
-        } while (await timer.WaitForNextTickAsync());
+            if (_remote is not null)
+                await _remote.RefreshAsync();
+        }
     }
 
-    private async Task LoadAsync()
+    private async Task<Snapshot> FetchAsync()
     {
         try
         {
             var overview = Admin.OverviewAsync();
             var online = Admin.OnlineAsync();
-            (_overview, _online) = (await overview, await online);
-            _error = null;
-            _refreshedAt = DateTime.Now;
+            return new Snapshot(await overview, await online);
         }
-        catch (ApiException ex)
+        catch (Exception ex) when (ex is not (ApiException or ObjectDisposedException))
         {
-            _error = ex;
-        }
-        catch (Exception ex) when (ex is not ObjectDisposedException)
-        {
-            // A timeout is not an ApiException: show it instead of ending the refresh loop.
-            _error = new ApiException("Délai dépassé", ex.Message);
+            // Shown like any other error instead of ending the refresh loop.
+            throw new ApiException("Erreur inattendue.", ex.Message);
         }
     }
 

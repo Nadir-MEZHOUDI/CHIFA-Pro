@@ -1,17 +1,10 @@
 @inject Api Api
 
-@if (_error is not null)
-{
-    <ErrorBox Error="_error" Retry="LoadAsync" />
-}
-else if (_days is null)
-{
-    <Loading />
-}
-else
-{
-    var day = _days[_selected];
-    var before = _selected + 1 < _days.Count ? _days[_selected + 1] : null;
+<Remote Fetch="FetchAsync" Context="days">
+    @{
+        var day = days[_selected];
+        var before = _selected + 1 < days.Count ? days[_selected + 1] : null;
+    }
     <div class="duo">
         <section class="card today">
             <div class="card-head">
@@ -37,7 +30,7 @@ else
                     <button class="chip @(metric == _metric ? "active" : "")" @onclick="() => _metric = metric">@metric</button>
                 }
             </div>
-            <BarChart Bars="Bars()" Selected="_days.Count - 1 - _selected" OnSelect="i => _selected = _days.Count - 1 - i"
+            <BarChart Bars="Bars(days)" Selected="days.Count - 1 - _selected" OnSelect="i => _selected = days.Count - 1 - i"
                       Colorful="_metric != Brut" />
             @if (_metric == Brut)
             {
@@ -46,37 +39,23 @@ else
             <p class="muted small hint">Touchez un jour pour voir ses chiffres.</p>
         </section>
     </div>
-}
+</Remote>
 
 @code {
     private const string Montant = "Chiffre d'affaires", Factures = "Ordonnances", Brut = "Marge + Maj";
     private static readonly string[] Metrics = [Montant, Factures, Brut];
 
-    private List<DayStat>? _days;
-    private ApiException? _error;
     private int _selected;
     private string _metric = Montant;
 
-    protected override Task OnInitializedAsync() => LoadAsync();
-
-    private async Task LoadAsync()
+    private async Task<List<DayStat>> FetchAsync()
     {
-        _days = null;
-        _error = null;
-        try
-        {
-            var days = await Api.RecentDaysAsync();
-            _days = days.Count > 0 ? days : null;
-            _error = days.Count > 0 ? null : new ApiException("Aucune donnée.");
-        }
-        catch (ApiException ex)
-        {
-            _error = ex;
-        }
+        var days = await Api.RecentDaysAsync();
+        return days.Count > 0 ? days : throw new ApiException("Aucune donnée.");
     }
 
     // Oldest day first, today on the right.
-    private List<BarChart.Bar> Bars() => _days!.AsEnumerable().Reverse().Select(d => _metric switch
+    private List<BarChart.Bar> Bars(List<DayStat> days) => days.AsEnumerable().Reverse().Select(d => _metric switch
     {
         Factures => new BarChart.Bar(Fmt.Day(d.Date), $"{Fmt.Date(d.Date)} : {d.Factures} ordonnances", [d.Factures], d.Factures.ToString()),
         Brut => new BarChart.Bar(Fmt.Day(d.Date), $"{Fmt.Date(d.Date)} : marge {Fmt.Money(d.Marge)}, maj {Fmt.Money(d.Maj)}",

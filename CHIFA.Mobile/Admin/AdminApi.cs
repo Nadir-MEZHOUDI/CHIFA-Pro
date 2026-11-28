@@ -63,25 +63,13 @@ public sealed class AdminApi(HttpClient http, IJSRuntime js)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add(Header, _key ?? "");
-        HttpResponseMessage response;
-        try
-        {
-            response = await http.SendAsync(request);
-        }
-        catch (HttpRequestException)
-        {
-            throw new ApiException("Serveur injoignable.", "Vérifiez la connexion internet.");
-        }
-
-        using (response)
-        {
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                throw new ApiException("Clé admin refusée.", "Saisissez de nouveau la clé admin.");
-            if (response.StatusCode == HttpStatusCode.NotFound)
-                throw new ApiException("Introuvable.");
-            if (!response.IsSuccessStatusCode)
-                throw new ApiException("Erreur du serveur.", $"Erreur {(int)response.StatusCode}. Réessayez.");
-            return (await response.Content.ReadFromJsonAsync<T>(JsonSerializerOptions.Web))!;
-        }
+        using var response = await ApiHttp.SendAsync(http, request, "Vérifiez la connexion internet.");
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+            throw new ApiException("Clé admin refusée.", "Saisissez de nouveau la clé admin.");
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            throw new ApiException("Introuvable.");
+        if (!response.IsSuccessStatusCode)
+            throw new ApiException("Erreur du serveur.", $"Erreur {(int)response.StatusCode}. Réessayez.");
+        return (await response.Content.ReadFromJsonAsync<T>(JsonSerializerOptions.Web))!;
     }
 }

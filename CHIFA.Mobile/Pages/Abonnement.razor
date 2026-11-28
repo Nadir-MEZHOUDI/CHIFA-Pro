@@ -12,40 +12,34 @@
         }
     </div>
 
-    @if (_subscriptionError is not null)
-    {
-        <ErrorBox Error="_subscriptionError" Retry="LoadSubscriptionAsync" />
-    }
-    else if (_subscription is not { } sub)
-    {
-        <Loading Text="Chargement…" />
-    }
-    else if (sub.Status == "unknown")
-    {
-        <p class="muted small">
-            La licence de la pharmacie n'est pas encore connue. Mettez à jour SmartCHIFA sur l'ordinateur de la pharmacie
-            puis ouvrez-le : l'abonnement s'affichera ici.
-        </p>
-    }
-    else
-    {
-        @if (sub.DaysLeft is { } days && sub.Status != "expired")
+    <Remote Fetch="Api.SubscriptionAsync" Loaded="(Subscription s) => _subscription = s" LoadingText="Chargement…" Context="sub">
+        @if (sub.Status == "unknown")
         {
-            <div class="sub-days @BadgeClass(sub.Status)">
-                <strong>@days</strong>
-                <span>@(days > 1 ? "jours restants" : "jour restant")</span>
-            </div>
+            <p class="muted small">
+                La licence de la pharmacie n'est pas encore connue. Mettez à jour SmartCHIFA sur l'ordinateur de la pharmacie
+                puis ouvrez-le : l'abonnement s'affichera ici.
+            </p>
         }
-        <dl class="facts">
-            <div><dt>Type</dt><dd>@(sub.IsTrial ? "Essai gratuit" : "Abonnement")</dd></div>
-            <div><dt>@(sub.Status == "expired" ? "Terminé le" : "Valable jusqu'au")</dt><dd>@(sub.ExpiresAt is { } end ? Fmt.Date(end.ToLocalTime()) : "Sans limite")</dd></div>
-            <div><dt>Licence vérifiée</dt><dd>@Fmt.Ago(sub.CheckedAt)</dd></div>
-        </dl>
-        @if (Advice(sub) is { } advice)
+        else
         {
-            <p class="hint small @(sub.Status == "expired" ? "bad-text" : "muted")">@advice</p>
+            @if (sub.DaysLeft is { } days && sub.Status != "expired")
+            {
+                <div class="sub-days @BadgeClass(sub.Status)">
+                    <strong>@days</strong>
+                    <span>@(days > 1 ? "jours restants" : "jour restant")</span>
+                </div>
+            }
+            <dl class="facts">
+                <div><dt>Type</dt><dd>@(sub.IsTrial ? "Essai gratuit" : "Abonnement")</dd></div>
+                <div><dt>@(sub.Status == "expired" ? "Terminé le" : "Valable jusqu'au")</dt><dd>@(sub.ExpiresAt is { } end ? Fmt.Date(end.ToLocalTime()) : "Sans limite")</dd></div>
+                <div><dt>Licence vérifiée</dt><dd>@Fmt.Ago(sub.CheckedAt)</dd></div>
+            </dl>
+            @if (Advice(sub) is { } advice)
+            {
+                <p class="hint small @(sub.Status == "expired" ? "bad-text" : "muted")">@advice</p>
+            }
         }
-    }
+    </Remote>
 </section>
 
 <LicenseRequestCard />
@@ -53,53 +47,47 @@
 <section class="card">
     <h2>Téléphones liés@(_devices is { } list ? $" ({list.Count})" : "")</h2>
 
-    @if (_devicesError is not null)
-    {
-        <ErrorBox Error="_devicesError" Retry="LoadDevicesAsync" />
-    }
-    else if (_devices is null)
-    {
-        <Loading Text="Chargement…" />
-    }
-    else if (_devices.Count == 0)
-    {
-        <p class="muted">Aucun téléphone lié.</p>
-    }
-    else
-    {
-        <ul class="lines devices">
-            @foreach (var d in _devices)
-            {
-                <li>
-                    <div class="item-head">
-                        <strong>@d.Name</strong>
-                        @if (d.IsCurrent)
-                        {
-                            <span class="tag ok">Cet appareil</span>
-                        }
-                        else if (_confirming != d.Id)
-                        {
-                            <button class="button secondary small" disabled="@_removing" @onclick="() => AskRemove(d.Id)">Retirer</button>
-                        }
-                    </div>
-                    <div class="item-sub">
-                        <span>Lié le @Fmt.Date(d.CreatedAt.ToLocalTime())</span>
-                        <span>Vu @Fmt.Ago(d.LastSeenAt)</span>
-                    </div>
-                    @if (_confirming == d.Id)
-                    {
-                        <div class="confirm">
-                            <span>Retirer « @d.Name » ? Il sera déconnecté tout de suite.</span>
-                            <div class="notify-actions">
-                                <button class="button small danger" disabled="@_removing" @onclick="() => RemoveAsync(d.Id)">@(_removing ? "Retrait…" : "Retirer")</button>
-                                <button class="button secondary small" disabled="@_removing" @onclick="CancelRemove">Annuler</button>
-                            </div>
+    <Remote @ref="_devicesRemote" Fetch="Api.DevicesAsync" Loaded="(List<PhoneDevice> list) => _devices = list" LoadingText="Chargement…" Context="devices">
+        @if (devices.Count == 0)
+        {
+            <p class="muted">Aucun téléphone lié.</p>
+        }
+        else
+        {
+            <ul class="lines devices">
+                @foreach (var d in devices)
+                {
+                    <li>
+                        <div class="item-head">
+                            <strong>@d.Name</strong>
+                            @if (d.IsCurrent)
+                            {
+                                <span class="tag ok">Cet appareil</span>
+                            }
+                            else if (_confirming != d.Id)
+                            {
+                                <button class="button secondary small" disabled="@_removing" @onclick="() => AskRemove(d.Id)">Retirer</button>
+                            }
                         </div>
-                    }
-                </li>
-            }
-        </ul>
-    }
+                        <div class="item-sub">
+                            <span>Lié le @Fmt.Date(d.CreatedAt.ToLocalTime())</span>
+                            <span>Vu @Fmt.Ago(d.LastSeenAt)</span>
+                        </div>
+                        @if (_confirming == d.Id)
+                        {
+                            <div class="confirm">
+                                <span>Retirer « @d.Name » ? Il sera déconnecté tout de suite.</span>
+                                <div class="notify-actions">
+                                    <button class="button small danger" disabled="@_removing" @onclick="() => RemoveAsync(d.Id)">@(_removing ? "Retrait…" : "Retirer")</button>
+                                    <button class="button secondary small" disabled="@_removing" @onclick="CancelRemove">Annuler</button>
+                                </div>
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    </Remote>
 
     @if (_removeError is not null)
     {
@@ -111,45 +99,21 @@
     </p>
 </section>
 
-<LinkAnotherDevice OnLinked="LoadDevicesAsync" />
+<LinkAnotherDevice OnLinked="ReloadDevicesAsync" />
 
 @code {
+    // Copies of what the Remotes loaded, for the badge and the count in the titles.
     private Subscription? _subscription;
-    private ApiException? _subscriptionError;
     private List<PhoneDevice>? _devices;
-    private ApiException? _devicesError;
+    private Remote<List<PhoneDevice>> _devicesRemote = default!;
     private Guid? _confirming;
     private bool _removing;
     private ApiException? _removeError;
 
-    protected override Task OnInitializedAsync() => Task.WhenAll(LoadSubscriptionAsync(), LoadDevicesAsync());
-
-    private async Task LoadSubscriptionAsync()
+    private async Task ReloadDevicesAsync()
     {
-        _subscriptionError = null;
-        _subscription = null;
-        try
-        {
-            _subscription = await Api.SubscriptionAsync();
-        }
-        catch (ApiException ex)
-        {
-            _subscriptionError = ex;
-        }
-    }
-
-    private async Task LoadDevicesAsync()
-    {
-        _devicesError = null;
         _devices = null;
-        try
-        {
-            _devices = await Api.DevicesAsync();
-        }
-        catch (ApiException ex)
-        {
-            _devicesError = ex;
-        }
+        await _devicesRemote.ReloadAsync();
     }
 
     private void AskRemove(Guid id)

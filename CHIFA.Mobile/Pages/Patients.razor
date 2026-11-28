@@ -13,39 +13,33 @@
 @if (Relance)
 {
     <p class="muted small">Malades chroniques dont le traitement se termine dans la semaine, ou est déjà terminé.</p>
-    @if (_remindError is not null)
-    {
-        <ErrorBox Error="_remindError" Retry="LoadRemindersAsync" />
-    }
-    else if (_reminders is null)
-    {
-        <Loading />
-    }
-    else if (_reminders.Count == 0)
-    {
-        <div class="empty">Aucun malade chronique à relancer cette semaine.</div>
-    }
-    else
-    {
-        @foreach (var r in _reminders)
+    <Remote Fetch="RemindersAsync" Context="reminders">
+        @if (reminders.Count == 0)
         {
-            <a class="card item link" href="@PatientUrl(r.NumAssure, r.Rang)">
-                <div class="item-head">
-                    <strong>@(r.NomBeneficiaire ?? r.NomAssure ?? "—")</strong>
-                    <span class="tag @(r.JoursRestants < 0 ? "bad" : r.JoursRestants == 0 ? "warn" : "accent")">@Due(r.JoursRestants)</span>
-                </div>
-                <div class="item-sub">
-                    <span>Dernière visite @Fmt.Date(r.DateDerniereVisite)</span>
-                    <span>Retour prévu @Fmt.Date(r.DatePrevisionnelleRetour)</span>
-                </div>
-                @if (!string.IsNullOrWhiteSpace(r.TraitementHabituelResume))
-                {
-                    <span class="muted small">@r.TraitementHabituelResume · ~@Fmt.Money(r.MontantMoyenHabituel)</span>
-                }
-            </a>
+            <div class="empty">Aucun malade chronique à relancer cette semaine.</div>
         }
-        <div class="list-end">@_reminders.Count patient@(_reminders.Count > 1 ? "s" : "")</div>
-    }
+        else
+        {
+            @foreach (var r in reminders)
+            {
+                <a class="card item link" href="@PatientUrl(r.NumAssure, r.Rang)">
+                    <div class="item-head">
+                        <strong>@(r.NomBeneficiaire ?? r.NomAssure ?? "—")</strong>
+                        <span class="tag @(r.JoursRestants < 0 ? "bad" : r.JoursRestants == 0 ? "warn" : "accent")">@Due(r.JoursRestants)</span>
+                    </div>
+                    <div class="item-sub">
+                        <span>Dernière visite @Fmt.Date(r.DateDerniereVisite)</span>
+                        <span>Retour prévu @Fmt.Date(r.DatePrevisionnelleRetour)</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(r.TraitementHabituelResume))
+                    {
+                        <span class="muted small">@r.TraitementHabituelResume · ~@Fmt.Money(r.MontantMoyenHabituel)</span>
+                    }
+                </a>
+            }
+            <div class="list-end">@reminders.Count patient@(reminders.Count > 1 ? "s" : "")</div>
+        }
+    </Remote>
 }
 else
 {
@@ -103,14 +97,12 @@ else
     private ApiException? _error;
     private bool _listLoaded;
 
+    // Kept when switching to "Tous" and back, so the reminders are not asked for again.
     private List<Reminder>? _reminders;
-    private ApiException? _remindError;
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Relance && _reminders is null)
-            await LoadRemindersAsync();
-        else if (!Relance && !_listLoaded)
+        if (!Relance && !_listLoaded)
         {
             _listLoaded = true;
             await LoadMoreAsync();
@@ -157,19 +149,7 @@ else
         }
     }
 
-    private async Task LoadRemindersAsync()
-    {
-        _remindError = null;
-        _reminders = null;
-        try
-        {
-            _reminders = await Api.RemindersAsync();
-        }
-        catch (ApiException ex)
-        {
-            _remindError = ex;
-        }
-    }
+    private async Task<List<Reminder>> RemindersAsync() => _reminders ??= await Api.RemindersAsync();
 
     private static string Due(int days) => days switch
     {
