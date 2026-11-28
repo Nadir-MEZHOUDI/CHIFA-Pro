@@ -53,17 +53,11 @@ internal static class LicenseGate
 
         _storageDirectory = settings.StorageDirectory ?? Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SmartApp", "Licensing", Product);
+        var pharmacyId = PharmacyId(_storageDirectory);
 
         try
         {
-            _client = LicenseClientFactory.Create(options =>
-            {
-                options.Endpoint = settings.Endpoint;
-                options.Product = Product;
-                options.PublicKeyPem = settings.PublicKeyPem;
-                options.AppVersion = Application.ProductVersion.Split("+")[0];
-                options.StorageDirectory = settings.StorageDirectory;
-            });
+            _client = CreateClient(settings, pharmacyId);
         }
         catch (Exception ex)
         {
@@ -74,6 +68,10 @@ internal static class LicenseGate
         }
 
         var state = _client.Check();
+
+        // A license activated before the serial followed the code PS is bound to this Windows: move it to the pharmacy.
+        if (state.Status == LicenseStatus.WrongMachine && pharmacyId is not null)
+            state = MoveToPharmacy(settings);
 
         // Expired or offline for too long: maybe it was renewed meanwhile, ask the server once.
         if (!state.IsValid && state.License is not null)
@@ -219,6 +217,121 @@ internal static class LicenseGate
         _client?.Dispose();
         _client = null;
     }
+
+    private static string AppVersion => Application.ProductVersion.Split("+")[0];
+
+    /// <param name="pharmacyId"><c>null</c>: the license follows this Windows, as before the code PS.</param>
+    private static LicenseClient CreateClient(Settings settings, string? pharmacyId) =>
+        LicenseClientFactory.Create(options =>
+        {
+            options.Endpoint = settings.Endpoint;
+            options.Product = Product;
+            options.PublicKeyPem = settings.PublicKeyPem;
+            options.AppVersion = AppVersion;
+            options.StorageDirectory = settings.StorageDirectory;
+            if (pharmacyId is not null)
+                options.MachineIdProvider = () => pharmacyId;
+        });
+
+    /// <summary>
+    /// The id the license is bound to, from the code PS of the CHIFA database: all the computers of the pharmacy share it
+    /// and it survives a Windows reinstall. Kept in <c>pharmacy.id</c> for a start where the database does not answer.
+    /// <c>null</c> when the database has no code PS.
+    /// </summary>
+    private static string? PharmacyId(string storageDirectory)
+    {
+        var cache = Path.Combine(storageDirectory, "pharmacy.id");
+        try
+        {
+            var officine = Task.Run(OfficineAsync).GetAwaiter().GetResult();
+            if (officine is null)
+                return File.Exists(cache) && File.ReadAllText(cache).Trim() is { } cached && PharmacyLicenseId.IsPharmacy(cached) ? cached : null;
+
+            var id = PharmacyLicenseId.FromCodePs(officine.CodePs);
+            if (id is not null)
+            {
+                Directory.CreateDirectory(storageDirectory);
+                File.WriteAllText(cache, id);
+            }
+            return id;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            ex.Log(showMessage: false);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Asks the licensing server, once, to move this Windows' license (or trial) to the pharmacy. Offline, the
+    /// Windows license keeps working for this session and the move is tried again at the next start.
+    /// </summary>
+    private static LicenseState MoveToPharmacy(Settings settings)
+    {
+        var path = Path.Combine(_storageDirectory!, "license.lic");
+        string? moved = null;
+        try
+        {
+            var token = File.ReadAllText(path);
+            moved = Task.Run(() => RebindAsync(settings.Endpoint, token, _client!.MachineId))
+                .WaitAsync(TimeSpan.FromSeconds(20))
+                .GetAwaiter()
+                .GetResult();
+            if (moved is not null)
+            {
+                File.WriteAllText(path + ".tmp", moved);
+                File.Move(path + ".tmp", path, overwrite: true);
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or HttpRequestException or TimeoutException or TaskCanceledException)
+        {
+            Log.Warning(ex, "The license could not move to the pharmacy's code PS.");
+            moved = null;
+        }
+
+        if (moved is not null)
+        {
+            var state = _client!.Check();
+            if (state.Status != LicenseStatus.WrongMachine)
+            {
+                Log.Information("The license now follows the pharmacy's code PS.");
+                Program.Telemetry?.TrackFeatureUsed("license.moved_to_pharmacy");
+                return state;
+            }
+        }
+
+        var windows = CreateClient(settings, pharmacyId: null);
+        var legacy = windows.Check();
+        if (legacy.Status == LicenseStatus.WrongMachine)
+        {
+            // Neither this pharmacy's nor this Windows' license (copied from elsewhere): activate this pharmacy.
+            windows.Dispose();
+            return _client!.Current;
+        }
+
+        _client!.Dispose();
+        _client = windows;
+        return legacy;
+    }
+
+    private static async Task<string?> RebindAsync(string endpoint, string token, string pharmacyId)
+    {
+        using var http = new HttpClient { BaseAddress = new Uri(endpoint.TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(15) };
+        using var response = await http.PostAsJsonAsync("api/v1/licenses/rebind",
+            new RebindRequest(token, pharmacyId, Environment.MachineName, AppVersion)).ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            Log.Warning("The licensing server refused to move the license to the pharmacy: {Status} {Body}",
+                (int)response.StatusCode, await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            return null;
+        }
+
+        return (await response.Content.ReadFromJsonAsync<RebindResponse>().ConfigureAwait(false))?.License;
+    }
+
+    private sealed record RebindRequest(string License, string MachineId, string? MachineName, string? AppVersion);
+
+    private sealed record RebindResponse(string? License);
 
     private static LicenseState RefreshNow()
     {
@@ -386,7 +499,7 @@ internal static class LicenseText
             LicenseStatus.RefreshRequired => "La licence doit être vérifiée en ligne. Connectez ce poste à Internet puis cliquez sur « Vérifier en ligne ».",
             LicenseStatus.Revoked => "Ce numéro de série a été révoqué. Contactez SmartApp.",
             LicenseStatus.ClockTampered => "La date de cet ordinateur est incorrecte. Corrigez la date et l'heure puis relancez SmartCHIFA.",
-            LicenseStatus.WrongMachine => "Cette licence appartient à un autre ordinateur. Ce poste nécessite son propre numéro de série.",
+            LicenseStatus.WrongMachine => "Cette licence appartient à une autre pharmacie (autre code PS). Saisissez le numéro de série de cette pharmacie.",
             LicenseStatus.WrongProduct or LicenseStatus.Invalid => "Le fichier de licence est invalide. Activez ce poste avec votre numéro de série.",
             _ => state.Message
         };
@@ -398,8 +511,8 @@ internal static class LicenseText
         {
             "invalid_serial" => "Numéro de série invalide. Vérifiez la saisie (5 groupes de 5 caractères).",
             "not_found" => "Ce numéro de série n'existe pas. Vérifiez la saisie.",
-            "activation_limit_reached" => "Ce numéro de série est déjà activé sur un autre ordinateur. " +
-                                          "Chaque poste nécessite son propre numéro de série : contactez SmartApp.",
+            "activation_limit_reached" => "Ce numéro de série est déjà activé pour une autre pharmacie. " +
+                                          "Chaque pharmacie (code PS) a son propre numéro de série : contactez SmartApp.",
             "revoked" => "Ce numéro de série a été révoqué. Contactez SmartApp.",
             "expired" => "Votre abonnement est terminé. Renouvelez-le auprès de SmartApp puis cliquez sur « Vérifier en ligne ».",
             "not_started" => "Votre abonnement n'a pas encore commencé.",
@@ -408,7 +521,7 @@ internal static class LicenseText
             "unknown_product" => "Cette application n'est pas disponible à l'activation. Contactez SmartApp.",
             "invalid_request" => "Demande incomplète : le nom et le téléphone sont obligatoires.",
             "request_not_found" => "Votre demande n'existe plus. Envoyez une nouvelle demande.",
-            "trial_used" => "L'essai gratuit a déjà été utilisé sur cet ordinateur. Demandez une licence pour continuer.",
+            "trial_used" => "L'essai gratuit a déjà été utilisé pour cette pharmacie. Demandez une licence pour continuer.",
             "trial_unavailable" => "L'essai gratuit n'est pas disponible pour le moment. Demandez une licence.",
             null => null,
             _ => "Le serveur de licences a répondu par une erreur. Réessayez plus tard."
