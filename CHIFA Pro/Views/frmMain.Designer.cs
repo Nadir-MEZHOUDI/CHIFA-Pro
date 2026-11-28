@@ -83,7 +83,6 @@ namespace CHIFA.Pro.Views
             skinPaletteDropDownButtonItem1 = new DevExpress.XtraBars.SkinPaletteDropDownButtonItem();
             skinDropDownButtonItem3 = new DevExpress.XtraBars.SkinDropDownButtonItem();
             skinDropDownButtonItem1 = new DevExpress.XtraBars.SkinDropDownButtonItem();
-            defaultLookAndFeel1 = new DevExpress.LookAndFeel.DefaultLookAndFeel(components);
             skinPaletteRibbonGalleryBarItem1 = new DevExpress.XtraBars.SkinPaletteRibbonGalleryBarItem();
             formAssistant1 = new DevExpress.XtraBars.FormAssistant();
             statusStrip1 = new StatusStrip();
@@ -506,10 +505,6 @@ namespace CHIFA.Pro.Views
             skinDropDownButtonItem1.Id = 0;
             skinDropDownButtonItem1.Name = "skinDropDownButtonItem1";
             // 
-            // defaultLookAndFeel1
-            // 
-            defaultLookAndFeel1.EnableBonusSkins = true;
-            // 
             // skinPaletteRibbonGalleryBarItem1
             // 
             skinPaletteRibbonGalleryBarItem1.Caption = "skinPaletteRibbonGalleryBarItem1";
@@ -770,7 +765,6 @@ namespace CHIFA.Pro.Views
         private DevExpress.XtraBars.Navigation.AccordionControlSeparator accordionControlSeparator5;
         private DevExpress.XtraBars.SkinPaletteDropDownButtonItem skinPaletteDropDownButtonItem1;
         private DevExpress.XtraBars.SkinDropDownButtonItem skinDropDownButtonItem3;
-        private DevExpress.LookAndFeel.DefaultLookAndFeel defaultLookAndFeel1;
         private DevExpress.XtraBars.SkinPaletteRibbonGalleryBarItem skinPaletteRibbonGalleryBarItem1;
         private DevExpress.XtraBars.FormAssistant formAssistant1;
         private StatusStrip statusStrip1;

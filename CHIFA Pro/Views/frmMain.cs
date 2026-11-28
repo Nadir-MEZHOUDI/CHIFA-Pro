@@ -25,16 +25,23 @@ public partial class FrmMain : XtraForm
         ApplyAccess();
         ChangeTitle();
         TidyMenuGroups();
+
+        // The WinForms status bar is not skinned: with a dark palette its text turns light on its light background.
+        statusStrip1.BackColor = Color.FromArgb(243, 243, 243);
+        statusStrip1.ForeColor = Color.Black;
     }
 
     /// <summary>
-    /// Group titles use the item font so « STATISTIQUES » fits on one line, and the groups start folded:
+    /// Groups and items share one explicit font so « STATISTIQUES » fits on one line (the skins draw items with
+    /// their own smaller font, not the app's default), and the groups start folded:
     /// hiding an item of a group (Licence, Sécurité) unfolds it otherwise.
     /// </summary>
     private void TidyMenuGroups()
     {
-        var font = accordionControl1.Appearance.Item.Normal.GetFont();
-        foreach (var appearance in new[] { accordionControl1.Appearance.Group.Normal, accordionControl1.Appearance.Group.Hovered, accordionControl1.Appearance.Group.Pressed })
+        var font = new Font("Segoe UI", 8.25F);
+        var appearances = accordionControl1.Appearance;
+        foreach (var appearance in new[] { appearances.Group.Normal, appearances.Group.Hovered, appearances.Group.Pressed,
+                     appearances.Item.Normal, appearances.Item.Hovered, appearances.Item.Pressed })
         {
             appearance.Font = font;
             appearance.Options.UseFont = true;

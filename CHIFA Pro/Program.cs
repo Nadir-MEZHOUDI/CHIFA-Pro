@@ -141,17 +141,21 @@ internal static partial class Program
         e.Exception.Log();
     }
 
-    /// <summary>WXI by default; the skin and palette picked from the title bar are kept for the next start.</summary>
+    /// <summary>
+    /// WXI by default; the skin and palette picked in Paramètres or the title bar are kept for the next start.
+    /// No form may hold a DefaultLookAndFeel component: it replaces UserLookAndFeel.Default with a fresh "Basic" one.
+    /// </summary>
     private static void SetLookAndFeel()
     {
         WindowsFormsSettings.DefaultFont = new Font("Segoe UI", 10F);
         var settings = Helpers.Settings.AppSettings.Default;
+        var skin = string.IsNullOrWhiteSpace(settings.Skin) ? SkinStyle.WXI.ToString() : settings.Skin;
         try
         {
             if (settings.SkinPalette.Length > 0)
-                UserLookAndFeel.Default.SetSkinStyle(settings.Skin, settings.SkinPalette);
+                UserLookAndFeel.Default.SetSkinStyle(skin, settings.SkinPalette);
             else
-                UserLookAndFeel.Default.SetSkinStyle(settings.Skin);
+                UserLookAndFeel.Default.SetSkinStyle(skin);
         }
         catch (Exception ex)
         {
@@ -161,6 +165,7 @@ internal static partial class Program
 
         UserLookAndFeel.Default.StyleChanged += (_, _) =>
         {
+            if (string.IsNullOrWhiteSpace(UserLookAndFeel.Default.SkinName)) return;
             settings.Skin = UserLookAndFeel.Default.SkinName;
             settings.SkinPalette = UserLookAndFeel.Default.ActiveSvgPaletteName ?? "";
             settings.Save();
