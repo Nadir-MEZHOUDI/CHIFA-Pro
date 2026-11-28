@@ -24,6 +24,8 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
             e.Property(p => p.LicenseRequestToken).HasMaxLength(100);
             e.HasIndex(p => p.AgentKeyHash).IsUnique();
             e.HasIndex(p => p.LicenseId).IsUnique();
+            // Looked up when a new license (the paid one after the trial) registers from the same computer.
+            e.HasIndex(p => p.MachineId);
         });
 
         b.Entity<MobileUser>(e =>

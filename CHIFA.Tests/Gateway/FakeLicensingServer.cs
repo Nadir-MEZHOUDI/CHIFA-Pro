@@ -14,6 +14,7 @@ public sealed class FakeLicensingServer : HttpMessageHandler
 {
     private readonly ConcurrentDictionary<Guid, Request> _requests = new();
     private readonly ConcurrentDictionary<string, bool> _down = new();
+    private readonly ConcurrentDictionary<string, bool> _garbled = new();
 
     public sealed class Request(Guid id, LicensingSubmission submission)
     {
@@ -37,6 +38,9 @@ public sealed class FakeLicensingServer : HttpMessageHandler
     /// <summary>Answers 503 for this computer, as an unreachable or failing server would.</summary>
     public void SetDown(string machineId) => _down[machineId] = true;
 
+    /// <summary>Answers 200 with an HTML page for this computer, as a proxy or maintenance page would.</summary>
+    public void SetGarbled(string machineId) => _garbled[machineId] = true;
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
     {
         var path = request.RequestUri!.AbsolutePath.TrimEnd('/');
@@ -55,6 +59,8 @@ public sealed class FakeLicensingServer : HttpMessageHandler
             var submission = (await request.Content!.ReadFromJsonAsync<LicensingSubmission>(JsonSerializerOptions.Web, ct))!;
             if (_down.ContainsKey(submission.MachineId))
                 return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable);
+            if (_garbled.ContainsKey(submission.MachineId))
+                return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("<html>Maintenance</html>", System.Text.Encoding.UTF8, "text/html") };
 
             var open = _requests.Values.SingleOrDefault(r => r.Submission.MachineId == submission.MachineId && r.Status == "pending");
             if (open is null)

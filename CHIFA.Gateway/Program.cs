@@ -61,6 +61,11 @@ builder.Services.AddRateLimiter(o =>
     o.AddPolicy(AuthEndpoints.LoginRateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
         http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions { PermitLimit = authRequestsPerMinute, Window = TimeSpan.FromMinutes(1) }));
+    o.AddPolicy(LicenseRequestEndpoints.RateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
+        http.User.GetPharmacyId(),
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(10) }));
+    o.OnRejected = (context, ct) => new ValueTask(Results.Problem(statusCode: StatusCodes.Status429TooManyRequests,
+        title: "Trop de tentatives.", detail: "Réessayez dans quelques minutes.").ExecuteAsync(context.HttpContext));
 });
 
 var websiteOrigin = builder.Configuration.GetSection(GatewayOptions.Section).Get<GatewayOptions>()?.WebsiteOrigin ?? new GatewayOptions().WebsiteOrigin;

@@ -153,6 +153,35 @@ public class LicenseRequestTests(GatewayFixture gateway)
     }
 
     [Fact]
+    public async Task Unreadable_answer_from_the_licensing_server_answers_503()
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        gateway.Licensing.SetGarbled(machine);
+
+        var sent = await phone.PostAsJsonAsync("/api/license-request", Form);
+
+        sent.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+    }
+
+    [Fact]
+    public async Task Sending_in_a_loop_is_limited_per_pharmacy()
+    {
+        var (pharmacy, _) = await RegisterTrialAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        for (var i = 0; i < 5; i++)
+            (await phone.PostAsJsonAsync("/api/license-request", Form)).EnsureSuccessStatusCode();
+
+        var limited = await phone.PostAsJsonAsync("/api/license-request", Form);
+        var (other, _) = await RegisterTrialAsync();
+        using var otherPhone = await LinkPhoneAsync(other.AgentKey);
+
+        limited.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
+        (await limited.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ProblemDetails>())!.Title.Should().Be("Trop de tentatives.");
+        (await otherPhone.PostAsJsonAsync("/api/license-request", Form)).StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
     public async Task Pharmacy_without_a_known_computer_cannot_request_from_the_phone()
     {
         var pharmacy = await gateway.CreatePharmacyAsync();

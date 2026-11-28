@@ -66,6 +66,12 @@ public class LicensingServer(HttpClient http, ILogger<LicensingServer> logger)
             logger.LogWarning("Licensing server unreachable for {Route}: {Error}", route, ex.Message);
             return (null, null);
         }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException)
+        {
+            // A 2xx that is not our JSON (a proxy or maintenance page): the phone gets "unreachable", not a 500.
+            logger.LogWarning("Licensing server sent an unreadable answer for {Route}: {Error}", route, ex.Message);
+            return (null, null);
+        }
     }
 
     private static async Task<LicensingError> ReadErrorAsync(HttpResponseMessage response, CancellationToken ct)

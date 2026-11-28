@@ -18,11 +18,17 @@ public static class LicenseRequestEndpoints
 {
     private const string PhoneRoute = "/api/license-request";
 
+    /// <summary>
+    /// Per pharmacy: every request reaches the licensing server from the gateway's single address, so one phone
+    /// sending in a loop would otherwise use up the per-IP limit there for all pharmacies.
+    /// </summary>
+    public const string RateLimit = "license-request";
+
     public static void MapLicenseRequestEndpoints(this IEndpointRouteBuilder app)
     {
         var phone = app.MapGroup(PhoneRoute).RequireAuthorization();
         phone.MapGet("", StateAsync);
-        phone.MapPost("", SendAsync);
+        phone.MapPost("", SendAsync).RequireRateLimiting(RateLimit);
 
         app.MapGet(LinkRoutes.LicenseRequest, StateAsync)
             .RequireAuthorization(new AuthorizeAttribute { AuthenticationSchemes = AgentKeyAuthenticationHandler.SchemeName });

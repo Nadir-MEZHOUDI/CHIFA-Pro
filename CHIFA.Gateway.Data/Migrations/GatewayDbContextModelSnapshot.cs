@@ -262,6 +262,9 @@ namespace CHIFA.Gateway.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_pharmacies_license_id");
 
+                    b.HasIndex("MachineId")
+                        .HasDatabaseName("ix_pharmacies_machine_id");
+
                     b.ToTable("pharmacies", (string)null);
                 });
 
