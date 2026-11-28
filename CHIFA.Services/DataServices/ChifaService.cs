@@ -506,10 +506,65 @@ public class ChifaService
             .ConfigureAwait(false);
     }
 
-    public async ValueTask<IEnumerable<ListeNoire>> LoadAllListNoirAsync()
+    /// <summary>
+    /// The patients whose Chifa card serial (facture.num_serie) is in the liste noire table "ln",
+    /// matched as CHIFA_OFFICINE does it at sale time.
+    /// </summary>
+    public async ValueTask<IEnumerable<ListeNoirePatientDto>> LoadListeNoirePatientsAsync()
     {
         await using var db = new ChifaDb();
-        return await db.ListeNoires.ToListAsync().ConfigureAwait(false);
+        var cards = await db.Factures
+            .Where(f => f.NumSerie != null)
+            .GroupBy(f => new { f.NumAssure, f.RangAd, f.NumSerie })
+            .Select(g => new
+            {
+                g.Key.NumAssure,
+                g.Key.RangAd,
+                NumSerie = g.Key.NumSerie!.Value,
+                Factures = g.Count(),
+                Derniere = g.Max(f => f.DateFact)
+            })
+            .ToListAsync().ConfigureAwait(false);
+
+        // "ln" holds millions of rows and has no index: one hash join over it, not a lookup per card (2 min).
+        var serials = cards.Select(c => c.NumSerie.ToString()).Distinct().ToArray();
+        var blacklisted = (await db.QueryToListAsync<string>(
+                "select l.num_serie from ln l join unnest(@s) x(s) on l.num_serie = x.s",
+                new DataParameter("s", serials)).ConfigureAwait(false))
+            .ToHashSet();
+
+        var patients = cards
+            .GroupBy(c => (c.NumAssure, c.RangAd))
+            .Select(g => (Cards: g.ToList(), Current: g.MaxBy(c => c.Derniere)!, Visite: g.Max(c => c.Derniere)))
+            .Where(p => p.Cards.Exists(c => blacklisted.Contains(c.NumSerie.ToString())))
+            .ToList();
+        if (patients.Count == 0)
+            return [];
+
+        var assures = patients.Select(p => p.Current.NumAssure).Distinct().ToList();
+        var names = (await db.Beneficiaires
+                .Where(b => assures.Contains(b.NumAssure))
+                .Select(b => new { b.NumAssure, b.RangAd, b.Nom, b.Prenom })
+                .ToListAsync().ConfigureAwait(false))
+            .ToDictionary(b => (b.NumAssure, b.RangAd), b => $"{b.Nom} {b.Prenom}".Trim());
+
+        return patients
+            .SelectMany(p => p.Cards
+                .Where(c => blacklisted.Contains(c.NumSerie.ToString()))
+                .Select(c => new ListeNoirePatientDto
+                {
+                    CarteActuelle = c.NumSerie == p.Current.NumSerie,
+                    Malade = names.GetValueOrDefault((c.NumAssure!, c.RangAd!)),
+                    NumAssure = c.NumAssure,
+                    Rang = c.RangAd,
+                    NumSerie = c.NumSerie,
+                    Factures = c.Factures,
+                    DerniereUtilisation = c.Derniere,
+                    DerniereVisite = p.Visite
+                }))
+            .OrderByDescending(p => p.CarteActuelle)
+            .ThenByDescending(p => p.DerniereVisite)
+            .ToList();
     }
 
     public async ValueTask<IEnumerable<ConsumptionDto>> LoadConsumptionAsync(string noAssure, string rang,

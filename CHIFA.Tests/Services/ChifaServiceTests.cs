@@ -267,10 +267,10 @@ public class ChifaServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task LoadAllListNoirAsync_DoesNotThrow()
+    public async Task LoadListeNoirePatientsAsync_DoesNotThrow()
     {
         using var w = StartWatch();
-        var rows = (await _svc.LoadAllListNoirAsync()).ToList();
+        var rows = (await _svc.LoadListeNoirePatientsAsync()).ToList();
         rows.Should().NotBeNull();
     }
 
