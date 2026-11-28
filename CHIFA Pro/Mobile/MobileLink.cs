@@ -34,7 +34,9 @@ internal static class MobileLink
     private static CancellationTokenSource? _watch;
     private static string? _reportedLicense;
     private static string? _reportedContact;
-    private static PharmacistContact? _officineContact;
+    private static LicenseRequestInfo? _officine;
+    private static bool _officineRead;
+    private static DateTime _officineTriedAt;
 
     /// <summary><c>CHIFA_GATEWAY_URL</c> points to a test server.</summary>
     public static string GatewayUrl =>
@@ -151,28 +153,30 @@ internal static class MobileLink
     }
 
     /// <summary>
-    /// What the pharmacist typed for the trial or a license request; otherwise the pharmacy's settings in CHIFA (the
-    /// same details the trial form starts from), which the gateway only uses when it has nothing better.
+    /// What the pharmacist typed for the trial or a license request, with the name, address and code PS of the CHIFA
+    /// database in place of the typed ones: those cannot be changed, here or on a phone.
     /// </summary>
     private static async Task<PharmacistContact?> ContactAsync()
     {
-        if (LicenseGate.SavedContact() is { } typed) return typed;
-        if (_officineContact is not null) return _officineContact;
-        try
+        var typed = LicenseGate.SavedContact();
+        if (!_officineRead && DateTime.UtcNow - _officineTriedAt > TimeSpan.FromMinutes(10))
         {
-            var officine = await ChifaService.Instance.GetFirstOfficineAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(8));
-            if (officine is null) return null;
-            var name = string.Join(" ", new[] { officine.Nom, officine.Prenom }.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x!.Trim()));
-            if (name.Length == 0 || string.IsNullOrWhiteSpace(officine.NumTel)) return null;
-            return _officineContact = new PharmacistContact(name, officine.NumTel.Trim(), officine.NomPharmacie?.Trim(), officine.Email?.Trim(),
-                Address: officine.Adresse?.Trim(), CodePs: officine.CodePs?.Trim());
+            // Read once: the pharmacy's settings do not change while SmartCHIFA runs. The check runs every 30 s, so an
+            // unreachable database is tried again only every 10 minutes.
+            _officineTriedAt = DateTime.UtcNow;
+            _officine = await LicenseGate.OfficineAsync();
+            _officineRead = _officine is not null;
         }
-        catch (Exception ex)
-        {
-            // The database may not be reachable: the license still goes, without the details.
-            Log.Debug(ex, "Mobile link: pharmacy details unavailable");
-            return null;
-        }
+
+        if (_officine is not { FullName.Length: > 0 } chifa)
+            return typed;
+
+        var phone = typed?.Phone ?? chifa.Phone;
+        if (phone.Count(char.IsDigit) < 9)
+            return typed;
+
+        return new PharmacistContact(chifa.FullName, phone, typed?.BusinessName ?? chifa.BusinessName, typed?.Email ?? chifa.Email,
+            typed?.Wilaya, chifa.Address ?? typed?.Address, chifa.CodePs ?? typed?.CodePs, typed?.UpdatedAt, IdentityFromChifa: true);
     }
 
     /// <summary>

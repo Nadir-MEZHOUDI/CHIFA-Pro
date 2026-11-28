@@ -6,8 +6,10 @@ using Microsoft.Extensions.Options;
 
 namespace CHIFA.Gateway.Features.LicenseRequests;
 
-/// <summary>What the pharmacist fills in on the phone; the rest comes from the pharmacy's last license.</summary>
-public record PhoneLicenseRequest(string FullName, string Phone, string? BusinessName = null, string? Wilaya = null, string? Message = null);
+/// <summary>What the pharmacist fills in on the phone; the rest comes from what SmartCHIFA sent.</summary>
+/// <param name="FullName">Ignored when the name comes from the CHIFA database: it cannot be changed from a phone.</param>
+public record PhoneLicenseRequest(
+    string? FullName, string Phone, string? BusinessName = null, string? Wilaya = null, string? Message = null, string? Email = null);
 
 /// <summary>
 /// The pharmacist asks for a license from the phone, for the pharmacy's computer (its machine id comes from the
@@ -67,9 +69,6 @@ public static class LicenseRequestEndpoints
         IOptions<GatewayOptions> options,
         CancellationToken ct)
     {
-        var fullName = request.FullName?.Trim();
-        if (string.IsNullOrEmpty(fullName))
-            return Invalid("Saisissez le nom et le prénom du pharmacien.");
         if ((request.Phone ?? "").Count(char.IsDigit) < 9)
             return Invalid("Saisissez un numéro de téléphone valide : SmartApp vous appelle pour le paiement.");
 
@@ -88,10 +87,15 @@ public static class LicenseRequestEndpoints
         var message = string.IsNullOrWhiteSpace(request.Message)
             ? "Demande envoyée depuis l'application mobile."
             : $"Demande envoyée depuis l'application mobile. {request.Message.Trim()}";
-        // The phone shows the name, phone, pharmacy and wilaya; the e-mail, address and code PS SmartCHIFA sent go along.
+        // The name, address and code PS from the CHIFA database stay as SmartCHIFA sent them: only the phone number,
+        // e-mail, pharmacy name and wilaya can change here. The address and code PS go along unseen.
         var stored = PharmacistContacts.Of(pharmacy);
+        var fromChifa = stored is { IdentityFromChifa: true };
+        var fullName = fromChifa ? stored!.FullName : request.FullName?.Trim();
+        if (string.IsNullOrEmpty(fullName))
+            return Invalid("Saisissez le nom et le prénom du pharmacien.");
         var contact = new PharmacistContact(fullName, request.Phone!.Trim(), Clean(request.BusinessName) ?? stored?.BusinessName ?? pharmacy.Name,
-            stored?.Email, Clean(request.Wilaya), stored?.Address, stored?.CodePs, DateTime.UtcNow);
+            Clean(request.Email) ?? stored?.Email, Clean(request.Wilaya), stored?.Address, stored?.CodePs, DateTime.UtcNow, fromChifa);
         var (receipt, error) = await server.SubmitAsync(new LicensingSubmission(
             options.Value.LicenseProduct, pharmacy.MachineId!, contact.FullName, contact.BusinessName, contact.Phone,
             contact.Email, contact.Wilaya, contact.Address, contact.CodePs, message, MachineName: null, AppVersion: null), ct);

@@ -258,6 +258,55 @@ public class LicenseRequestTests(GatewayFixture gateway)
         last!.FullName.Should().Be("Amel Benali");
     }
 
+    private static readonly PharmacistContact FromChifa = new(
+        "BENALI Amel", "0661 23 45 67", "Pharmacie El Amel", "amel@example.dz", null, "12 rue des Roses, Annaba", "PS-123",
+        IdentityFromChifa: true);
+
+    [Fact]
+    public async Task Name_address_and_code_ps_from_chifa_cannot_be_changed_from_the_phone()
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync(FromChifa);
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+
+        (await phone.PostAsJsonAsync("/api/license-request", new PhoneLicenseRequest(
+            "Quelqu'un d'autre", "0550 11 22 33", "Pharmacie Nouvelle", "Annaba", Email: "nouveau@example.dz"))).EnsureSuccessStatusCode();
+        var kept = (await StateAsync(phone)).Contact;
+
+        gateway.Licensing.For(machine)!.Submission.Should().BeEquivalentTo(new
+        {
+            FullName = "BENALI Amel", Address = "12 rue des Roses, Annaba", CodePs = "PS-123",
+            Phone = "0550 11 22 33", Email = "nouveau@example.dz", BusinessName = "Pharmacie Nouvelle"
+        });
+        kept.Should().BeEquivalentTo(new { FullName = "BENALI Amel", Phone = "0550 11 22 33", Email = "nouveau@example.dz", IdentityFromChifa = true });
+    }
+
+    [Fact]
+    public async Task Phone_may_leave_out_the_name_when_it_comes_from_chifa()
+    {
+        var (pharmacy, _) = await RegisterTrialAsync(FromChifa);
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+
+        var sent = await phone.PostAsJsonAsync("/api/license-request", new PhoneLicenseRequest(null, "0661 23 45 67"));
+
+        sent.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Chifa_identity_replaces_a_typed_name_but_keeps_the_typed_phone()
+    {
+        var license = GatewayFixture.CreateLicense(edition: "trial", machineId: Guid.NewGuid().ToString("N"));
+        var pharmacy = await RegisterAsync(license, TrialDetails with { Phone = "0550 11 22 33", UpdatedAt = DateTime.UtcNow });
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        using var desktop = gateway.CreatePharmacyClient(pharmacy.AgentKey);
+
+        (await desktop.PostAsJsonAsync(LinkRoutes.License, new LicenseUpdateRequest(license, FromChifa))).EnsureSuccessStatusCode();
+
+        (await StateAsync(phone)).Contact.Should().BeEquivalentTo(new
+        {
+            FullName = "BENALI Amel", Address = "12 rue des Roses, Annaba", CodePs = "PS-123", Phone = "0550 11 22 33", IdentityFromChifa = true
+        });
+    }
+
     private async Task<RegisterPharmacyResponse> RegisterAsync(string license, PharmacistContact contact)
     {
         using var client = gateway.CreateClient();

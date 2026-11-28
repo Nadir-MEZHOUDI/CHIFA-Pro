@@ -43,6 +43,9 @@ public class Pharmacy
     /// <summary>When the pharmacist typed them: newer details replace older ones, wherever they were typed.</summary>
     public DateTime? ContactUpdatedAt { get; set; }
 
+    /// <summary>The name, address and code PS come from the CHIFA database: a phone cannot change them.</summary>
+    public bool ContactIdentityFromChifa { get; set; }
+
     /// <summary>SHA-256 of the agent key. The key itself is shown once, when created.</summary>
     public required string AgentKeyHash { get; set; }
 

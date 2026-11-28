@@ -33,41 +33,43 @@ public sealed partial class LicenseRequestForm : XtraForm
     /// <summary>The request was sent; the license dialog shows it as pending.</summary>
     public LicenseRequestResult? Result { get; private set; }
 
-    /// <summary>Last sent details first, otherwise the pharmacy's details from the CHIFA database.</summary>
+    /// <summary>
+    /// The pharmacist's name, address and code PS come from the CHIFA database and cannot be changed here; the phone,
+    /// e-mail and pharmacy name start from the last sent details, otherwise from the CHIFA database.
+    /// </summary>
     private async Task FillAsync()
     {
         if (_client.PendingRequest?.Info is { } sent)
-        {
             ShowInfo(sent);
-            return;
-        }
 
         try
         {
             UseWaitCursor = true;
-            var officine = await ChifaService.Instance.GetFirstOfficineAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(8));
-            if (officine is null || IsDisposed) return;
-
-            var name = string.Join(" ", new[] { officine.Nom, officine.Prenom }.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x!.Trim()));
-            ShowInfo(new LicenseRequestInfo(
-                FullName: name,
-                Phone: officine.NumTel?.Trim() ?? string.Empty,
-                BusinessName: officine.NomPharmacie?.Trim(),
-                Email: officine.Email?.Trim(),
-                Address: officine.Adresse?.Trim(),
-                CodePs: officine.CodePs?.Trim()));
-        }
-        catch (Exception ex)
-        {
-            // The database may not be reachable yet: the pharmacist types the details.
-            ex.Log(showMessage: false);
+            if (await LicenseGate.OfficineAsync() is { } officine && !IsDisposed)
+            {
+                Lock(_txtFullName, officine.FullName);
+                Lock(_txtAddress, officine.Address);
+                Lock(_txtCodePs, officine.CodePs);
+                ShowInfo(officine);
+            }
         }
         finally
         {
             if (!IsDisposed) UseWaitCursor = false;
         }
 
-        (string.IsNullOrWhiteSpace(_txtFullName.Text) ? _txtFullName : _txtPhone).Focus();
+        if (!IsDisposed)
+            (string.IsNullOrWhiteSpace(_txtFullName.Text) ? _txtFullName : _txtPhone).Focus();
+    }
+
+    /// <summary>A detail from the CHIFA database: shown, not editable. An empty one stays editable.</summary>
+    private static void Lock(TextEdit editor, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+        editor.Text = value;
+        editor.Properties.ReadOnly = true;
+        editor.TabStop = false;
+        editor.ToolTip = "Information du logiciel CHIFA (Paramètres de l'officine) : non modifiable ici.";
     }
 
     private void ShowInfo(LicenseRequestInfo info)

@@ -303,9 +303,11 @@ public record Subscription(string Status, bool IsTrial, DateTime? ExpiresAt, int
 /// <param name="Contact">The pharmacist's details from the trial or the last request, sent again in one tap.</param>
 public record LicenseRequestState(bool CanRequest, string Status, DateTime? SentAt, string? Serial, string? Message, PharmacistContact? Contact = null);
 
-public record PharmacistContact(string FullName, string Phone, string? BusinessName, string? Email, string? Wilaya, string? Address, string? CodePs);
+/// <param name="IdentityFromChifa">The name (with the address and code PS) comes from the CHIFA database: not editable here.</param>
+public record PharmacistContact(
+    string FullName, string Phone, string? BusinessName, string? Email, string? Wilaya, string? Address, string? CodePs, bool IdentityFromChifa = false);
 
-public record LicenseRequestForm(string FullName, string Phone, string? BusinessName, string? Wilaya, string? Message);
+public record LicenseRequestForm(string? FullName, string Phone, string? BusinessName, string? Wilaya, string? Message, string? Email);
 
 /// <param name="IsCurrent">This phone.</param>
 public record PhoneDevice(Guid Id, string Name, DateTime CreatedAt, DateTime? LastSeenAt, bool IsCurrent);

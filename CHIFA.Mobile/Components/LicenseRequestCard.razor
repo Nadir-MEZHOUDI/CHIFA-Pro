@@ -26,13 +26,28 @@ else if (_state is { } s && (s.CanRequest || s.Status != "none"))
         @if (_editing)
         {
             <EditForm Model="this" OnSubmit="SendAsync" FormName="license-request" class="form">
-                <label>
-                    Nom et prénom du pharmacien *
-                    <InputText @bind-Value="FullName" autocomplete="name" />
-                </label>
+                @if (NameFromChifa)
+                {
+                    <div class="locked-field">
+                        <span>Pharmacien</span>
+                        <strong>@FullName</strong>
+                        <small>Nom, adresse et code PS du logiciel CHIFA : non modifiables.</small>
+                    </div>
+                }
+                else
+                {
+                    <label>
+                        Nom et prénom du pharmacien *
+                        <InputText @bind-Value="FullName" autocomplete="name" />
+                    </label>
+                }
                 <label>
                     Téléphone *
                     <InputText @bind-Value="Phone" type="tel" inputmode="tel" autocomplete="tel" />
+                </label>
+                <label>
+                    E-mail
+                    <InputText @bind-Value="Email" type="email" inputmode="email" autocomplete="email" />
                 </label>
                 <label>
                     Pharmacie
@@ -92,6 +107,10 @@ else if (_state is { } s && (s.CanRequest || s.Status != "none"))
                 <dl class="facts contact-facts">
                     <div><dt>Pharmacien</dt><dd>@c.FullName</dd></div>
                     <div><dt>Téléphone</dt><dd class="ltr">@c.Phone</dd></div>
+                    @if (c.Email is { Length: > 0 } email)
+                    {
+                        <div><dt>E-mail</dt><dd class="ltr">@email</dd></div>
+                    }
                     @if (c.BusinessName is { Length: > 0 } business)
                     {
                         <div><dt>Pharmacie</dt><dd>@business</dd></div>
@@ -134,9 +153,13 @@ else if (_state is { } s && (s.CanRequest || s.Status != "none"))
     private string? Phone { get; set; }
     private string? BusinessName { get; set; }
     private string? Wilaya { get; set; }
+    private string? Email { get; set; }
     private string? Message { get; set; }
 
-    private bool IsComplete => !string.IsNullOrWhiteSpace(FullName) && (Phone ?? "").Count(char.IsDigit) >= 9;
+    /// <summary>The name comes from the CHIFA database: shown, not editable (the gateway keeps it anyway).</summary>
+    private bool NameFromChifa => _state?.Contact is { IdentityFromChifa: true };
+
+    private bool IsComplete => (NameFromChifa || !string.IsNullOrWhiteSpace(FullName)) && (Phone ?? "").Count(char.IsDigit) >= 9;
 
     protected override Task OnInitializedAsync() => LoadAsync();
 
@@ -168,6 +191,9 @@ else if (_state is { } s && (s.CanRequest || s.Status != "none"))
             Phone ??= c.Phone;
             BusinessName ??= c.BusinessName;
             Wilaya ??= c.Wilaya;
+            Email ??= c.Email;
+            if (c.IdentityFromChifa)
+                FullName = c.FullName;
         }
         BusinessName ??= Session.Current?.Pharmacy;
         _editing = true;
@@ -175,7 +201,7 @@ else if (_state is { } s && (s.CanRequest || s.Status != "none"))
 
     private Task SendAsIsAsync(PharmacistContact contact)
     {
-        (FullName, Phone, BusinessName, Wilaya) = (contact.FullName, contact.Phone, contact.BusinessName, contact.Wilaya);
+        (FullName, Phone, BusinessName, Wilaya, Email) = (contact.FullName, contact.Phone, contact.BusinessName, contact.Wilaya, contact.Email);
         return SendAsync();
     }
 
@@ -185,7 +211,7 @@ else if (_state is { } s && (s.CanRequest || s.Status != "none"))
         _sendError = null;
         try
         {
-            _state = await Api.SendLicenseRequestAsync(new LicenseRequestForm(FullName!.Trim(), Phone!.Trim(), BusinessName, Wilaya, Message));
+            _state = await Api.SendLicenseRequestAsync(new LicenseRequestForm(FullName?.Trim(), Phone!.Trim(), BusinessName, Wilaya, Message, Email));
             _editing = false;
         }
         catch (ApiException ex)

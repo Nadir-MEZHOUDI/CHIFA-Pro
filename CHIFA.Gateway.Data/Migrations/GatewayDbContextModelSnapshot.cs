@@ -218,6 +218,10 @@ namespace CHIFA.Gateway.Data.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("contact_email");
 
+                    b.Property<bool>("ContactIdentityFromChifa")
+                        .HasColumnType("boolean")
+                        .HasColumnName("contact_identity_from_chifa");
+
                     b.Property<string>("ContactName")
                         .HasMaxLength(160)
                         .HasColumnType("character varying(160)")

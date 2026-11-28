@@ -34,6 +34,8 @@ public record LicenseRequestState(
 /// <summary>Who SmartApp calls about the payment: what the pharmacist typed for the trial or a license request.</summary>
 /// <param name="UpdatedAt">When the pharmacist typed them (UTC); <c>null</c> when SmartCHIFA only read its own settings,
 /// which then never replace details typed somewhere.</param>
+/// <param name="IdentityFromChifa">The name, address and code PS come from the CHIFA database: they cannot be changed
+/// from a phone, and SmartCHIFA always sends the current ones.</param>
 public record PharmacistContact(
     string FullName,
     string Phone,
@@ -42,7 +44,8 @@ public record PharmacistContact(
     string? Wilaya = null,
     string? Address = null,
     string? CodePs = null,
-    DateTime? UpdatedAt = null);
+    DateTime? UpdatedAt = null,
+    bool IdentityFromChifa = false);
 
 public static class LicenseRequestStates
 {

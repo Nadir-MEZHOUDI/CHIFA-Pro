@@ -157,6 +157,36 @@ internal static class LicenseGate
 
     private static string ContactFile => Path.Combine(_storageDirectory!, "contact.json");
 
+    /// <summary>
+    /// The pharmacy's details in the CHIFA database (Paramètres de l'officine), or <c>null</c> when it cannot be read.
+    /// The pharmacist's name, address and code PS are taken from here and cannot be changed in a license request,
+    /// on the computer or on a phone; the phone number, e-mail and pharmacy name only start from here.
+    /// </summary>
+    public static async Task<LicenseRequestInfo?> OfficineAsync()
+    {
+        try
+        {
+            var officine = await ChifaService.Instance.GetFirstOfficineAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(8));
+            if (officine is null) return null;
+            var name = string.Join(" ", new[] { officine.Nom, officine.Prenom }.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x!.Trim()));
+            return new LicenseRequestInfo(
+                FullName: name,
+                Phone: officine.NumTel?.Trim() ?? string.Empty,
+                BusinessName: Clean(officine.NomPharmacie),
+                Email: Clean(officine.Email),
+                Address: Clean(officine.Adresse),
+                CodePs: Clean(officine.CodePs));
+        }
+        catch (Exception ex)
+        {
+            // The database may not be reachable yet: the pharmacist types the details.
+            ex.Log(showMessage: false);
+            return null;
+        }
+
+        static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+    }
+
     /// <summary>Opens the license dialog from the main window (details and online check).</summary>
     public static void ShowDialog(IWin32Window owner)
     {
