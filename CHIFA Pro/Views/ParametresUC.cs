@@ -4,25 +4,12 @@ namespace CHIFA.Pro.Views;
 
 public partial class ParametersUc : XtraUserControl, INavigable
 {
-    private Action? _closer;
     public string Caption { get; } = "PARAMÈTRES";
     public Image Image => FrmMain.Image(14);
 
     public ParametersUc()
     {
         InitializeComponent();
-    }
-
-    public static void ShowAsForm()
-    {
-        var frm = new XtraForm
-        {
-            StartPosition = FormStartPosition.CenterScreen,
-            Text = @"Paramètres",
-            Size = new Size(600, 300)
-        };
-        frm.Controls.Add(new ParametersUc { Dock = DockStyle.Fill, _closer = frm.Close });
-        frm.ShowDialog();
     }
 
     private async void btnSave_Click(object sender, EventArgs e)
@@ -58,7 +45,6 @@ public partial class ParametersUc : XtraUserControl, INavigable
             {
                 XtraMessageBox.Show("Configuration enregistrée et appliquée. Connexion au serveur réussie.",
                     "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _closer?.Invoke();
             }
             else
             {
@@ -195,11 +181,6 @@ Vérifiez le nom du serveur ou que PostgreSQL est démarré.",
         {
             Cursor.Current = Cursors.Default;
         }
-    }
-
-    private void txtChifaPath_EditValueChanged(object sender, EventArgs e)
-    {
-
     }
 
     private void rbtServer_CheckedChanged(object sender, EventArgs e)

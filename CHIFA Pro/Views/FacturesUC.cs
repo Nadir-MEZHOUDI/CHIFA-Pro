@@ -4,7 +4,6 @@ namespace CHIFA.Pro.Views;
 
 public partial class FacturesUc : XtraUserControl, INavigable
 {
-    private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
     private readonly ReloadCancellation _reloads = new();
 
     public FacturesUc()
@@ -34,7 +33,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
     private void BtnTraitSpes_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e) => new FrmTraitSpec().Show();
 
     private void BtnViewFacture_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        => _ = ViewFactureAsync();
+        => _ = PrintFactureAsync(avecMajoration: true);
 
     private void BtnPrintFacture_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         => _ = PrintFactureAsync(avecMajoration: true);
@@ -42,34 +41,16 @@ public partial class FacturesUc : XtraUserControl, INavigable
     private void BtnPrintVerso_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         => _ = PrintVersoAsync();
 
-    private void BtnDeleteFacture_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        => _ = DeleteFactureAsync();
-
-
     private void GridDetails_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        if (viewDetails?.GetRow(e.RowHandle) is FactureDetailDto fc)
-        {
-            e.Appearance.BackColor = (fc.Ts, fc.DureeTrait >= 60) switch
-            {
-                (true, _) => Color.LawnGreen,
-                (_, true) => Color.Khaki,
-                (_, _) => e.Appearance.BackColor
-            };
-        }
+        if (viewDetails?.GetRow(e.RowHandle) is FactureDetailDto fc && RowColors.For(fc.Ts, fc.DureeTrait >= 60) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private void GridFactures_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        if (viewFactures?.GetRow(e.RowHandle) is FactureDto row)
-        {
-            e.Appearance.BackColor = (row.TS, row.LongDuree) switch
-            {
-                (true, _) => Color.LawnGreen,
-                (_, true) => Color.Khaki,
-                (_, _) => e.Appearance.BackColor
-            };
-        }
+        if (viewFactures?.GetRow(e.RowHandle) is FactureDto row && RowColors.For(row.TS, row.LongDuree) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private async void GridFactures_FocusedRowChanged(object sender, FocusedRowChangedEventArgs e)
@@ -82,29 +63,8 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
     private async void LastFacturesUC_Load(object sender, EventArgs e)
     {
-        await LoadMaxAndMinDates();
+        await DateFilter.SetUpAsync(txtDateFrom, txtDateTo, DateTime.Today.AddYears(-1), calendarOnFrom: true, _reloads, LoadFacturesAsync);
         _ = ReloadFacturesImmediateAsync();
-    }
-
-    private async Task LoadMaxAndMinDates()
-    {
-        try
-        {
-            await ChifaService.Instance.GetMinAndMaxDatesAsync();
-            var lastYear = DateTime.Today.AddYears(-1);
-            DateFilter.Configure(fromDateRepo, toDateRepo);
-            fromDateRepo.TodayDate = lastYear;
-
-            txtDateFrom.EditValue = lastYear;
-            txtDateTo.EditValue = null; // up to today
-
-            txtDateFrom.EditValueChanged += TxtDateFrom_EditValueChanged;
-            txtDateTo.EditValueChanged += TxtDateTo_EditValueChanged;
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
     }
 
     private void OpenHistoryOfSelectedPatient()
@@ -115,19 +75,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
         }
     }
 
-    private async Task ScheduleFacturesReloadAsync()
-    {
-        var cancellationToken = _reloads.Next();
-
-        try
-        {
-            await Task.Delay(ReloadDebounceDelay, cancellationToken);
-            await LoadFacturesAsync(cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-    }
+    private Task ScheduleFacturesReloadAsync() => DateFilter.DebounceAsync(_reloads, LoadFacturesAsync);
 
     private async Task ReloadFacturesImmediateAsync()
     {
@@ -180,43 +128,17 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
     private async void TxtMedic_EditValueChanged(object sender, EventArgs e) => await ScheduleFacturesReloadAsync();
 
-    private async void TxtDateFrom_EditValueChanged(object? sender, EventArgs e) => await ScheduleFacturesReloadAsync();
-
-    private async void TxtDateTo_EditValueChanged(object? sender, EventArgs e) => await ScheduleFacturesReloadAsync();
-
     private void ViewFactures_DoubleClick(object sender, EventArgs e)
     {
         OpenHistoryOfSelectedPatient();
     }
 
-    private FactureDto? GetSelectedFactureDto()
-        => viewFactures.GetRow(viewFactures.FocusedRowHandle) as FactureDto;
-
-    private async Task ViewFactureAsync()
-        => await PrintFactureInternalAsync(avecMajoration: true);
-
     private async Task PrintFactureAsync(bool avecMajoration)
-        => await PrintFactureInternalAsync(avecMajoration);
-
-    private async Task PrintFactureInternalAsync(bool avecMajoration)
     {
         try
         {
-            var dto = GetSelectedFactureDto();
-            if (dto is null || string.IsNullOrWhiteSpace(dto.NumFact))
-            {
-                XtraMessageBox.Show("Veuillez sélectionner une facture.", "Aucune sélection", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (await LoadSelectedFactureForPrintAsync() is not { } facture)
                 return;
-            }
-
-            Cursor = Cursors.WaitCursor;
-            var facture = await Task.Run(() => ChifaService.Instance.GetFactureForPrint(dto.NumFact!)).ConfigureAwait(true);
-
-            if (facture is null)
-            {
-                XtraMessageBox.Show($"Facture {dto.NumFact} introuvable.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
 
             if (facture.DetailFacts is null || !facture.DetailFacts.Any())
             {
@@ -240,23 +162,8 @@ public partial class FacturesUc : XtraUserControl, INavigable
     {
         try
         {
-            var dto = GetSelectedFactureDto();
-            if (dto is null || string.IsNullOrWhiteSpace(dto.NumFact))
-            {
-                XtraMessageBox.Show("Veuillez sélectionner une facture.", "Aucune sélection", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            Cursor = Cursors.WaitCursor;
-            var facture = await Task.Run(() => ChifaService.Instance.GetFactureForPrint(dto.NumFact!)).ConfigureAwait(true);
-
-            if (facture is null)
-            {
-                XtraMessageBox.Show($"Facture {dto.NumFact} introuvable.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            FactureReportService.PrintVerso(facture);
+            if (await LoadSelectedFactureForPrintAsync() is { } facture)
+                FactureReportService.PrintVerso(facture);
         }
         catch (Exception ex)
         {
@@ -268,42 +175,21 @@ public partial class FacturesUc : XtraUserControl, INavigable
         }
     }
 
-    private async Task DeleteFactureAsync()
+    /// <summary>The selected facture with its details, or <c>null</c> once the user is told why. Leaves the wait cursor on.</summary>
+    private async Task<Facture?> LoadSelectedFactureForPrintAsync()
     {
-        try
+        if (viewFactures.GetRow(viewFactures.FocusedRowHandle) is not FactureDto { NumFact: { } numFact } || string.IsNullOrWhiteSpace(numFact))
         {
-            var dto = GetSelectedFactureDto();
-            if (dto is null || string.IsNullOrWhiteSpace(dto.NumFact))
-            {
-                XtraMessageBox.Show("Veuillez sélectionner une facture.", "Aucune sélection", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            var confirm = XtraMessageBox.Show(
-                $"Voulez-vous vraiment supprimer cette facture ?\n\nN° Facture : {dto.NumFact}\nAssuré : {dto.Assure}\nMalade : {dto.Malade}\n\nCette action est irréversible.",
-                "Confirmation de suppression",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (confirm != DialogResult.Yes)
-                return;
-
-            Cursor = Cursors.WaitCursor;
-
-            await ChifaService.Instance.DeleteFactureAsync(dto.NumFact!);
-
-            XtraMessageBox.Show($"Facture {dto.NumFact} supprimée avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            await ReloadFacturesImmediateAsync();
+            XtraMessageBox.Show("Veuillez sélectionner une facture.", "Aucune sélection", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return null;
         }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-        finally
-        {
-            Cursor = Cursors.Default;
-        }
+
+        Cursor = Cursors.WaitCursor;
+        var facture = await ChifaService.Instance.GetFactureForPrintAsync(numFact);
+        if (facture is null)
+            XtraMessageBox.Show($"Facture {numFact} introuvable.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+        return facture;
     }
 
     private void FacturesUc_Disposed(object? sender, EventArgs e)

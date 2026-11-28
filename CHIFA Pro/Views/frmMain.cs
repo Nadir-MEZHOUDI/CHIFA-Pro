@@ -1,12 +1,5 @@
-using CHIFA.Pro.Helpers.Settings;
-
-using DevExpress.XtraBars.Alerter;
 using DevExpress.XtraTab;
 using DevExpress.XtraTab.ViewInfo;
-using LinqToDB.Async;
-using System.Net.Sockets;
-using Velopack;
-using Velopack.Exceptions;
 
 namespace CHIFA.Pro.Views;
 
@@ -15,10 +8,13 @@ public partial class FrmMain : XtraForm
     private static FrmMain? _instance;
     public static FrmMain Instance => _instance ??= (Application.OpenForms[nameof(FrmMain)] as FrmMain)!;
 
+    internal AppUpdater Updater { get; }
+
     public FrmMain()
     {
         _instance = this;
         InitializeComponent();
+        Updater = new AppUpdater(this, components!,progressBar, statusStrip1, ShowNotification);
         SetStatisticsAccordionImages();
         _loginImage = accLogin.ImageOptions.Image;
         WatchLicense();
@@ -318,8 +314,8 @@ public partial class FrmMain : XtraForm
             await Task.Yield();
             await Task.Delay(500);
             _ = LoadServerInfo();
-            _ = UpdateAppAsync();
-            StartHourlyUpdateCheck();
+            _ = Updater.UpdateNowAsync();
+            Updater.StartHourlyCheck();
             await UpdateMobileServiceAsync();
         }
         catch (Exception ex)
@@ -367,201 +363,6 @@ public partial class FrmMain : XtraForm
 
         return await DbChecker.CheckDbConnectionAsync();
     }
-
-
-    private const string UpdateFeedUrl = "https://nadirsmartapp.blob.core.windows.net/chifa-pro";
-    private static readonly SemaphoreSlim UpdateGate = new(1, 1);
-
-    public async Task UpdateAppAsync(bool showMessage = false)
-    {
-        if (!await UpdateGate.WaitAsync(0))
-        {
-            if (showMessage)
-                await ShowNotification("Une mise à jour est déjà en cours", "Mise à jour");
-            return;
-        }
-
-        try
-        {
-            progressBar.Visible = true;
-            var mgr = new UpdateManager(UpdateFeedUrl);
-
-            if (!mgr.IsInstalled)
-            {
-                progressBar.Value = 50;
-                await Task.Delay(2000);
-                return;
-            }
-
-            var newVersion = await mgr.CheckForUpdatesAsync();
-            if (newVersion == null)
-            {
-                if (showMessage)
-                    await ShowNotification("Vous disposez de la dernière version", "Mise à jour");
-            }
-            else
-            {
-                await mgr.DownloadUpdatesAsync(newVersion,
-                    i => Invoke(() => progressBar.Value = i));
-
-                ApplyUpdateAndRestart(mgr, newVersion.TargetFullRelease);
-            }
-        }
-        catch (Exception ex) when (FindInChain<AcquireLockFailedException>(ex) is not null)
-        {
-            Serilog.Log.Information(ex, "Update skipped: another update operation holds the Velopack lock");
-            if (showMessage)
-                await ShowNotification("Une mise à jour est déjà en cours", "Mise à jour");
-        }
-        catch (Exception ex) when (IsUpdateServerUnreachable(ex))
-        {
-            // The next startup or manual check retries; reporting these would only measure customers' internet.
-            Serilog.Log.Warning(ex, "Update check skipped: update server unreachable");
-            if (showMessage)
-                await ShowNotification("Serveur de mise à jour injoignable. Vérifiez votre connexion Internet et réessayez plus tard.",
-                    "Mise à jour", ToolTipIcon.Warning);
-        }
-        catch (Exception ex)
-        {
-            ex.Log(showMessage);
-        }
-        finally
-        {
-            progressBar.Visible = false;
-            UpdateGate.Release();
-        }
-    }
-
-    private static readonly TimeSpan UpdateCheckInterval = TimeSpan.FromMinutes(60);
-    private System.Windows.Forms.Timer? _updateTimer;
-    private VelopackAsset? _readyUpdate;
-    private ToolStripStatusLabel? _restartLabel;
-    private AlertControl? _updateAlert;
-
-    /// <summary>Pharmacies leave SmartCHIFA open all day: look for a new version every hour, not only at startup.</summary>
-    private void StartHourlyUpdateCheck()
-    {
-        if (_updateTimer is not null) return;
-        _updateTimer = new System.Windows.Forms.Timer { Interval = (int)UpdateCheckInterval.TotalMilliseconds };
-        _updateTimer.Tick += async (_, _) => await DownloadUpdateInBackgroundAsync();
-        _updateTimer.Start();
-        FormClosed += (_, _) => _updateTimer.Dispose();
-    }
-
-    /// <summary>Downloads quietly and only offers the restart, so nobody is interrupted mid-work.</summary>
-    private async Task DownloadUpdateInBackgroundAsync()
-    {
-        if (!await UpdateGate.WaitAsync(0)) return;
-
-        try
-        {
-            var mgr = new UpdateManager(UpdateFeedUrl);
-            if (!mgr.IsInstalled) return;
-
-            var update = await mgr.CheckForUpdatesAsync();
-            // Already downloaded and offered (or declined) in this run.
-            if (update is null || Equals(update.TargetFullRelease.Version, _readyUpdate?.Version)) return;
-
-            await mgr.DownloadUpdatesAsync(update);
-            _readyUpdate = update.TargetFullRelease;
-            OfferRestart(_readyUpdate.Version.ToString());
-        }
-        catch (Exception ex) when (FindInChain<AcquireLockFailedException>(ex) is not null || IsUpdateServerUnreachable(ex))
-        {
-            Serilog.Log.Warning(ex, "Hourly update check skipped, retrying in {Interval}", UpdateCheckInterval);
-        }
-        catch (Exception ex)
-        {
-            ex.Log(showMessage: false);
-        }
-        finally
-        {
-            UpdateGate.Release();
-        }
-    }
-
-    private void OfferRestart(string version)
-    {
-        if (_restartLabel is null)
-        {
-            _restartLabel = new ToolStripStatusLabel { IsLink = true, ForeColor = Color.DarkGreen };
-            _restartLabel.Click += (_, _) => RestartToUpdate();
-            statusStrip1.Items.Insert(0, _restartLabel);
-        }
-        _restartLabel.Text = $"Redémarrer pour mettre à jour (V {version})";
-
-        if (!Visible)
-        {
-            // In the tray, a downloaded update is applied anyway at the next start.
-            _ = ShowNotification($"La version {version} est prête. Elle sera installée au prochain démarrage.", "Mise à jour");
-            return;
-        }
-
-        if (_updateAlert is null)
-        {
-            _updateAlert = new AlertControl(components) { AutoFormDelay = 15_000 };
-            _updateAlert.AlertClick += (_, _) => RestartToUpdate();
-        }
-        _updateAlert.Show(this, "Mise à jour disponible",
-            $"SmartCHIFA {version} est prêt. Cliquez ici pour redémarrer et mettre à jour.");
-    }
-
-    private void RestartToUpdate()
-    {
-        if (_readyUpdate is null) return;
-        if (!UpdateGate.Wait(0))
-        {
-            _ = ShowNotification("Une mise à jour est déjà en cours", "Mise à jour");
-            return;
-        }
-
-        try
-        {
-            ApplyUpdateAndRestart(new UpdateManager(UpdateFeedUrl), _readyUpdate);
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-        finally
-        {
-            UpdateGate.Release();
-        }
-    }
-
-    private void ApplyUpdateAndRestart(UpdateManager mgr, VelopackAsset update)
-    {
-        // install-agent.ps1 copies the service from our agent\ folder, which applying the update replaces.
-        if (Mobile.AgentService.IsInstalling)
-        {
-            Serilog.Log.Information("Update {Version} postponed to the next start: the agent service is being installed", update.Version);
-            _ = ShowNotification("La mise à jour sera installée au prochain démarrage.", "Mise à jour");
-            return;
-        }
-
-        mgr.ApplyUpdatesAndRestart(update);
-    }
-
-    private static bool IsUpdateServerUnreachable(Exception ex) =>
-        FindInChain<HttpRequestException>(ex) is not null ||
-        FindInChain<SocketException>(ex) is not null ||
-        FindInChain<TimeoutException>(ex) is not null ||
-        ex is OperationCanceledException;
-
-    private static T? FindInChain<T>(Exception? ex) where T : Exception
-    {
-        for (; ex is not null; ex = ex.InnerException)
-        {
-            if (ex is T match)
-                return match;
-            if (ex is AggregateException agg)
-                foreach (var inner in agg.InnerExceptions)
-                    if (FindInChain<T>(inner) is { } found)
-                        return found;
-        }
-        return null;
-    }
-
 
     private async Task LoadServerInfo()
     {
@@ -664,7 +465,11 @@ public partial class FrmMain : XtraForm
         await ShowNotification("Application réduite dans la zone de notification.");
     }
 
-    private void Notification_MouseDoubleClick(object sender, MouseEventArgs e)
+    private void Notification_MouseDoubleClick(object sender, MouseEventArgs e) => RestoreFromTray();
+
+    private void menuOpen_Click(object sender, EventArgs e) => RestoreFromTray();
+
+    private void RestoreFromTray()
     {
         try
         {
@@ -682,42 +487,8 @@ public partial class FrmMain : XtraForm
     {
         try
         {
-            // Undisposed, the connection never went back to the pool: one leaked server connection per refresh.
-            await using var db = new ChifaDb();
-            var bords = await db.Bordereaus
-                .Where(x => x.Etat == 'O')
-                .Select(x => new BordNotification
-                {
-                    NumBord = x.NumBord,
-                    Center = x.Center!.Nom,
-                    NmbrFact = x.Factures.Count(),
-                    Min = x.Factures.Min(f => f.DateFact),
-                    Max = x.Factures.Max(f => f.DateFact),
-                    Montant = x.Factures.Sum(f => f.MontOff + f.MontMaj + f.MontMajFae)
-                })
-                .ToListAsync();
-
-            foreach (var bord in bords)
-            {
-                var message = "";
-                if (AppSettings.Default.NotificationOnDays && AppSettings.Default.MaxDays > 0 && bord.Days > AppSettings.Default.MaxDays)
-                {
-                    message += $"\n a {bord.Days:N0} Jours";
-                }
-
-                if (AppSettings.Default.NotificationOnMontant && AppSettings.Default.MaxMontant > 0 && bord.Montant > AppSettings.Default.MaxMontant)
-                {
-                    message += $"\n a {bord.Montant:N2} DA";
-                }
-
-                if (AppSettings.Default.NotificationOnNmbr && AppSettings.Default.MaxNmbr > 0 && bord.NmbrFact > AppSettings.Default.MaxNmbr)
-                {
-                    message += $"\n a {bord.NmbrFact:N0} Factures";
-                }
-                if (!string.IsNullOrWhiteSpace(message))
-                    await ShowNotification($"Le Bord {bord.NumBord} de {bord.Center} " + message, ToolTipIcon.Warning);
-
-            }
+            foreach (var message in await BordereauAlerts.GetMessagesAsync())
+                await ShowNotification(message, ToolTipIcon.Warning);
         }
         catch (Exception ex)
         {
@@ -744,33 +515,8 @@ public partial class FrmMain : XtraForm
         Application.Exit();
     }
 
-    private void menuOpen_Click(object sender, EventArgs e)
-    {
-        try
-        {
-            Show();
-            WindowState = FormWindowState.Maximized;
-            Notification.Visible = false;
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-    }
-
     private void accDahsboard_Click(object sender, EventArgs e)
     {
         NavigateToStatistics(sender,StatisticsSection.Dashboard);
     }
-}
-
-public record BordNotification
-{
-    public int Days => (Max - Min)?.Days ?? 0;
-    public string? NumBord { get; init; }
-    public string? Center { get; init; }
-    public int NmbrFact { get; init; }
-    public DateTime? Min { get; init; }
-    public DateTime? Max { get; init; }
-    public decimal? Montant { get; init; }
 }

@@ -149,7 +149,7 @@ public partial class HomeUc : XtraUserControl, INavigable
     {
         try
         {
-            await FrmMain.Instance.UpdateAppAsync(true);
+            await FrmMain.Instance.Updater.UpdateNowAsync(true);
         }
         catch (Exception ex)
         {

@@ -1,4 +1,5 @@
 using DevExpress.Utils;
+using DevExpress.XtraBars;
 using DevExpress.XtraEditors.Repository;
 
 namespace CHIFA.Pro.Helpers;
@@ -11,13 +12,55 @@ namespace CHIFA.Pro.Helpers;
 internal static class DateFilter
 {
     public const string UpToTodayText = "Aujourd'hui";
+    private static readonly TimeSpan ReloadDelay = TimeSpan.FromMilliseconds(400);
 
     /// <summary>
-    /// Call after <see cref="ChifaService.GetMinAndMaxDatesAsync"/>. Keeps the lower limit,
-    /// removes the upper limit (it was frozen on the last facture) and lets "Au" be empty.
+    /// Shows <paramref name="from"/> → today, then runs <paramref name="load"/> (debounced) each time a date changes.
     /// </summary>
-    public static void Configure(RepositoryItemDateEdit fromRepo, RepositoryItemDateEdit toRepo)
+    /// <param name="calendarOnFrom">Opens the "Du" calendar on <paramref name="from"/> instead of today.</param>
+    public static async Task SetUpAsync(BarEditItem fromEdit, BarEditItem toEdit, DateTime from, bool calendarOnFrom,
+        ReloadCancellation reloads, Func<CancellationToken, Task> load)
     {
+        try
+        {
+            await ConfigureAsync(fromEdit, toEdit);
+            if (calendarOnFrom)
+                ((RepositoryItemDateEdit)fromEdit.Edit).TodayDate = from;
+
+            fromEdit.EditValue = from;
+            toEdit.EditValue = null; // up to today
+
+            fromEdit.EditValueChanged += DateChanged;
+            toEdit.EditValueChanged += DateChanged;
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
+
+        async void DateChanged(object? sender, EventArgs e)
+        {
+            try
+            {
+                await DebounceAsync(reloads, load);
+            }
+            catch (Exception ex)
+            {
+                ex.Log();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reads the first facture date as the lower limit, removes the upper limit (it was frozen on the
+    /// last facture) and lets "Au" be empty.
+    /// </summary>
+    public static async Task ConfigureAsync(BarEditItem fromEdit, BarEditItem toEdit)
+    {
+        await ChifaService.Instance.GetMinAndMaxDatesAsync();
+
+        var fromRepo = (RepositoryItemDateEdit)fromEdit.Edit;
+        var toRepo = (RepositoryItemDateEdit)toEdit.Edit;
         foreach (var repo in new[] { fromRepo, toRepo })
         {
             repo.MinValue = Period.MinDate;
@@ -27,6 +70,21 @@ internal static class DateFilter
         toRepo.AllowNullInput = DefaultBoolean.True;
         toRepo.NullText = UpToTodayText;
         toRepo.TodayDate = DateTime.Today;
+    }
+
+    /// <summary>Waits for the typing to settle, then loads; a newer change or reload cancels this one.</summary>
+    public static async Task DebounceAsync(ReloadCancellation reloads, Func<CancellationToken, Task> load)
+    {
+        var cancellationToken = reloads.Next();
+
+        try
+        {
+            await Task.Delay(ReloadDelay, cancellationToken);
+            await load(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     /// <summary>Reads a date editor value; an empty or cleared editor gives <c>null</c>.</summary>

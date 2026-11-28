@@ -34,30 +34,19 @@ public partial class FrmTraitSpec : XtraForm
 
     private void gridView1_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        if (gridViewTraitSpec1?.GetRow(e.RowHandle) is PatientWithTraitSpec row)
-            e.Appearance.BackColor = (row.TS, row.LongDuree) switch
-            {
-                (true, _) => Colors.Green,
-                (_, true) => Colors.Tan,
-                (_, _) => e.Appearance.BackColor
-            };
+        if (gridViewTraitSpec1?.GetRow(e.RowHandle) is PatientWithTraitSpec row && RowColors.For(row.TS, row.LongDuree) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private void gridView2_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        if ((sender as GridView)?.GetRow(e.RowHandle) is TraitSpec2 row)
-            e.Appearance.BackColor = (row.TS, row.Duree >= 60, DateTime.Now > row.Prochain) switch
-            {
-                (_, _, true) => Colors.Red,
-                (true, _, _) => Colors.Green,
-                (_, true, _) => Colors.Tan,
-                (_, _, _) => e.Appearance.BackColor
-            };
+        if ((sender as GridView)?.GetRow(e.RowHandle) is TraitSpec2 row && RowColors.For(row.TS, row.Duree >= 60, DateTime.Now > row.Prochain) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private void gridView2_CustomDrawGroupRow(object sender, RowObjectCustomDrawEventArgs e)
     {
-        e.Appearance.BackColor = Colors.Green;
+        e.Appearance.BackColor = RowColors.Green;
     }
 
     private void gridView2_DoubleClick(object sender, EventArgs e) => GetHistoryOfSelectedPatient();

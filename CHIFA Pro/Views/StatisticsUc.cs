@@ -8,7 +8,6 @@ namespace CHIFA.Pro.Views;
 
 public partial class StatisticsUc : XtraUserControl, INavigable
 {
-    private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
     private readonly HashSet<StatisticsSection> _loadedSections = [];
     private readonly ReloadCancellation _reloads = new();
     private StatisticsSection _selectedSection = StatisticsSection.Bordereaux;
@@ -135,11 +134,9 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         try
         {
-            await ChifaService.Instance.GetMinAndMaxDatesAsync();
+            await DateFilter.ConfigureAsync(FromDate, ToDate);
 
             var towYearsBefore = DateTime.Today.AddYears(-2);
-
-            DateFilter.Configure(fromDateRepo, toDateRepo);
             fromDateRepo.TodayDate = Period.MinDate < towYearsBefore ? towYearsBefore : Period.MinDate;
 
             _suspendDateEvents = true;
@@ -203,21 +200,12 @@ public partial class StatisticsUc : XtraUserControl, INavigable
         if (_disposed || IsDisposed)
             return;
 
-        var cancellationToken = ResetReloadToken();
-        if (cancellationToken.IsCancellationRequested)
-            return;
         try
         {
-            await Task.Delay(ReloadDebounceDelay, cancellationToken);
-            await ReloadSelectedTableAsync(tab, cancellationToken, forceReload);
-        }
-        catch (OperationCanceledException)
-        {
-
+            await DateFilter.DebounceAsync(_reloads, ct => ReloadSelectedTableAsync(tab, ct, forceReload));
         }
         catch (ObjectDisposedException)
         {
-
         }
     }
 

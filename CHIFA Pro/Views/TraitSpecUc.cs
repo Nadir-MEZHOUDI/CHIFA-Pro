@@ -2,7 +2,6 @@ namespace CHIFA.Pro.Views;
 
 public partial class TraitSpecUc : XtraUserControl, INavigable
 {
-    private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
     private readonly ReloadCancellation _reloads = new();
 
     public string Caption { get; } = "TRAITEMENT SPÉCIFIQUE";
@@ -27,29 +26,8 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private async void facturesUC_Load(object sender, EventArgs e)
     {
-        await LoadMaxAndMinDates();
+        await DateFilter.SetUpAsync(FromDate, ToDate, DateTime.Today.AddYears(-1), calendarOnFrom: true, _reloads, LoadDataAsync);
         await ReloadDataImmediateAsync();
-    }
-
-    private async Task LoadMaxAndMinDates()
-    {
-        try
-        {
-            await ChifaService.Instance.GetMinAndMaxDatesAsync();
-            var lastYear = DateTime.Today.AddYears(-1);
-            DateFilter.Configure(fromDateRepo, toDateRepo);
-            fromDateRepo.TodayDate = lastYear;
-
-            FromDate.EditValue = lastYear;
-            ToDate.EditValue = null; // up to today
-
-            FromDate.EditValueChanged += FromDate_EditValueChanged;
-            ToDate.EditValueChanged += ToDate_EditValueChanged;
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
     }
 
     private void GetHistoryOfSelectedPatient()
@@ -66,13 +44,8 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private void gridView1_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        if (viewFectures?.GetRow(e.RowHandle) is PatientOfTraitSpec fc)
-            e.Appearance.BackColor = (fc.TS, fc.LongDuree) switch
-            {
-                (true, _) => Colors.Green,
-                (_, true) => Colors.Tan,
-                (_, _) => e.Appearance.BackColor
-            };
+        if (viewFectures?.GetRow(e.RowHandle) is PatientOfTraitSpec fc && RowColors.For(fc.TS, fc.LongDuree) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private async void gridView1_FocusedRowChanged(object sender, FocusedRowChangedEventArgs e)
@@ -82,14 +55,8 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private void gridView2_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        if (viewDetails?.GetRow(e.RowHandle) is TraitDetailsDto fc)
-            e.Appearance.BackColor = (fc.TS, fc.Duree >= 60, DateTime.Now > fc?.Prochain) switch
-            {
-                (_, _, true) => Colors.Red,
-                (true, _, _) => Colors.Green,
-                (_, true, _) => Colors.Tan,
-                (_, _, _) => e.Appearance.BackColor
-            };
+        if (viewDetails?.GetRow(e.RowHandle) is TraitDetailsDto fc && RowColors.For(fc.TS, fc.Duree >= 60, DateTime.Now > fc.Prochain) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private Task LoadDetailsAsync(PatientOfTraitSpec row)
@@ -101,19 +68,7 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
 
     private Period CurrentPeriod() => DateFilter.ToPeriod(FromDate.EditValue, ToDate.EditValue);
 
-    private async Task ScheduleReloadDataAsync()
-    {
-        var cancellationToken = _reloads.Next();
-
-        try
-        {
-            await Task.Delay(ReloadDebounceDelay, cancellationToken);
-            await LoadDataAsync(cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-    }
+    private Task ScheduleReloadDataAsync() => DateFilter.DebounceAsync(_reloads, LoadDataAsync);
 
     private async Task ReloadDataImmediateAsync()
     {
@@ -168,10 +123,6 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     {
         await ReloadDataImmediateAsync();
     }
-
-    private async void FromDate_EditValueChanged(object? sender, EventArgs e) => await ScheduleReloadDataAsync();
-
-    private async void ToDate_EditValueChanged(object? sender, EventArgs e) => await ScheduleReloadDataAsync();
 
     private void TraitSpecUc_Disposed(object? sender, EventArgs e)
     {

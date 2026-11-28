@@ -38,39 +38,20 @@ public partial class FrmHistory : XtraForm
 
     private void gridConsumption_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        if (gridConsomption?.GetRow(e.RowHandle) is ConsumptionDto row)
-        {
-            e.Appearance.BackColor = (row.TS, row.Duree >= 60) switch
-            {
-                (true, _) => Color.LawnGreen,
-                (_, true) => Color.Khaki,
-                (_, _) => e.Appearance.BackColor
-            };
-        }
+        if (gridConsomption?.GetRow(e.RowHandle) is ConsumptionDto row && RowColors.For(row.TS, row.Duree >= 60) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private void gridDetails_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        var fc = gridHistDetails?.GetRow(e.RowHandle) as FactureDetailDto;
-        e.Appearance.BackColor = (fc?.Ts, fc?.DureeTrait >= 60) switch
-        {
-            (true, _) => Color.LawnGreen,
-            (_, true) => Color.Khaki,
-            (_, _) => e.Appearance.BackColor
-        };
+        if (gridHistDetails?.GetRow(e.RowHandle) is FactureDetailDto fc && RowColors.For(fc.Ts, fc.DureeTrait >= 60) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private void gridHistory_CustomDrawCell(object sender, RowCellCustomDrawEventArgs e)
     {
-        if (gridHistFactures?.GetRow(e.RowHandle) is FactureDto row)
-        {
-            e.Appearance.BackColor = (row.TS, row.LongDuree) switch
-            {
-                (true, _) => Color.LawnGreen,
-                (_, true) => Color.Khaki,
-                (_, _) => e.Appearance.BackColor
-            };
-        }
+        if (gridHistFactures?.GetRow(e.RowHandle) is FactureDto row && RowColors.For(row.TS, row.LongDuree) is { } color)
+            e.Appearance.BackColor = color;
     }
 
     private async void gridHistory_FocusedRowChanged(object sender, FocusedRowChangedEventArgs e)

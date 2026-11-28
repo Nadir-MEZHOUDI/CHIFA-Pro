@@ -232,12 +232,4 @@ public static class FactureReportService
             _ => string.Empty
         };
     }
-
-    public static void ClearOfficineCache()
-    {
-        lock (Lock)
-        {
-            _officine = null;
-        }
-    }
 }

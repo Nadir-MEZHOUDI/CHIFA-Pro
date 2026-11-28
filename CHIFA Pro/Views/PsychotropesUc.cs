@@ -7,7 +7,6 @@ namespace CHIFA.Pro.Views;
 
 public partial class PsychotropesUc : XtraUserControl, INavigable
 {
-    private static readonly TimeSpan ReloadDebounceDelay = TimeSpan.FromMilliseconds(400);
     private readonly ReloadCancellation _reloads = new();
     private readonly Period _period = new();
 
@@ -49,48 +48,8 @@ public partial class PsychotropesUc : XtraUserControl, INavigable
 
     private async void PsychotropesUc_Load(object? sender, EventArgs e)
     {
-        await LoadDateFiltersAsync();
+        await DateFilter.SetUpAsync(txtDateFrom, txtDateTo, DateTime.Today.AddYears(-1), calendarOnFrom: false, _reloads, ReloadDataAsync);
         await ReloadDataAsync(_reloads.Next());
-    }
-
-    private async Task LoadDateFiltersAsync()
-    {
-        try
-        {
-            await ChifaService.Instance.GetMinAndMaxDatesAsync();
-            var lastYear = DateTime.Today.AddYears(-1);
-
-            DateFilter.Configure(repoDateFrom, repoDateTo);
-
-            txtDateFrom.EditValue = lastYear;
-            txtDateTo.EditValue = null; // up to today
-
-            txtDateFrom.EditValueChanged += TxtDate_EditValueChanged;
-            txtDateTo.EditValueChanged += TxtDate_EditValueChanged;
-        }
-        catch (Exception ex)
-        {
-            ex.Log();
-        }
-    }
-
-    private async void TxtDate_EditValueChanged(object? sender, EventArgs e)
-    {
-        await ScheduleReloadAsync();
-    }
-
-    private async Task ScheduleReloadAsync()
-    {
-        var token = _reloads.Next();
-
-        try
-        {
-            await Task.Delay(ReloadDebounceDelay, token);
-            await ReloadDataAsync(token);
-        }
-        catch (OperationCanceledException)
-        {
-        }
     }
 
     private async Task ReloadDataAsync(CancellationToken cancellationToken)
