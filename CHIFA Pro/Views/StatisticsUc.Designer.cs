@@ -853,6 +853,7 @@ namespace CHIFA.Pro.Views
             // 
             colNum.FieldName = "Num";
             colNum.Name = "colNum";
+            colNum.Summary.AddRange(new DevExpress.XtraGrid.GridSummaryItem[] { new DevExpress.XtraGrid.GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Count, "Num", "{0:N0}") });
             colNum.Visible = true;
             colNum.VisibleIndex = 1;
             colNum.Width = 61;
