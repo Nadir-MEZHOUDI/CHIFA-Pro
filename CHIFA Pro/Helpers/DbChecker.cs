@@ -385,8 +385,7 @@ Vérifiez l'installation du dossier « CHIFA_OFFICINE_DB » dans le chemin CHIFA
         {
             Directory.CreateDirectory(AppSettings.Default.ChifaBackup);
             var backupFile = Path.Combine(AppSettings.Default.ChifaBackup, BackupFileName);
-            await RunPgToolAsync(AppSettings.Default.ChifaDump,
-                $"""-h "{ChifaDb.Server}" -p {DefaultDbPort} -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """,
+            await RunPgToolAsync(AppSettings.Default.ChifaDump, $"""-c -Ft -f "{backupFile}" """,
                 @"Sauvegarde", @"Sauvegarde effectuée avec succès.", @"Échec de la sauvegarde.");
         }
         catch (Exception ex)
@@ -402,8 +401,7 @@ Vérifiez l'installation du dossier « CHIFA_OFFICINE_DB » dans le chemin CHIFA
 
         try
         {
-            await RunPgToolAsync(AppSettings.Default.ChifaRestore,
-                $"""-h "{ChifaDb.Server}" -c -p {DefaultDbPort} -U pharm -d CHIFA_OFFICINE "{fileName}" """,
+            await RunPgToolAsync(AppSettings.Default.ChifaRestore, $"""-c "{fileName}" """,
                 @"Restauration", @"Restauration de la base de données effectuée avec succès.", @"Échec de la restauration de la base de données.");
         }
         catch (Exception ex)
@@ -412,18 +410,25 @@ Vérifiez l'installation du dossier « CHIFA_OFFICINE_DB » dans le chemin CHIFA
         }
     }
 
+    /// <param name="arguments">The tool's own options; the connection (same server, user and password as the app) is added here.</param>
     private static async Task RunPgToolAsync(string tool, string arguments, string caption, string success, string failure)
     {
+        var connection = new NpgsqlConnectionStringBuilder(ChifaDb.ConString);
+        var password = AppSettings.Default.DbPassword is { Length: > 0 } configured ? configured : connection.Password ?? "";
+        var user = string.IsNullOrEmpty(connection.Username) ? "pharm" : connection.Username;
+        var database = string.IsNullOrEmpty(connection.Database) ? "CHIFA_OFFICINE" : connection.Database;
+
         ProcessStartInfo startInfo = new()
         {
             FileName = tool,
-            Arguments = arguments,
+            // -w: never prompt. Without a password the tool would wait forever on its hidden console.
+            Arguments = $"""-w -h "{ChifaDb.Server}" -p {DefaultDbPort} -U "{user}" -d "{database}" {arguments}""",
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
             // Only for this process: set process-wide, every program started later would inherit the password.
-            Environment = { ["PGPASSWORD"] = AppSettings.Default.DbPassword },
+            Environment = { ["PGPASSWORD"] = password },
         };
 
         using var process = Process.Start(startInfo)!;
