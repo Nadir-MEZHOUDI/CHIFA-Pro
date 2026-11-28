@@ -122,6 +122,41 @@ internal static class LicenseGate
         }
     }
 
+    /// <summary>
+    /// Keeps what the pharmacist typed for the trial or a license request: the phone app sends the license request
+    /// with these details in one tap.
+    /// </summary>
+    public static void SaveContact(LicenseRequestInfo info)
+    {
+        if (_storageDirectory is null) return;
+        var contact = new CHIFA.Contract.PharmacistContact(info.FullName, info.Phone, info.BusinessName, info.Email, info.Wilaya, info.Address,
+            info.CodePs, DateTime.UtcNow);
+        try
+        {
+            File.WriteAllText(ContactFile, System.Text.Json.JsonSerializer.Serialize(contact));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            ex.Log(showMessage: false);
+        }
+    }
+
+    /// <summary>The details saved by <see cref="SaveContact"/>, or <c>null</c>.</summary>
+    public static CHIFA.Contract.PharmacistContact? SavedContact()
+    {
+        if (_storageDirectory is null || !File.Exists(ContactFile)) return null;
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<CHIFA.Contract.PharmacistContact>(File.ReadAllText(ContactFile));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static string ContactFile => Path.Combine(_storageDirectory!, "contact.json");
+
     /// <summary>Opens the license dialog from the main window (details and online check).</summary>
     public static void ShowDialog(IWin32Window owner)
     {

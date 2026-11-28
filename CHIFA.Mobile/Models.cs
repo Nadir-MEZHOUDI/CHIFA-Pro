@@ -300,7 +300,10 @@ public record Subscription(string Status, bool IsTrial, DateTime? ExpiresAt, int
 /// <param name="CanRequest">The gateway knows the pharmacy's computer and the license is a trial or has ended.</param>
 /// <param name="Status">none, pending, approved or rejected.</param>
 /// <param name="Serial">Once approved; SmartCHIFA activates it by itself at its next start.</param>
-public record LicenseRequestState(bool CanRequest, string Status, DateTime? SentAt, string? Serial, string? Message);
+/// <param name="Contact">The pharmacist's details from the trial or the last request, sent again in one tap.</param>
+public record LicenseRequestState(bool CanRequest, string Status, DateTime? SentAt, string? Serial, string? Message, PharmacistContact? Contact = null);
+
+public record PharmacistContact(string FullName, string Phone, string? BusinessName, string? Email, string? Wilaya, string? Address, string? CodePs);
 
 public record LicenseRequestForm(string FullName, string Phone, string? BusinessName, string? Wilaya, string? Message);
 

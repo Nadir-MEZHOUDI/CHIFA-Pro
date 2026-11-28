@@ -87,10 +87,37 @@ else if (_state is { } s && (s.CanRequest || s.Status != "none"))
                 <p class="bad-text small">Votre demande a été refusée@(string.IsNullOrWhiteSpace(s.Message) ? "." : $" : {s.Message}") Vous pouvez en envoyer une nouvelle.</p>
             }
             <p class="muted small">Demandez votre licence d'ici, sans passer par le PC : SmartApp vous appelle pour le paiement, puis SmartCHIFA s'active tout seul.</p>
-            <div class="actions">
-                <button class="button wide" type="button" @onclick="StartEdit">Demander une licence</button>
-                <button class="button wide secondary" type="button" @onclick="@(() => Nav.NavigateTo("paiement"))">Tarifs et paiement</button>
-            </div>
+            @if (s.Contact is { } c)
+            {
+                <dl class="facts contact-facts">
+                    <div><dt>Pharmacien</dt><dd>@c.FullName</dd></div>
+                    <div><dt>Téléphone</dt><dd class="ltr">@c.Phone</dd></div>
+                    @if (c.BusinessName is { Length: > 0 } business)
+                    {
+                        <div><dt>Pharmacie</dt><dd>@business</dd></div>
+                    }
+                    @if (c.Wilaya is { Length: > 0 } wilaya)
+                    {
+                        <div><dt>Wilaya</dt><dd>@wilaya</dd></div>
+                    }
+                </dl>
+                @if (_sendError is not null)
+                {
+                    <ErrorBox Error="_sendError" />
+                }
+                <div class="actions">
+                    <button class="button wide" type="button" disabled="@_busy" @onclick="() => SendAsIsAsync(c)">@(_busy ? "Envoi…" : "Envoyer la demande")</button>
+                    <button class="link-button" type="button" @onclick="StartEdit">Modifier mes informations</button>
+                    <button class="button wide secondary" type="button" @onclick="@(() => Nav.NavigateTo("paiement"))">Tarifs et paiement</button>
+                </div>
+            }
+            else
+            {
+                <div class="actions">
+                    <button class="button wide" type="button" @onclick="StartEdit">Demander une licence</button>
+                    <button class="button wide secondary" type="button" @onclick="@(() => Nav.NavigateTo("paiement"))">Tarifs et paiement</button>
+                </div>
+            }
         }
     </section>
 }
@@ -131,11 +158,25 @@ else if (_state is { } s && (s.CanRequest || s.Status != "none"))
         }
     }
 
+    /// <summary>Starts from the details of the trial or the last request, when the gateway has them.</summary>
     private void StartEdit()
     {
         _sendError = null;
+        if (_state?.Contact is { } c)
+        {
+            FullName ??= c.FullName;
+            Phone ??= c.Phone;
+            BusinessName ??= c.BusinessName;
+            Wilaya ??= c.Wilaya;
+        }
         BusinessName ??= Session.Current?.Pharmacy;
         _editing = true;
+    }
+
+    private Task SendAsIsAsync(PharmacistContact contact)
+    {
+        (FullName, Phone, BusinessName, Wilaya) = (contact.FullName, contact.Phone, contact.BusinessName, contact.Wilaya);
+        return SendAsync();
     }
 
     private async Task SendAsync()

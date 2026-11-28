@@ -88,9 +88,13 @@ public static class LicenseRequestEndpoints
         var message = string.IsNullOrWhiteSpace(request.Message)
             ? "Demande envoyée depuis l'application mobile."
             : $"Demande envoyée depuis l'application mobile. {request.Message.Trim()}";
+        // The phone shows the name, phone, pharmacy and wilaya; the e-mail, address and code PS SmartCHIFA sent go along.
+        var stored = PharmacistContacts.Of(pharmacy);
+        var contact = new PharmacistContact(fullName, request.Phone!.Trim(), Clean(request.BusinessName) ?? stored?.BusinessName ?? pharmacy.Name,
+            stored?.Email, Clean(request.Wilaya), stored?.Address, stored?.CodePs, DateTime.UtcNow);
         var (receipt, error) = await server.SubmitAsync(new LicensingSubmission(
-            options.Value.LicenseProduct, pharmacy.MachineId!, fullName, Clean(request.BusinessName) ?? pharmacy.Name, request.Phone!.Trim(),
-            Email: null, Clean(request.Wilaya), Address: null, CodePs: null, message, MachineName: null, AppVersion: null), ct);
+            options.Value.LicenseProduct, pharmacy.MachineId!, contact.FullName, contact.BusinessName, contact.Phone,
+            contact.Email, contact.Wilaya, contact.Address, contact.CodePs, message, MachineName: null, AppVersion: null), ct);
         if (receipt is null)
             return error is null ? Unreachable() : Refused(error);
 
@@ -98,29 +102,32 @@ public static class LicenseRequestEndpoints
         pharmacy.LicenseRequestId = receipt.Id;
         pharmacy.LicenseRequestToken = receipt.Token;
         pharmacy.LicenseRequestedAt = DateTime.UtcNow;
+        PharmacistContacts.Keep(pharmacy, contact);
         await db.SaveChangesAsync(ct);
-        return Results.Ok(new LicenseRequestState(true, LicenseRequestStates.Pending, pharmacy.LicenseRequestedAt));
+        return Results.Ok(new LicenseRequestState(true, LicenseRequestStates.Pending, pharmacy.LicenseRequestedAt,
+            Contact: PharmacistContacts.Of(pharmacy)));
     }
 
     /// <returns><c>null</c> when the licensing server cannot be reached.</returns>
     private static async Task<LicenseRequestState?> ReadAsync(GatewayDbContext db, Pharmacy pharmacy, LicensingServer server, CancellationToken ct)
     {
         var canRequest = CanRequest(pharmacy, DateTime.UtcNow);
+        var contact = PharmacistContacts.Of(pharmacy);
         if (pharmacy is not { LicenseRequestId: { } id, LicenseRequestToken: { } token, MachineId: { } machineId })
-            return new LicenseRequestState(canRequest, LicenseRequestStates.None);
+            return new LicenseRequestState(canRequest, LicenseRequestStates.None, Contact: contact);
 
         var (status, error) = await server.StatusAsync(new LicensingStatusQuery(id, token, machineId), ct);
         var sentAt = pharmacy.LicenseRequestedAt;
         switch (status?.Status)
         {
             case LicenseRequestStates.Pending:
-                return new LicenseRequestState(canRequest, LicenseRequestStates.Pending, sentAt);
+                return new LicenseRequestState(canRequest, LicenseRequestStates.Pending, sentAt, Contact: contact);
             case LicenseRequestStates.Approved:
-                return new LicenseRequestState(canRequest, LicenseRequestStates.Approved, sentAt, status.Serial);
+                return new LicenseRequestState(canRequest, LicenseRequestStates.Approved, sentAt, status.Serial, Contact: contact);
             case LicenseRequestStates.Rejected:
                 Forget(pharmacy);
                 await db.SaveChangesAsync(ct);
-                return new LicenseRequestState(canRequest, LicenseRequestStates.Rejected, sentAt, Message: status.Message);
+                return new LicenseRequestState(canRequest, LicenseRequestStates.Rejected, sentAt, Message: status.Message, Contact: contact);
         }
 
         // Sent again from SmartCHIFA (which replaces the token) or deleted: the phone may ask again.
@@ -128,7 +135,7 @@ public static class LicenseRequestEndpoints
             return null;
         Forget(pharmacy);
         await db.SaveChangesAsync(ct);
-        return new LicenseRequestState(canRequest, LicenseRequestStates.None);
+        return new LicenseRequestState(canRequest, LicenseRequestStates.None, Contact: contact);
     }
 
     private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();

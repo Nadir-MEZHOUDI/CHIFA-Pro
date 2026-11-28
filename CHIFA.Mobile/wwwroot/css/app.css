@@ -1055,6 +1055,7 @@ a.card.link.contact { flex-direction: row; align-items: center; gap: .8rem; }
 .license-request p { margin: 0 0 .5rem; line-height: 1.5; }
 .license-request .actions { display: flex; flex-direction: column; gap: .5rem; margin-top: .6rem; }
 .license-request .link-button { margin-top: 0; }
+.license-request .contact-facts { margin: .2rem 0 .4rem; }
 .subscription-ended .license-request { width: 100%; text-align: left; margin: .4rem 0; }
 .subscription-ended .license-request p { color: var(--text); font-size: .9rem; }
 .subscription-ended .license-request p.muted { color: var(--muted); }

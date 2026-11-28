@@ -131,6 +131,7 @@ public sealed partial class LicenseRequestForm : XtraForm
                 }
 
                 Program.Telemetry?.TrackFeatureUsed("license.trial.started");
+                LicenseGate.SaveContact(info);
                 TrialState = state;
                 DialogResult = DialogResult.OK;
                 Close();
@@ -145,6 +146,7 @@ public sealed partial class LicenseRequestForm : XtraForm
             }
 
             Program.Telemetry?.TrackFeatureUsed("license.request.sent");
+            LicenseGate.SaveContact(info);
             Result = result;
             DialogResult = DialogResult.OK;
             Close();

@@ -52,6 +52,7 @@ public static class LinkEndpoints
             pharmacy = new Pharmacy { Name = PharmacyName(license.Customer), LicenseId = license.LicenseId, AgentKeyHash = AgentKeys.Hash(key) };
             db.Pharmacies.Add(pharmacy);
             KeepLicense(pharmacy, license);
+            LicenseRequests.PharmacistContacts.Keep(pharmacy, request.Contact);
         }
         else if (!pharmacy.IsActive)
         {
@@ -65,6 +66,7 @@ public static class LinkEndpoints
                 LicenseRequests.LicenseRequestEndpoints.Forget(pharmacy);
             pharmacy.LicenseId = license.LicenseId;
             KeepLicense(pharmacy, license);
+            LicenseRequests.PharmacistContacts.Keep(pharmacy, request.Contact);
         }
 
         await db.SaveChangesAsync(ct);
@@ -177,6 +179,8 @@ public static class LinkEndpoints
         }
 
         KeepLicense(pharmacy, license);
+
+        LicenseRequests.PharmacistContacts.Keep(pharmacy, request.Contact);
         await db.SaveChangesAsync(ct);
         return Results.NoContent();
     }

@@ -22,6 +22,14 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
             e.Property(p => p.LicenseEdition).HasMaxLength(50);
             e.Property(p => p.MachineId).HasMaxLength(128);
             e.Property(p => p.LicenseRequestToken).HasMaxLength(100);
+            // Same limits as the licensing server's license requests.
+            e.Property(p => p.ContactName).HasMaxLength(160);
+            e.Property(p => p.ContactPhone).HasMaxLength(40);
+            e.Property(p => p.ContactBusinessName).HasMaxLength(160);
+            e.Property(p => p.ContactEmail).HasMaxLength(256);
+            e.Property(p => p.ContactWilaya).HasMaxLength(64);
+            e.Property(p => p.ContactAddress).HasMaxLength(256);
+            e.Property(p => p.ContactCodePs).HasMaxLength(64);
             e.HasIndex(p => p.AgentKeyHash).IsUnique();
             e.HasIndex(p => p.LicenseId).IsUnique();
             // Looked up when a new license (the paid one after the trial) registers from the same computer.

@@ -198,6 +198,45 @@ namespace CHIFA.Gateway.Data.Migrations
                         .HasColumnType("character varying(64)")
                         .HasColumnName("agent_key_hash");
 
+                    b.Property<string>("ContactAddress")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("contact_address");
+
+                    b.Property<string>("ContactBusinessName")
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)")
+                        .HasColumnName("contact_business_name");
+
+                    b.Property<string>("ContactCodePs")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("contact_code_ps");
+
+                    b.Property<string>("ContactEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("contact_email");
+
+                    b.Property<string>("ContactName")
+                        .HasMaxLength(160)
+                        .HasColumnType("character varying(160)")
+                        .HasColumnName("contact_name");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("contact_phone");
+
+                    b.Property<DateTime?>("ContactUpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("contact_updated_at");
+
+                    b.Property<string>("ContactWilaya")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("contact_wilaya");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");

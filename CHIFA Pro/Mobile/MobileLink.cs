@@ -33,6 +33,8 @@ internal static class MobileLink
     private static AgentWorker? _agent;
     private static CancellationTokenSource? _watch;
     private static string? _reportedLicense;
+    private static string? _reportedContact;
+    private static PharmacistContact? _officineContact;
 
     /// <summary><c>CHIFA_GATEWAY_URL</c> points to a test server.</summary>
     public static string GatewayUrl =>
@@ -124,23 +126,52 @@ internal static class MobileLink
     {
         if (Load() is not { } settings || settings.Agent.GatewayUrl != GatewayUrl) return;
         var license = LicenseGate.LicenseFile();
-        if (license is null || license == _reportedLicense) return;
+        if (license is null) return;
+        var contact = await ContactAsync();
+        var contactJson = contact is null ? null : JsonSerializer.Serialize(contact);
+        if (license == _reportedLicense && contactJson == _reportedContact) return;
 
         try
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, GatewayUrl + LinkRoutes.License)
             {
-                Content = JsonContent.Create(new LicenseUpdateRequest(license))
+                Content = JsonContent.Create(new LicenseUpdateRequest(license, contact))
             };
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", settings.Agent.AgentKey);
             using var response = await Http.SendAsync(request);
             // Any answer is final for this file (an older server answers 404): only a network error is retried.
             _reportedLicense = license;
+            _reportedContact = contactJson;
             if (!response.IsSuccessStatusCode)
                 Log.Warning("Mobile link: the server refused the license ({Status})", (int)response.StatusCode);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
+        }
+    }
+
+    /// <summary>
+    /// What the pharmacist typed for the trial or a license request; otherwise the pharmacy's settings in CHIFA (the
+    /// same details the trial form starts from), which the gateway only uses when it has nothing better.
+    /// </summary>
+    private static async Task<PharmacistContact?> ContactAsync()
+    {
+        if (LicenseGate.SavedContact() is { } typed) return typed;
+        if (_officineContact is not null) return _officineContact;
+        try
+        {
+            var officine = await ChifaService.Instance.GetFirstOfficineAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(8));
+            if (officine is null) return null;
+            var name = string.Join(" ", new[] { officine.Nom, officine.Prenom }.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x!.Trim()));
+            if (name.Length == 0 || string.IsNullOrWhiteSpace(officine.NumTel)) return null;
+            return _officineContact = new PharmacistContact(name, officine.NumTel.Trim(), officine.NomPharmacie?.Trim(), officine.Email?.Trim(),
+                Address: officine.Adresse?.Trim(), CodePs: officine.CodePs?.Trim());
+        }
+        catch (Exception ex)
+        {
+            // The database may not be reachable: the license still goes, without the details.
+            Log.Debug(ex, "Mobile link: pharmacy details unavailable");
+            return null;
         }
     }
 
@@ -221,7 +252,7 @@ internal static class MobileLink
             var license = LicenseGate.LicenseFile()
                 ?? throw new MobileLinkException("L'application mobile nécessite une licence SmartCHIFA valide sur ce poste.");
 
-            using var response = await Http.PostAsJsonAsync(GatewayUrl + LinkRoutes.Register, new RegisterPharmacyRequest(license));
+            using var response = await Http.PostAsJsonAsync(GatewayUrl + LinkRoutes.Register, new RegisterPharmacyRequest(license, await ContactAsync()));
             if (response.StatusCode == HttpStatusCode.Forbidden)
                 throw new MobileLinkException(await ProblemTitleAsync(response) ?? "Cette licence ne permet pas l'application mobile.");
             if (!response.IsSuccessStatusCode)

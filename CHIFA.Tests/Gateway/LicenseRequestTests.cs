@@ -199,6 +199,78 @@ public class LicenseRequestTests(GatewayFixture gateway)
         (await anonymous.GetAsync(LinkRoutes.LicenseRequest)).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
+    private static readonly PharmacistContact TrialDetails = new(
+        "Amel Benali", "0661 23 45 67", "Pharmacie El Amel", "amel@example.dz", "Annaba", "12 rue des Roses", "PS-123",
+        DateTime.UtcNow.AddDays(-7));
+
+    [Fact]
+    public async Task Details_typed_for_the_trial_come_back_to_the_phone_and_go_with_the_request()
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync(TrialDetails);
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+
+        var state = await StateAsync(phone);
+        (await phone.PostAsJsonAsync("/api/license-request",
+            new PhoneLicenseRequest(TrialDetails.FullName, TrialDetails.Phone, TrialDetails.BusinessName, TrialDetails.Wilaya))).EnsureSuccessStatusCode();
+
+        state.Contact.Should().BeEquivalentTo(TrialDetails, o => o.Excluding(c => c.UpdatedAt));
+        // The phone does not show the e-mail, address and code PS: they still reach SmartApp.
+        gateway.Licensing.For(machine)!.Submission.Should().BeEquivalentTo(new { Email = "amel@example.dz", Address = "12 rue des Roses", CodePs = "PS-123" });
+    }
+
+    [Fact]
+    public async Task Details_changed_on_the_phone_are_not_overwritten_by_older_ones_from_smartchifa()
+    {
+        var licenseId = Guid.NewGuid();
+        var machine = Guid.NewGuid().ToString("N");
+        var license = GatewayFixture.CreateLicense(licenseId, edition: "trial", machineId: machine);
+        var pharmacy = await RegisterAsync(license, TrialDetails);
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        (await phone.PostAsJsonAsync("/api/license-request", Form with { Phone = "0550 11 22 33" })).EnsureSuccessStatusCode();
+
+        using var desktop = gateway.CreatePharmacyClient(pharmacy.AgentKey);
+        (await desktop.PostAsJsonAsync(LinkRoutes.License, new LicenseUpdateRequest(license, TrialDetails))).EnsureSuccessStatusCode();
+        var afterOlder = (await StateAsync(phone)).Contact;
+        (await desktop.PostAsJsonAsync(LinkRoutes.License,
+            new LicenseUpdateRequest(license, TrialDetails with { Phone = "0770 99 88 77", UpdatedAt = DateTime.UtcNow.AddMinutes(1) }))).EnsureSuccessStatusCode();
+        var afterNewer = (await StateAsync(phone)).Contact;
+
+        afterOlder!.Phone.Should().Be("0550 11 22 33");
+        afterNewer!.Phone.Should().Be("0770 99 88 77");
+    }
+
+    [Fact]
+    public async Task Pharmacy_settings_only_fill_in_missing_details()
+    {
+        var machine = Guid.NewGuid().ToString("N");
+        var license = GatewayFixture.CreateLicense(edition: "trial", machineId: machine);
+        var fromSettings = new PharmacistContact("Officine Settings", "0661 00 00 00");
+        var pharmacy = await RegisterAsync(license, fromSettings);
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        using var desktop = gateway.CreatePharmacyClient(pharmacy.AgentKey);
+
+        var first = (await StateAsync(phone)).Contact;
+        (await desktop.PostAsJsonAsync(LinkRoutes.License, new LicenseUpdateRequest(license, TrialDetails))).EnsureSuccessStatusCode();
+        (await desktop.PostAsJsonAsync(LinkRoutes.License, new LicenseUpdateRequest(license, fromSettings))).EnsureSuccessStatusCode();
+        var last = (await StateAsync(phone)).Contact;
+
+        first!.FullName.Should().Be("Officine Settings");
+        last!.FullName.Should().Be("Amel Benali");
+    }
+
+    private async Task<RegisterPharmacyResponse> RegisterAsync(string license, PharmacistContact contact)
+    {
+        using var client = gateway.CreateClient();
+        return (await (await client.PostAsJsonAsync(LinkRoutes.Register, new RegisterPharmacyRequest(license, contact)))
+            .EnsureSuccessStatusCode().Content.ReadFromJsonAsync<RegisterPharmacyResponse>())!;
+    }
+
+    private async Task<(RegisterPharmacyResponse Pharmacy, string Machine)> RegisterTrialAsync(PharmacistContact contact)
+    {
+        var machine = Guid.NewGuid().ToString("N");
+        return (await RegisterAsync(GatewayFixture.CreateLicense(edition: "trial", machineId: machine), contact), machine);
+    }
+
     private async Task<(RegisterPharmacyResponse Pharmacy, string Machine)> RegisterTrialAsync()
     {
         var machine = Guid.NewGuid().ToString("N");

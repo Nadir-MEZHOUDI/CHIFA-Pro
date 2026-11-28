@@ -27,6 +27,22 @@ public class Pharmacy
 
     public DateTime? LicenseRequestedAt { get; set; }
 
+    /// <summary>
+    /// The pharmacist's details from the trial or the last license request (sent by SmartCHIFA or typed on a
+    /// phone): a phone asks for the license without typing them again.
+    /// </summary>
+    public string? ContactName { get; set; }
+
+    public string? ContactPhone { get; set; }
+    public string? ContactBusinessName { get; set; }
+    public string? ContactEmail { get; set; }
+    public string? ContactWilaya { get; set; }
+    public string? ContactAddress { get; set; }
+    public string? ContactCodePs { get; set; }
+
+    /// <summary>When the pharmacist typed them: newer details replace older ones, wherever they were typed.</summary>
+    public DateTime? ContactUpdatedAt { get; set; }
+
     /// <summary>SHA-256 of the agent key. The key itself is shown once, when created.</summary>
     public required string AgentKeyHash { get; set; }
 

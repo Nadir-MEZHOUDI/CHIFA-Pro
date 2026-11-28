@@ -27,7 +27,22 @@ public static class LinkRoutes
 /// <param name="Status">One of <see cref="LicenseRequestStates"/>.</param>
 /// <param name="Serial">Once approved: SmartCHIFA activates it, and the phone shows it in case it must be typed.</param>
 /// <param name="Message">Why SmartApp rejected it.</param>
-public record LicenseRequestState(bool CanRequest, string Status, DateTime? SentAt = null, string? Serial = null, string? Message = null);
+/// <param name="Contact">The pharmacist's details from the trial or the last request: the phone sends them again in one tap.</param>
+public record LicenseRequestState(
+    bool CanRequest, string Status, DateTime? SentAt = null, string? Serial = null, string? Message = null, PharmacistContact? Contact = null);
+
+/// <summary>Who SmartApp calls about the payment: what the pharmacist typed for the trial or a license request.</summary>
+/// <param name="UpdatedAt">When the pharmacist typed them (UTC); <c>null</c> when SmartCHIFA only read its own settings,
+/// which then never replace details typed somewhere.</param>
+public record PharmacistContact(
+    string FullName,
+    string Phone,
+    string? BusinessName = null,
+    string? Email = null,
+    string? Wilaya = null,
+    string? Address = null,
+    string? CodePs = null,
+    DateTime? UpdatedAt = null);
 
 public static class LicenseRequestStates
 {
@@ -38,10 +53,12 @@ public static class LicenseRequestStates
 }
 
 /// <param name="License">Content of the SmartApp license file (<c>license.lic</c>) of this computer.</param>
-public record RegisterPharmacyRequest(string License);
+/// <param name="Contact">The pharmacist's details, so a phone can ask for the license without typing them again.</param>
+public record RegisterPharmacyRequest(string License, PharmacistContact? Contact = null);
 
 /// <param name="License">Content of <c>license.lic</c> after an online check-in (renewal, new edition).</param>
-public record LicenseUpdateRequest(string License);
+/// <param name="Contact">Sent again when it changed.</param>
+public record LicenseUpdateRequest(string License, PharmacistContact? Contact = null);
 
 /// <summary>The agent key is shown once: CHIFA Pro keeps it to run the agent and ask for codes.</summary>
 public record RegisterPharmacyResponse(Guid PharmacyId, string Name, string AgentKey);
