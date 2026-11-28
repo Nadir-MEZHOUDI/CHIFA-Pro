@@ -4,11 +4,14 @@ public partial class FrmHistory : XtraForm
 {
     private readonly string? _noAssure;
     private readonly string? _rang;
+    private readonly PatientContactPanel _contact = new();
     private bool _isStrict;
 
     public FrmHistory()
     {
         InitializeComponent();
+        // Added last, so it docks below the patient's details.
+        Controls.Add(_contact);
     }
 
     public FrmHistory(string noAssure, string rang) : this()
@@ -72,7 +75,11 @@ public partial class FrmHistory : XtraForm
     {
         await gridHistFactures.LoadDataAsync(ct => ChifaService.Instance.LoadHistoryAsync(_noAssure!, _rang!, ct));
         var beneficiare = await ChifaService.Instance.GetBeneficiareByIdAsync(_noAssure!, _rang!);
-        if (!IsDisposed) dataLayoutControl1.DataSource = beneficiare;
+        if (IsDisposed)
+            return;
+        dataLayoutControl1.DataSource = beneficiare;
+        _contact.Nom = beneficiare?.Beneficiare;
+        await _contact.LoadAsync(_noAssure!, _rang!);
     }
 
     private async void xtraTabControl1_CustomHeaderButtonClick(object sender, DevExpress.XtraTab.ViewInfo.CustomHeaderButtonEventArgs e)
