@@ -29,7 +29,7 @@ else
     <section class="card hero">
         <span class="label">Délivré · @_period.Label</span>
         <span class="amount">@Fmt.Number(m.Quantite) boîtes</span>
-        <span class="muted">@Fmt.Money(m.Montant) · @Fmt.Number(m.Factures) factures · @Fmt.Number(m.NombrePatients) patients</span>
+        <span class="muted">@(m.Montant is { } montant ? $"{Fmt.Money(montant)} · " : "")@Fmt.Number(m.Factures) factures · @Fmt.Number(m.NombrePatients) patients</span>
     </section>
 
     <section class="card">

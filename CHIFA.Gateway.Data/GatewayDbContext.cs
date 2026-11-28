@@ -46,12 +46,14 @@ public class GatewayDbContext(DbContextOptions<GatewayDbContext> options) : DbCo
         {
             e.Property(d => d.Name).HasMaxLength(100);
             e.Property(d => d.TokenHash).HasMaxLength(64);
+            e.Property(d => d.Role).HasMaxLength(20).HasDefaultValue(DeviceRoles.Owner);
             e.HasIndex(d => d.TokenHash).IsUnique();
         });
 
         b.Entity<PairingCode>(e =>
         {
             e.Property(c => c.CodeHash).HasMaxLength(64);
+            e.Property(c => c.Role).HasMaxLength(20).HasDefaultValue(DeviceRoles.Owner);
             e.HasIndex(c => c.CodeHash).IsUnique();
         });
 

@@ -89,9 +89,13 @@ public sealed partial class LicenseForm : XtraForm
                           (days >= 0 ? $" ({days} jour(s) restants)" : string.Empty));
             }
             lines.Add($"Numéro de série : •••••-•••••-•••••-•••••-{license.SerialHint}");
-            lines.Add("Ce numéro de série est lié à cet ordinateur.");
+            lines.Add(PharmacyLicenseId.IsPharmacy(_client.MachineId)
+                ? "Ce numéro de série est lié au code PS de la pharmacie : tous ses ordinateurs l'utilisent."
+                : "Ce numéro de série est lié à cet ordinateur.");
         }
-        lines.Add($"Identifiant du poste : {_client.MachineId[..Math.Min(12, _client.MachineId.Length)].ToUpperInvariant()}");
+        var id = PharmacyLicenseId.IsPharmacy(_client.MachineId) ? _client.MachineId[PharmacyLicenseId.Prefix.Length..] : _client.MachineId;
+        lines.Add((PharmacyLicenseId.IsPharmacy(_client.MachineId) ? "Identifiant de la pharmacie : " : "Identifiant du poste : ") +
+                  id[..Math.Min(12, id.Length)].ToUpperInvariant());
         _lblDetails.Text = string.Join(Environment.NewLine, lines);
 
         var canBuy = !state.IsValid || state.IsTrial;

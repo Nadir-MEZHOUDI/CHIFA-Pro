@@ -19,6 +19,12 @@ public sealed class Session(IJSRuntime js)
 
     public bool IsSignedIn => HasValidToken || DeviceToken is not null;
 
+    /// <summary>An employee's phone: the gateway refuses it the turnover, margins, payments and the pharmacy's account.</summary>
+    public bool IsStaff => Current?.Role == Roles.Staff;
+
+    /// <summary>Raised when a renewal brought another role (changed in SmartCHIFA), so the menu follows.</summary>
+    public event Action? Changed;
+
     public async Task LoadAsync()
     {
         try
@@ -41,8 +47,11 @@ public sealed class Session(IJSRuntime js)
     /// <summary>A new access token for the linked phone: the device token stays.</summary>
     public async Task RenewAsync(LoginResponse login)
     {
+        var roleChanged = login.Role != Current?.Role;
         Current = login with { DeviceToken = login.DeviceToken ?? Current?.DeviceToken };
         await SaveAsync();
+        if (roleChanged)
+            Changed?.Invoke();
     }
 
     public async Task SignOutAsync()

@@ -1,4 +1,5 @@
 using CHIFA.Contract;
+using DevExpress.XtraEditors.Controls;
 using QRCoder;
 
 namespace CHIFA.Pro.Mobile;
@@ -24,7 +25,14 @@ public sealed partial class MobileLinkForm : XtraForm
         _lblIntro.Text =
             $"1. Sur le téléphone, ouvrez {MobileLink.PhoneHost} puis touchez « Scanner le QR code ».{Environment.NewLine}" +
             "2. Ou saisissez le code ci-dessous. Il ne sert qu'une fois : le téléphone reste ensuite connecté.";
+        _rdoRole.Properties.Items.AddRange([
+            new RadioGroupItem(DeviceRoles.Owner, "Téléphone du titulaire : tout voir"),
+            new RadioGroupItem(DeviceRoles.Staff, "Téléphone d'employé : sans chiffre d'affaires, marges ni paiements")
+        ]);
+        _rdoRole.EditValue = DeviceRoles.Owner;
     }
+
+    private string Role => _rdoRole.EditValue as string ?? DeviceRoles.Owner;
 
     private async void MobileLinkForm_Shown(object? sender, EventArgs e)
     {
@@ -85,12 +93,20 @@ public sealed partial class MobileLinkForm : XtraForm
 
     private async void BtnRemove_Click(object? sender, EventArgs e) => await RemoveSelectedAsync();
 
+    private async void BtnRole_Click(object? sender, EventArgs e) => await SwitchSelectedRoleAsync();
+
+    // A code shown for the other role would link with it: a new one replaces it.
+    private async void RdoRole_SelectedIndexChanged(object? sender, EventArgs e)
+    {
+        if (_code is not null)
+            await NewCodeAsync();
+    }
+
     private async void BtnService_Click(object? sender, EventArgs e) => await InstallServiceAsync();
 
     private void BtnClose_Click(object? sender, EventArgs e) => Close();
 
-    private void LstDevices_SelectedIndexChanged(object? sender, EventArgs e) =>
-        _btnRemove.Enabled = !_busy && SelectedDevice() is not null;
+    private void LstDevices_SelectedIndexChanged(object? sender, EventArgs e) => ShowSelection();
 
     private void Clock_Tick(object? sender, EventArgs e) => ShowExpiry();
 
@@ -100,7 +116,7 @@ public sealed partial class MobileLinkForm : XtraForm
     {
         await RunAsync(async () =>
         {
-            _code = await MobileLink.NewCodeAsync();
+            _code = await MobileLink.NewCodeAsync(Role);
             ShowCode();
             ShowDevices(await MobileLink.DevicesAsync());
             _clock.Start();
@@ -182,7 +198,32 @@ public sealed partial class MobileLinkForm : XtraForm
             _lstDevices.Items.Add("Aucun téléphone lié pour le moment.");
         _lstDevices.SelectedIndex = selected is { } id ? devices.FindIndex(d => d.Id == id) : -1;
         _lstDevices.EndUpdate();
-        _btnRemove.Enabled = !_busy && SelectedDevice() is not null;
+        ShowSelection();
+    }
+
+    private void ShowSelection()
+    {
+        var device = SelectedDevice();
+        _btnRemove.Enabled = !_busy && device is not null;
+        _btnRole.Enabled = !_busy && device is not null;
+        _btnRole.Text = device?.Role == DeviceRoles.Staff ? "Passer en titulaire" : "Passer en employé";
+    }
+
+    private async Task SwitchSelectedRoleAsync()
+    {
+        if (SelectedDevice() is not { } device) return;
+        var role = device.Role == DeviceRoles.Staff ? DeviceRoles.Owner : DeviceRoles.Staff;
+        var question = role == DeviceRoles.Staff
+            ? $"« {device.Name} » ne verra plus le chiffre d'affaires, les marges, les bordereaux ni les paiements. Continuer ?"
+            : $"« {device.Name} » verra tout : chiffre d'affaires, marges, bordereaux, paiements et appareils liés. Continuer ?";
+        if (XtraMessageBox.Show(this, question, Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+
+        await RunAsync(async () =>
+        {
+            await MobileLink.SetRoleAsync(device.Id, role);
+            ShowDevices(await MobileLink.DevicesAsync());
+            SetStatus(($"« {device.Name} » est maintenant un téléphone {(role == DeviceRoles.Staff ? "d'employé" : "du titulaire")}.", Color.SeaGreen));
+        });
     }
 
     private async Task RemoveSelectedAsync()
@@ -250,7 +291,7 @@ public sealed partial class MobileLinkForm : XtraForm
     private static string Describe(LinkedDevice d)
     {
         var seen = d.LastSeenAt is { } at ? $" · dernière connexion {at.ToLocalTime():dd/MM/yyyy HH:mm}" : string.Empty;
-        return $"{d.Name} · lié le {d.CreatedAt.ToLocalTime():dd/MM/yyyy}{seen}";
+        return $"{d.Name} ({DeviceRoles.Label(d.Role)}) · lié le {d.CreatedAt.ToLocalTime():dd/MM/yyyy}{seen}";
     }
 
     private async Task RunAsync(Func<Task> action)
@@ -293,7 +334,8 @@ public sealed partial class MobileLinkForm : XtraForm
         _busy = busy;
         UseWaitCursor = busy;
         _btnNewCode.Enabled = !busy;
-        _btnRemove.Enabled = !busy && SelectedDevice() is not null;
+        _rdoRole.Enabled = !busy;
+        ShowSelection();
     }
 
     private static Image QrCode(string text)

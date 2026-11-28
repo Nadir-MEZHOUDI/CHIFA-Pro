@@ -85,6 +85,14 @@ namespace CHIFA.Gateway.Data.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("revoked_at");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("owner")
+                        .HasColumnName("role");
+
                     b.Property<string>("TokenHash")
                         .IsRequired()
                         .HasMaxLength(64)
@@ -171,6 +179,14 @@ namespace CHIFA.Gateway.Data.Migrations
                     b.Property<Guid>("PharmacyId")
                         .HasColumnType("uuid")
                         .HasColumnName("pharmacy_id");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("owner")
+                        .HasColumnName("role");
 
                     b.HasKey("Id")
                         .HasName("pk_pairing_codes");

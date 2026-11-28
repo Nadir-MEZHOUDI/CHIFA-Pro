@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace CHIFA.Gateway.Features.Account;
 
 /// <param name="IsCurrent">The phone making the request.</param>
-public record PhoneDevice(Guid Id, string Name, DateTime CreatedAt, DateTime? LastSeenAt, bool IsCurrent);
+public record PhoneDevice(Guid Id, string Name, DateTime CreatedAt, DateTime? LastSeenAt, bool IsCurrent, string Role = DeviceRoles.Owner);
 
 /// <param name="Status">One of <see cref="SubscriptionStates"/>.</param>
 /// <param name="ExpiresAt"><c>null</c>: no end date, or <see cref="Status"/> is unknown.</param>
@@ -38,9 +38,13 @@ public static class AccountEndpoints
     {
         var api = app.MapGroup("/api").RequireAuthorization();
         api.MapGet("/subscription", SubscriptionAsync);
-        api.MapGet("/devices", DevicesAsync);
-        api.MapDelete("/devices/{id:guid}", RemoveDeviceAsync);
-        api.MapPost("/devices/code", CreateCodeAsync).RequireSubscription();
+
+        // Only the pharmacist links, unlinks and sets what each phone may see.
+        var devices = api.MapGroup("/devices").RequireOwner();
+        devices.MapGet("", DevicesAsync);
+        devices.MapDelete("/{id:guid}", RemoveDeviceAsync);
+        devices.MapPut("/{id:guid}/role", ChangeRoleAsync);
+        devices.MapPost("/code", CreateCodeAsync).RequireSubscription();
     }
 
     /// <summary>
@@ -112,7 +116,7 @@ public static class AccountEndpoints
         var devices = await db.MobileDevices.AsNoTracking()
             .Where(d => d.PharmacyId == pharmacyId && d.RevokedAt == null)
             .OrderByDescending(d => d.CreatedAt)
-            .Select(d => new PhoneDevice(d.Id, d.Name, d.CreatedAt, d.LastSeenAt, d.Id == current))
+            .Select(d => new PhoneDevice(d.Id, d.Name, d.CreatedAt, d.LastSeenAt, d.Id == current, d.Role))
             .ToListAsync(ct);
         return Results.Ok(devices);
     }
@@ -135,14 +139,34 @@ public static class AccountEndpoints
     /// is away from the pharmacy computer. Same code as the one CHIFA Pro shows: it replaces it.
     /// </summary>
     private static async Task<IResult> CreateCodeAsync(
+        HttpRequest http,
         ClaimsPrincipal user,
         IDbContextFactory<GatewayDbContext> dbFactory,
         AgentRegistry registry,
         IOptions<GatewayOptions> options,
         CancellationToken ct)
     {
+        var role = await LinkEndpoints.RequestedRoleAsync(http, ct);
+        if (!DeviceRoles.IsValid(role))
+            return LinkEndpoints.InvalidRole();
+
         await using var db = await dbFactory.CreateDbContextAsync(ct);
-        return Results.Ok(await LinkEndpoints.IssueCodeAsync(db, registry, user.GetPharmacyId(), options.Value.PairingCodeMinutes, ct));
+        return Results.Ok(await LinkEndpoints.IssueCodeAsync(db, registry, user.GetPharmacyId(), options.Value.PairingCodeMinutes, role, ct));
+    }
+
+    /// <summary>This phone keeps its own role: the pharmacist would otherwise lock themself out of this page.</summary>
+    private static async Task<IResult> ChangeRoleAsync(Guid id, DeviceRoleRequest request, ClaimsPrincipal user, IDbContextFactory<GatewayDbContext> dbFactory, CancellationToken ct)
+    {
+        if (!DeviceRoles.IsValid(request.Role))
+            return LinkEndpoints.InvalidRole();
+        if (id == CurrentDeviceId(user))
+            return Results.Problem(statusCode: StatusCodes.Status400BadRequest,
+                title: "C'est ce téléphone.", detail: "Changez son rôle depuis SmartCHIFA sur l'ordinateur de la pharmacie.");
+
+        await using var db = await dbFactory.CreateDbContextAsync(ct);
+        return await LinkEndpoints.SetRoleAsync(db, user.GetPharmacyId(), id, request.Role, ct)
+            ? Results.NoContent()
+            : Results.Problem(statusCode: StatusCodes.Status404NotFound, title: "Appareil introuvable.", detail: "Il a peut-être déjà été retiré.");
     }
 
     // Phones signed in with a password (before pairing codes) have no device.

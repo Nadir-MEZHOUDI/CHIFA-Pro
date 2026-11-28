@@ -14,7 +14,8 @@ namespace CHIFA.Gateway.Features.Auth;
 public record LoginRequest(string UserName, string Password);
 
 /// <param name="DeviceToken">Only when a phone is linked: it keeps it to sign in again without a code.</param>
-public record LoginResponse(string AccessToken, DateTime ExpiresAt, string Pharmacy, string? DeviceToken = null);
+/// <param name="Role">One of <see cref="DeviceRoles"/>: the app hides the pages the gateway refuses to this phone.</param>
+public record LoginResponse(string AccessToken, DateTime ExpiresAt, string Pharmacy, string? DeviceToken = null, string Role = DeviceRoles.Owner);
 
 /// <param name="Code">The code shown in SmartCHIFA, e.g. <c>ABCD-2345</c>.</param>
 public record PairRequest(string Code, string? DeviceName);
@@ -62,6 +63,7 @@ public static class AuthEndpoints
         {
             PharmacyId = pairing.PharmacyId,
             Name = DeviceName(request.DeviceName),
+            Role = pairing.Role,
             TokenHash = AgentKeys.Hash(token),
             LastSeenAt = DateTime.UtcNow
         };
@@ -70,7 +72,7 @@ public static class AuthEndpoints
         await db.SaveChangesAsync(ct);
 
         var expiresAt = DateTime.UtcNow.AddHours(jwt.Value.LifetimeHours);
-        return Results.Ok(new LoginResponse(CreateToken(DeviceClaims(device), expiresAt, jwt.Value), expiresAt, pairing.Pharmacy.Name, token));
+        return Results.Ok(new LoginResponse(CreateToken(DeviceClaims(device), expiresAt, jwt.Value), expiresAt, pairing.Pharmacy.Name, token, device.Role));
     }
 
     /// <summary>A linked phone opening the app again: no code, no password.</summary>
@@ -91,7 +93,7 @@ public static class AuthEndpoints
         await db.SaveChangesAsync(ct);
 
         var expiresAt = DateTime.UtcNow.AddHours(jwt.Value.LifetimeHours);
-        return Results.Ok(new LoginResponse(CreateToken(DeviceClaims(device), expiresAt, jwt.Value), expiresAt, device.Pharmacy.Name));
+        return Results.Ok(new LoginResponse(CreateToken(DeviceClaims(device), expiresAt, jwt.Value), expiresAt, device.Pharmacy.Name, Role: device.Role));
     }
 
     /// <summary>The phone forgets its token; revoking it here makes a copy of it useless too.</summary>
@@ -110,7 +112,8 @@ public static class AuthEndpoints
 
     /// <summary>
     /// JWT check for phones: a device removed in SmartCHIFA or logged out loses access at once,
-    /// not when its access token expires.
+    /// not when its access token expires. So does a phone whose role changed: it signs in again with its
+    /// device token and gets a token (and pages) for its new role.
     /// </summary>
     public static async Task RejectRevokedDeviceAsync(TokenValidatedContext context)
     {
@@ -119,11 +122,19 @@ public static class AuthEndpoints
 
         var dbFactory = context.HttpContext.RequestServices.GetRequiredService<IDbContextFactory<GatewayDbContext>>();
         await using var db = await dbFactory.CreateDbContextAsync(context.HttpContext.RequestAborted);
-        var active = await db.MobileDevices.AnyAsync(
-            d => d.Id == deviceId && d.RevokedAt == null && d.Pharmacy.IsActive, context.HttpContext.RequestAborted);
-        if (!active)
+        var role = await db.MobileDevices
+            .Where(d => d.Id == deviceId && d.RevokedAt == null && d.Pharmacy.IsActive)
+            .Select(d => d.Role)
+            .FirstOrDefaultAsync(context.HttpContext.RequestAborted);
+        if (role is null)
         {
             context.Fail("This phone was unlinked.");
+            return;
+        }
+
+        if (role != context.Principal!.GetDeviceRole())
+        {
+            context.Fail("The role of this phone changed.");
             return;
         }
 
@@ -136,7 +147,8 @@ public static class AuthEndpoints
         new(JwtRegisteredClaimNames.Sub, device.Id.ToString()),
         new(JwtRegisteredClaimNames.Name, device.Name),
         new(DeviceIdClaim, device.Id.ToString()),
-        new(PharmacyClaims.PharmacyId, device.PharmacyId.ToString())
+        new(PharmacyClaims.PharmacyId, device.PharmacyId.ToString()),
+        new(DeviceRoleClaims.Claim, device.Role)
     ];
 
     private static string DeviceName(string? name)

@@ -9,6 +9,9 @@ public class MobileDevice
 
     public required string Name { get; set; }
 
+    /// <summary>One of <see cref="DeviceRoles"/>: an employee's phone never gets the turnover, margins or payments.</summary>
+    public string Role { get; set; } = DeviceRoles.Owner;
+
     /// <summary>SHA-256 of the device token. The token itself only lives on the phone.</summary>
     public required string TokenHash { get; set; }
 
@@ -28,5 +31,9 @@ public class PairingCode
 
     public required string CodeHash { get; set; }
     public required DateTime ExpiresAt { get; set; }
+
+    /// <summary>The role of the phone linked with this code.</summary>
+    public string Role { get; set; } = DeviceRoles.Owner;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

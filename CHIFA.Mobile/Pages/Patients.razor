@@ -249,7 +249,7 @@ else
             </div>
             @if (!string.IsNullOrWhiteSpace(r.TraitementHabituelResume))
             {
-                <span class="muted small">@r.TraitementHabituelResume · ~@Fmt.Money(r.MontantMoyenHabituel)</span>
+                <span class="muted small">@r.TraitementHabituelResume@(r.MontantMoyenHabituel is { } moyen ? $" · ~{Fmt.Money(moyen)}" : "")</span>
             }
         </text>;
 
