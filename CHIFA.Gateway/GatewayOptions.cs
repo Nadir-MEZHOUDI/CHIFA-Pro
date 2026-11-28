@@ -27,6 +27,10 @@ public class GatewayOptions
     [Required]
     public string LicenseProduct { get; set; } = "chifa-pro";
 
+    /// <summary>SmartApp licensing server: phones send their license requests to it through the gateway.</summary>
+    [Required, Url]
+    public string LicensingUrl { get; set; } = "https://license.smartappdz.org/";
+
     [Range(1, 60)]
     public int PairingCodeMinutes { get; set; } = 10;
 

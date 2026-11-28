@@ -84,6 +84,10 @@ internal static class LicenseGate
         if ((!state.IsValid || state.IsTrial) && _client.PendingRequest is not null)
             state = CheckRequestNow();
 
+        // The same, for a license requested from a linked phone.
+        if (!state.IsValid || state.IsTrial)
+            state = InstallPhoneRequestNow() ?? state;
+
         if (!state.IsValid)
         {
             using var form = new LicenseForm(_client, startup: true);
@@ -182,6 +186,49 @@ internal static class LicenseGate
         {
             return _client!.Current;
         }
+    }
+
+    /// <summary>Activates the serial of a license requested from a phone and approved by SmartApp; <c>null</c> when there is none.</summary>
+    private static LicenseState? InstallPhoneRequestNow()
+    {
+        try
+        {
+            return Task.Run(() => InstallPhoneRequestAsync(_client!))
+                .WaitAsync(TimeSpan.FromSeconds(25))
+                .GetAwaiter()
+                .GetResult();
+        }
+        catch (Exception ex) when (ex is TimeoutException or TaskCanceledException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>Also used by « Vérifier en ligne » in the license dialog.</summary>
+    internal static async Task<LicenseState?> InstallPhoneRequestAsync(LicenseClient client)
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+        if (await Mobile.MobileLink.ApprovedPhoneRequestSerialAsync(timeout.Token) is not { } serial)
+            return null;
+
+        LicenseState state;
+        try
+        {
+            state = await client.ActivateAsync(serial, timeout.Token);
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or HttpRequestException)
+        {
+            return null;
+        }
+
+        if (!state.IsValid)
+        {
+            Log.Warning("The license requested from a phone could not be activated: {Status} {Error}", state.Status, state.ErrorCode);
+            return null;
+        }
+
+        Program.Telemetry?.TrackFeatureUsed("license.phone_request.installed");
+        return state;
     }
 
     private static async Task RefreshInBackgroundAsync()

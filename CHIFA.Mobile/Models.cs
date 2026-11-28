@@ -297,6 +297,13 @@ public record PushKey(string PublicKey);
 /// <param name="CheckedAt">When SmartCHIFA last sent its license to the server.</param>
 public record Subscription(string Status, bool IsTrial, DateTime? ExpiresAt, int? DaysLeft, DateTime? CheckedAt);
 
+/// <param name="CanRequest">The gateway knows the pharmacy's computer and the license is a trial or has ended.</param>
+/// <param name="Status">none, pending, approved or rejected.</param>
+/// <param name="Serial">Once approved; SmartCHIFA activates it by itself at its next start.</param>
+public record LicenseRequestState(bool CanRequest, string Status, DateTime? SentAt, string? Serial, string? Message);
+
+public record LicenseRequestForm(string FullName, string Phone, string? BusinessName, string? Wilaya, string? Message);
+
 /// <param name="IsCurrent">This phone.</param>
 public record PhoneDevice(Guid Id, string Name, DateTime CreatedAt, DateTime? LastSeenAt, bool IsCurrent);
 

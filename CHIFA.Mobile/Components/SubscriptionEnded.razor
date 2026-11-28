@@ -1,7 +1,7 @@
 @* In place of every page that needs the pharmacy PC once the trial or subscription has ended (the gateway answers 402). *@
 @inject NavigationManager Nav
 
-<div class="offline-screen pharmacy-offline" role="status">
+<div class="offline-screen pharmacy-offline subscription-ended" role="status">
     <div class="offline-card">
         <div class="offline-art" aria-hidden="true">
             <span class="offline-ring"></span>
@@ -15,7 +15,7 @@
         <div class="guest-message">
             @if (Status.IsTrial)
             {
-                <p lang="ar" dir="rtl">انتهت الفترة التجريبية. اطلب ترخيصاً من قائمة « Licence » في برنامج <bdi>SmartCHIFA</bdi> على حاسوب الصيدلية، وسيعود الهاتف للعمل تلقائياً.</p>
+                <p lang="ar" dir="rtl">انتهت الفترة التجريبية. اطلب الترخيص من هنا مباشرة، ثم ادفع وأرسل الوصل على واتساب، وسيعود البرنامج والهاتف للعمل تلقائياً.</p>
             }
             else
             {
@@ -23,22 +23,18 @@
             }
         </div>
 
-        <ul class="offline-tips">
-            @if (Status.IsTrial)
-            {
-                <li><svg viewBox="0 0 24 24"><path d="M3 4h18v12H3zM8 20h8M12 16v4" /></svg>Ouvrez SmartCHIFA sur le PC de la pharmacie</li>
-                <li><svg viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6" /></svg>Menu « Licence » : demandez une licence</li>
-                <li><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></svg>SmartApp vous appelle pour le paiement</li>
-            }
-            else
-            {
+        <LicenseRequestCard />
+
+        @if (!Status.IsTrial)
+        {
+            <ul class="offline-tips">
                 <li><svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z" /></svg>Contactez SmartApp pour renouveler</li>
                 <li><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 4v5h-5" /></svg>Dans SmartCHIFA, cliquez sur « Vérifier en ligne »</li>
-            }
-        </ul>
+            </ul>
+        }
 
-        <button type="button" class="button wide" @onclick="@(() => Nav.NavigateTo("abonnement"))">Voir l'abonnement</button>
         <button type="button" class="button wide secondary" @onclick="@(() => Nav.NavigateTo("assistance"))">Contacter SmartApp</button>
+        <button type="button" class="link-button" @onclick="@(() => Nav.NavigateTo("paiement"))">Tarifs et paiement</button>
         <span class="offline-status" aria-live="polite">Vérification automatique toutes les 30 s.</span>
     </div>
 </div>

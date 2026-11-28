@@ -48,6 +48,8 @@
     }
 </section>
 
+<LicenseRequestCard />
+
 <section class="card">
     <h2>Téléphones liés@(_devices is { } list ? $" ({list.Count})" : "")</h2>
 
@@ -198,10 +200,10 @@
 
     private static string? Advice(Subscription s) => s.Status switch
     {
-        "expired" when s.IsTrial => "L'essai gratuit est terminé. Demandez une licence dans SmartCHIFA (menu « Licence ») : SmartApp vous appelle pour le paiement.",
+        "expired" when s.IsTrial => "L'essai gratuit est terminé. Demandez une licence (ci-dessous ou dans SmartCHIFA, menu « Licence ») : SmartApp vous appelle pour le paiement.",
         "expired" => "Renouvelez l'abonnement auprès de SmartApp, puis cliquez sur « Vérifier en ligne » dans SmartCHIFA.",
         "expiring" => "Contactez SmartApp pour renouveler l'abonnement : votre numéro de série reste le même.",
-        "trial" => "Pour continuer après l'essai, demandez une licence dans SmartCHIFA (menu « Licence »).",
+        "trial" => "Pour continuer après l'essai, demandez une licence (ci-dessous ou dans SmartCHIFA, menu « Licence »).",
         _ => null
     };
 }

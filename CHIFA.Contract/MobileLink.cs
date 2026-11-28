@@ -17,6 +17,24 @@ public static class LinkRoutes
 
     /// <summary>Called with the agent key: the current license file, so the phone shows the subscription's end.</summary>
     public const string License = "/api/link/license";
+
+    /// <summary>Called with the agent key: the license request sent from a phone, with its serial once approved.</summary>
+    public const string LicenseRequest = "/api/link/license-request";
+}
+
+/// <summary>A license request sent from a phone for the pharmacy's computer.</summary>
+/// <param name="CanRequest">The gateway knows the computer (from its last license), so a phone can ask for it.</param>
+/// <param name="Status">One of <see cref="LicenseRequestStates"/>.</param>
+/// <param name="Serial">Once approved: SmartCHIFA activates it, and the phone shows it in case it must be typed.</param>
+/// <param name="Message">Why SmartApp rejected it.</param>
+public record LicenseRequestState(bool CanRequest, string Status, DateTime? SentAt = null, string? Serial = null, string? Message = null);
+
+public static class LicenseRequestStates
+{
+    public const string None = "none";
+    public const string Pending = "pending";
+    public const string Approved = "approved";
+    public const string Rejected = "rejected";
 }
 
 /// <param name="License">Content of the SmartApp license file (<c>license.lic</c>) of this computer.</param>

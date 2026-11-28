@@ -1,0 +1,202 @@
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+using CHIFA.Contract;
+using CHIFA.Gateway.Data;
+using CHIFA.Gateway.Features.Account;
+using CHIFA.Gateway.Features.Auth;
+using CHIFA.Gateway.Features.LicenseRequests;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace CHIFA.Tests.Gateway;
+
+/// <summary>The pharmacist asks for a license from the phone; SmartCHIFA picks up the approved serial.</summary>
+[Collection(GatewayCollection.Name)]
+public class LicenseRequestTests(GatewayFixture gateway)
+{
+    private static readonly PhoneLicenseRequest Form = new("Amel Benali", "0661 23 45 67", Wilaya: "Annaba", Message: "Formule annuelle");
+
+    [Fact]
+    public async Task Phone_asks_for_a_license_for_its_pharmacys_computer()
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+
+        var before = await StateAsync(phone);
+        var sent = await phone.PostAsJsonAsync("/api/license-request", Form);
+        var after = await StateAsync(phone);
+
+        before.Should().BeEquivalentTo(new { CanRequest = true, Status = LicenseRequestStates.None });
+        sent.StatusCode.Should().Be(HttpStatusCode.OK);
+        after.Status.Should().Be(LicenseRequestStates.Pending);
+        after.SentAt.Should().NotBeNull();
+        gateway.Licensing.For(machine)!.Submission.Should().BeEquivalentTo(new
+        {
+            Product = GatewayFixture.LicenseProduct, MachineId = machine, FullName = "Amel Benali", Phone = "0661 23 45 67", Wilaya = "Annaba",
+            BusinessName = "Pharmacie Test"
+        });
+        gateway.Licensing.For(machine)!.Submission.Message.Should().Contain("application mobile").And.Contain("Formule annuelle");
+    }
+
+    [Fact]
+    public async Task Approved_request_reaches_smartchifa_and_its_new_license_unblocks_the_phone()
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        (await phone.PostAsJsonAsync("/api/license-request", Form)).EnsureSuccessStatusCode();
+        await EndLicenseAsync(pharmacy.PharmacyId);
+        gateway.Licensing.Approve(machine, "AAAAA-BBBBB-CCCCC-DDDDD-EEEEE");
+
+        using var desktop = gateway.CreatePharmacyClient(pharmacy.AgentKey);
+        var forPhone = await StateAsync(phone);
+        var forDesktop = (await desktop.GetFromJsonAsync<LicenseRequestState>(LinkRoutes.LicenseRequest, JsonSerializerOptions.Web))!;
+
+        forPhone.Should().BeEquivalentTo(new { Status = LicenseRequestStates.Approved, Serial = "AAAAA-BBBBB-CCCCC-DDDDD-EEEEE" });
+        forDesktop.Serial.Should().Be("AAAAA-BBBBB-CCCCC-DDDDD-EEEEE");
+
+        // SmartCHIFA activated the serial: a new license, for the same computer, replaces the trial.
+        var paid = GatewayFixture.CreateLicense(machineId: machine);
+        (await desktop.PostAsJsonAsync(LinkRoutes.License, new LicenseUpdateRequest(paid))).StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        (await phone.GetAsync("/api/officine/stats/recent")).StatusCode.Should().NotBe(HttpStatusCode.PaymentRequired);
+        (await phone.GetFromJsonAsync<SubscriptionStatus>("/api/subscription", JsonSerializerOptions.Web))!.Status.Should().Be(SubscriptionStates.Active);
+        (await StateAsync(phone)).Should().BeEquivalentTo(new { CanRequest = false, Status = LicenseRequestStates.None });
+    }
+
+    [Fact]
+    public async Task License_of_another_computer_does_not_replace_the_pharmacys()
+    {
+        var (pharmacy, _) = await RegisterTrialAsync();
+        using var desktop = gateway.CreatePharmacyClient(pharmacy.AgentKey);
+
+        var response = await desktop.PostAsJsonAsync(LinkRoutes.License, new LicenseUpdateRequest(GatewayFixture.CreateLicense()));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task Registering_with_the_paid_license_of_the_same_computer_keeps_the_pharmacy()
+    {
+        var (trial, machine) = await RegisterTrialAsync();
+
+        var paid = await gateway.RegisterAsync(GatewayFixture.CreateLicense(machineId: machine));
+
+        paid.PharmacyId.Should().Be(trial.PharmacyId);
+    }
+
+    [Fact]
+    public async Task Rejected_request_shows_why_and_can_be_sent_again()
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        (await phone.PostAsJsonAsync("/api/license-request", Form)).EnsureSuccessStatusCode();
+        gateway.Licensing.Reject(machine, "Numéro injoignable");
+
+        var rejected = await StateAsync(phone);
+        var next = await StateAsync(phone);
+
+        rejected.Should().BeEquivalentTo(new { Status = LicenseRequestStates.Rejected, Message = "Numéro injoignable" });
+        next.Should().BeEquivalentTo(new { CanRequest = true, Status = LicenseRequestStates.None });
+    }
+
+    [Fact]
+    public async Task Request_sent_again_from_smartchifa_is_forgotten_on_the_phone()
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        (await phone.PostAsJsonAsync("/api/license-request", Form)).EnsureSuccessStatusCode();
+        gateway.Licensing.ReplaceToken(machine);
+
+        (await StateAsync(phone)).Status.Should().Be(LicenseRequestStates.None);
+    }
+
+    [Fact]
+    public async Task Running_subscription_cannot_be_requested_again()
+    {
+        var pharmacy = await gateway.RegisterAsync(GatewayFixture.CreateLicense());
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+
+        var state = await StateAsync(phone);
+        var sent = await phone.PostAsJsonAsync("/api/license-request", Form);
+
+        state.CanRequest.Should().BeFalse();
+        sent.StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
+    [Theory]
+    [InlineData("", "0661234567")]
+    [InlineData("Amel", "0661")]
+    public async Task Name_and_phone_are_required(string fullName, string phoneNumber)
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+
+        var sent = await phone.PostAsJsonAsync("/api/license-request", Form with { FullName = fullName, Phone = phoneNumber });
+
+        sent.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        gateway.Licensing.For(machine).Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Unreachable_licensing_server_answers_503()
+    {
+        var (pharmacy, machine) = await RegisterTrialAsync();
+        using var phone = await LinkPhoneAsync(pharmacy.AgentKey);
+        gateway.Licensing.SetDown(machine);
+
+        var sent = await phone.PostAsJsonAsync("/api/license-request", Form);
+
+        sent.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+        (await phone.GetFromJsonAsync<LicenseRequestState>("/api/license-request", JsonSerializerOptions.Web))!.CanRequest.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Pharmacy_without_a_known_computer_cannot_request_from_the_phone()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        (await StateAsync(phone)).CanRequest.Should().BeFalse();
+        (await phone.PostAsJsonAsync("/api/license-request", Form)).StatusCode.Should().Be(HttpStatusCode.Conflict);
+    }
+
+    [Fact]
+    public async Task Desktop_route_needs_the_agent_key()
+    {
+        using var anonymous = gateway.CreateClient();
+
+        (await anonymous.GetAsync(LinkRoutes.LicenseRequest)).StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    private async Task<(RegisterPharmacyResponse Pharmacy, string Machine)> RegisterTrialAsync()
+    {
+        var machine = Guid.NewGuid().ToString("N");
+        return (await gateway.RegisterAsync(GatewayFixture.CreateLicense(edition: "trial", machineId: machine)), machine);
+    }
+
+    private async Task EndLicenseAsync(Guid pharmacyId)
+    {
+        await using var db = await gateway.Services.GetRequiredService<IDbContextFactory<GatewayDbContext>>().CreateDbContextAsync();
+        var pharmacy = await EntityFrameworkQueryableExtensions.SingleAsync(db.Pharmacies, p => p.Id == pharmacyId);
+        pharmacy.LicenseExpiresAt = DateTime.UtcNow.AddMinutes(-1);
+        await db.SaveChangesAsync();
+    }
+
+    private async Task<HttpClient> LinkPhoneAsync(string agentKey)
+    {
+        using var desktop = gateway.CreatePharmacyClient(agentKey);
+        var code = (await (await desktop.PostAsync(LinkRoutes.Codes, null)).EnsureSuccessStatusCode()
+            .Content.ReadFromJsonAsync<PairingCodeResponse>())!;
+
+        var client = gateway.CreateClient();
+        var session = (await (await client.PostAsJsonAsync("/api/auth/pair", new PairRequest(code.Code, "Samsung")))
+            .EnsureSuccessStatusCode().Content.ReadFromJsonAsync<LoginResponse>())!;
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
+        return client;
+    }
+
+    private static async Task<LicenseRequestState> StateAsync(HttpClient phone) =>
+        (await phone.GetFromJsonAsync<LicenseRequestState>("/api/license-request", JsonSerializerOptions.Web))!;
+}

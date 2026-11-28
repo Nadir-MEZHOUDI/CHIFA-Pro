@@ -1,0 +1,169 @@
+@* Asks SmartApp for a license from the phone, for the pharmacy's computer. Shows nothing when the phone cannot ask
+   (running subscription, or a SmartCHIFA too old to have sent its computer's identity). *@
+@inject Api Api
+@inject Session Session
+@inject IJSRuntime Js
+@inject NavigationManager Nav
+
+@if (_error is not null)
+{
+    <section class="card license-request">
+        <h2>Licence SmartCHIFA</h2>
+        <ErrorBox Error="_error" Retry="LoadAsync" />
+    </section>
+}
+else if (_state is { } s && (s.CanRequest || s.Status != "none"))
+{
+    <section class="card license-request">
+        <div class="card-head">
+            <h2>Licence SmartCHIFA</h2>
+            @if (StatusTag(s.Status) is { } tag)
+            {
+                <span class="tag @tag.Class">@tag.Text</span>
+            }
+        </div>
+
+        @if (_editing)
+        {
+            <EditForm Model="this" OnSubmit="SendAsync" FormName="license-request" class="form">
+                <label>
+                    Nom et prénom du pharmacien *
+                    <InputText @bind-Value="FullName" autocomplete="name" />
+                </label>
+                <label>
+                    Téléphone *
+                    <InputText @bind-Value="Phone" type="tel" inputmode="tel" autocomplete="tel" />
+                </label>
+                <label>
+                    Pharmacie
+                    <InputText @bind-Value="BusinessName" autocomplete="organization" />
+                </label>
+                <label>
+                    Wilaya
+                    <InputText @bind-Value="Wilaya" />
+                </label>
+                <label>
+                    Message (formule souhaitée, nombre de postes…)
+                    <InputTextArea @bind-Value="Message" rows="2" />
+                </label>
+
+                @if (_sendError is not null)
+                {
+                    <ErrorBox Error="_sendError" />
+                }
+
+                <button class="button wide" type="submit" disabled="@(_busy || !IsComplete)">
+                    @(_busy ? "Envoi…" : "Envoyer la demande")
+                </button>
+                <button class="link-button" type="button" @onclick="() => _editing = false">Annuler</button>
+            </EditForm>
+        }
+        else if (s.Status == "approved")
+        {
+            <p><strong class="ok-text">Licence validée.</strong> Ouvrez SmartCHIFA sur le PC de la pharmacie : il s'active tout seul (Internet nécessaire), et ce téléphone se débloque.</p>
+            @if (s.Serial is { } serial)
+            {
+                <div class="copy-row">
+                    <div><small>Numéro de série</small><b class="ltr">@serial</b></div>
+                    <button class="button small secondary" type="button" @onclick="() => CopyAsync(serial)">@(_copied ? "Copié" : "Copier")</button>
+                </div>
+                <p class="hint muted small">Si SmartCHIFA ne s'active pas, saisissez ce numéro dans le menu « Licence ».</p>
+            }
+        }
+        else if (s.Status == "pending")
+        {
+            <p><strong>Demande envoyée@(s.SentAt is { } sent ? $" le {Fmt.Date(sent.ToLocalTime())} à {sent.ToLocalTime():HH:mm}" : "")</strong>. SmartApp vous appelle pour le paiement.</p>
+            <p class="hint muted small">Dès la validation, SmartCHIFA s'active tout seul au prochain démarrage du PC, et ce téléphone se débloque.</p>
+            <div class="actions">
+                <button class="button wide" type="button" @onclick="@(() => Nav.NavigateTo("paiement"))">Comment payer</button>
+                <button class="button wide secondary" type="button" disabled="@_busy" @onclick="LoadAsync">@(_busy ? "Vérification…" : "Vérifier la demande")</button>
+                <button class="link-button" type="button" @onclick="StartEdit">Modifier ma demande</button>
+            </div>
+        }
+        else
+        {
+            @if (s.Status == "rejected")
+            {
+                <p class="bad-text small">Votre demande a été refusée@(string.IsNullOrWhiteSpace(s.Message) ? "." : $" : {s.Message}") Vous pouvez en envoyer une nouvelle.</p>
+            }
+            <p class="muted small">Demandez votre licence d'ici, sans passer par le PC : SmartApp vous appelle pour le paiement, puis SmartCHIFA s'active tout seul.</p>
+            <div class="actions">
+                <button class="button wide" type="button" @onclick="StartEdit">Demander une licence</button>
+                <button class="button wide secondary" type="button" @onclick="@(() => Nav.NavigateTo("paiement"))">Tarifs et paiement</button>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private LicenseRequestState? _state;
+    private ApiException? _error;
+    private ApiException? _sendError;
+    private bool _editing;
+    private bool _busy;
+    private bool _copied;
+
+    private string? FullName { get; set; }
+    private string? Phone { get; set; }
+    private string? BusinessName { get; set; }
+    private string? Wilaya { get; set; }
+    private string? Message { get; set; }
+
+    private bool IsComplete => !string.IsNullOrWhiteSpace(FullName) && (Phone ?? "").Count(char.IsDigit) >= 9;
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            _state = await Api.LicenseRequestAsync();
+        }
+        catch (ApiException ex)
+        {
+            _error = ex;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private void StartEdit()
+    {
+        _sendError = null;
+        BusinessName ??= Session.Current?.Pharmacy;
+        _editing = true;
+    }
+
+    private async Task SendAsync()
+    {
+        _busy = true;
+        _sendError = null;
+        try
+        {
+            _state = await Api.SendLicenseRequestAsync(new LicenseRequestForm(FullName!.Trim(), Phone!.Trim(), BusinessName, Wilaya, Message));
+            _editing = false;
+        }
+        catch (ApiException ex)
+        {
+            _sendError = ex;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task CopyAsync(string text) => _copied = await Js.InvokeAsync<bool>("chifa.copy", text);
+
+    private static (string Text, string Class)? StatusTag(string status) => status switch
+    {
+        "pending" => ("En attente", "warn"),
+        "approved" => ("Validée", "ok"),
+        "rejected" => ("Refusée", "bad"),
+        _ => null
+    };
+}

@@ -14,6 +14,10 @@
         <svg viewBox="0 0 24 24"><path d="M3 21l1.7-5A8.5 8.5 0 1 1 8 19.3zM9 8.5c0 3.5 3 6.5 6.5 6.5l1.2-1.6-2-1-1 1a5 5 0 0 1-3-3l1-1-1-2z" /></svg>
         <span><strong>Écrire sur WhatsApp</strong><span class="muted small">@Phone</span></span>
     </a>
+    <a class="card link contact" href="paiement">
+        <svg viewBox="0 0 24 24"><path d="M2 6h20v12H2zM2 10h20M6 15h4" /></svg>
+        <span><strong>Tarifs et paiement</strong><span class="muted small">CCP, BaridiMob ou virement bancaire : les comptes à copier.</span></span>
+    </a>
     <a class="card link contact" href="@($"{Website}/#assistance")" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24"><path d="M2 4h20v12H2zM8 20h8M12 16v4" /></svg>
         <span><strong>Assistance à distance</strong><span class="muted small">Sur le PC de la pharmacie, avec RustDesk : nous réglons le problème avec vous.</span></span>
@@ -37,8 +41,8 @@
 
 @code {
     public const string Website = "https://smartchifa.smartappdz.org";
-    private const string Phone = "06 71 71 66 66";
-    private const string WhatsApp = "213671716666";
+    public const string Phone = "06 71 71 66 66";
+    public const string WhatsApp = "213671716666";
 
     private string WhatsAppUrl =>
         $"https://wa.me/{WhatsApp}?text={Uri.EscapeDataString($"Bonjour{(Session.Current is { } s ? $", ici {s.Pharmacy}" : "")} (SmartCHIFA mobile). J'ai besoin d'aide avec SmartCHIFA.")}";

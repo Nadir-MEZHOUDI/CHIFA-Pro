@@ -96,6 +96,11 @@
                         prompt('Copiez ce lien pour le partager :', url);
                     }
                 },
+                // True once copied; older browsers (no clipboard over http) get a box to copy from.
+                copy: async (text) => {
+                    try { await navigator.clipboard.writeText(text); return true; }
+                    catch { prompt('Copiez :', text); return false; }
+                },
                 push: {
                     state: async () => {
                         if (!pushSupported()) return ios() && !standalone() ? 'ios-install' : 'unsupported';

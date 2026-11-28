@@ -130,6 +130,17 @@ public sealed partial class LicenseForm : XtraForm
             return;
         }
 
+        if (!_client.Current.IsValid || _client.Current.IsTrial)
+        {
+            var fromPhone = await LicenseGate.InstallPhoneRequestAsync(_client);
+            if (fromPhone is not null)
+            {
+                await RunAsync(() => Task.FromResult(fromPhone),
+                    "La licence demandée depuis le téléphone est validée : SmartCHIFA est maintenant activé sur ce poste.");
+                return;
+            }
+        }
+
         await RunAsync(() => _client.RefreshAsync(force: true), "La licence a été vérifiée en ligne.");
     }
 

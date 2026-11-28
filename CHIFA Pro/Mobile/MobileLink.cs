@@ -144,6 +144,26 @@ internal static class MobileLink
         }
     }
 
+    /// <summary>
+    /// The serial of a license requested from a linked phone and approved by SmartApp, or <c>null</c>. Never
+    /// registers: only a pharmacy that already linked a phone can have one.
+    /// </summary>
+    public static async Task<string?> ApprovedPhoneRequestSerialAsync(CancellationToken ct)
+    {
+        if (Load() is not { } settings || settings.Agent.GatewayUrl != GatewayUrl) return null;
+        try
+        {
+            using var response = await SendWithKeyAsync(HttpMethod.Get, LinkRoutes.LicenseRequest, settings.Agent.AgentKey, ct);
+            if (!response.IsSuccessStatusCode) return null;
+            var state = await response.Content.ReadFromJsonAsync<LicenseRequestState>(JsonSerializerOptions.Web, ct);
+            return state is { Status: LicenseRequestStates.Approved, Serial.Length: > 0 } ? state.Serial : null;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
+        {
+            return null;
+        }
+    }
+
     /// <summary>A new code; the previous one stops working.</summary>
     public static Task<PairingCodeResponse> NewCodeAsync() =>
         SendAsync<PairingCodeResponse>(HttpMethod.Post, LinkRoutes.Codes);
@@ -186,11 +206,11 @@ internal static class MobileLink
         }
     }
 
-    private static async Task<HttpResponseMessage> SendWithKeyAsync(HttpMethod method, string route, string agentKey)
+    private static async Task<HttpResponseMessage> SendWithKeyAsync(HttpMethod method, string route, string agentKey, CancellationToken ct = default)
     {
         using var request = new HttpRequestMessage(method, GatewayUrl + route);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", agentKey);
-        return await Http.SendAsync(request);
+        return await Http.SendAsync(request, ct);
     }
 
     private static async Task<Settings> RegisterAsync()

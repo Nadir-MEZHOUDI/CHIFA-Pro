@@ -40,7 +40,11 @@ public static class LinkEndpoints
 
         var key = AgentKeys.Generate();
         await using var db = await dbFactory.CreateDbContextAsync(ct);
-        var pharmacy = await db.Pharmacies.FirstOrDefaultAsync(p => p.LicenseId == license.LicenseId, ct);
+        // A new license on the same computer (the paid license after the trial) is still the same pharmacy.
+        var pharmacy = await db.Pharmacies.FirstOrDefaultAsync(p => p.LicenseId == license.LicenseId, ct)
+                       ?? (license.MachineId is { } machineId
+                           ? await db.Pharmacies.FirstOrDefaultAsync(p => p.MachineId == machineId, ct)
+                           : null);
         var existed = pharmacy is not null;
 
         if (pharmacy is null)
@@ -57,6 +61,9 @@ public static class LinkEndpoints
         else
         {
             pharmacy.AgentKeyHash = AgentKeys.Hash(key);
+            if (pharmacy.LicenseId != license.LicenseId)
+                LicenseRequests.LicenseRequestEndpoints.Forget(pharmacy);
+            pharmacy.LicenseId = license.LicenseId;
             KeepLicense(pharmacy, license);
         }
 
@@ -158,7 +165,16 @@ public static class LinkEndpoints
         await using var db = await dbFactory.CreateDbContextAsync(ct);
         var pharmacy = await db.Pharmacies.FirstAsync(p => p.Id == pharmacyId, ct);
         if (pharmacy.LicenseId != license.LicenseId)
-            return Results.Problem(title: "Cette licence n'est pas celle de cette pharmacie.", statusCode: StatusCodes.Status403Forbidden);
+        {
+            // A paid license replaces the trial (or an older license) on the same computer: the pharmacy keeps
+            // its phones. A license of another computer, or one another pharmacy already uses, is refused.
+            var sameComputer = pharmacy.MachineId is null || pharmacy.MachineId == license.MachineId;
+            if (!sameComputer || await db.Pharmacies.AnyAsync(p => p.LicenseId == license.LicenseId, ct))
+                return Results.Problem(title: "Cette licence n'est pas celle de cette pharmacie.", statusCode: StatusCodes.Status403Forbidden);
+
+            pharmacy.LicenseId = license.LicenseId;
+            LicenseRequests.LicenseRequestEndpoints.Forget(pharmacy);
+        }
 
         KeepLicense(pharmacy, license);
         await db.SaveChangesAsync(ct);
@@ -170,6 +186,8 @@ public static class LinkEndpoints
         pharmacy.LicenseExpiresAt = license.ExpiresAt?.UtcDateTime;
         pharmacy.LicenseEdition = license.Edition is { Length: > 50 } edition ? edition[..50] : license.Edition;
         pharmacy.LicenseCheckedAt = DateTime.UtcNow;
+        if (license.MachineId is { Length: > 0 and <= 128 } machineId)
+            pharmacy.MachineId = machineId;
     }
 
     private static string PharmacyName(string? customer)

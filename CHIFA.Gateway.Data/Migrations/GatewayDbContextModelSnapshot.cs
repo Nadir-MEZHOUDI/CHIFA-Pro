@@ -227,6 +227,24 @@ namespace CHIFA.Gateway.Data.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("license_id");
 
+                    b.Property<Guid?>("LicenseRequestId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("license_request_id");
+
+                    b.Property<string>("LicenseRequestToken")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("license_request_token");
+
+                    b.Property<DateTime?>("LicenseRequestedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("license_requested_at");
+
+                    b.Property<string>("MachineId")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("machine_id");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)

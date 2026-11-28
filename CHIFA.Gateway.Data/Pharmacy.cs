@@ -17,6 +17,16 @@ public class Pharmacy
     /// <summary>When CHIFA Pro last sent its license. <c>null</c> when it never did (added by the admin, or an older SmartCHIFA).</summary>
     public DateTime? LicenseCheckedAt { get; set; }
 
+    /// <summary>The computer that license is bound to (hashed by SmartApp): a phone can ask for a license for it.</summary>
+    public string? MachineId { get; set; }
+
+    /// <summary>License request sent from a phone; its token is the only way to read its status.</summary>
+    public Guid? LicenseRequestId { get; set; }
+
+    public string? LicenseRequestToken { get; set; }
+
+    public DateTime? LicenseRequestedAt { get; set; }
+
     /// <summary>SHA-256 of the agent key. The key itself is shown once, when created.</summary>
     public required string AgentKeyHash { get; set; }
 

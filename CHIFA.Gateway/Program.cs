@@ -4,6 +4,7 @@ using CHIFA.Gateway.Features.Account;
 using CHIFA.Gateway.Features.Admin;
 using CHIFA.Gateway.Features.Agents;
 using CHIFA.Gateway.Features.Auth;
+using CHIFA.Gateway.Features.LicenseRequests;
 using CHIFA.Gateway.Features.Link;
 using CHIFA.Gateway.Features.Officine;
 using CHIFA.Gateway.Features.Push;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -77,6 +79,11 @@ builder.Services.AddSingleton<AgentRegistry>();
 builder.Services.AddSingleton<AgentInvoker>();
 builder.Services.AddSingleton<AgentOnlineNotifier>();
 builder.Services.AddHttpClient(nameof(PushSender));
+builder.Services.AddHttpClient<LicensingServer>((sp, http) =>
+{
+    http.BaseAddress = new Uri(sp.GetRequiredService<IOptions<GatewayOptions>>().Value.LicensingUrl);
+    http.Timeout = TimeSpan.FromSeconds(20);
+});
 builder.Services.AddSingleton<PushSender>();
 builder.Services.AddHostedService<AlertPoller>();
 builder.Services.AddSingleton<PhoneActivity>();
@@ -129,6 +136,7 @@ app.MapAdminEndpoints();
 app.MapOfficineEndpoints();
 app.MapPushEndpoints();
 app.MapAccountEndpoints();
+app.MapLicenseRequestEndpoints();
 app.MapReviewEndpoints();
 app.MapUsageEndpoints();
 

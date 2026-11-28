@@ -146,6 +146,15 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
 
     public Task<List<PhoneDevice>> DevicesAsync() => GetAsync<List<PhoneDevice>>("api/devices");
 
+    public Task<LicenseRequestState> LicenseRequestAsync() => GetAsync<LicenseRequestState>("api/license-request");
+
+    /// <summary>Asks SmartApp for a license for the pharmacy's computer; sending again replaces the request.</summary>
+    public async Task<LicenseRequestState> SendLicenseRequestAsync(LicenseRequestForm form)
+    {
+        using var response = await SendAsync(HttpMethod.Post, "api/license-request", form);
+        return (await response.Content.ReadFromJsonAsync<LicenseRequestState>(JsonSerializerOptions.Web))!;
+    }
+
     /// <summary>A code for another phone or browser; it replaces the one shown in SmartCHIFA.</summary>
     public async Task<LinkCode> NewLinkCodeAsync()
     {

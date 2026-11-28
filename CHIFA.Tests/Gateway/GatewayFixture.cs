@@ -8,6 +8,7 @@ using CHIFA.Contract;
 using CHIFA.Gateway.Data;
 using CHIFA.Gateway.Features.Admin;
 using CHIFA.Gateway.Features.Auth;
+using CHIFA.Gateway.Features.LicenseRequests;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -35,6 +36,9 @@ public sealed class GatewayFixture : IAsyncLifetime
     private readonly SqliteConnection _db = new("DataSource=:memory:");
     private WebApplicationFactory<Program> _factory = null!;
 
+    /// <summary>Stands in for the SmartApp licensing server that phone license requests go to.</summary>
+    public FakeLicensingServer Licensing { get; } = new();
+
     public Uri BaseAddress { get; private set; } = null!;
     public IServiceProvider Services => _factory.Services;
 
@@ -56,6 +60,7 @@ public sealed class GatewayFixture : IAsyncLifetime
                 s.RemoveAll<DbContextOptions<GatewayDbContext>>();
                 s.RemoveAll<IDbContextFactory<GatewayDbContext>>();
                 s.AddDbContextFactory<GatewayDbContext>(o => o.UseSqlite(_db));
+                s.AddHttpClient<LicensingServer>().ConfigurePrimaryHttpMessageHandler(() => Licensing);
             });
         });
         _factory.UseKestrel(0);
@@ -112,7 +117,8 @@ public sealed class GatewayFixture : IAsyncLifetime
         DateTimeOffset? expiresAt = null,
         DateTimeOffset? offlineUntil = null,
         ECDsa? signingKey = null,
-        string edition = "standard")
+        string edition = "standard",
+        string? machineId = null)
     {
         var now = DateTimeOffset.UtcNow;
         var payload = JsonSerializer.SerializeToUtf8Bytes(new
@@ -124,7 +130,7 @@ public sealed class GatewayFixture : IAsyncLifetime
             customer,
             edition,
             features = Array.Empty<string>(),
-            machineId = "machine",
+            machineId = machineId ?? Guid.NewGuid().ToString("N"),
             issuedAt = now,
             expiresAt = expiresAt ?? now.AddYears(1),
             refreshAfter = now.AddDays(1),

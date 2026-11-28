@@ -5,7 +5,8 @@ using System.Text.Json;
 
 namespace CHIFA.Gateway.Features.Link;
 
-public sealed record VerifiedLicense(Guid LicenseId, string? Customer, string? Edition, DateTimeOffset? ExpiresAt);
+/// <param name="MachineId">The computer the license is bound to, as SmartApp hashes it.</param>
+public sealed record VerifiedLicense(Guid LicenseId, string? Customer, string? Edition, DateTimeOffset? ExpiresAt, string? MachineId);
 
 /// <summary>
 /// Checks a SmartApp license file (<c>SL1.&lt;payload&gt;.&lt;signature&gt;</c>, ECDSA P-256 / SHA-256)
@@ -63,7 +64,7 @@ public static class LicenseTokens
         }
 
         error = "";
-        return new VerifiedLicense(payload.LicenseId, payload.Customer, payload.Edition, payload.ExpiresAt);
+        return new VerifiedLicense(payload.LicenseId, payload.Customer, payload.Edition, payload.ExpiresAt, payload.MachineId);
     }
 
     private sealed record Payload(
@@ -73,5 +74,6 @@ public static class LicenseTokens
         string? Customer,
         string? Edition,
         DateTimeOffset? ExpiresAt,
-        DateTimeOffset OfflineUntil);
+        DateTimeOffset OfflineUntil,
+        string? MachineId);
 }

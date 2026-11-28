@@ -167,10 +167,10 @@
     }
 
     // These pages don't need the pharmacy PC, so they keep working while it is off.
-    private static readonly string[] GatewayPages = ["notifications", "abonnement", "assistance", "login"];
+    private static readonly string[] GatewayPages = ["notifications", "abonnement", "assistance", "paiement", "login"];
 
     // An unlinked phone has no pharmacy behind it: these pages work as usual, the others ask to install SmartCHIFA.
-    private static readonly string[] GuestPages = ["assistance", "login"];
+    private static readonly string[] GuestPages = ["assistance", "paiement", "login"];
 
     private string CurrentPage => Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#', '/')[0];
 
