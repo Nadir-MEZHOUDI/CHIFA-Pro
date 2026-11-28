@@ -378,100 +378,66 @@ Vérifiez l'installation du dossier « CHIFA_OFFICINE_DB » dans le chemin CHIFA
 
     public static async Task SaveBackup()
     {
+        if (!EnsureToolExists(AppSettings.Default.ChifaDump, @"Sauvegarde"))
+            return;
+
         try
         {
-            if (!EnsureToolExists(AppSettings.Default.ChifaDump, @"Sauvegarde"))
-                return;
-
-            Environment.SetEnvironmentVariable(@"PGPASSWORD", AppSettings.Default.DbPassword);
-
-            if (!Directory.Exists(AppSettings.Default.ChifaBackup))
-            {
-                Directory.CreateDirectory(AppSettings.Default.ChifaBackup);
-            }
-
+            Directory.CreateDirectory(AppSettings.Default.ChifaBackup);
             var backupFile = Path.Combine(AppSettings.Default.ChifaBackup, BackupFileName);
-
-            ProcessStartInfo startInfo = new()
-            {
-                FileName = AppSettings.Default.ChifaDump,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                Arguments = $"""-h "{ChifaDb.Server}" -p {DefaultDbPort} -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """
-            };
-
-            using Process process = new() { StartInfo = startInfo };
-
-            process.Start();
-
-            // Drain both streams while the process runs, otherwise a full pipe buffer can deadlock the wait.
-            var outputTask = process.StandardOutput.ReadToEndAsync();
-            var errorTask = process.StandardError.ReadToEndAsync();
-
-            await process.WaitForExitAsync();
-
-            await outputTask;
-            var error = await errorTask;
-
-            if (process.ExitCode == 0)
-            {
-                MessageBox.Show(@"Sauvegarde effectuée avec succès.", @"Sauvegarde", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show(@"Échec de la sauvegarde. Erreur : " + error, @"Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            await RunPgToolAsync(AppSettings.Default.ChifaDump,
+                $"""-h "{ChifaDb.Server}" -p {DefaultDbPort} -U pharm -c -Ft -d CHIFA_OFFICINE -f "{backupFile}" """,
+                @"Sauvegarde", @"Sauvegarde effectuée avec succès.", @"Échec de la sauvegarde.");
         }
         catch (Exception ex)
         {
             ex.Log();
         }
     }
+
     public static async Task Restore(string fileName)
     {
+        if (!EnsureToolExists(AppSettings.Default.ChifaRestore, @"Restauration"))
+            return;
+
         try
         {
-            if (!EnsureToolExists(AppSettings.Default.ChifaRestore, @"Restauration"))
-                return;
-
-            Environment.SetEnvironmentVariable("PGPASSWORD", AppSettings.Default.DbPassword);
-            ProcessStartInfo processStartInfo = new()
-            {
-                FileName = AppSettings.Default.ChifaRestore,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-                Arguments = $"""-h "{ChifaDb.Server}" -c  -p {DefaultDbPort} -U pharm -d CHIFA_OFFICINE "{fileName}" """,
-            };
-
-            using Process process = new();
-            process.StartInfo = processStartInfo;
-            process.Start();
-
-            // Drain both streams while the process runs, otherwise a full pipe buffer can deadlock the wait.
-            var outputTask = process.StandardOutput.ReadToEndAsync();
-            var errorTask = process.StandardError.ReadToEndAsync();
-
-            await process.WaitForExitAsync();
-
-            await outputTask;
-            var error = await errorTask;
-
-            if (process.ExitCode == 0)
-            {
-                MessageBox.Show(@"Restauration de la base de données effectuée avec succès.", @"Restauration", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show(@"Échec de la restauration de la base de données. Erreur : " + error, @"Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            await RunPgToolAsync(AppSettings.Default.ChifaRestore,
+                $"""-h "{ChifaDb.Server}" -c -p {DefaultDbPort} -U pharm -d CHIFA_OFFICINE "{fileName}" """,
+                @"Restauration", @"Restauration de la base de données effectuée avec succès.", @"Échec de la restauration de la base de données.");
         }
         catch (Exception ex)
         {
             ex.Log();
         }
+    }
+
+    private static async Task RunPgToolAsync(string tool, string arguments, string caption, string success, string failure)
+    {
+        ProcessStartInfo startInfo = new()
+        {
+            FileName = tool,
+            Arguments = arguments,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true,
+            // Only for this process: set process-wide, every program started later would inherit the password.
+            Environment = { ["PGPASSWORD"] = AppSettings.Default.DbPassword },
+        };
+
+        using var process = Process.Start(startInfo)!;
+
+        // Drain both streams while the process runs, otherwise a full pipe buffer can deadlock the wait.
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+        await process.WaitForExitAsync();
+        await outputTask;
+        var error = await errorTask;
+
+        if (process.ExitCode == 0)
+            MessageBox.Show(success, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        else
+            MessageBox.Show($"{failure} Erreur : {error}", @"Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 }

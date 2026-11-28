@@ -34,7 +34,11 @@ public static class XtraHelper
             gridView.ShowLoadingPanel();
             gridView.OptionsView.BestFitMaxRowCount = 40;
 
-            gridControl.DataSource = new List<T>();
+            // Keep a designer BindingSource: replacing it would unbind the controls that follow the current row.
+            if (gridControl.DataSource is BindingSource existing)
+                existing.DataSource = new List<T>();
+            else
+                gridControl.DataSource = new List<T>();
 
             var data = await func(token).ConfigureAwait(false);
 

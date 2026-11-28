@@ -6,23 +6,13 @@ public partial class FacturePreviewForm : Form
 {
     public ReportViewer reportViewer1;
     private Button btnClose;
-    private System.ComponentModel.IContainer? components;
 
     public FacturePreviewForm()
     {
         InitializeComponent();
     }
 
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing && components is not null)
-        {
-            components.Dispose();
-        }
-
-        base.Dispose(disposing);
-    }
-
+    [System.Diagnostics.CodeAnalysis.MemberNotNull(nameof(reportViewer1), nameof(btnClose))]
     private void InitializeComponent()
     {
         reportViewer1 = new ReportViewer();

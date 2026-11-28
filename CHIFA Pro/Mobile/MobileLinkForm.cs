@@ -28,9 +28,16 @@ public sealed partial class MobileLinkForm : XtraForm
 
     private async void MobileLinkForm_Shown(object? sender, EventArgs e)
     {
-        await NewCodeAsync();
-        ShowService();
-        await OfferServiceAsync(null);
+        try
+        {
+            await NewCodeAsync();
+            ShowService();
+            await OfferServiceAsync(null);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+        }
     }
 
     /// <summary>
@@ -155,6 +162,11 @@ public sealed partial class MobileLinkForm : XtraForm
         catch (MobileLinkException)
         {
             // Shown again at the next click; polling stays quiet.
+        }
+        catch (Exception ex)
+        {
+            // Runs every few seconds from a timer: a message box here would pop up on each tick.
+            ex.Log(showMessage: false);
         }
     }
 
