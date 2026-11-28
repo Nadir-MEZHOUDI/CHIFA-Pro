@@ -259,6 +259,7 @@ namespace CHIFA.Pro.Views
             accLN.Name = "accLN";
             accLN.Style = DevExpress.XtraBars.Navigation.ElementStyle.Item;
             accLN.Text = "LISTE NOIRE";
+            accLN.Visible = false;
             accLN.Click += accLN_Click;
             // 
             // accCM

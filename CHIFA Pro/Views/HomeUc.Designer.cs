@@ -257,6 +257,7 @@ namespace CHIFA.Pro.Views
             itemListNoir.Id = 9;
             itemListNoir.ItemSize = TileItemSize.Medium;
             itemListNoir.Name = "itemListNoir";
+            itemListNoir.Visible = false;
             itemListNoir.ItemClick += ItemListNoir_ItemClick;
             // 
             // itemUsers
