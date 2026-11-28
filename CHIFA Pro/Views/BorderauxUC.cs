@@ -52,6 +52,14 @@ public partial class BordereauxUc : XtraUserControl, INavigable
             if (e.Column.FieldName == "StatutRejet")
                 e.Appearance.ForeColor = Color.Gray;
         }
+        else if (row.Virment == 0)
+        {
+            if (e.Column.FieldName == "StatutRejet")
+            {
+                e.Appearance.BackColor = Color.FromArgb(255, 224, 178);
+                e.Appearance.ForeColor = Color.FromArgb(194, 65, 12);
+            }
+        }
         else if (row.MontantRejete > 0)
         {
             if (e.Column.FieldName is "MontantRejete" or "TauxRejet" or "StatutRejet")
