@@ -22,34 +22,7 @@ public class ChifaService
         CancellationToken cancellationToken = default)
     {
         await using var db = new ChifaDb();
-        var activePeriod = period ?? Period;
-        var start = activePeriod.Start;
-        var end = activePeriod.EndExclusive;
-
-        // The extraction date is the last facture date, so the period filter needs the same per-bordereau
-        // totals as the grid: computing them in one GROUP BY over facture (no index on num_bord) is one scan
-        // instead of one scan per bordereau.
-        var list = await (
-                from b in db.Bordereaus.Where(predicate ?? (_ => true))
-                from t in FactureTotals(db).LeftJoin(t => t.NumBord == b.NumBord)
-                where b.Etat == 'O' ||
-                      (t.LastFacture != null && (start == null || t.LastFacture >= start) && (end == null || t.LastFacture < end))
-                select new BordereauDto
-                {
-                    Num = b.NumBord,
-                    Center = b.Center!.Nom,
-                    FirstFacture = t.FirstFacture,
-                    LastFacture = t.LastFacture,
-                    Nmbr = (int?)t.Nmbr ?? 0,
-                    Virment = b.MontVir,
-                    DateDepotFtp = b.DateDepotFtp,
-                    DateCloture = b.DateCloture,
-                    DateOuverture = b.DateOuverture,
-                    State = b.Etat,
-                    MontOff = t.MontOff,
-                    MontAss = t.MontAss,
-                    Maj = t.Maj
-                })
+        var list = await BordereauxInPeriod(db, db.Bordereaus.Where(predicate ?? (_ => true)), period ?? Period)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
@@ -57,6 +30,51 @@ public class ChifaService
             .OrderByDescending(x => x.FirstFacture)
             .ThenByDescending(x => x.Num)
             .ToList();
+    }
+
+    /// <summary>Same rows as <see cref="GetAllBordereauxAsync"/>, latest opened first, one page read from the database.</summary>
+    public async ValueTask<(int Total, List<BordereauDto> Items)> GetBordereauxPageAsync(Period? period, int skip, int take,
+        CancellationToken cancellationToken = default)
+    {
+        await using var db = new ChifaDb();
+        return await BordereauxInPeriod(db, db.Bordereaus, period ?? Period)
+            .OrderBy(x => x.DateOuverture == null)
+            .ThenByDescending(x => x.DateOuverture)
+            .ThenBy(x => x.FirstFacture == null)
+            .ThenByDescending(x => x.FirstFacture)
+            .ThenByDescending(x => x.Num)
+            .ToPageAsync(skip, take, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private static IQueryable<BordereauDto> BordereauxInPeriod(ChifaDb db, IQueryable<Bordereau> bordereaux, Period period)
+    {
+        var start = period.Start;
+        var end = period.EndExclusive;
+
+        // The extraction date is the last facture date, so the period filter needs the same per-bordereau
+        // totals as the grid: computing them in one GROUP BY over facture (no index on num_bord) is one scan
+        // instead of one scan per bordereau.
+        return from b in bordereaux
+            from t in FactureTotals(db).LeftJoin(t => t.NumBord == b.NumBord)
+            where b.Etat == 'O' ||
+                  (t.LastFacture != null && (start == null || t.LastFacture >= start) && (end == null || t.LastFacture < end))
+            select new BordereauDto
+            {
+                Num = b.NumBord,
+                Center = b.Center!.Nom,
+                FirstFacture = t.FirstFacture,
+                LastFacture = t.LastFacture,
+                Nmbr = (int?)t.Nmbr ?? 0,
+                Virment = b.MontVir,
+                DateDepotFtp = b.DateDepotFtp,
+                DateCloture = b.DateCloture,
+                DateOuverture = b.DateOuverture,
+                State = b.Etat,
+                MontOff = t.MontOff,
+                MontAss = t.MontAss,
+                Maj = t.Maj
+            };
     }
 
     /// <summary>One bordereau with all its factures, by insured number. Null when it does not exist.</summary>
@@ -101,23 +119,31 @@ public class ChifaService
         return new BordereauDetailDto { Bordereau = bordereau, Factures = factures };
     }
 
-    /// <summary>Per-bordereau totals of its factures, whatever their date.</summary>
-    internal static IQueryable<FactureTotals> FactureTotals(ChifaDb db) =>
-        from f in db.Factures
-        where f.NumBord != null
-        group f by f.NumBord into g
-        select new FactureTotals
-        {
-            NumBord = g.Key,
-            Nmbr = g.Count(),
-            MontOff = g.Sum(m => m.MontOff),
-            MontFact = g.Sum(m => m.MontFact),
-            MontAss = g.Sum(m => m.MontAs),
-            Maj = g.Sum(m => m.MontMaj),
-            Fae = g.Sum(m => m.MontMajFae),
-            FirstFacture = g.Min(m => m.DateFact),
-            LastFacture = g.Max(m => m.DateFact)
-        };
+    /// <summary>
+    /// Per-bordereau totals of its factures, whatever their date. <paramref name="numBords"/>, a query on
+    /// the same connection, limits the GROUP BY to those bordereaux.
+    /// </summary>
+    internal static IQueryable<FactureTotals> FactureTotals(ChifaDb db, IQueryable<string>? numBords = null)
+    {
+        var factures = db.Factures.Where(f => f.NumBord != null);
+        if (numBords != null)
+            factures = factures.Where(f => numBords.Contains(f.NumBord!));
+
+        return from f in factures
+            group f by f.NumBord into g
+            select new FactureTotals
+            {
+                NumBord = g.Key,
+                Nmbr = g.Count(),
+                MontOff = g.Sum(m => m.MontOff),
+                MontFact = g.Sum(m => m.MontFact),
+                MontAss = g.Sum(m => m.MontAs),
+                Maj = g.Sum(m => m.MontMaj),
+                Fae = g.Sum(m => m.MontMajFae),
+                FirstFacture = g.Min(m => m.DateFact),
+                LastFacture = g.Max(m => m.DateFact)
+            };
+    }
 
     public async ValueTask<IEnumerable<FactureDto>> GetAllFacturesAsync(bool? last, bool? ts, Period? period = null, Expression<Func<Facture, bool>>? predicate = default,
         CancellationToken cancellationToken = default)
@@ -752,18 +778,6 @@ public class ChifaService
             .ThenLoad(x => x.Medicament)
             .FirstOrDefaultAsync(x => x.NumFact == numFact)
             .ConfigureAwait(false);
-    }
-
-    public Facture? GetFactureForPrint(string numFact)
-    {
-        using var db = new ChifaDb();
-        return db.Factures
-            .LoadWith(x => x.Beneficiaire)
-            .LoadWith(x => x.Assure)
-            .LoadWith(x => x.Center)
-            .LoadWith(x => x.DetailFacts)
-            .ThenLoad(x => x.Medicament)
-            .FirstOrDefault(x => x.NumFact == numFact);
     }
 
     public async ValueTask DeleteFactureAsync(string numFact)

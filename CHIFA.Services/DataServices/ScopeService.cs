@@ -11,54 +11,45 @@ public class ScopeService
 
     public async ValueTask<IEnumerable<RejetDto>> GetRejetsAsync(Period? period = null)
     {
-        var activePeriod = period ?? Period;
-        var start = activePeriod.Start;
-        var end = activePeriod.EndExclusive;
         await using var db = new ChifaDb();
-
-        // A bordereau belongs to the period by its closing date, or its FTP deposit date when CHIFA left
-        // the closing date at the 1900 placeholder (it does so for every bordereau).
-        var minDate = RejetDto.DateMinimaleValide;
-        var bordereaux = await (
-                from b in db.Bordereaus
-                where (start == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) >= start) &&
-                      (end == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) < end)
-                from t in ChifaService.FactureTotals(db).LeftJoin(t => t.NumBord == b.NumBord)
-                select new
-                {
-                    b.NumBord,
-                    Center = b.Center!.Nom,
-                    b.DateCloture,
-                    b.DateDepotFtp,
-                    b.MontVir,
-                    Etat = b.Etat.ToString(),
-                    EstOuvert = b.Etat == 'O',
-                    NombreFactures = (int?)t.Nmbr ?? 0,
-                    PartCaisse = t.MontOff ?? 0m,
-                    Majorations = t.Maj ?? 0m,
-                    Fae = t.Fae ?? 0m
-                })
+        var rows = await BordereauRows(db, BordereauxInPeriod(db, period ?? Period))
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return bordereaux
-            .Select(b => new RejetDto
-            {
-                NumBord = b.NumBord,
-                Centre = b.Center ?? "Inconnu",
-                DateBord = RejetDto.DateReelle(b.DateCloture, b.DateDepotFtp),
-                DateDepotFtp = b.DateDepotFtp,
-                NombreFactures = b.NombreFactures,
-                MontantPartCaisse = b.PartCaisse,
-                MontantMajorations = b.Majorations,
-                MontantFae = b.Fae,
-                MontantVirement = b.MontVir ?? 0m,
-                EstOuvert = b.EstOuvert,
-                EtatBordereau = b.Etat ?? ""
-            })
+        return rows
+            .Select(ToRejet)
             .OrderByDescending(r => r.MontantRejete)
             .ThenByDescending(r => r.DateBord)
             .ToList();
+    }
+
+    /// <summary>Same rows as <see cref="GetRejetsAsync"/>, latest first, one page read from the database.</summary>
+    public async ValueTask<(int Total, List<RejetDto> Items)> GetRejetsPageAsync(Period? period, int skip, int take)
+    {
+        await using var db = new ChifaDb();
+        var (total, rows) = await BordereauRows(db, BordereauxInPeriod(db, period ?? Period))
+            .OrderBy(b => b.DateBord == null)
+            .ThenByDescending(b => b.DateBord)
+            .ThenByDescending(b => b.MontantRejete)
+            .ThenByDescending(b => b.NumBord)
+            .ToPageAsync(skip, take)
+            .ConfigureAwait(false);
+
+        return (total, rows.Select(ToRejet).ToList());
+    }
+
+    /// <summary>
+    /// A bordereau belongs to the period by its closing date, or its FTP deposit date when CHIFA left
+    /// the closing date at the 1900 placeholder (it does so for every bordereau).
+    /// </summary>
+    private static IQueryable<Bordereau> BordereauxInPeriod(ChifaDb db, Period period)
+    {
+        var start = period.Start;
+        var end = period.EndExclusive;
+        var minDate = RejetDto.DateMinimaleValide;
+        return db.Bordereaus.Where(b =>
+            (start == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) >= start) &&
+            (end == null || (b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp) < end));
     }
 
     /// <summary>Numbers of the bordereaux still open in CHIFA: cheap, polled every few minutes.</summary>
@@ -82,49 +73,109 @@ public class ScopeService
             return [];
 
         await using var db = new ChifaDb();
-        var rows = await (
-                from b in db.Bordereaus
-                where numBords.Contains(b.NumBord)
-                from t in ChifaService.FactureTotals(db).LeftJoin(t => t.NumBord == b.NumBord)
-                select new
-                {
-                    b.NumBord,
-                    Center = b.Center!.Nom,
-                    b.DateCloture,
-                    b.DateDepotFtp,
-                    b.MontVir,
-                    Etat = b.Etat.ToString(),
-                    EstOuvert = b.Etat == 'O',
-                    NombreFactures = (int?)t.Nmbr ?? 0,
-                    PartCaisse = t.MontOff ?? 0m,
-                    Majorations = t.Maj ?? 0m,
-                    Fae = t.Fae ?? 0m
-                })
+        var rows = await BordereauRows(db, db.Bordereaus.Where(b => numBords.Contains(b.NumBord)))
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return rows.Select(b => new RejetDto
-        {
-            NumBord = b.NumBord,
-            Centre = b.Center ?? "Inconnu",
-            DateBord = RejetDto.DateReelle(b.DateCloture, b.DateDepotFtp),
-            DateDepotFtp = b.DateDepotFtp,
-            NombreFactures = b.NombreFactures,
-            MontantPartCaisse = b.PartCaisse,
-            MontantMajorations = b.Majorations,
-            MontantFae = b.Fae,
-            MontantVirement = b.MontVir ?? 0m,
-            EstOuvert = b.EstOuvert,
-            EtatBordereau = b.Etat ?? ""
-        }).ToList();
+        return rows.Select(ToRejet).ToList();
+    }
+
+    /// <summary>The bordereaux with their totals, the GROUP BY over facture limited to these bordereaux.</summary>
+    private static IQueryable<BordereauRow> BordereauRows(ChifaDb db, IQueryable<Bordereau> bordereaux)
+    {
+        var minDate = RejetDto.DateMinimaleValide;
+        var tolerance = RejetDto.ToleranceArrondi;
+        return from b in bordereaux
+            from t in ChifaService.FactureTotals(db, bordereaux.Select(x => x.NumBord)).LeftJoin(t => t.NumBord == b.NumBord)
+            let partCaisse = t.MontOff ?? 0m
+            let majorations = t.Maj ?? 0m
+            let fae = t.Fae ?? 0m
+            let virement = b.MontVir ?? 0m
+            let ecart = partCaisse + majorations + fae - virement
+            select new BordereauRow
+            {
+                NumBord = b.NumBord,
+                Center = b.Center!.Nom,
+                DateCloture = b.DateCloture,
+                DateDepotFtp = b.DateDepotFtp,
+                MontVir = b.MontVir,
+                Etat = b.Etat.ToString(),
+                EstOuvert = b.Etat == 'O',
+                NombreFactures = (int?)t.Nmbr ?? 0,
+                PartCaisse = partCaisse,
+                Majorations = majorations,
+                Fae = fae,
+                // RejetDto.DateReelle and RejetDto.MontantRejete in SQL, for the ORDER BY of a page.
+                DateBord = b.DateCloture >= minDate ? b.DateCloture : b.DateDepotFtp >= minDate ? b.DateDepotFtp : null,
+                MontantRejete = b.Etat == 'O' ? 0m : virement > 0 && ecart >= tolerance ? ecart : 0m
+            };
+    }
+
+    private static RejetDto ToRejet(BordereauRow b) => new()
+    {
+        NumBord = b.NumBord,
+        Centre = b.Center ?? "Inconnu",
+        DateBord = RejetDto.DateReelle(b.DateCloture, b.DateDepotFtp),
+        DateDepotFtp = b.DateDepotFtp,
+        NombreFactures = b.NombreFactures,
+        MontantPartCaisse = b.PartCaisse,
+        MontantMajorations = b.Majorations,
+        MontantFae = b.Fae,
+        MontantVirement = b.MontVir ?? 0m,
+        EstOuvert = b.EstOuvert,
+        EtatBordereau = b.Etat ?? ""
+    };
+
+    private sealed class BordereauRow
+    {
+        public string NumBord { get; init; } = "";
+        public string? Center { get; init; }
+        public DateTime? DateCloture { get; init; }
+        public DateTime? DateDepotFtp { get; init; }
+        public decimal? MontVir { get; init; }
+        public string? Etat { get; init; }
+        public bool EstOuvert { get; init; }
+        public int NombreFactures { get; init; }
+        public decimal PartCaisse { get; init; }
+        public decimal Majorations { get; init; }
+        public decimal Fae { get; init; }
+        public DateTime? DateBord { get; init; }
+        public decimal MontantRejete { get; init; }
     }
 
     public async ValueTask<IEnumerable<PsychotropeDto>> GetPsychotropesAsync(Period? period = null, Expression<Func<DetailFact, bool>>? predicate = null, CancellationToken cancellationToken = default)
     {
-        var activePeriod = period ?? Period;
-        var start = activePeriod.Start;
-        var end = activePeriod.EndExclusive;
         await using var db = new ChifaDb();
+        var list = await PsychotropeRows(db, period ?? Period, predicate)
+            // Regulatory register: every dispensing of the period must be listed, never truncated.
+            .OrderByDescending(p => p.DateDelivrance)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return list.Select(ToPsychotrope).ToList();
+    }
+
+    /// <summary>Same rows as <see cref="GetPsychotropesAsync"/>, latest first, one page read from the database.</summary>
+    public async ValueTask<(int Total, List<PsychotropeDto> Items)> GetPsychotropesPageAsync(Period? period, int skip, int take,
+        CancellationToken cancellationToken = default)
+    {
+        await using var db = new ChifaDb();
+        var (total, rows) = await PsychotropeRows(db, period ?? Period, null)
+            .OrderBy(p => p.DateDelivrance == null)
+            .ThenByDescending(p => p.DateDelivrance)
+            .ThenByDescending(p => p.NumFact)
+            .ThenBy(p => p.CodeEnr)
+            .ThenBy(p => p.NumLot)
+            .ToPageAsync(skip, take, cancellationToken)
+            .ConfigureAwait(false);
+
+        return (total, rows.Select(ToPsychotrope).ToList());
+    }
+
+    private static IQueryable<PsychotropeRow> PsychotropeRows(ChifaDb db, Period period, Expression<Func<DetailFact, bool>>? predicate)
+    {
+        var start = period.Start;
+        var end = period.EndExclusive;
 
         var explicitCodes = PsychotropesHelper.ExplicitDciCodes;
         var excludedCodes = PsychotropesHelper.ExcludedDciCodes.ToList();
@@ -152,9 +203,9 @@ public class ScopeService
         if (predicate != null)
             basePredicate = basePredicate.And(predicate);
 
-        var list = await db.DetailFacts
+        return db.DetailFacts
             .Where(basePredicate)
-            .Select(d => new
+            .Select(d => new PsychotropeRow
             {
                 NumFact = d.Facture.NumFact,
                 DateDelivrance = d.Facture.DateFact,
@@ -165,6 +216,7 @@ public class ScopeService
                 Medecin = d.Facture.Prescripteur,
                 SpecialiteMedecin = d.Facture.Specialite!.Libelle,
                 CodeEnr = d.NumEnr,
+                NumLot = d.NumLot,
                 CodeDci = d.Medicament.CodeDci,
                 Tableau = d.Medicament.Tableau != null ? d.Medicament.Tableau.ToString() : null,
                 MedicamentNom = d.Medicament.NomCom,
@@ -178,34 +230,57 @@ public class ScopeService
                 Montant = d.Mont,
                 NumeroOrdonnance = d.Facture.NumFact,
                 EstTraitementSpecial = d.Ts == true
-            })
-            // Regulatory register: every dispensing of the period must be listed, never truncated.
-            .OrderByDescending(p => p.DateDelivrance)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
+            });
+    }
 
-        return list.Select(d => new PsychotropeDto
-        {
-            NumFact = d.NumFact,
-            DateDelivrance = d.DateDelivrance,
-            NumAssure = d.NumAssure+"-"+d.Rang,
-            NomAssure = d.NomAssure,
-            NomBeneficiaire = d.NomBeneficiaire,
-            Medecin = d.Medecin,
-            CategoriePsychotrope = PsychotropesHelper.GetCategorie(d.CodeDci),
-            Tableau = d.Tableau,
-            MedicamentNom = d.MedicamentNom,
-            Dci = d.Dci,
-            Dosage = d.Dosage,
-            Forme = d.Forme,
-            Quantite = d.Quantite,
-            DureeTrait = d.DureeTrait,
-            Ppa = d.Ppa,
-            TarifRef = d.TarifRef,
-            Montant = d.Montant,
-            NumeroOrdonnance = d.NumeroOrdonnance,
-            EstTraitementSpecial = d.EstTraitementSpecial
-        }).ToList();
+    private static PsychotropeDto ToPsychotrope(PsychotropeRow d) => new()
+    {
+        NumFact = d.NumFact,
+        DateDelivrance = d.DateDelivrance,
+        NumAssure = d.NumAssure + "-" + d.Rang,
+        NomAssure = d.NomAssure,
+        NomBeneficiaire = d.NomBeneficiaire,
+        Medecin = d.Medecin,
+        CategoriePsychotrope = PsychotropesHelper.GetCategorie(d.CodeDci),
+        Tableau = d.Tableau,
+        MedicamentNom = d.MedicamentNom,
+        Dci = d.Dci,
+        Dosage = d.Dosage,
+        Forme = d.Forme,
+        Quantite = d.Quantite,
+        DureeTrait = d.DureeTrait,
+        Ppa = d.Ppa,
+        TarifRef = d.TarifRef,
+        Montant = d.Montant,
+        NumeroOrdonnance = d.NumeroOrdonnance,
+        EstTraitementSpecial = d.EstTraitementSpecial
+    };
+
+    private sealed class PsychotropeRow
+    {
+        public string? NumFact { get; init; }
+        public DateTime? DateDelivrance { get; init; }
+        public string? NumAssure { get; init; }
+        public string? NomAssure { get; init; }
+        public string? NomBeneficiaire { get; init; }
+        public string? Rang { get; init; }
+        public string? Medecin { get; init; }
+        public string? SpecialiteMedecin { get; init; }
+        public string? CodeEnr { get; init; }
+        public string? NumLot { get; init; }
+        public string? CodeDci { get; init; }
+        public string? Tableau { get; init; }
+        public string? MedicamentNom { get; init; }
+        public string? Dci { get; init; }
+        public string? Dosage { get; init; }
+        public string? Forme { get; init; }
+        public decimal? Quantite { get; init; }
+        public decimal? DureeTrait { get; init; }
+        public decimal? Ppa { get; init; }
+        public decimal? TarifRef { get; init; }
+        public decimal? Montant { get; init; }
+        public string? NumeroOrdonnance { get; init; }
+        public bool EstTraitementSpecial { get; init; }
     }
 
     public async ValueTask<ForecastSummaryDto> GetChronicForecastsAsync(int lookbackMonths = 6, int forecastDays = 30)

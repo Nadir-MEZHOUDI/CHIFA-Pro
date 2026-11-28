@@ -35,18 +35,18 @@ public class AgentHandlers
 
         connection.On<PageQuery, Page<RejetDto>>(AgentMethods.GetRejets, q =>
             RunAsync(AgentMethods.GetRejets, async () =>
-                ToPage((await ScopeService.Instance.GetRejetsAsync(ToPeriod(q))).OrderByDescending(r => r.DateBord), q)));
+                ToPage(await ScopeService.Instance.GetRejetsPageAsync(ToPeriod(q), q.SafeSkip, q.SafeTake))));
 
         connection.On<PageQuery, Page<BordereauDto>>(AgentMethods.GetBordereaux, q =>
             RunAsync(AgentMethods.GetBordereaux, async () =>
-                ToPage((await ChifaService.Instance.GetAllBordereauxAsync(period: ToPeriod(q))).OrderByDescending(b => b.DateOuverture), q)));
+                ToPage(await ChifaService.Instance.GetBordereauxPageAsync(ToPeriod(q), q.SafeSkip, q.SafeTake))));
 
         connection.On<string, BordereauDetailDto?>(AgentMethods.GetBordereau, numBord =>
             RunAsync(AgentMethods.GetBordereau, async () => await ChifaService.Instance.GetBordereauAsync(numBord)));
 
         connection.On<PageQuery, Page<PsychotropeDto>>(AgentMethods.GetPsychotropes, q =>
             RunAsync(AgentMethods.GetPsychotropes, async () =>
-                ToPage((await ScopeService.Instance.GetPsychotropesAsync(ToPeriod(q))).OrderByDescending(p => p.DateDelivrance), q)));
+                ToPage(await ScopeService.Instance.GetPsychotropesPageAsync(ToPeriod(q), q.SafeSkip, q.SafeTake))));
 
         connection.On<PageQuery, IEnumerable<FactureDto>>(AgentMethods.GetRecentFactures, q =>
             RunAsync(AgentMethods.GetRecentFactures, async () => await ScopeService.Instance.GetRecentFacturesLiveAsync(q.SafeTake, q.Text)));
@@ -120,11 +120,7 @@ public class AgentHandlers
         return period;
     }
 
-    public static Page<T> ToPage<T>(IEnumerable<T> items, PageQuery query)
-    {
-        var all = items as IReadOnlyCollection<T> ?? items.ToList();
-        return new Page<T>(all.Count, all.Skip(query.SafeSkip).Take(query.SafeTake).ToList());
-    }
+    private static Page<T> ToPage<T>((int Total, List<T> Items) page) => new(page.Total, page.Items);
 
     /// <summary>
     /// The SignalR client sends an exception's message to the gateway as is. Log the real error here

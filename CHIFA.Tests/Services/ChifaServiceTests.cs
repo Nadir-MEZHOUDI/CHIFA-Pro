@@ -40,6 +40,24 @@ public class ChifaServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetBordereauxPageAsync_MatchesTheFullListPagedInMemory()
+    {
+        using var w = StartWatch();
+        var period = new Period { From = new DateTime(2000, 1, 1) };
+        var expected = (await _svc.GetAllBordereauxAsync(period: period))
+            .OrderByDescending(b => b.DateOuverture)
+            .ThenByDescending(b => b.FirstFacture)
+            .ThenByDescending(b => b.Num, StringComparer.Ordinal)
+            .ToList();
+
+        var pages = await Pages.ReadAllAsync((skip, take) => _svc.GetBordereauxPageAsync(period, skip, take), expected.Count, take: 7);
+
+        expected.Should().NotBeEmpty();
+        pages.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering());
+        _output.WriteLine($"{expected.Count} bordereaux, first {string.Join(", ", expected.Take(5).Select(b => b.Num))}");
+    }
+
+    [Fact]
     public async Task GetAllBordereauxAsync_RespectsPeriod_ButAlwaysShowsOpenBordereaux()
     {
         using var w = StartWatch();

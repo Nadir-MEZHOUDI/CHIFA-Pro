@@ -21,23 +21,16 @@ public class AgentTests
             .And.BeLessThan(TimeSpan.FromSeconds(expectedSeconds + 1));
     }
 
-    [Fact]
-    public void Page_is_clamped_to_the_maximum_size()
+    [Theory]
+    [InlineData(-5, 10_000, 0, PageQuery.MaxTake)]
+    [InlineData(20, 0, 20, 1)]
+    [InlineData(20, 25, 20, 25)]
+    public void Page_query_is_clamped_before_reaching_the_database(int skip, int take, int expectedSkip, int expectedTake)
     {
-        var page = AgentHandlers.ToPage(Enumerable.Range(1, 500), new PageQuery(null, null, Skip: -5, Take: 10_000));
+        var query = new PageQuery(null, null, Skip: skip, Take: take);
 
-        page.Total.Should().Be(500);
-        page.Items.Should().HaveCount(PageQuery.MaxTake);
-        page.Items[0].Should().Be(1);
-    }
-
-    [Fact]
-    public void Page_skips_and_takes()
-    {
-        var page = AgentHandlers.ToPage(Enumerable.Range(1, 30), new PageQuery(null, null, Skip: 20, Take: 25));
-
-        page.Total.Should().Be(30);
-        page.Items.Should().Equal(Enumerable.Range(21, 10));
+        query.SafeSkip.Should().Be(expectedSkip);
+        query.SafeTake.Should().Be(expectedTake);
     }
 
     [Fact]

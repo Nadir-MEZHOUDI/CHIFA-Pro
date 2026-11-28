@@ -32,6 +32,44 @@ public class ScopeServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task GetRejetsPageAsync_MatchesTheFullListPagedInMemory()
+    {
+        using var w = StartWatch();
+        var period = new Period { From = new DateTime(2000, 1, 1) };
+        var expected = (await _svc.GetRejetsAsync(period))
+            .OrderByDescending(r => r.DateBord)
+            .ThenByDescending(r => r.MontantRejete)
+            .ThenByDescending(r => r.NumBord, StringComparer.Ordinal)
+            .ToList();
+
+        var pages = await Pages.ReadAllAsync((skip, take) => _svc.GetRejetsPageAsync(period, skip, take), expected.Count, take: 7);
+
+        expected.Should().NotBeEmpty();
+        pages.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering());
+        _output.WriteLine($"{expected.Count} rejets, first {string.Join(", ", expected.Take(5).Select(r => r.NumBord))}");
+    }
+
+    [Fact]
+    public async Task GetPsychotropesPageAsync_MatchesTheFullListPagedInMemory()
+    {
+        using var w = StartWatch();
+        var latest = (await _svc.GetRecentFacturesLiveAsync(1)).Single().DateFact!.Value;
+        var period = new Period { From = latest.AddYears(-1), To = latest };
+        var expected = (await _svc.GetPsychotropesAsync(period))
+            .OrderByDescending(p => p.DateDelivrance)
+            .ThenByDescending(p => p.NumFact, StringComparer.Ordinal)
+            .ToList();
+
+        var pages = await Pages.ReadAllAsync((skip, take) => _svc.GetPsychotropesPageAsync(period, skip, take), expected.Count, take: 9);
+
+        expected.Should().NotBeEmpty();
+        // The DTO has no line key, so lines of one facture are compared as a set.
+        pages.Select(p => (p.DateDelivrance, p.NumFact)).Should().Equal(expected.Select(p => (p.DateDelivrance, p.NumFact)));
+        pages.Should().BeEquivalentTo(expected);
+        _output.WriteLine($"{expected.Count} psychotropes from {period.Start:d} to {period.To:d}");
+    }
+
+    [Fact]
     public async Task GetBordereauxByNumAsync_ReadsOpenBordereauxWithoutDates()
     {
         using var w = StartWatch();
