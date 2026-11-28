@@ -645,7 +645,7 @@ namespace CHIFA.Pro.Views
             ClientSize = new Size(1312, 639);
             Controls.Add(xtraTabControl1);
             Controls.Add(dataLayoutControl1);
-            Font = new Font("Tahoma", 12F);
+            Font = new Font("Segoe UI", 12F);
             IconOptions.LargeImage = (Image)resources.GetObject("FrmHistory.IconOptions.LargeImage");
             Margin = new Padding(5, 4, 5, 4);
             Name = "FrmHistory";

@@ -30,6 +30,9 @@ public class AppSettings : SettingsToRegistry<AppSettings>
 
     #endregion
 
+    public string Skin { get; set; } = "WXI";
+    public string SkinPalette { get; set; } = "";
+
     #region CHIFA_PASS
 
     internal string DbName => "CHIFA_OFFICINE";

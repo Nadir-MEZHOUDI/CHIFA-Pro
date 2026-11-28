@@ -96,7 +96,7 @@ namespace CHIFA.Pro.Views
             chkStatistics.Location = new Point(18, 40);
             chkStatistics.Margin = new Padding(4);
             chkStatistics.Name = "chkStatistics";
-            chkStatistics.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            chkStatistics.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             chkStatistics.Properties.Appearance.Options.UseFont = true;
             chkStatistics.Properties.Caption = "Statistiques";
             chkStatistics.Size = new Size(550, 25);
@@ -107,7 +107,7 @@ namespace CHIFA.Pro.Views
             chkBordereaux.Location = new Point(18, 75);
             chkBordereaux.Margin = new Padding(4);
             chkBordereaux.Name = "chkBordereaux";
-            chkBordereaux.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            chkBordereaux.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             chkBordereaux.Properties.Appearance.Options.UseFont = true;
             chkBordereaux.Properties.Caption = "Bordereaux";
             chkBordereaux.Size = new Size(550, 25);
@@ -118,7 +118,7 @@ namespace CHIFA.Pro.Views
             chkMobile.Location = new Point(18, 110);
             chkMobile.Margin = new Padding(4);
             chkMobile.Name = "chkMobile";
-            chkMobile.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            chkMobile.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             chkMobile.Properties.Appearance.Options.UseFont = true;
             chkMobile.Properties.Caption = "Application mobile (liaison du téléphone)";
             chkMobile.Size = new Size(550, 25);
@@ -129,7 +129,7 @@ namespace CHIFA.Pro.Views
             chkLicense.Location = new Point(18, 145);
             chkLicense.Margin = new Padding(4);
             chkLicense.Name = "chkLicense";
-            chkLicense.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            chkLicense.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             chkLicense.Properties.Appearance.Options.UseFont = true;
             chkLicense.Properties.Caption = "Licence";
             chkLicense.Size = new Size(550, 25);
@@ -152,7 +152,7 @@ namespace CHIFA.Pro.Views
             chkHomeFactures.Location = new Point(18, 40);
             chkHomeFactures.Margin = new Padding(4);
             chkHomeFactures.Name = "chkHomeFactures";
-            chkHomeFactures.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            chkHomeFactures.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             chkHomeFactures.Properties.Appearance.Options.UseFont = true;
             chkHomeFactures.Properties.Caption = "Nombre de factures";
             chkHomeFactures.Size = new Size(550, 25);
@@ -163,7 +163,7 @@ namespace CHIFA.Pro.Views
             chkHomeMontant.Location = new Point(18, 75);
             chkHomeMontant.Margin = new Padding(4);
             chkHomeMontant.Name = "chkHomeMontant";
-            chkHomeMontant.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            chkHomeMontant.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             chkHomeMontant.Properties.Appearance.Options.UseFont = true;
             chkHomeMontant.Properties.Caption = "Chiffre d'affaires (montant par jour)";
             chkHomeMontant.Size = new Size(550, 25);
@@ -174,7 +174,7 @@ namespace CHIFA.Pro.Views
             chkHomeMarge.Location = new Point(18, 110);
             chkHomeMarge.Margin = new Padding(4);
             chkHomeMarge.Name = "chkHomeMarge";
-            chkHomeMarge.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            chkHomeMarge.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             chkHomeMarge.Properties.Appearance.Options.UseFont = true;
             chkHomeMarge.Properties.Caption = "Marge bénéficiaire (majoration)";
             chkHomeMarge.Size = new Size(550, 25);
@@ -195,7 +195,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblNew
             // 
-            lblNew.Appearance.Font = new Font("Tahoma", 10F);
+            lblNew.Appearance.Font = new Font("Segoe UI", 10F);
             lblNew.Appearance.Options.UseFont = true;
             lblNew.Location = new Point(13, 40);
             lblNew.Margin = new Padding(4);
@@ -209,7 +209,7 @@ namespace CHIFA.Pro.Views
             _txtNew.Location = new Point(131, 35);
             _txtNew.Margin = new Padding(4);
             _txtNew.Name = "_txtNew";
-            _txtNew.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtNew.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtNew.Properties.Appearance.Options.UseFont = true;
             _txtNew.Properties.NullValuePrompt = "Laisser vide pour ne pas changer";
             _txtNew.Properties.UseSystemPasswordChar = true;
@@ -218,7 +218,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblConfirm
             // 
-            lblConfirm.Appearance.Font = new Font("Tahoma", 10F);
+            lblConfirm.Appearance.Font = new Font("Segoe UI", 10F);
             lblConfirm.Appearance.Options.UseFont = true;
             lblConfirm.Location = new Point(13, 85);
             lblConfirm.Margin = new Padding(4);
@@ -232,7 +232,7 @@ namespace CHIFA.Pro.Views
             _txtConfirm.Location = new Point(131, 80);
             _txtConfirm.Margin = new Padding(4);
             _txtConfirm.Name = "_txtConfirm";
-            _txtConfirm.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtConfirm.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtConfirm.Properties.Appearance.Options.UseFont = true;
             _txtConfirm.Properties.UseSystemPasswordChar = true;
             _txtConfirm.Size = new Size(425, 28);
@@ -250,7 +250,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnSave
             // 
-            _btnSave.Appearance.Font = new Font("Tahoma", 10F);
+            _btnSave.Appearance.Font = new Font("Segoe UI", 10F);
             _btnSave.Appearance.Options.UseFont = true;
             _btnSave.ImageOptions.Image = (Image)resources.GetObject("_btnSave.ImageOptions.Image");
             _btnSave.Location = new Point(332, 623);
@@ -263,7 +263,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnCancel
             // 
-            _btnCancel.Appearance.Font = new Font("Tahoma", 10F);
+            _btnCancel.Appearance.Font = new Font("Segoe UI", 10F);
             _btnCancel.Appearance.Options.UseFont = true;
             _btnCancel.DialogResult = DialogResult.Cancel;
             _btnCancel.ImageOptions.Image = (Image)resources.GetObject("_btnCancel.ImageOptions.Image");
@@ -290,7 +290,7 @@ namespace CHIFA.Pro.Views
             Controls.Add(_lblError);
             Controls.Add(_btnSave);
             Controls.Add(_btnCancel);
-            Font = new Font("Tahoma", 10F);
+            Font = new Font("Segoe UI", 10F);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             IconOptions.Image = (Image)resources.GetObject("SecurityForm.IconOptions.Image");
             Margin = new Padding(4);

@@ -102,7 +102,7 @@ namespace CHIFA.Pro.Views
             // 
             // _lblSerial
             // 
-            _lblSerial.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _lblSerial.Appearance.Font = new Font("Segoe UI", 10.2F);
             _lblSerial.Appearance.Options.UseFont = true;
             _lblSerial.Location = new Point(30, 365);
             _lblSerial.Margin = new Padding(4);
@@ -116,7 +116,7 @@ namespace CHIFA.Pro.Views
             _txtSerial.Location = new Point(30, 393);
             _txtSerial.Margin = new Padding(4);
             _txtSerial.Name = "_txtSerial";
-            _txtSerial.Properties.Appearance.Font = new Font("Microsoft Sans Serif", 12F);
+            _txtSerial.Properties.Appearance.Font = new Font("Segoe UI", 12F);
             _txtSerial.Properties.Appearance.Options.UseFont = true;
             _txtSerial.Properties.CharacterCasing = CharacterCasing.Upper;
             _txtSerial.Properties.MaxLength = 40;
@@ -127,7 +127,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnActivate
             // 
-            _btnActivate.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnActivate.Appearance.Font = new Font("Segoe UI", 10.2F);
             _btnActivate.Appearance.Options.UseFont = true;
             _btnActivate.ImageOptions.Image = (Image)resources.GetObject("_btnActivate.ImageOptions.Image");
             _btnActivate.Location = new Point(532, 392);
@@ -140,7 +140,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnRefresh
             // 
-            _btnRefresh.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnRefresh.Appearance.Font = new Font("Segoe UI", 10.2F);
             _btnRefresh.Appearance.Options.UseFont = true;
             _btnRefresh.ImageOptions.Image = (Image)resources.GetObject("_btnRefresh.ImageOptions.Image");
             _btnRefresh.Location = new Point(30, 453);
@@ -153,7 +153,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnClose
             // 
-            _btnClose.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnClose.Appearance.Font = new Font("Segoe UI", 10.2F);
             _btnClose.Appearance.Options.UseFont = true;
             _btnClose.ImageOptions.Image = (Image)resources.GetObject("_btnClose.ImageOptions.Image");
             _btnClose.Location = new Point(532, 453);

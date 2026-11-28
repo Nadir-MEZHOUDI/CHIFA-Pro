@@ -257,7 +257,7 @@ namespace CHIFA.Pro.Views
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1356, 669);
             Controls.Add(xtraTabControl1);
-            Font = new Font("Tahoma", 12F);
+            Font = new Font("Segoe UI", 12F);
             IconOptions.LargeImage = (Image)resources.GetObject("FrmTraitSpec.IconOptions.LargeImage");
             Name = "FrmTraitSpec";
             Text = "Trait Spec";

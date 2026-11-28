@@ -16,6 +16,8 @@ global using DevExpress.XtraGrid.Views.Base;
 global using LinqToDB;
 global using Serilog;
 
+using DevExpress.LookAndFeel;
+
 namespace CHIFA.Pro;
 internal static partial class Program
 {
@@ -45,6 +47,7 @@ internal static partial class Program
             Application.SetCompatibleTextRenderingDefault(false);
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             SetCulture();
+            SetLookAndFeel();
 
             ChifaDb.ConString = DatabaseDefaults.ForDesktop(ChifaDb.ConString);
             if (!DbChecker.EnsureConnectedAtStartup()) return;
@@ -136,6 +139,32 @@ internal static partial class Program
         // Application.ThreadException is NOT covered by TelemetryExceptionHooks.AttachProcessWide,
         // so ex.Log() must report to telemetry (reportToTelemetry: true via default).
         e.Exception.Log();
+    }
+
+    /// <summary>WXI by default; the skin and palette picked from the title bar are kept for the next start.</summary>
+    private static void SetLookAndFeel()
+    {
+        WindowsFormsSettings.DefaultFont = new Font("Segoe UI", 10F);
+        var settings = Helpers.Settings.AppSettings.Default;
+        try
+        {
+            if (settings.SkinPalette.Length > 0)
+                UserLookAndFeel.Default.SetSkinStyle(settings.Skin, settings.SkinPalette);
+            else
+                UserLookAndFeel.Default.SetSkinStyle(settings.Skin);
+        }
+        catch (Exception ex)
+        {
+            ex.Log();
+            UserLookAndFeel.Default.SetSkinStyle(SkinStyle.WXI);
+        }
+
+        UserLookAndFeel.Default.StyleChanged += (_, _) =>
+        {
+            settings.Skin = UserLookAndFeel.Default.SkinName;
+            settings.SkinPalette = UserLookAndFeel.Default.ActiveSvgPaletteName ?? "";
+            settings.Save();
+        };
     }
 
     private static void SetCulture()

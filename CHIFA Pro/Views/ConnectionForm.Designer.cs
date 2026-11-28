@@ -67,7 +67,7 @@ namespace CHIFA.Pro.Views
             _rbLocal.Location = new Point(28, 105);
             _rbLocal.Margin = new Padding(4);
             _rbLocal.Name = "_rbLocal";
-            _rbLocal.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _rbLocal.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _rbLocal.Properties.Appearance.Options.UseFont = true;
             _rbLocal.Properties.Caption = "CHIFA_OFFICINE est installé sur ce poste (serveur)";
             _rbLocal.Properties.CheckStyle = DevExpress.XtraEditors.Controls.CheckStyles.Radio;
@@ -112,7 +112,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnBrowse
             // 
-            _btnBrowse.Appearance.Font = new Font("Tahoma", 10F);
+            _btnBrowse.Appearance.Font = new Font("Segoe UI", 10F);
             _btnBrowse.Appearance.Options.UseFont = true;
             _btnBrowse.ImageOptions.Image = (Image)resources.GetObject("_btnBrowse.ImageOptions.Image");
             _btnBrowse.Location = new Point(570, 142);
@@ -128,7 +128,7 @@ namespace CHIFA.Pro.Views
             _rbRemote.Location = new Point(28, 295);
             _rbRemote.Margin = new Padding(4);
             _rbRemote.Name = "_rbRemote";
-            _rbRemote.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _rbRemote.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _rbRemote.Properties.Appearance.Options.UseFont = true;
             _rbRemote.Properties.Caption = "La base de données est sur un autre poste";
             _rbRemote.Properties.CheckStyle = DevExpress.XtraEditors.Controls.CheckStyles.Radio;
@@ -140,7 +140,7 @@ namespace CHIFA.Pro.Views
             // 
             // _lblServer
             // 
-            _lblServer.Appearance.Font = new Font("Tahoma", 10F);
+            _lblServer.Appearance.Font = new Font("Segoe UI", 10F);
             _lblServer.Appearance.Options.UseFont = true;
             _lblServer.Location = new Point(60, 340);
             _lblServer.Margin = new Padding(4);
@@ -154,7 +154,7 @@ namespace CHIFA.Pro.Views
             _cboServer.Location = new Point(162, 335);
             _cboServer.Margin = new Padding(4);
             _cboServer.Name = "_cboServer";
-            _cboServer.Properties.Appearance.Font = new Font("Tahoma", 12F);
+            _cboServer.Properties.Appearance.Font = new Font("Segoe UI", 12F);
             _cboServer.Properties.Appearance.Options.UseFont = true;
             _cboServer.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             _cboServer.Properties.NullValuePrompt = "Nom ou adresse IP du poste serveur";
@@ -174,7 +174,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnTest
             // 
-            _btnTest.Appearance.Font = new Font("Tahoma", 10F);
+            _btnTest.Appearance.Font = new Font("Segoe UI", 10F);
             _btnTest.Appearance.Options.UseFont = true;
             _btnTest.ImageOptions.Image = (Image)resources.GetObject("_btnTest.ImageOptions.Image");
             _btnTest.Location = new Point(245, 475);
@@ -187,7 +187,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnSave
             // 
-            _btnSave.Appearance.Font = new Font("Tahoma", 10F);
+            _btnSave.Appearance.Font = new Font("Segoe UI", 10F);
             _btnSave.Appearance.Options.UseFont = true;
             _btnSave.ImageOptions.Image = (Image)resources.GetObject("_btnSave.ImageOptions.Image");
             _btnSave.Location = new Point(408, 475);
@@ -200,7 +200,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnCancel
             // 
-            _btnCancel.Appearance.Font = new Font("Tahoma", 10F);
+            _btnCancel.Appearance.Font = new Font("Segoe UI", 10F);
             _btnCancel.Appearance.Options.UseFont = true;
             _btnCancel.DialogResult = DialogResult.Cancel;
             _btnCancel.ImageOptions.Image = (Image)resources.GetObject("_btnCancel.ImageOptions.Image");

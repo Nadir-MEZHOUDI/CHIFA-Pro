@@ -61,7 +61,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblIntro
             // 
-            lblIntro.Appearance.Font = new Font("Tahoma", 10F);
+            lblIntro.Appearance.Font = new Font("Segoe UI", 10F);
             lblIntro.Appearance.ForeColor = Color.DimGray;
             lblIntro.Appearance.Options.UseFont = true;
             lblIntro.Appearance.Options.UseForeColor = true;
@@ -77,7 +77,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblFullName
             // 
-            lblFullName.Appearance.Font = new Font("Tahoma", 10F);
+            lblFullName.Appearance.Font = new Font("Segoe UI", 10F);
             lblFullName.Appearance.Options.UseFont = true;
             lblFullName.Location = new Point(30, 132);
             lblFullName.Margin = new Padding(4);
@@ -91,7 +91,7 @@ namespace CHIFA.Pro.Views
             _txtFullName.Location = new Point(288, 125);
             _txtFullName.Margin = new Padding(4);
             _txtFullName.Name = "_txtFullName";
-            _txtFullName.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtFullName.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtFullName.Properties.Appearance.Options.UseFont = true;
             _txtFullName.Properties.MaxLength = 160;
             _txtFullName.Size = new Size(432, 28);
@@ -99,7 +99,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblPhone
             // 
-            lblPhone.Appearance.Font = new Font("Tahoma", 10F);
+            lblPhone.Appearance.Font = new Font("Segoe UI", 10F);
             lblPhone.Appearance.Options.UseFont = true;
             lblPhone.Location = new Point(30, 178);
             lblPhone.Margin = new Padding(4);
@@ -113,7 +113,7 @@ namespace CHIFA.Pro.Views
             _txtPhone.Location = new Point(288, 170);
             _txtPhone.Margin = new Padding(4);
             _txtPhone.Name = "_txtPhone";
-            _txtPhone.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtPhone.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtPhone.Properties.Appearance.Options.UseFont = true;
             _txtPhone.Properties.MaxLength = 40;
             _txtPhone.Properties.NullValuePrompt = "05 / 06 / 07 XX XX XX XX";
@@ -122,7 +122,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblPharmacy
             // 
-            lblPharmacy.Appearance.Font = new Font("Tahoma", 10F);
+            lblPharmacy.Appearance.Font = new Font("Segoe UI", 10F);
             lblPharmacy.Appearance.Options.UseFont = true;
             lblPharmacy.Location = new Point(30, 222);
             lblPharmacy.Margin = new Padding(4);
@@ -136,7 +136,7 @@ namespace CHIFA.Pro.Views
             _txtPharmacy.Location = new Point(288, 215);
             _txtPharmacy.Margin = new Padding(4);
             _txtPharmacy.Name = "_txtPharmacy";
-            _txtPharmacy.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtPharmacy.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtPharmacy.Properties.Appearance.Options.UseFont = true;
             _txtPharmacy.Properties.MaxLength = 160;
             _txtPharmacy.Size = new Size(432, 28);
@@ -144,7 +144,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblEmail
             // 
-            lblEmail.Appearance.Font = new Font("Tahoma", 10F);
+            lblEmail.Appearance.Font = new Font("Segoe UI", 10F);
             lblEmail.Appearance.Options.UseFont = true;
             lblEmail.Location = new Point(30, 268);
             lblEmail.Margin = new Padding(4);
@@ -158,7 +158,7 @@ namespace CHIFA.Pro.Views
             _txtEmail.Location = new Point(288, 260);
             _txtEmail.Margin = new Padding(4);
             _txtEmail.Name = "_txtEmail";
-            _txtEmail.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtEmail.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtEmail.Properties.Appearance.Options.UseFont = true;
             _txtEmail.Properties.MaxLength = 256;
             _txtEmail.Size = new Size(432, 28);
@@ -166,7 +166,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblWilaya
             // 
-            lblWilaya.Appearance.Font = new Font("Tahoma", 10F);
+            lblWilaya.Appearance.Font = new Font("Segoe UI", 10F);
             lblWilaya.Appearance.Options.UseFont = true;
             lblWilaya.Location = new Point(30, 312);
             lblWilaya.Margin = new Padding(4);
@@ -180,7 +180,7 @@ namespace CHIFA.Pro.Views
             _cboWilaya.Location = new Point(288, 305);
             _cboWilaya.Margin = new Padding(4);
             _cboWilaya.Name = "_cboWilaya";
-            _cboWilaya.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _cboWilaya.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _cboWilaya.Properties.Appearance.Options.UseFont = true;
             _cboWilaya.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] { new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo) });
             _cboWilaya.Properties.Items.AddRange(new object[] { "01 Adrar", "02 Chlef", "03 Laghouat", "04 Oum El Bouaghi", "05 Batna", "06 Béjaïa", "07 Biskra", "08 Béchar", "09 Blida", "10 Bouira", "11 Tamanrasset", "12 Tébessa", "13 Tlemcen", "14 Tiaret", "15 Tizi Ouzou", "16 Alger", "17 Djelfa", "18 Jijel", "19 Sétif", "20 Saïda", "21 Skikda", "22 Sidi Bel Abbès", "23 Annaba", "24 Guelma", "25 Constantine", "26 Médéa", "27 Mostaganem", "28 M'Sila", "29 Mascara", "30 Ouargla", "31 Oran", "32 El Bayadh", "33 Illizi", "34 Bordj Bou Arréridj", "35 Boumerdès", "36 El Tarf", "37 Tindouf", "38 Tissemsilt", "39 El Oued", "40 Khenchela", "41 Souk Ahras", "42 Tipaza", "43 Mila", "44 Aïn Defla", "45 Naâma", "46 Aïn Témouchent", "47 Ghardaïa", "48 Relizane", "49 Timimoun", "50 Bordj Badji Mokhtar", "51 Ouled Djellal", "52 Béni Abbès", "53 In Salah", "54 In Guezzam", "55 Touggourt", "56 Djanet", "57 El M'Ghair", "58 El Meniaa" });
@@ -190,7 +190,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblAddress
             // 
-            lblAddress.Appearance.Font = new Font("Tahoma", 10F);
+            lblAddress.Appearance.Font = new Font("Segoe UI", 10F);
             lblAddress.Appearance.Options.UseFont = true;
             lblAddress.Location = new Point(30, 358);
             lblAddress.Margin = new Padding(4);
@@ -204,7 +204,7 @@ namespace CHIFA.Pro.Views
             _txtAddress.Location = new Point(288, 350);
             _txtAddress.Margin = new Padding(4);
             _txtAddress.Name = "_txtAddress";
-            _txtAddress.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtAddress.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtAddress.Properties.Appearance.Options.UseFont = true;
             _txtAddress.Properties.MaxLength = 256;
             _txtAddress.Size = new Size(432, 28);
@@ -212,7 +212,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblCodePs
             // 
-            lblCodePs.Appearance.Font = new Font("Tahoma", 10F);
+            lblCodePs.Appearance.Font = new Font("Segoe UI", 10F);
             lblCodePs.Appearance.Options.UseFont = true;
             lblCodePs.Location = new Point(30, 402);
             lblCodePs.Margin = new Padding(4);
@@ -226,7 +226,7 @@ namespace CHIFA.Pro.Views
             _txtCodePs.Location = new Point(288, 395);
             _txtCodePs.Margin = new Padding(4);
             _txtCodePs.Name = "_txtCodePs";
-            _txtCodePs.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtCodePs.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtCodePs.Properties.Appearance.Options.UseFont = true;
             _txtCodePs.Properties.MaxLength = 64;
             _txtCodePs.Size = new Size(432, 28);
@@ -234,7 +234,7 @@ namespace CHIFA.Pro.Views
             // 
             // lblMessage
             // 
-            lblMessage.Appearance.Font = new Font("Tahoma", 10F);
+            lblMessage.Appearance.Font = new Font("Segoe UI", 10F);
             lblMessage.Appearance.Options.UseFont = true;
             lblMessage.Location = new Point(30, 448);
             lblMessage.Margin = new Padding(4);
@@ -248,7 +248,7 @@ namespace CHIFA.Pro.Views
             _txtMessage.Location = new Point(288, 440);
             _txtMessage.Margin = new Padding(4);
             _txtMessage.Name = "_txtMessage";
-            _txtMessage.Properties.Appearance.Font = new Font("Tahoma", 10F);
+            _txtMessage.Properties.Appearance.Font = new Font("Segoe UI", 10F);
             _txtMessage.Properties.Appearance.Options.UseFont = true;
             _txtMessage.Properties.MaxLength = 1000;
             _txtMessage.Size = new Size(432, 68);
@@ -256,7 +256,7 @@ namespace CHIFA.Pro.Views
             // 
             // _lblError
             // 
-            _lblError.Appearance.Font = new Font("Tahoma", 10F);
+            _lblError.Appearance.Font = new Font("Segoe UI", 10F);
             _lblError.Appearance.ForeColor = Color.Crimson;
             _lblError.Appearance.Options.UseFont = true;
             _lblError.Appearance.Options.UseForeColor = true;
@@ -271,7 +271,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnSend
             // 
-            _btnSend.Appearance.Font = new Font("Tahoma", 10F);
+            _btnSend.Appearance.Font = new Font("Segoe UI", 10F);
             _btnSend.Appearance.Options.UseFont = true;
             _btnSend.ImageOptions.Image = (Image)resources.GetObject("_btnSend.ImageOptions.Image");
             _btnSend.Location = new Point(395, 592);
@@ -284,7 +284,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnCancel
             // 
-            _btnCancel.Appearance.Font = new Font("Tahoma", 10F);
+            _btnCancel.Appearance.Font = new Font("Segoe UI", 10F);
             _btnCancel.Appearance.Options.UseFont = true;
             _btnCancel.DialogResult = DialogResult.Cancel;
             _btnCancel.ImageOptions.Image = (Image)resources.GetObject("_btnCancel.ImageOptions.Image");

@@ -8,6 +8,9 @@ public partial class HomeUc : XtraUserControl, INavigable
     public HomeUc()
     {
         InitializeComponent();
+        // At the app's Segoe UI 10, « STATISTIQUES » and « BORDEREAUX » no longer fit a medium tile.
+        tileControl1.AppearanceItem.Normal.Font = new Font("Segoe UI", 9F);
+        tileControl1.AppearanceItem.Normal.Options.UseFont = true;
         ApplyAccess();
         AccessGuard.Changed += ApplyAccess;
         Disposed += (_, _) => AccessGuard.Changed -= ApplyAccess;

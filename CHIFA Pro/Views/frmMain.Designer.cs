@@ -466,7 +466,7 @@ namespace CHIFA.Pro.Views
             // 
             // tabContainer
             // 
-            tabContainer.AppearancePage.Header.Font = new Font("Tahoma", 10F);
+            tabContainer.AppearancePage.Header.Font = new Font("Segoe UI", 10F);
             tabContainer.AppearancePage.Header.Options.UseFont = true;
             tabContainer.ClosePageButtonShowMode = DevExpress.XtraTab.ClosePageButtonShowMode.InAllTabPagesAndTabControlHeader;
             tabContainer.Dock = DockStyle.Fill;
@@ -509,7 +509,6 @@ namespace CHIFA.Pro.Views
             // defaultLookAndFeel1
             // 
             defaultLookAndFeel1.EnableBonusSkins = true;
-            defaultLookAndFeel1.LookAndFeel.SkinName = "DevExpress Style";
             // 
             // skinPaletteRibbonGalleryBarItem1
             // 
@@ -698,7 +697,7 @@ namespace CHIFA.Pro.Views
             Controls.Add(toolbarFormControl1);
             Controls.Add(accordionControl1);
             Controls.Add(statusStrip1);
-            Font = new Font("Tahoma", 12F);
+            Font = new Font("Segoe UI", 12F);
             IconOptions.LargeImage = (Image)resources.GetObject("FrmMain.IconOptions.LargeImage");
             IsMdiContainer = true;
             Margin = new Padding(5, 4, 5, 4);

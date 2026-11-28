@@ -42,7 +42,7 @@ namespace CHIFA.Pro.Views
             _txtPassword.Location = new Point(30, 48);
             _txtPassword.Margin = new Padding(4);
             _txtPassword.Name = "_txtPassword";
-            _txtPassword.Properties.Appearance.Font = new Font("Tahoma", 12F);
+            _txtPassword.Properties.Appearance.Font = new Font("Segoe UI", 12F);
             _txtPassword.Properties.Appearance.Options.UseFont = true;
             _txtPassword.Properties.UseSystemPasswordChar = true;
             _txtPassword.Size = new Size(465, 30);
@@ -74,7 +74,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnOk
             // 
-            _btnOk.Appearance.Font = new Font("Tahoma", 10F);
+            _btnOk.Appearance.Font = new Font("Segoe UI", 10F);
             _btnOk.Appearance.Options.UseFont = true;
             _btnOk.ImageOptions.Image = (Image)resources.GetObject("_btnOk.ImageOptions.Image");
             _btnOk.Location = new Point(218, 145);
@@ -87,7 +87,7 @@ namespace CHIFA.Pro.Views
             // 
             // _btnCancel
             // 
-            _btnCancel.Appearance.Font = new Font("Tahoma", 10F);
+            _btnCancel.Appearance.Font = new Font("Segoe UI", 10F);
             _btnCancel.Appearance.Options.UseFont = true;
             _btnCancel.DialogResult = DialogResult.Cancel;
             _btnCancel.ImageOptions.Image = (Image)resources.GetObject("_btnCancel.ImageOptions.Image");
