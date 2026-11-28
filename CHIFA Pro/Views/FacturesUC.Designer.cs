@@ -577,7 +577,6 @@ namespace CHIFA.Pro.Views
             txtMedic.EditWidth = 150;
             txtMedic.Id = 21;
             txtMedic.Name = "txtMedic";
-            txtMedic.EditValueChanged += TxtMedic_EditValueChanged;
             // 
             // repositoryItemTextEdit1
             // 

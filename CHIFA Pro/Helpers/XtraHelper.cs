@@ -4,6 +4,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 
+using DevExpress.XtraBars;
 using DevExpress.XtraBars.Alerter;
 using DevExpress.XtraGrid.Views.Grid;
 
@@ -161,6 +162,25 @@ public static class XtraHelper
         catch (InvalidOperationException)
         {
         }
+    }
+
+    /// <summary>
+    /// Calls <paramref name="onText"/> with the text at each keystroke: a ribbon BarEditItem only posts
+    /// its EditValue when the editor loses focus or Enter is pressed.
+    /// </summary>
+    public static void OnTyping(this BarEditItem item, Func<string, Task> onText)
+    {
+        item.Edit.EditValueChanged += async (sender, _) =>
+        {
+            try
+            {
+                await onText((sender as BaseEdit)?.Text ?? "");
+            }
+            catch (Exception ex)
+            {
+                ex.Log();
+            }
+        };
     }
 
     public static void SetOptions(this GridView? grid)

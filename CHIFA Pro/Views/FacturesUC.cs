@@ -5,11 +5,17 @@ namespace CHIFA.Pro.Views;
 public partial class FacturesUc : XtraUserControl, INavigable
 {
     private readonly ReloadCancellation _reloads = new();
+    private string _medicament = "";
 
     public FacturesUc()
     {
         InitializeComponent();
         viewFactures.SetOptions();
+        txtMedic.OnTyping(text =>
+        {
+            _medicament = text;
+            return ScheduleFacturesReloadAsync();
+        });
         Disposed += FacturesUc_Disposed;
     }
 
@@ -53,12 +59,14 @@ public partial class FacturesUc : XtraUserControl, INavigable
             e.Appearance.BackColor = color;
     }
 
-    private async void GridFactures_FocusedRowChanged(object sender, FocusedRowChangedEventArgs e)
+    private async void GridFactures_FocusedRowChanged(object sender, FocusedRowChangedEventArgs e) => await LoadSelectedDetailsAsync();
+
+    private async Task LoadSelectedDetailsAsync()
     {
         if (viewFactures.GetRow(viewFactures.FocusedRowHandle) is FactureDto row)
-        {
             await viewDetails.LoadDataAsync(ct => ChifaService.Instance.GetFactureDetailsByIdAsync(row.NumFact!, ct));
-        }
+        else
+            viewDetails.GridControl.DataSource = null;
     }
 
     private async void LastFacturesUC_Load(object sender, EventArgs e)
@@ -98,7 +106,7 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
             Expression<Func<Facture, bool>> predicate = f => true;
 
-            var txt = (txtMedic.EditValue as string)?.ToUpperInvariant();
+            var txt = _medicament.ToUpperInvariant();
 
             if (!string.IsNullOrEmpty(txt))
             {
@@ -112,6 +120,10 @@ public partial class FacturesUc : XtraUserControl, INavigable
             viewFactures.FocusedRowHandle = 0;
             await factureDtoBindingSource.LoadDataAsync(viewFactures,
                 ct => ChifaService.Instance.GetAllFacturesAsync(last, ts, period, predicate, ct), cancellationToken);
+
+            // The focus stays on row 0, so FocusedRowChanged does not fire: the details would show the old facture.
+            if (!cancellationToken.IsCancellationRequested)
+                await LoadSelectedDetailsAsync();
         }
         catch (OperationCanceledException)
         {
@@ -126,7 +138,6 @@ public partial class FacturesUc : XtraUserControl, INavigable
 
     private async void SwtchTS_EditValueChanged(object sender, EventArgs e) => await ScheduleFacturesReloadAsync();
 
-    private async void TxtMedic_EditValueChanged(object sender, EventArgs e) => await ScheduleFacturesReloadAsync();
 
     private void ViewFactures_DoubleClick(object sender, EventArgs e)
     {

@@ -292,7 +292,6 @@ namespace CHIFA.Pro.Views
             txtMedic.ImageOptions.Image = (Image)resources.GetObject("txtMedic.ImageOptions.Image");
             txtMedic.ImageOptions.LargeImage = (Image)resources.GetObject("txtMedic.ImageOptions.LargeImage");
             txtMedic.Name = "txtMedic";
-            txtMedic.EditValueChanged += txtMedic_EditValueChanged;
             // 
             // repositoryItemTextEdit1
             // 

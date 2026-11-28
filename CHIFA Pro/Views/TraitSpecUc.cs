@@ -3,6 +3,7 @@ namespace CHIFA.Pro.Views;
 public partial class TraitSpecUc : XtraUserControl, INavigable
 {
     private readonly ReloadCancellation _reloads = new();
+    private string _medicament = "";
 
     public string Caption { get; } = "TRAITEMENT SPÉCIFIQUE";
     public Image Image => FrmMain.Image(2);
@@ -11,6 +12,11 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     {
         InitializeComponent();
         viewFectures.SetOptions();
+        txtMedic.OnTyping(text =>
+        {
+            _medicament = text;
+            return ScheduleReloadDataAsync();
+        });
         Disposed += TraitSpecUc_Disposed;
     }
 
@@ -85,8 +91,9 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
         {
             Expression<Func<DetailFact, bool>> predicate = f => true;
 
-            if (txtMedic.EditValue is string txt)
-                predicate = predicate.And(d => d.Medicament.FullName!.Contains(txt, StringComparison.InvariantCultureIgnoreCase));
+            // Each typed word must appear, as in Factures: « paralgan 500 » finds « PARALGAN 500 MG B/20 ».
+            foreach (var word in _medicament.ToUpperInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                predicate = predicate.And(d => d.Medicament.FullName!.Contains(word));
 
             var period = CurrentPeriod();
 
@@ -103,11 +110,6 @@ public partial class TraitSpecUc : XtraUserControl, INavigable
     }
 
     private async void swtchTimeOnly_EditValueChangedAsync(object sender, EventArgs e)
-    {
-        await ScheduleReloadDataAsync();
-    }
-
-    private async void txtMedic_EditValueChanged(object sender, EventArgs e)
     {
         await ScheduleReloadDataAsync();
     }
