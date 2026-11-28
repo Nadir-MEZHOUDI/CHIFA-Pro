@@ -17,6 +17,7 @@ public class PhoneActivity(IDbContextFactory<GatewayDbContext> dbFactory, ILogge
         public Guid PharmacyId;
         public int Requests;
         public int Minutes;
+        public DateTime LastSeenAt;
     }
 
     public sealed record Seen(Guid PharmacyId, DateTime LastSeenAt, long Minute);
@@ -40,6 +41,7 @@ public class PhoneActivity(IDbContextFactory<GatewayDbContext> dbFactory, ILogge
             if (!_pending.TryGetValue(key, out var counts))
                 _pending[key] = counts = new Counts { PharmacyId = pharmacyId };
             counts.Requests++;
+            counts.LastSeenAt = utcNow;
             if (newMinute)
                 counts.Minutes++;
         }
@@ -66,7 +68,7 @@ public class PhoneActivity(IDbContextFactory<GatewayDbContext> dbFactory, ILogge
                     return;
                 batch = _pending;
                 _pending = [];
-                lastSeen = batch.Keys.Select(k => k.Device).Distinct().ToDictionary(id => id, id => _seen[id].LastSeenAt);
+                lastSeen = batch.GroupBy(b => b.Key.Device).ToDictionary(g => g.Key, g => g.Max(b => b.Value.LastSeenAt));
 
                 // Only the last minute matters for counting minutes, and only recent phones for "online".
                 foreach (var stale in _seen.Where(s => DateTime.UtcNow - s.Value.LastSeenAt > OnlineWindow + TimeSpan.FromMinutes(1)).Select(s => s.Key).ToList())
@@ -88,6 +90,8 @@ public class PhoneActivity(IDbContextFactory<GatewayDbContext> dbFactory, ILogge
                         {
                             current.Requests += counts.Requests;
                             current.Minutes += counts.Minutes;
+                            if (counts.LastSeenAt > current.LastSeenAt)
+                                current.LastSeenAt = counts.LastSeenAt;
                         }
                         else
                             _pending[key] = counts;
@@ -147,7 +151,17 @@ public class PhoneActivityFlusher(PhoneActivity activity, ILogger<PhoneActivityF
         try
         {
             while (await timer.WaitForNextTickAsync(stoppingToken))
-                await activity.FlushAsync(stoppingToken);
+            {
+                try
+                {
+                    await activity.FlushAsync(stoppingToken);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // An unhandled exception in a BackgroundService stops the whole gateway.
+                    logger.LogError(ex, "Phone activity flush failed");
+                }
+            }
         }
         catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
         {

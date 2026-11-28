@@ -37,7 +37,8 @@ public class AgentOnlineNotifier(
             await using (var db = await dbFactory.CreateDbContextAsync(ct))
             {
                 subscriptions = await db.PushSubscriptions.AsNoTracking()
-                    .Where(s => s.PharmacyId == pharmacyId && s.Pharmacy.IsActive && (s.Device == null || s.Device.RevokedAt == null))
+                    .Where(s => s.PharmacyId == pharmacyId)
+                    .Deliverable(DateTime.UtcNow)
                     .ToListAsync(ct);
             }
             if (subscriptions.Count == 0)

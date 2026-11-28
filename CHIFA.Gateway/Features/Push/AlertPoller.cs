@@ -37,11 +37,7 @@ public class AlertPoller(
         var now = DateTime.UtcNow;
         await using (var db = await dbFactory.CreateDbContextAsync(ct))
         {
-            // Same rule as AccountEndpoints.HasEnded: no alerts once the trial or subscription has ended.
-            subscriptions = await db.PushSubscriptions.AsNoTracking()
-                .Where(s => s.Pharmacy.IsActive && (s.Device == null || s.Device.RevokedAt == null))
-                .Where(s => s.Pharmacy.LicenseCheckedAt == null || s.Pharmacy.LicenseExpiresAt == null || s.Pharmacy.LicenseExpiresAt > now)
-                .ToListAsync(ct);
+            subscriptions = await db.PushSubscriptions.AsNoTracking().Deliverable(now).ToListAsync(ct);
         }
 
         foreach (var pharmacy in subscriptions.GroupBy(s => s.PharmacyId).Where(g => registry.IsOnline(g.Key)))
