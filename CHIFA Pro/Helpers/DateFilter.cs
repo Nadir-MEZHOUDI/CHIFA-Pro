@@ -64,7 +64,8 @@ internal static class DateFilter
         foreach (var repo in new[] { fromRepo, toRepo })
         {
             repo.MinValue = Period.MinDate;
-            repo.MaxValue = DateTime.MinValue; // DateTime.MinValue = no upper limit
+            // Not DateTime.MinValue: next to a MinValue, the WXI calendar takes it as the upper limit and shows no day.
+            repo.MaxValue = DateTime.Today.AddYears(50);
         }
 
         toRepo.AllowNullInput = DefaultBoolean.True;
