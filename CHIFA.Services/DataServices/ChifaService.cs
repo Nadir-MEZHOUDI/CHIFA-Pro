@@ -1,5 +1,4 @@
-﻿global using LinqToDB;
-using LinqToDB.Async;
+﻿using LinqToDB.Async;
 using LinqToDB.Data;
 using Npgsql;
 namespace CHIFA.Services.DataServices;
