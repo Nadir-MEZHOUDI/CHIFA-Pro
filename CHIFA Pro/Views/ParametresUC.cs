@@ -8,9 +8,9 @@ namespace CHIFA.Pro.Views;
 
 public partial class ParametersUc : XtraUserControl, INavigable
 {
-    /// <summary>The modern vector skins only: the older raster ones look dated next to WXI.</summary>
+    /// <summary>The modern vector skins, plus « DevExpress Style », the app's look before WXI.</summary>
     private static readonly string[] Themes =
-        ["WXI", "Office 2019 Colorful", "Office 2019 White", "Office 2019 Dark Gray", "Office 2019 Black", "The Bezier", "Basic"];
+        ["WXI", "Office 2019 Colorful", "Office 2019 White", "Office 2019 Dark Gray", "Office 2019 Black", "The Bezier", "Basic", "DevExpress Style"];
 
     private readonly ComboBoxEdit _theme = new() { Name = "cmbTheme" };
     private readonly ComboBoxEdit _palette = new() { Name = "cmbPalette" };
