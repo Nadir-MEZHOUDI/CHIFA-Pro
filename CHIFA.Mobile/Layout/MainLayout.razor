@@ -161,8 +161,9 @@
             _status = await Api.StatusAsync();
             StateHasChanged();
         }
-        catch (ApiException)
+        catch (Exception)
         {
+            // Any failure (offline, timeout) is retried at the next tick; letting it escape would end the loop for good.
         }
     }
 

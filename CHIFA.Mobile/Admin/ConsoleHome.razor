@@ -144,6 +144,11 @@ else
         {
             _error = ex;
         }
+        catch (Exception ex) when (ex is not ObjectDisposedException)
+        {
+            // A timeout is not an ApiException: show it instead of ending the refresh loop.
+            _error = new ApiException("Délai dépassé", ex.Message);
+        }
     }
 
     private IReadOnlyList<BarChart.Bar> Bars(List<UsageDay> days) => days
