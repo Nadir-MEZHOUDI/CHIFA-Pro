@@ -25,7 +25,32 @@ public partial class StatisticsUc : XtraUserControl, INavigable
     {
         InitializeComponent();
         SetupDashboardCharts();
+        ColourAmountColumns();
         Disposed += StatisticsUc_Disposed;
+    }
+
+    /// <summary>Marge in yellow, majorations in orange and Marge + Maj (Brut) in green, in every table.</summary>
+    private void ColourAmountColumns()
+    {
+        var marge = Color.FromArgb(255, 249, 196);
+        var maj = Color.FromArgb(255, 224, 178);
+        var brut = Color.FromArgb(200, 230, 201);
+        foreach (var view in new[] { viewBord, viewClients, viewMonthly, viewProducts, viewYearly, viewWeekly, viewDaily, gridView1, gridView2 })
+        foreach (DevExpress.XtraGrid.Columns.GridColumn column in view.Columns)
+        {
+            Color? color = column.FieldName switch
+            {
+                "Marge" => marge,
+                "MontantMaj" or "MontMaj" => maj,
+                "Brut" => brut,
+                _ => null
+            };
+            if (color is not { } back) continue;
+            column.AppearanceCell.BackColor = back;
+            column.AppearanceCell.ForeColor = Color.Black;
+            column.AppearanceCell.Options.UseBackColor = true;
+            column.AppearanceCell.Options.UseForeColor = true;
+        }
     }
 
     public void SelectSection(StatisticsSection section)
