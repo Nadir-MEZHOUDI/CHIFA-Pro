@@ -1082,3 +1082,44 @@ a.card.link.contact { flex-direction: row; align-items: center; gap: .8rem; }
 .locked-field span { font-size: .84rem; font-weight: 600; color: var(--muted); }
 .locked-field strong { color: var(--text); }
 .locked-field small { font-size: .76rem; color: var(--muted); }
+
+/* Patient phone book (ContactCard.razor, CallLinks.razor, Patients.razor) */
+.phone-card .card-head { align-items: center; }
+.phone-card .facts { margin-bottom: .8rem; }
+.phone-row dd { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; }
+.phone-row dd > a { color: var(--text); text-decoration: none; font-variant-numeric: tabular-nums; }
+.phone-note { white-space: pre-wrap; font-weight: 500; text-align: left; }
+.phone-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.phone-actions .button { text-decoration: none; text-align: center; }
+.phone-actions a.button { flex: 1; }
+.form .phone-actions { justify-content: flex-end; }
+.field-error { color: var(--bad); font-size: .78rem; font-weight: 600; }
+
+.star-button {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    font: inherit;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: .35rem .7rem;
+}
+.star-button svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.star-button.on { background: color-mix(in srgb, #f2a93b 16%, transparent); border-color: transparent; color: #c07a10; }
+.star-button.on svg { fill: currentColor; }
+.star-button:disabled { opacity: .6; }
+.fav-star { color: #f2a93b; }
+
+.call-links { display: inline-flex; gap: .35rem; flex: none; }
+.call-link { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 999px; background: var(--primary-soft); color: var(--primary); }
+.call-link.sms { background: var(--accent-soft); color: var(--accent); }
+.call-link svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.card.calls { gap: .55rem; }
+.card.calls .item-link { color: inherit; text-decoration: none; display: flex; flex-direction: column; gap: .4rem; }
+.calls-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding-top: .55rem; border-top: 1px solid var(--line); font-weight: 600; font-variant-numeric: tabular-nums; }
+.note-preview { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

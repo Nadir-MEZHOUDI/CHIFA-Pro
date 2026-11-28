@@ -18,12 +18,14 @@ public class AgentHandlers
     private readonly ILogger<AgentHandlers> logger;
     private readonly WatchlistStore _watchlist;
     private readonly AlertTracker _alerts;
+    private readonly ContactStore _contacts;
 
     public AgentHandlers(ILogger<AgentHandlers> logger)
     {
         this.logger = logger;
         _watchlist = new WatchlistStore(logger);
         _alerts = new AlertTracker(logger, _watchlist);
+        _contacts = new ContactStore(logger);
     }
 
     public void Register(HubConnection connection)
@@ -100,6 +102,25 @@ public class AgentHandlers
                     throw new HubException("Impossible d'enregistrer la surveillance sur l'ordinateur de la pharmacie.");
                 }
             }));
+
+        connection.On<PatientKey, PatientContact>(AgentMethods.GetContact, key =>
+            RunAsync(AgentMethods.GetContact, () => _contacts.GetAsync(key)));
+
+        connection.On(AgentMethods.GetContacts, () => RunAsync(AgentMethods.GetContacts, _contacts.LoadAllAsync));
+
+        connection.On<PatientContact, PatientContact>(AgentMethods.SaveContact, c =>
+            RunAsync(AgentMethods.SaveContact, async () =>
+            {
+                try
+                {
+                    return await _contacts.SaveAsync(c);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    logger.LogError(ex, "Could not save {Path}", _contacts.FilePath);
+                    throw new HubException("Impossible d'enregistrer le contact sur l'ordinateur de la pharmacie.");
+                }
+            }));
     }
 
     private static async Task<AgentInfo> GetInfoAsync()
@@ -135,6 +156,10 @@ public class AgentHandlers
         catch (HubException)
         {
             throw;
+        }
+        catch (ContactRejectedException ex)
+        {
+            throw new HubException(ex.Message);
         }
         catch (Exception ex) when (ex is NpgsqlException or TimeoutException)
         {

@@ -1,16 +1,67 @@
 @page "/patients"
 @page "/relances"
+@page "/favoris"
+@using CHIFA.Contract
 @inject Api Api
+@inject Session Session
 @inject NavigationManager Nav
 
 <div class="page-head"><h1>Patients</h1></div>
 
 <div class="chips">
-    <button class="chip @(Relance ? "" : "active")" @onclick="ShowAll">Tous</button>
+    <button class="chip @(Relance || Favoris ? "" : "active")" @onclick="ShowAll">Tous</button>
     <button class="chip @(Relance ? "active" : "")" @onclick="ShowReminders">Chroniques à relancer</button>
+    @* Hidden while the agent is older than the phone book. *@
+    @if (_contacts is not null || Favoris)
+    {
+        <button class="chip @(Favoris ? "active" : "")" @onclick="ShowFavoris">★ Favoris</button>
+    }
 </div>
 
-@if (Relance)
+@if (Favoris)
+{
+    @if (_contactsError is not null)
+    {
+        <ErrorBox Error="_contactsError" Retry="LoadContactsAsync" />
+    }
+    else if (_contacts is null)
+    {
+        <Loading />
+    }
+    else if (FavoriList.Count == 0)
+    {
+        <div class="empty">Aucun favori. Touchez « Favoris » sur la fiche d'un patient pour l'ajouter ici.</div>
+    }
+    else
+    {
+        @foreach (var c in FavoriList)
+        {
+            <div class="card item calls">
+                <a class="item-link" href="@PatientUrl(c.NumAssure, c.Rang)">
+                    <div class="item-head">
+                        <strong><span class="fav-star">★</span> @(c.Nom ?? "—")</strong>
+                    </div>
+                    <div class="item-sub">
+                        <span>@c.NumAssure · rang @c.Rang</span>
+                    </div>
+                    @if (c.Note is { } note)
+                    {
+                        <span class="muted small note-preview">@note</span>
+                    }
+                </a>
+                @if (c.Telephone1 is { } phone)
+                {
+                    <div class="calls-row">
+                        <span>@AlgerianPhone.Format(phone)</span>
+                        <CallLinks Phone="@phone" SmsPhone="@ContactLinks.SmsPhone(c)" />
+                    </div>
+                }
+            </div>
+        }
+        <div class="list-end">@FavoriList.Count favori@(FavoriList.Count > 1 ? "s" : "")</div>
+    }
+}
+else if (Relance)
 {
     <p class="muted small">Malades chroniques dont le traitement se termine dans la semaine, ou est déjà terminé.</p>
     <Remote Fetch="RemindersAsync" Context="reminders">
@@ -22,20 +73,22 @@
         {
             @foreach (var r in reminders)
             {
-                <a class="card item link" href="@PatientUrl(r.NumAssure, r.Rang)">
-                    <div class="item-head">
-                        <strong>@(r.NomBeneficiaire ?? r.NomAssure ?? "—")</strong>
-                        <span class="tag @(r.JoursRestants < 0 ? "bad" : r.JoursRestants == 0 ? "warn" : "accent")">@Due(r.JoursRestants)</span>
+                var contact = ContactOf(r.NumAssure, r.Rang);
+                @if (contact?.Telephone1 is { } phone)
+                {
+                    <div class="card item calls">
+                        <a class="item-link" href="@PatientUrl(r.NumAssure, r.Rang)">@ReminderBody(r)</a>
+                        <div class="calls-row">
+                            <span>@AlgerianPhone.Format(phone)</span>
+                            <CallLinks Phone="@phone" SmsPhone="@ContactLinks.SmsPhone(contact)"
+                                       SmsBody="@ContactLinks.ReminderText(r.DatePrevisionnelleRetour, Session.Current?.Pharmacy)" />
+                        </div>
                     </div>
-                    <div class="item-sub">
-                        <span>Dernière visite @Fmt.Date(r.DateDerniereVisite)</span>
-                        <span>Retour prévu @Fmt.Date(r.DatePrevisionnelleRetour)</span>
-                    </div>
-                    @if (!string.IsNullOrWhiteSpace(r.TraitementHabituelResume))
-                    {
-                        <span class="muted small">@r.TraitementHabituelResume · ~@Fmt.Money(r.MontantMoyenHabituel)</span>
-                    }
-                </a>
+                }
+                else
+                {
+                    <a class="card item link" href="@PatientUrl(r.NumAssure, r.Rang)">@ReminderBody(r)</a>
+                }
             }
             <div class="list-end">@reminders.Count patient@(reminders.Count > 1 ? "s" : "")</div>
         }
@@ -49,7 +102,7 @@ else
     {
         <a class="card item link" href="@PatientUrl(p.NumAssure, p.Rang)">
             <div class="item-head">
-                <strong>@(p.Nom ?? "—")</strong>
+                <strong>@if (ContactOf(p.NumAssure, p.Rang) is { Favori: true }) {<span class="fav-star" title="Favori">★ </span>}@(p.Nom ?? "—")</strong>
                 <span class="tags">
                     <CoverageTags Taux="p.Taux" TauxVarie="p.TauxVarie" Mc="p.Mc" Compact="true" />
                     <span class="tag">@Fmt.Number(p.NombreFactures) fact.</span>
@@ -88,7 +141,11 @@ else
     // The agent's push notification links to patients?relance=1, so phones still running an older PWA can open it.
     [SupplyParameterFromQuery(Name = "relance")] public int? RelanceQuery { get; set; }
 
-    private bool Relance => RelanceQuery == 1 || Nav.ToBaseRelativePath(Nav.Uri).StartsWith("relances", StringComparison.OrdinalIgnoreCase);
+    private string Route => Nav.ToBaseRelativePath(Nav.Uri);
+
+    private bool Relance => RelanceQuery == 1 || Route.StartsWith("relances", StringComparison.OrdinalIgnoreCase);
+
+    private bool Favoris => Route.StartsWith("favoris", StringComparison.OrdinalIgnoreCase);
 
     private readonly List<PatientRow> _items = [];
     private int _total;
@@ -100,9 +157,18 @@ else
     // Kept when switching to "Tous" and back, so the reminders are not asked for again.
     private List<Reminder>? _reminders;
 
+    // The pharmacist's phone book, by (NumAssure, Rang). Null until read, or when the agent is too old for it.
+    private Dictionary<(string, string), PatientContact>? _contacts;
+    private ApiException? _contactsError;
+
+    private List<PatientContact> FavoriList =>
+        _contacts?.Values.Where(c => c.Favori).OrderBy(c => c.Nom, StringComparer.OrdinalIgnoreCase).ToList() ?? [];
+
+    protected override void OnInitialized() => _ = LoadContactsAsync();
+
     protected override async Task OnParametersSetAsync()
     {
-        if (!Relance && !_listLoaded)
+        if (!Relance && !Favoris && !_listLoaded)
         {
             _listLoaded = true;
             await LoadMoreAsync();
@@ -113,8 +179,28 @@ else
 
     private void ShowReminders() => Nav.NavigateTo("relances");
 
+    private void ShowFavoris() => Nav.NavigateTo("favoris");
+
     public static string PatientUrl(string? numAssure, string? rang) =>
         $"patients/{Uri.EscapeDataString(numAssure ?? "")}/{Uri.EscapeDataString(rang ?? "")}";
+
+    private PatientContact? ContactOf(string? numAssure, string? rang) =>
+        _contacts is not null && numAssure is not null && rang is not null && _contacts.TryGetValue((numAssure, rang), out var c) ? c : null;
+
+    private async Task LoadContactsAsync()
+    {
+        _contactsError = null;
+        try
+        {
+            var all = await Api.ContactsAsync();
+            _contacts = all.DistinctBy(c => (c.NumAssure, c.Rang)).ToDictionary(c => (c.NumAssure, c.Rang));
+        }
+        catch (ApiException ex)
+        {
+            _contactsError = ex;
+        }
+        StateHasChanged();
+    }
 
     private async Task SearchAsync(string text)
     {
@@ -150,6 +236,22 @@ else
     }
 
     private async Task<List<Reminder>> RemindersAsync() => _reminders ??= await Api.RemindersAsync();
+
+    private static RenderFragment ReminderBody(Reminder r) =>
+        @<text>
+            <div class="item-head">
+                <strong>@(r.NomBeneficiaire ?? r.NomAssure ?? "—")</strong>
+                <span class="tag @(r.JoursRestants < 0 ? "bad" : r.JoursRestants == 0 ? "warn" : "accent")">@Due(r.JoursRestants)</span>
+            </div>
+            <div class="item-sub">
+                <span>Dernière visite @Fmt.Date(r.DateDerniereVisite)</span>
+                <span>Retour prévu @Fmt.Date(r.DatePrevisionnelleRetour)</span>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(r.TraitementHabituelResume))
+            {
+                <span class="muted small">@r.TraitementHabituelResume · ~@Fmt.Money(r.MontantMoyenHabituel)</span>
+            }
+        </text>;
 
     private static string Due(int days) => days switch
     {

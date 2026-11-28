@@ -1,0 +1,176 @@
+@using CHIFA.Contract
+@inject Api Api
+@inject Session Session
+
+@* Hidden until the contact is read: an agent older than the phone book has none to show. *@
+@if (_contact is { } c)
+{
+    <section class="card phone-card">
+        <div class="card-head">
+            <h2>Contact</h2>
+            <button class="star-button @(c.Favori ? "on" : "")" disabled="@_busy" @onclick="ToggleFavoriAsync"
+                    title="@(c.Favori ? "Retirer des favoris" : "Ajouter aux favoris")" aria-pressed="@c.Favori">
+                <svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" /></svg>
+                <span>@(c.Favori ? "Favori" : "Favoris")</span>
+            </button>
+        </div>
+
+        @if (_editing)
+        {
+            <form class="form" @onsubmit="SaveAsync">
+                <label>
+                    Téléphone 1
+                    <input type="tel" inputmode="tel" autocomplete="off" placeholder="06 61 23 45 67" @bind="_phone1" @bind:event="oninput" />
+                    @if (PhoneProblem(_phone1))
+                    {
+                        <span class="field-error">Numéro algérien attendu : 05, 06, 07 ou un fixe 0xx.</span>
+                    }
+                </label>
+                <label>
+                    Téléphone 2
+                    <input type="tel" inputmode="tel" autocomplete="off" placeholder="Facultatif" @bind="_phone2" @bind:event="oninput" />
+                    @if (PhoneProblem(_phone2))
+                    {
+                        <span class="field-error">Numéro algérien attendu : 05, 06, 07 ou un fixe 0xx.</span>
+                    }
+                </label>
+                <label>
+                    Note
+                    <textarea rows="3" maxlength="@PatientContact.MaxNoteLength" placeholder="Allergies, horaires, personne à contacter…" @bind="_note"></textarea>
+                </label>
+                @if (_error is not null)
+                {
+                    <span class="field-error">@_error</span>
+                }
+                <div class="phone-actions">
+                    <button type="button" class="button secondary small" disabled="@_busy" @onclick="CancelEdit">Annuler</button>
+                    <button type="submit" class="button small" disabled="@(_busy || PhoneProblem(_phone1) || PhoneProblem(_phone2))">Enregistrer</button>
+                </div>
+            </form>
+        }
+        else
+        {
+            @if (c.Telephone1 is null && c.Telephone2 is null && c.Note is null)
+            {
+                <p class="muted small">Aucun numéro enregistré pour ce patient.</p>
+            }
+            <dl class="facts">
+                @foreach (var (label, phone) in Phones(c))
+                {
+                    <div class="phone-row">
+                        <dt>@label</dt>
+                        <dd><a href="@ContactLinks.Call(phone)">@AlgerianPhone.Format(phone)</a><CallLinks Phone="@phone" SmsBody="@SmsBody" /></dd>
+                    </div>
+                }
+                @if (c.Note is { } note)
+                {
+                    <div><dt>Note</dt><dd class="phone-note">@note</dd></div>
+                }
+            </dl>
+            @if (_error is not null)
+            {
+                <span class="field-error">@_error</span>
+            }
+            <div class="phone-actions">
+                @if (ContactLinks.Call(c.Telephone1) is { } call)
+                {
+                    <a class="button small" href="@call">Appeler</a>
+                }
+                @if (ContactLinks.Sms(ContactLinks.SmsPhone(c), SmsBody) is { } sms)
+                {
+                    <a class="button secondary small" href="@sms">SMS</a>
+                }
+                <button class="button secondary small" @onclick="StartEdit">@(c.Telephone1 is null && c.Note is null ? "Ajouter un numéro" : "Modifier")</button>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    [Parameter, EditorRequired] public string NumAssure { get; set; } = "";
+    [Parameter, EditorRequired] public string Rang { get; set; } = "";
+    [Parameter] public string? Nom { get; set; }
+
+    /// <summary>When the chronic treatment runs out, for the SMS reminder.</summary>
+    [Parameter] public DateTime? FinTraitement { get; set; }
+
+    private PatientContact? _contact;
+    private string? _loadedKey;
+    private bool _editing;
+    private bool _busy;
+    private string? _error;
+    private string? _phone1;
+    private string? _phone2;
+    private string? _note;
+
+    private string SmsBody => ContactLinks.ReminderText(FinTraitement, Session.Current?.Pharmacy);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var key = $"{NumAssure}/{Rang}";
+        if (key == _loadedKey)
+            return;
+        _loadedKey = key;
+        _contact = null;
+        _editing = false;
+        _error = null;
+        try
+        {
+            _contact = await Api.ContactAsync(NumAssure, Rang);
+        }
+        catch (ApiException)
+        {
+            _contact = null;
+        }
+    }
+
+    private static IEnumerable<(string Label, string Phone)> Phones(PatientContact c)
+    {
+        if (c.Telephone1 is { } t1)
+            yield return (c.Telephone2 is null ? "Téléphone" : "Téléphone 1", t1);
+        if (c.Telephone2 is { } t2)
+            yield return ("Téléphone 2", t2);
+    }
+
+    private static bool PhoneProblem(string? phone) => !string.IsNullOrWhiteSpace(phone) && !AlgerianPhone.IsValid(phone);
+
+    private void StartEdit()
+    {
+        _phone1 = _contact?.Telephone1 is { } t1 ? AlgerianPhone.Format(t1) : null;
+        _phone2 = _contact?.Telephone2 is { } t2 ? AlgerianPhone.Format(t2) : null;
+        _note = _contact?.Note;
+        _error = null;
+        _editing = true;
+    }
+
+    private void CancelEdit()
+    {
+        _editing = false;
+        _error = null;
+    }
+
+    private Task SaveAsync() =>
+        SaveContactAsync(_contact! with { Nom = Nom, Telephone1 = _phone1, Telephone2 = _phone2, Note = _note }, closeEditor: true);
+
+    private Task ToggleFavoriAsync() => SaveContactAsync(_contact! with { Nom = Nom, Favori = !_contact!.Favori }, closeEditor: false);
+
+    private async Task SaveContactAsync(PatientContact contact, bool closeEditor)
+    {
+        _busy = true;
+        _error = null;
+        try
+        {
+            _contact = await Api.SaveContactAsync(contact);
+            if (closeEditor)
+                _editing = false;
+        }
+        catch (ApiException ex)
+        {
+            _error = ex.Detail is { Length: > 0 } detail ? $"{ex.Title} {detail}" : ex.Title;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

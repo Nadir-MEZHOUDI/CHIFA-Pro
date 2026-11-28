@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using CHIFA.Contract;
 using Microsoft.AspNetCore.Components;
 
 namespace CHIFA.Mobile;
@@ -157,6 +158,19 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
     {
         using var response = await SendAsync(HttpMethod.Put, "api/officine/watchlist", watchlist);
         return (await response.Content.ReadFromJsonAsync<Watchlist>(JsonSerializerOptions.Web))!;
+    }
+
+    public Task<PatientContact> ContactAsync(string numAssure, string rang) =>
+        GetAsync<PatientContact>($"api/officine/patients/{Uri.EscapeDataString(numAssure)}/{Uri.EscapeDataString(rang)}/contact");
+
+    public Task<List<PatientContact>> ContactsAsync() => GetAsync<List<PatientContact>>("api/officine/contacts");
+
+    /// <returns>The contact as the pharmacy computer saved it (normalised phone numbers).</returns>
+    public async Task<PatientContact> SaveContactAsync(PatientContact contact)
+    {
+        using var response = await SendAsync(HttpMethod.Put,
+            $"api/officine/patients/{Uri.EscapeDataString(contact.NumAssure)}/{Uri.EscapeDataString(contact.Rang)}/contact", contact);
+        return (await response.Content.ReadFromJsonAsync<PatientContact>(JsonSerializerOptions.Web))!;
     }
 
     private Task<Page<T>> PageAsync<T>(string route, Period period, int skip) =>

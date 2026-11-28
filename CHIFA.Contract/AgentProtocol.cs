@@ -28,6 +28,15 @@ public static class AgentMethods
 
     /// <summary>The only write: it changes the agent's own watch file, never the CHIFA database.</summary>
     public const string SaveWatchlist = nameof(SaveWatchlist);
+
+    /// <summary>The <see cref="PatientContact"/> of a <see cref="PatientKey"/> (empty when none was saved).</summary>
+    public const string GetContact = nameof(GetContact);
+
+    /// <summary>Every saved contact: favourites and phones for the patient lists.</summary>
+    public const string GetContacts = nameof(GetContacts);
+
+    /// <summary>Writes the agent's own contacts file, never the CHIFA database. An empty contact is removed.</summary>
+    public const string SaveContact = nameof(SaveContact);
 }
 
 public static class AgentHub

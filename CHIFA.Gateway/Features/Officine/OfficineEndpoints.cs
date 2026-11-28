@@ -60,6 +60,19 @@ public static class OfficineEndpoints
                 ? Task.FromResult(Results.Problem(statusCode: StatusCodes.Status400BadRequest,
                     title: $"Au plus {Watchlist.MaxItems} patients et {Watchlist.MaxItems} médicaments suivis."))
                 : agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.SaveWatchlist, watchlist, ct));
+
+        api.MapGet("/contacts", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetContacts, null, ct));
+        api.MapGet("/patients/{numAssure}/{rang}/contact", (string numAssure, string rang, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetContact, new PatientKey(numAssure, rang), ct));
+        api.MapPut("/patients/{numAssure}/{rang}/contact", (string numAssure, string rang, PatientContact contact, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+        {
+            // The patient comes from the route, whatever the body says.
+            contact = contact with { NumAssure = numAssure, Rang = rang };
+            return contact.Problem() is { } problem
+                ? Task.FromResult(Results.Problem(statusCode: StatusCodes.Status400BadRequest, title: problem))
+                : agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.SaveContact, contact, ct);
+        });
     }
 
     private static void MapPaged(RouteGroupBuilder api, string route, string method) =>

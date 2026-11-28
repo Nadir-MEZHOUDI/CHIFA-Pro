@@ -70,6 +70,54 @@ public class GatewayTests(GatewayFixture gateway)
     }
 
     [Fact]
+    public async Task Phone_reads_and_saves_a_patient_contact_kept_by_the_agent()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        var stored = new List<PatientContact>();
+        PatientKey? asked = null;
+        await using var agent = gateway.CreateAgentConnection(pharmacy.AgentKey);
+        agent.On<PatientKey, PatientContact>(AgentMethods.GetContact, k =>
+        {
+            asked = k;
+            return Task.FromResult(stored.SingleOrDefault(c => c.NumAssure == k.NumAssure && c.Rang == k.Rang) ?? new PatientContact(k.NumAssure, k.Rang));
+        });
+        agent.On(AgentMethods.GetContacts, () => Task.FromResult(stored));
+        agent.On<PatientContact, PatientContact>(AgentMethods.SaveContact, c =>
+        {
+            var clean = ContactStore.Normalize(c);
+            stored.Add(clean);
+            return Task.FromResult(clean);
+        });
+        await agent.StartAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        // The body names another patient: the route wins.
+        var put = await phone.PutAsJsonAsync("/api/officine/patients/123/01/contact",
+            new PatientContact("999", "00", "BENALI", "06 61 23 45 67", null, "Rappeler le matin", true), JsonSerializerOptions.Web);
+        var one = await phone.GetFromJsonAsync<PatientContact>("/api/officine/patients/123/01/contact", JsonSerializerOptions.Web);
+        var all = await phone.GetFromJsonAsync<List<PatientContact>>("/api/officine/contacts", JsonSerializerOptions.Web);
+
+        put.StatusCode.Should().Be(HttpStatusCode.OK);
+        var expected = new PatientContact("123", "01", "BENALI", "0661234567", null, "Rappeler le matin", true);
+        one.Should().Be(expected);
+        asked.Should().Be(new PatientKey("123", "01"));
+        all.Should().ContainSingle().Which.Should().Be(expected);
+    }
+
+    [Fact]
+    public async Task Invalid_phone_is_refused_before_reaching_the_agent()
+    {
+        var pharmacy = await gateway.CreatePharmacyAsync();
+        using var phone = await gateway.LoginAsync(pharmacy);
+
+        var response = await phone.PutAsJsonAsync("/api/officine/patients/123/00/contact",
+            new PatientContact("123", "00", Telephone1: "0812"), JsonSerializerOptions.Web);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        (await response.Content.ReadAsStringAsync()).Should().Contain("Téléphone 1 invalide");
+    }
+
+    [Fact]
     public async Task Too_long_a_watchlist_is_refused_before_reaching_the_agent()
     {
         var pharmacy = await gateway.CreatePharmacyAsync();
@@ -147,6 +195,8 @@ public class GatewayTests(GatewayFixture gateway)
     [Theory]
     [InlineData("/api/officine/factures/61001126")]
     [InlineData("/api/officine/patients/relance")]
+    [InlineData("/api/officine/patients/123/00/contact")]
+    [InlineData("/api/officine/contacts")]
     public async Task Agent_without_the_method_asks_for_an_update(string url)
     {
         var pharmacy = await gateway.CreatePharmacyAsync();

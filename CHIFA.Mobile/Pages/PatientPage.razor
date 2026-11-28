@@ -44,6 +44,8 @@ else
         </dl>
     </section>
 
+    <ContactCard NumAssure="@p.NumAssure" Rang="@p.Rang" Nom="@p.Nom" FinTraitement="FinTraitement(p)" />
+
     @if (p.Famille.Count > 1)
     {
         <section class="card">
@@ -111,4 +113,12 @@ else
     [Parameter] public string Rang { get; set; } = "";
 
     protected override Task<PatientDetail?> FetchAsync() => Api.PatientAsync(NumAssure, Rang);
+
+    /// <summary>The next treatment to run out, or the last one that ran out this past month: the date of the SMS reminder.</summary>
+    private static DateTime? FinTraitement(PatientDetail p)
+    {
+        var dates = p.Traitements.Select(t => t.Prochain?.Date).OfType<DateTime>().Where(d => d >= DateTime.Today.AddDays(-30)).ToList();
+        var upcoming = dates.Where(d => d >= DateTime.Today).ToList();
+        return upcoming.Count > 0 ? upcoming.Min() : dates.Count > 0 ? dates.Max() : null;
+    }
 }
