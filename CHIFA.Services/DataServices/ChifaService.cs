@@ -574,10 +574,49 @@ public class ChifaService
         return list;
     }
 
-    public async ValueTask<IEnumerable<FactureCm>> LoadControlsMedicalAsync()
+    public async ValueTask<IEnumerable<ControleMedicalDto>> LoadControlsMedicalAsync()
     {
         await using var db = new ChifaDb();
-        return await db.FactureCms.ToListAsync().ConfigureAwait(false);
+        var factures = await (
+            from f in db.FactureCms
+            from b in db.Beneficiaires.LeftJoin(b => b.NumAssure == f.NumAssure && b.RangAd == f.RangAd)
+            orderby f.DateFact descending
+            select new ControleMedicalDto
+            {
+                Etat = f.Etat,
+                DecisionCm = f.DecisionCm,
+                NumFact = f.NumFact,
+                DateFact = f.DateFact,
+                DateSoin = f.DateSoin,
+                DateCm = f.DateCm,
+                Malade = b.Nom + " " + b.Prenom,
+                NumAssure = f.NumAssure,
+                Rang = f.RangAd,
+                Centre = f.Center!.Nom,
+                NumBord = f.NumBord,
+                MontFact = f.MontFact,
+                MontOff = f.MontOff,
+                MotifCm = f.MotifCm
+            }).ToListAsync().ConfigureAwait(false);
+
+        var lignes = (await (
+            from d in db.DetailFactCms
+            from m in db.Medicaments.LeftJoin(m => m.NumEnr == d.NumEnr)
+            select new ControleMedicalLigneDto
+            {
+                NumFact = d.NumFact,
+                Medicament = m.FullName ?? d.NumEnr,
+                Duree = d.DureeTrait,
+                Qte = d.Qte,
+                QteAccord = d.QteAccord,
+                QteRej = d.QteRej,
+                Ppa = d.Ppa,
+                Mont = d.Mont
+            }).ToListAsync().ConfigureAwait(false)).ToLookup(l => l.NumFact);
+
+        foreach (var facture in factures)
+            facture.Lignes = lignes[facture.NumFact].ToList();
+        return factures;
     }
 
     public async ValueTask<IEnumerable<FactureDto>> LoadHistoryAsync(string noAssure, string rang, CancellationToken cancellationToken = default)

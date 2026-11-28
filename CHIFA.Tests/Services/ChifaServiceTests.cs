@@ -280,6 +280,7 @@ public class ChifaServiceTests : IDisposable
         using var w = StartWatch();
         var rows = (await _svc.LoadControlsMedicalAsync()).ToList();
         rows.Should().NotBeEmpty();
+        rows.Should().Contain(r => r.Lignes.Count > 0);
     }
 
     [Fact]
