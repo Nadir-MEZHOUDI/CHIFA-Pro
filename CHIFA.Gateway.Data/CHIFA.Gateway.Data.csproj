@@ -6,8 +6,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Using Include="CHIFA.Contract" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.*" />
 		<PackageReference Include="EFCore.NamingConventions" Version="10.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CHIFA.Contract\CHIFA.Contract.csproj" />
 	</ItemGroup>
 
 </Project>

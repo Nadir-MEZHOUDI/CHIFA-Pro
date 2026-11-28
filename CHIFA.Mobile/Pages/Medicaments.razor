@@ -14,7 +14,10 @@
         </div>
         <div class="item-sub">
             <span>@(m.Dci ?? "—")@(string.IsNullOrWhiteSpace(m.Laboratoire) ? "" : $" · {m.Laboratoire}")</span>
-            <span>@Fmt.Money(m.Montant)</span>
+            @if (m.Montant is { } montant)
+            {
+                <span>@Fmt.Money(montant)</span>
+            }
         </div>
         <div class="tags">
             <span class="tag">@Fmt.Number(m.Patients) patient@(m.Patients > 1 ? "s" : "")</span>

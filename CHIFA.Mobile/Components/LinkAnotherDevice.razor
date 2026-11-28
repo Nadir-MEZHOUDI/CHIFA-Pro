@@ -11,6 +11,19 @@
         puis scannez ce QR code ou saisissez le code.
     </p>
 
+    <div class="chips role-choice" role="radiogroup" aria-label="Ce que l'appareil pourra voir">
+        @foreach (var role in RoleChoices)
+        {
+            <button class="chip @(_role == role ? "active" : "")" role="radio" aria-checked="@(_role == role ? "true" : "false")"
+                    @onclick="() => ChooseRole(role)">@(role == Roles.Staff ? "Employé" : "Titulaire")</button>
+        }
+    </div>
+    <p class="hint muted small">
+        @(_role == Roles.Staff
+            ? "Patients, médicaments, factures et psychotropes, sans chiffre d'affaires, marges, bordereaux ni paiements."
+            : "Tout, comme ce téléphone : chiffre d'affaires, statistiques, paiements et gestion des appareils.")
+    </p>
+
     @if (_error is not null)
     {
         <ErrorBox Error="_error" Retry="NewCodeAsync" />
@@ -52,6 +65,10 @@
     /// <summary>Called when the code was used, so the page shows the new device in its list.</summary>
     [Parameter] public EventCallback OnLinked { get; set; }
 
+    private static readonly string[] RoleChoices = [Roles.Staff, Roles.Owner];
+
+    // An employee's phone by default: giving everything must be a choice.
+    private string _role = Roles.Staff;
     private LinkCode? _code;
     private HashSet<Guid> _known = [];
     private string? _linked;
@@ -75,7 +92,7 @@
         {
             var devices = await Api.DevicesAsync();
             _known = devices.Select(d => d.Id).ToHashSet();
-            _code = await Api.NewLinkCodeAsync();
+            _code = await Api.NewLinkCodeAsync(_role);
             _ticks = 0;
             _clock ??= new Timer(_ => InvokeAsync(TickAsync), null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
         }
@@ -125,6 +142,16 @@
         }
 
         StateHasChanged();
+    }
+
+    /// <summary>A code shown for the other role would link with it: it is dropped.</summary>
+    private void ChooseRole(string role)
+    {
+        if (role == _role) return;
+        _role = role;
+        _code = null;
+        _linked = null;
+        StopClock();
     }
 
     private async Task ShareAsync() =>

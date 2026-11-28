@@ -28,7 +28,7 @@ public static class LicenseRequestEndpoints
 
     public static void MapLicenseRequestEndpoints(this IEndpointRouteBuilder app)
     {
-        var phone = app.MapGroup(PhoneRoute).RequireAuthorization();
+        var phone = app.MapGroup(PhoneRoute).RequireOwner();
         phone.MapGet("", StateAsync);
         phone.MapPost("", SendAsync).RequireRateLimiting(RateLimit);
 

@@ -40,7 +40,10 @@ else
             }
             <div><dt>Fin de droits</dt><dd class="@(droitsFinis ? "bad-text" : "")">@Fmt.Date(p.DateFinDroit)@(droitsFinis ? " · expirés" : "")</dd></div>
             <div><dt>Visites</dt><dd>@Fmt.Number(p.NombreFactures) factures · @Fmt.Date(p.PremiereVisite) → @Fmt.Date(p.DerniereVisite)</dd></div>
-            <div><dt>Total facturé</dt><dd>@Fmt.Money(p.MontantTotal)</dd></div>
+            @if (p.MontantTotal is { } total)
+            {
+                <div><dt>Total facturé</dt><dd>@Fmt.Money(total)</dd></div>
+            }
         </dl>
     </section>
 

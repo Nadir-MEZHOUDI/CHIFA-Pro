@@ -135,15 +135,22 @@ public sealed class Api(HttpClient http, Session session, NavigationManager nav)
     }
 
     /// <summary>A code for another phone or browser; it replaces the one shown in SmartCHIFA.</summary>
-    public async Task<LinkCode> NewLinkCodeAsync()
+    /// <param name="role">What the phone linked with it may see (<see cref="Roles"/>).</param>
+    public async Task<LinkCode> NewLinkCodeAsync(string role)
     {
-        using var response = await SendAsync(HttpMethod.Post, "api/devices/code", null);
+        using var response = await SendAsync(HttpMethod.Post, "api/devices/code", new { role });
         return (await response.Content.ReadFromJsonAsync<LinkCode>(JsonSerializerOptions.Web))!;
     }
 
     public async Task RemoveDeviceAsync(Guid id)
     {
         using var _ = await SendAsync(HttpMethod.Delete, $"api/devices/{id}", null);
+    }
+
+    /// <summary>The other phone gets its new pages on its next request.</summary>
+    public async Task SetDeviceRoleAsync(Guid id, string role)
+    {
+        using var _ = await SendAsync(HttpMethod.Put, $"api/devices/{id}/role", new { role });
     }
 
     public Task<ReviewState> ReviewStateAsync() => GetAsync<ReviewState>("api/review");

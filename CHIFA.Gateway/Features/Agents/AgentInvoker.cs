@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 
@@ -11,7 +12,9 @@ public class AgentInvoker(
     IOptions<GatewayOptions> options,
     ILogger<AgentInvoker> logger)
 {
-    public async Task<IResult> InvokeAsync(Guid pharmacyId, string method, object? argument, CancellationToken requestAborted)
+    /// <param name="hidden">Properties removed from the answer (and from its items, for a list or a page) before it
+    /// reaches the phone. Done here rather than in the agent, so an agent not yet updated cannot leak them.</param>
+    public async Task<IResult> InvokeAsync(Guid pharmacyId, string method, object? argument, CancellationToken requestAborted, string[]? hidden = null)
     {
         var connectionId = registry.GetConnectionId(pharmacyId);
         if (connectionId is null)
@@ -26,7 +29,7 @@ public class AgentInvoker(
             var result = argument is null
                 ? await client.InvokeAsync<JsonElement>(method, timeout.Token)
                 : await client.InvokeAsync<JsonElement>(method, argument, timeout.Token);
-            return Results.Json(result);
+            return hidden is { Length: > 0 } ? Results.Json(Without(result, hidden)) : Results.Json(result);
         }
         // SignalR reports a cancelled invocation as a HubException, not an OperationCanceledException.
         catch (Exception ex) when (ex is OperationCanceledException or HubException
@@ -76,6 +79,23 @@ public class AgentInvoker(
             logger.LogDebug("Agent {PharmacyId} did not answer {Method}: {Error}", pharmacyId, method, ex.Message);
             return default;
         }
+    }
+
+    public static JsonNode? Without(JsonElement json, string[] names)
+    {
+        var node = JsonNode.Parse(json.GetRawText(), new JsonNodeOptions { PropertyNameCaseInsensitive = true });
+        IEnumerable<JsonObject> objects = node switch
+        {
+            JsonArray list => list.OfType<JsonObject>(),
+            JsonObject page when page["items"] is JsonArray items => [page, .. items.OfType<JsonObject>()],
+            JsonObject single => [single],
+            _ => []
+        };
+
+        foreach (var obj in objects)
+            foreach (var name in names)
+                obj.Remove(name);
+        return node;
     }
 
     // What the SignalR client answers when it has no handler for the method.

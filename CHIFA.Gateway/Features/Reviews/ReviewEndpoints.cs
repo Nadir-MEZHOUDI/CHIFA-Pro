@@ -32,7 +32,7 @@ public static class ReviewEndpoints
 
     public static void MapReviewEndpoints(this IEndpointRouteBuilder app)
     {
-        var phone = app.MapGroup("/api/review").RequireAuthorization();
+        var phone = app.MapGroup("/api/review").RequireOwner();
         phone.MapGet("", StateAsync);
         phone.MapPost("", SendAsync);
 

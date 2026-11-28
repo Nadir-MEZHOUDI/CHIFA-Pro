@@ -22,13 +22,7 @@ public static class OfficineEndpoints
         api.MapGet("/info", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
             agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetInfo, null, ct));
 
-        api.MapGet("/dashboard", (DateTime? from, DateTime? to, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
-            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetDashboard, new PeriodQuery(from, to), ct));
-
-        MapPaged(api, "/rejets", AgentMethods.GetRejets);
-        MapPaged(api, "/bordereaux", AgentMethods.GetBordereaux);
-        api.MapGet("/bordereaux/{numBord}", (string numBord, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
-            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetBordereau, numBord, ct));
+        // An employee's phone: patients, médicaments, factures and psychotropes, without the totals below.
         MapPaged(api, "/psychotropes", AgentMethods.GetPsychotropes);
 
         api.MapGet("/factures/recent", (int? take, string? q, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
@@ -38,33 +32,51 @@ public static class OfficineEndpoints
 
         MapPaged(api, "/patients", AgentMethods.SearchPatients);
         api.MapGet("/patients/relance", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
-            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetPatientsToRemind, null, ct));
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetPatientsToRemind, null, ct, StaffHidden(user, ReminderTotals)));
         api.MapGet("/patients/{numAssure}/{rang}", (string numAssure, string rang, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
-            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetPatient, new PatientKey(numAssure, rang), ct));
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetPatient, new PatientKey(numAssure, rang), ct, StaffHidden(user, PatientTotals)));
 
-        MapPaged(api, "/medicaments", AgentMethods.SearchMedicaments);
+        MapPaged(api, "/medicaments", AgentMethods.SearchMedicaments, MedicamentTotals);
         api.MapGet("/medicaments/{numEnr}", (string numEnr, DateTime? from, DateTime? to, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
-            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetMedicament, new MedicamentQuery(numEnr, from, to), ct));
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetMedicament, new MedicamentQuery(numEnr, from, to), ct, StaffHidden(user, MedicamentTotals)));
 
-        api.MapGet("/stats/recent", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+        // The pharmacist's only: turnover, margins, CNAS payments and rejections, and the alerts set for the pharmacy.
+        var owner = api.MapGroup("").RequireOwner();
+        owner.MapGet("/dashboard", (DateTime? from, DateTime? to, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetDashboard, new PeriodQuery(from, to), ct));
+
+        MapPaged(owner, "/rejets", AgentMethods.GetRejets);
+        MapPaged(owner, "/bordereaux", AgentMethods.GetBordereaux);
+        owner.MapGet("/bordereaux/{numBord}", (string numBord, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+            agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetBordereau, numBord, ct));
+
+        owner.MapGet("/stats/recent", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
             agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetRecentDays, null, ct));
-        api.MapGet("/stats/{kind}", async (string kind, DateTime? from, DateTime? to, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+        owner.MapGet("/stats/{kind}", async (string kind, DateTime? from, DateTime? to, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
             StatsQuery.All.Contains(kind)
                 ? await agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetStats, new StatsQuery(kind, from, to), ct)
                 : Results.NotFound());
 
-        api.MapGet("/watchlist", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+        owner.MapGet("/watchlist", (ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
             agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.GetWatchlist, null, ct));
-        api.MapPut("/watchlist", (Watchlist watchlist, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
+        owner.MapPut("/watchlist", (Watchlist watchlist, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
             watchlist.Patients.Count > Watchlist.MaxItems || watchlist.Medicaments.Count > Watchlist.MaxItems
                 ? Task.FromResult(Results.Problem(statusCode: StatusCodes.Status400BadRequest,
                     title: $"Au plus {Watchlist.MaxItems} patients et {Watchlist.MaxItems} médicaments suivis."))
                 : agent.InvokeAsync(user.GetPharmacyId(), AgentMethods.SaveWatchlist, watchlist, ct));
     }
 
-    private static void MapPaged(RouteGroupBuilder api, string route, string method) =>
+    // Sums of money an employee's phone never gets. A single facture keeps its amounts: they are needed at the counter.
+    public static readonly string[] PatientTotals = ["montantTotal"];
+    public static readonly string[] ReminderTotals = ["montantMoyenHabituel"];
+    public static readonly string[] MedicamentTotals = ["montant"];
+
+    private static string[]? StaffHidden(ClaimsPrincipal user, string[]? fields) => user.IsStaff() ? fields : null;
+
+    private static void MapPaged(RouteGroupBuilder api, string route, string method, string[]? staffHidden = null) =>
         api.MapGet(route, (DateTime? from, DateTime? to, int? skip, int? take, string? q, ClaimsPrincipal user, AgentInvoker agent, CancellationToken ct) =>
-            agent.InvokeAsync(user.GetPharmacyId(), method, new PageQuery(from, to, skip ?? 0, take ?? PageQuery.DefaultTake, q), ct));
+            agent.InvokeAsync(user.GetPharmacyId(), method, new PageQuery(from, to, skip ?? 0, take ?? PageQuery.DefaultTake, q), ct,
+                StaffHidden(user, staffHidden)));
 
     private static async Task<IResult> StatusAsync(ClaimsPrincipal user, IDbContextFactory<GatewayDbContext> dbFactory, AgentRegistry registry, CancellationToken ct)
     {

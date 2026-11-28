@@ -3,7 +3,8 @@ namespace CHIFA.Mobile;
 // Shapes of the gateway JSON (the pharmacy agent's DTOs), limited to what the phone shows.
 
 /// <param name="DeviceToken">Linked phones only: signs in again without a code until logout.</param>
-public record LoginResponse(string AccessToken, DateTime ExpiresAt, string Pharmacy, string? DeviceToken = null);
+/// <param name="Role"><c>owner</c> (the pharmacist) or <c>staff</c> (an employee); older sessions have none and are the pharmacist's.</param>
+public record LoginResponse(string AccessToken, DateTime ExpiresAt, string Pharmacy, string? DeviceToken = null, string? Role = null);
 
 /// <param name="SubscriptionEnded">The trial or subscription has ended: the pharmacy's data is refused (402).</param>
 public record OfficineStatus(string Name, bool Online, DateTime? LastSeenAt, bool SubscriptionEnded = false, bool IsTrial = false);
@@ -201,7 +202,8 @@ public class PatientDetail
     public DateTime? PremiereVisite { get; init; }
     public DateTime? DerniereVisite { get; init; }
     public int NombreFactures { get; init; }
-    public decimal MontantTotal { get; init; }
+    /// <summary>Null on an employee's phone: the gateway does not send sums of money to it.</summary>
+    public decimal? MontantTotal { get; init; }
     public List<FamilyMember> Famille { get; init; } = [];
     public List<Treatment> Traitements { get; init; } = [];
     public List<Facture> Factures { get; init; } = [];
@@ -237,7 +239,8 @@ public class Reminder
     public DateTime? DatePrevisionnelleRetour { get; init; }
     public int JoursRestants { get; init; }
     public string? TraitementHabituelResume { get; init; }
-    public decimal MontantMoyenHabituel { get; init; }
+    /// <summary>Null on an employee's phone.</summary>
+    public decimal? MontantMoyenHabituel { get; init; }
 }
 
 public class MedicRow
@@ -247,7 +250,8 @@ public class MedicRow
     public string? Dci { get; init; }
     public string? Laboratoire { get; init; }
     public decimal Quantite { get; init; }
-    public decimal Montant { get; init; }
+    /// <summary>Null on an employee's phone.</summary>
+    public decimal? Montant { get; init; }
     public int Factures { get; init; }
     public int Patients { get; init; }
 }
@@ -264,7 +268,8 @@ public class MedicDetail
     public bool Generique { get; init; }
     public bool Psychotrope { get; init; }
     public decimal Quantite { get; init; }
-    public decimal Montant { get; init; }
+    /// <summary>Null on an employee's phone.</summary>
+    public decimal? Montant { get; init; }
     public int Factures { get; init; }
     public List<MonthQuantity> ParMois { get; init; } = [];
     public List<MedicPatient> Patients { get; init; } = [];
@@ -310,7 +315,7 @@ public record PharmacistContact(
 public record LicenseRequestForm(string? FullName, string Phone, string? BusinessName, string? Wilaya, string? Message, string? Email);
 
 /// <param name="IsCurrent">This phone.</param>
-public record PhoneDevice(Guid Id, string Name, DateTime CreatedAt, DateTime? LastSeenAt, bool IsCurrent);
+public record PhoneDevice(Guid Id, string Name, DateTime CreatedAt, DateTime? LastSeenAt, bool IsCurrent, string Role = Roles.Owner);
 
 /// <param name="Code">Shown as <c>ABCD-2345</c>, like in SmartCHIFA. One use, a few minutes.</param>
 public record LinkCode(string Code, DateTime ExpiresAt, bool AgentOnline);

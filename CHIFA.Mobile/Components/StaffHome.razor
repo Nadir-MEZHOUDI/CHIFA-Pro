@@ -1,0 +1,28 @@
+@inject Api Api
+
+@* An employee's phone: what the counter needs, without the turnover the pharmacist's home shows. *@
+<section class="tiles staff-tiles">
+    <a class="tile c0" href="patients"><span class="label">Rechercher</span><span class="value">Patients</span></a>
+    <a class="tile c1" href="medicaments"><span class="label">Rechercher</span><span class="value">Médicaments</span></a>
+    <a class="tile c2" href="relances"><span class="label">À relancer</span><span class="value">Chroniques</span></a>
+    <a class="tile c3" href="psychotropes"><span class="label">Registre</span><span class="value">Psychotropes</span></a>
+</section>
+
+<div class="page-head">
+    <h2 class="section-title">Dernières factures</h2>
+    <a class="link-more" href="factures">Tout voir</a>
+</div>
+
+<Remote Fetch="() => Api.RecentFacturesAsync(take: 10)" Context="factures">
+    @if (factures.Count == 0)
+    {
+        <div class="empty">Aucune facture.</div>
+    }
+    else
+    {
+        @foreach (var f in factures)
+        {
+            <FactureCard F="f" />
+        }
+    }
+</Remote>

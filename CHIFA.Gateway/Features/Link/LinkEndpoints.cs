@@ -20,6 +20,7 @@ public static class LinkEndpoints
         pharmacy.MapPost(LinkRoutes.Codes, CreateCodeAsync);
         pharmacy.MapGet(LinkRoutes.Devices, ListDevicesAsync);
         pharmacy.MapDelete(LinkRoutes.Devices + "/{id:guid}", RemoveDeviceAsync);
+        pharmacy.MapPut(LinkRoutes.Devices + "/{id:guid}/role", ChangeRoleAsync);
         pharmacy.MapPost(LinkRoutes.License, UpdateLicenseAsync);
     }
 
@@ -76,23 +77,59 @@ public static class LinkEndpoints
         return Results.Ok(new RegisterPharmacyResponse(pharmacy.Id, pharmacy.Name, key));
     }
 
+    /// <summary>An older CHIFA Pro posts no body: its code links the pharmacist's own phone.</summary>
     private static async Task<IResult> CreateCodeAsync(
+        HttpRequest http,
         ClaimsPrincipal user,
         IDbContextFactory<GatewayDbContext> dbFactory,
         AgentRegistry registry,
         IOptions<GatewayOptions> options,
         CancellationToken ct)
     {
-        var pharmacyId = user.GetPharmacyId();
+        var role = await RequestedRoleAsync(http, ct);
+        if (!DeviceRoles.IsValid(role))
+            return InvalidRole();
+
         await using var db = await dbFactory.CreateDbContextAsync(ct);
-        return Results.Ok(await IssueCodeAsync(db, registry, pharmacyId, options.Value.PairingCodeMinutes, ct));
+        return Results.Ok(await IssueCodeAsync(db, registry, user.GetPharmacyId(), options.Value.PairingCodeMinutes, role, ct));
     }
+
+    private static async Task<IResult> ChangeRoleAsync(Guid id, DeviceRoleRequest request, ClaimsPrincipal user, IDbContextFactory<GatewayDbContext> dbFactory, CancellationToken ct)
+    {
+        if (!DeviceRoles.IsValid(request.Role))
+            return InvalidRole();
+
+        await using var db = await dbFactory.CreateDbContextAsync(ct);
+        return await SetRoleAsync(db, user.GetPharmacyId(), id, request.Role, ct) ? Results.NoContent() : Results.NotFound();
+    }
+
+    /// <summary>
+    /// Takes effect on the phone's next request: its token no longer matches, so it signs in again with its
+    /// new role. False when the pharmacy has no such active phone.
+    /// </summary>
+    public static async Task<bool> SetRoleAsync(GatewayDbContext db, Guid pharmacyId, Guid deviceId, string role, CancellationToken ct) =>
+        await db.MobileDevices
+            .Where(d => d.Id == deviceId && d.PharmacyId == pharmacyId && d.RevokedAt == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(d => d.Role, role), ct) > 0;
+
+    /// <summary>
+    /// The role asked for a new code. Read by hand: a bound body parameter, even optional, would make routing
+    /// refuse the bodiless POST of older CHIFA Pro and phones.
+    /// </summary>
+    public static async Task<string> RequestedRoleAsync(HttpRequest http, CancellationToken ct) =>
+        http.HasJsonContentType() && await http.ReadFromJsonAsync<PairingCodeRequest>(ct) is { Role: { } role }
+            ? role
+            : DeviceRoles.Owner;
+
+    public static IResult InvalidRole() =>
+        Results.Problem(statusCode: StatusCodes.Status400BadRequest, title: "Rôle inconnu.",
+            detail: $"Choisissez « {DeviceRoles.Label(DeviceRoles.Owner)} » ou « {DeviceRoles.Label(DeviceRoles.Staff)} ».");
 
     /// <summary>
     /// Asked by CHIFA Pro or by a phone already linked. A new code replaces the previous one, so only the
     /// latest code shown works.
     /// </summary>
-    public static async Task<PairingCodeResponse> IssueCodeAsync(GatewayDbContext db, AgentRegistry registry, Guid pharmacyId, int minutes, CancellationToken ct)
+    public static async Task<PairingCodeResponse> IssueCodeAsync(GatewayDbContext db, AgentRegistry registry, Guid pharmacyId, int minutes, string role, CancellationToken ct)
     {
         var now = DateTime.UtcNow;
         await db.PairingCodes.Where(c => c.PharmacyId == pharmacyId || c.ExpiresAt < now).ExecuteDeleteAsync(ct);
@@ -101,12 +138,12 @@ public static class LinkEndpoints
         for (var attempt = 0; ; attempt++)
         {
             var code = PairingCodes.Generate();
-            var row = new PairingCode { PharmacyId = pharmacyId, CodeHash = PairingCodes.Hash(code), ExpiresAt = expiresAt };
+            var row = new PairingCode { PharmacyId = pharmacyId, CodeHash = PairingCodes.Hash(code), ExpiresAt = expiresAt, Role = role };
             db.PairingCodes.Add(row);
             try
             {
                 await db.SaveChangesAsync(ct);
-                return new PairingCodeResponse(PairingCodes.Display(code), expiresAt, registry.IsOnline(pharmacyId));
+                return new PairingCodeResponse(PairingCodes.Display(code), expiresAt, registry.IsOnline(pharmacyId), role);
             }
             catch (DbUpdateException) when (attempt < 2)
             {
@@ -123,7 +160,7 @@ public static class LinkEndpoints
         var devices = await db.MobileDevices.AsNoTracking()
             .Where(d => d.PharmacyId == pharmacyId && d.RevokedAt == null)
             .OrderByDescending(d => d.CreatedAt)
-            .Select(d => new LinkedDevice(d.Id, d.Name, d.CreatedAt, d.LastSeenAt))
+            .Select(d => new LinkedDevice(d.Id, d.Name, d.CreatedAt, d.LastSeenAt, d.Role))
             .ToListAsync(ct);
         return Results.Ok(devices);
     }

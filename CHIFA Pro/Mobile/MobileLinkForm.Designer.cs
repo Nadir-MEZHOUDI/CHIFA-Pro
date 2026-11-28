@@ -20,6 +20,7 @@ namespace CHIFA.Pro.Mobile
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MobileLinkForm));
             lblTitle = new LabelControl();
             _lblIntro = new LabelControl();
+            _rdoRole = new RadioGroup();
             _qr = new PictureEdit();
             _lblCode = new LabelControl();
             _lblExpiry = new LabelControl();
@@ -29,11 +30,13 @@ namespace CHIFA.Pro.Mobile
             lblDevices = new LabelControl();
             _lstDevices = new ListBoxControl();
             _btnRemove = new SimpleButton();
+            _btnRole = new SimpleButton();
             _lblService = new LabelControl();
             _btnService = new SimpleButton();
             _btnClose = new SimpleButton();
             _clock = new System.Windows.Forms.Timer(components);
             _devicesPoll = new System.Windows.Forms.Timer(components);
+            ((System.ComponentModel.ISupportInitialize)_rdoRole.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)_qr.Properties).BeginInit();
             ((System.ComponentModel.ISupportInitialize)_lstDevices).BeginInit();
             SuspendLayout();
@@ -64,10 +67,23 @@ namespace CHIFA.Pro.Mobile
             _lblIntro.Size = new Size(740, 52);
             _lblIntro.TabIndex = 1;
             _lblIntro.Text = "1. Sur le téléphone, scannez le QR code ou ouvrez l'adresse du site\r\n2. Saisissez le code ci-dessous. Il ne sert qu'une fois : le téléphone reste ensuite connecté.";
-            // 
+            //
+            // _rdoRole
+            //
+            _rdoRole.Location = new Point(30, 130);
+            _rdoRole.Margin = new Padding(4);
+            _rdoRole.Name = "_rdoRole";
+            _rdoRole.Properties.Appearance.Font = new Font("Segoe UI", 9.75F);
+            _rdoRole.Properties.Appearance.Options.UseFont = true;
+            _rdoRole.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            _rdoRole.Properties.Columns = 2;
+            _rdoRole.Size = new Size(740, 44);
+            _rdoRole.TabIndex = 2;
+            _rdoRole.SelectedIndexChanged += RdoRole_SelectedIndexChanged;
+            //
             // _qr
-            // 
-            _qr.Location = new Point(30, 138);
+            //
+            _qr.Location = new Point(30, 188);
             _qr.Margin = new Padding(4);
             _qr.Name = "_qr";
             _qr.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
@@ -84,7 +100,7 @@ namespace CHIFA.Pro.Mobile
             _lblCode.Appearance.Options.UseFont = true;
             _lblCode.Appearance.Options.UseForeColor = true;
             _lblCode.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblCode.Location = new Point(295, 150);
+            _lblCode.Location = new Point(295, 200);
             _lblCode.Margin = new Padding(4);
             _lblCode.Name = "_lblCode";
             _lblCode.Size = new Size(475, 80);
@@ -95,7 +111,7 @@ namespace CHIFA.Pro.Mobile
             _lblExpiry.Appearance.Font = new Font("Segoe UI", 9.75F);
             _lblExpiry.Appearance.Options.UseFont = true;
             _lblExpiry.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblExpiry.Location = new Point(300, 232);
+            _lblExpiry.Location = new Point(300, 282);
             _lblExpiry.Margin = new Padding(4);
             _lblExpiry.Name = "_lblExpiry";
             _lblExpiry.Size = new Size(470, 28);
@@ -109,7 +125,7 @@ namespace CHIFA.Pro.Mobile
             _lblStatus.Appearance.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Top;
             _lblStatus.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             _lblStatus.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblStatus.Location = new Point(300, 268);
+            _lblStatus.Location = new Point(300, 318);
             _lblStatus.Margin = new Padding(4);
             _lblStatus.Name = "_lblStatus";
             _lblStatus.Size = new Size(470, 55);
@@ -120,7 +136,7 @@ namespace CHIFA.Pro.Mobile
             _btnNewCode.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
             _btnNewCode.Appearance.Options.UseFont = true;
             _btnNewCode.ImageOptions.Image = (Image)resources.GetObject("_btnNewCode.ImageOptions.Image");
-            _btnNewCode.Location = new Point(300, 330);
+            _btnNewCode.Location = new Point(300, 380);
             _btnNewCode.Margin = new Padding(4);
             _btnNewCode.Name = "_btnNewCode";
             _btnNewCode.Size = new Size(200, 40);
@@ -134,7 +150,7 @@ namespace CHIFA.Pro.Mobile
             _btnCopy.Appearance.Options.UseFont = true;
             _btnCopy.Enabled = false;
             _btnCopy.ImageOptions.ImageUri.Uri = "Copy;Size16x16";
-            _btnCopy.Location = new Point(510, 330);
+            _btnCopy.Location = new Point(510, 380);
             _btnCopy.Margin = new Padding(4);
             _btnCopy.Name = "_btnCopy";
             _btnCopy.Size = new Size(200, 40);
@@ -146,7 +162,7 @@ namespace CHIFA.Pro.Mobile
             // 
             lblDevices.Appearance.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
             lblDevices.Appearance.Options.UseFont = true;
-            lblDevices.Location = new Point(30, 400);
+            lblDevices.Location = new Point(30, 450);
             lblDevices.Margin = new Padding(4);
             lblDevices.Name = "lblDevices";
             lblDevices.Size = new Size(131, 25);
@@ -157,7 +173,7 @@ namespace CHIFA.Pro.Mobile
             // 
             _lstDevices.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
             _lstDevices.Appearance.Options.UseFont = true;
-            _lstDevices.Location = new Point(30, 432);
+            _lstDevices.Location = new Point(30, 482);
             _lstDevices.Margin = new Padding(4);
             _lstDevices.Name = "_lstDevices";
             _lstDevices.Size = new Size(740, 162);
@@ -170,14 +186,27 @@ namespace CHIFA.Pro.Mobile
             _btnRemove.Appearance.Options.UseFont = true;
             _btnRemove.Enabled = false;
             _btnRemove.ImageOptions.Image = (Image)resources.GetObject("_btnRemove.ImageOptions.Image");
-            _btnRemove.Location = new Point(30, 605);
+            _btnRemove.Location = new Point(30, 655);
             _btnRemove.Margin = new Padding(4);
             _btnRemove.Name = "_btnRemove";
             _btnRemove.Size = new Size(238, 38);
             _btnRemove.TabIndex = 9;
             _btnRemove.Text = "Retirer ce téléphone";
             _btnRemove.Click += BtnRemove_Click;
-            // 
+            //
+            // _btnRole
+            //
+            _btnRole.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
+            _btnRole.Appearance.Options.UseFont = true;
+            _btnRole.Enabled = false;
+            _btnRole.Location = new Point(280, 655);
+            _btnRole.Margin = new Padding(4);
+            _btnRole.Name = "_btnRole";
+            _btnRole.Size = new Size(275, 38);
+            _btnRole.TabIndex = 10;
+            _btnRole.Text = "Passer en employé";
+            _btnRole.Click += BtnRole_Click;
+            //
             // _lblService
             // 
             _lblService.Appearance.Font = new Font("Segoe UI", 9.5F);
@@ -186,7 +215,7 @@ namespace CHIFA.Pro.Mobile
             _lblService.Appearance.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
             _lblService.Appearance.TextOptions.WordWrap = DevExpress.Utils.WordWrap.Wrap;
             _lblService.AutoSizeMode = LabelAutoSizeMode.None;
-            _lblService.Location = new Point(30, 655);
+            _lblService.Location = new Point(30, 705);
             _lblService.Margin = new Padding(4);
             _lblService.Name = "_lblService";
             _lblService.Size = new Size(525, 50);
@@ -197,7 +226,7 @@ namespace CHIFA.Pro.Mobile
             _btnService.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
             _btnService.Appearance.Options.UseFont = true;
             _btnService.ImageOptions.Image = (Image)resources.GetObject("_btnService.ImageOptions.Image");
-            _btnService.Location = new Point(570, 660);
+            _btnService.Location = new Point(570, 710);
             _btnService.Margin = new Padding(4);
             _btnService.Name = "_btnService";
             _btnService.Size = new Size(200, 38);
@@ -210,7 +239,7 @@ namespace CHIFA.Pro.Mobile
             _btnClose.Appearance.Font = new Font("Microsoft Sans Serif", 10.2F);
             _btnClose.Appearance.Options.UseFont = true;
             _btnClose.ImageOptions.Image = (Image)resources.GetObject("_btnClose.ImageOptions.Image");
-            _btnClose.Location = new Point(570, 702);
+            _btnClose.Location = new Point(570, 752);
             _btnClose.Margin = new Padding(4);
             _btnClose.Name = "_btnClose";
             _btnClose.Size = new Size(200, 38);
@@ -233,9 +262,10 @@ namespace CHIFA.Pro.Mobile
             AutoScaleDimensions = new SizeF(120F, 120F);
             AutoScaleMode = AutoScaleMode.Dpi;
             CancelButton = _btnClose;
-            ClientSize = new Size(792, 755);
+            ClientSize = new Size(792, 805);
             Controls.Add(lblTitle);
             Controls.Add(_lblIntro);
+            Controls.Add(_rdoRole);
             Controls.Add(_qr);
             Controls.Add(_lblCode);
             Controls.Add(_lblExpiry);
@@ -245,6 +275,7 @@ namespace CHIFA.Pro.Mobile
             Controls.Add(lblDevices);
             Controls.Add(_lstDevices);
             Controls.Add(_btnRemove);
+            Controls.Add(_btnRole);
             Controls.Add(_lblService);
             Controls.Add(_btnService);
             Controls.Add(_btnClose);
@@ -258,6 +289,7 @@ namespace CHIFA.Pro.Mobile
             StartPosition = FormStartPosition.CenterParent;
             Text = "Application mobile";
             Shown += MobileLinkForm_Shown;
+            ((System.ComponentModel.ISupportInitialize)_rdoRole.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)_qr.Properties).EndInit();
             ((System.ComponentModel.ISupportInitialize)_lstDevices).EndInit();
             ResumeLayout(false);
@@ -266,6 +298,7 @@ namespace CHIFA.Pro.Mobile
 
         private LabelControl lblTitle;
         private LabelControl _lblIntro;
+        private RadioGroup _rdoRole;
         private PictureEdit _qr;
         private LabelControl _lblCode;
         private LabelControl _lblExpiry;
@@ -275,6 +308,7 @@ namespace CHIFA.Pro.Mobile
         private LabelControl lblDevices;
         private ListBoxControl _lstDevices;
         private SimpleButton _btnRemove;
+        private SimpleButton _btnRole;
         private LabelControl _lblService;
         private SimpleButton _btnService;
         private SimpleButton _btnClose;

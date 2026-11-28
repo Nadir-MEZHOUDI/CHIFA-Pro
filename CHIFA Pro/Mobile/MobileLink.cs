@@ -188,7 +188,7 @@ internal static class MobileLink
         if (Load() is not { } settings || settings.Agent.GatewayUrl != GatewayUrl) return null;
         try
         {
-            using var response = await SendWithKeyAsync(HttpMethod.Get, LinkRoutes.LicenseRequest, settings.Agent.AgentKey, ct);
+            using var response = await SendWithKeyAsync(HttpMethod.Get, LinkRoutes.LicenseRequest, settings.Agent.AgentKey, ct: ct);
             if (!response.IsSuccessStatusCode) return null;
             var state = await response.Content.ReadFromJsonAsync<LicenseRequestState>(JsonSerializerOptions.Web, ct);
             return state is { Status: LicenseRequestStates.Approved, Serial.Length: > 0 } ? state.Serial : null;
@@ -200,8 +200,9 @@ internal static class MobileLink
     }
 
     /// <summary>A new code; the previous one stops working.</summary>
-    public static Task<PairingCodeResponse> NewCodeAsync() =>
-        SendAsync<PairingCodeResponse>(HttpMethod.Post, LinkRoutes.Codes);
+    /// <param name="role">What the phone linked with it may see (<see cref="DeviceRoles"/>).</param>
+    public static Task<PairingCodeResponse> NewCodeAsync(string role) =>
+        SendAsync<PairingCodeResponse>(HttpMethod.Post, LinkRoutes.Codes, new PairingCodeRequest(role));
 
     public static Task<List<LinkedDevice>> DevicesAsync() =>
         SendAsync<List<LinkedDevice>>(HttpMethod.Get, LinkRoutes.Devices);
@@ -209,20 +210,24 @@ internal static class MobileLink
     public static Task RemoveDeviceAsync(Guid id) =>
         SendAsync<object>(HttpMethod.Delete, $"{LinkRoutes.Devices}/{id}");
 
+    /// <summary>The phone gets its new pages on its next request.</summary>
+    public static Task SetRoleAsync(Guid id, string role) =>
+        SendAsync<object>(HttpMethod.Put, $"{LinkRoutes.Devices}/{id}/role", new DeviceRoleRequest(role));
+
     /// <summary>Calls the server with the agent key, registering first (or again) when there is no valid key.</summary>
-    private static async Task<T> SendAsync<T>(HttpMethod method, string route)
+    private static async Task<T> SendAsync<T>(HttpMethod method, string route, object? body = null)
     {
         try
         {
             var settings = Load() is { } saved && saved.Agent.GatewayUrl == GatewayUrl ? saved : await RegisterAsync();
-            var response = await SendWithKeyAsync(method, route, settings.Agent.AgentKey);
+            var response = await SendWithKeyAsync(method, route, settings.Agent.AgentKey, body);
 
             // Key replaced elsewhere (SmartCHIFA reinstalled, file restored): register again once.
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 response.Dispose();
                 settings = await RegisterAsync();
-                response = await SendWithKeyAsync(method, route, settings.Agent.AgentKey);
+                response = await SendWithKeyAsync(method, route, settings.Agent.AgentKey, body);
             }
 
             using (response)
@@ -241,10 +246,12 @@ internal static class MobileLink
         }
     }
 
-    private static async Task<HttpResponseMessage> SendWithKeyAsync(HttpMethod method, string route, string agentKey, CancellationToken ct = default)
+    private static async Task<HttpResponseMessage> SendWithKeyAsync(HttpMethod method, string route, string agentKey, object? body = null, CancellationToken ct = default)
     {
         using var request = new HttpRequestMessage(method, GatewayUrl + route);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", agentKey);
+        if (body is not null)
+            request.Content = JsonContent.Create(body, body.GetType(), options: JsonSerializerOptions.Web);
         return await Http.SendAsync(request, ct);
     }
 

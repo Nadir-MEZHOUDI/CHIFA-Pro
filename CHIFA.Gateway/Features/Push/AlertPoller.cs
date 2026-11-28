@@ -37,7 +37,10 @@ public class AlertPoller(
         var now = DateTime.UtcNow;
         await using (var db = await dbFactory.CreateDbContextAsync(ct))
         {
-            subscriptions = await db.PushSubscriptions.AsNoTracking().Deliverable(now).ToListAsync(ct);
+            // Alerts carry amounts and are set by the pharmacist: an employee's phone does not get them.
+            subscriptions = await db.PushSubscriptions.AsNoTracking().Deliverable(now)
+                .Where(s => s.Device == null || s.Device.Role == DeviceRoles.Owner)
+                .ToListAsync(ct);
         }
 
         foreach (var pharmacy in subscriptions.GroupBy(s => s.PharmacyId).Where(g => registry.IsOnline(g.Key)))

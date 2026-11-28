@@ -73,6 +73,15 @@
                             <span>Lié le @Fmt.Date(d.CreatedAt.ToLocalTime())</span>
                             <span>Vu @Fmt.Ago(d.LastSeenAt)</span>
                         </div>
+                        <div class="item-sub">
+                            <span class="tag @(d.Role == Roles.Staff ? "" : "accent")">@Roles.Label(d.Role)</span>
+                            @if (!d.IsCurrent)
+                            {
+                                <button class="button secondary small" disabled="@_removing" @onclick="() => SwitchRoleAsync(d)">
+                                    @(d.Role == Roles.Staff ? "Passer en titulaire" : "Passer en employé")
+                                </button>
+                            }
+                        </div>
                         @if (_confirming == d.Id)
                         {
                             <div class="confirm">
@@ -96,6 +105,8 @@
     <p class="hint muted small">
         Pour lier un autre appareil, affichez un code ci-dessous ou dans SmartCHIFA (Application mobile).
         Pour retirer ce téléphone, utilisez « Se déconnecter » dans le menu.
+        Un téléphone d'employé voit les patients, médicaments, factures et psychotropes, mais pas le chiffre d'affaires,
+        les marges, les bordereaux ni les paiements.
     </p>
 </section>
 
@@ -133,6 +144,28 @@
             await Api.RemoveDeviceAsync(id);
             _devices?.RemoveAll(d => d.Id == id);
             _confirming = null;
+        }
+        catch (ApiException ex)
+        {
+            _removeError = ex;
+        }
+        finally
+        {
+            _removing = false;
+        }
+    }
+
+    private async Task SwitchRoleAsync(PhoneDevice device)
+    {
+        var role = device.Role == Roles.Staff ? Roles.Owner : Roles.Staff;
+        _removing = true;
+        _removeError = null;
+        try
+        {
+            await Api.SetDeviceRoleAsync(device.Id, role);
+            var i = _devices?.FindIndex(d => d.Id == device.Id) ?? -1;
+            if (i >= 0)
+                _devices![i] = device with { Role = role };
         }
         catch (ApiException ex)
         {

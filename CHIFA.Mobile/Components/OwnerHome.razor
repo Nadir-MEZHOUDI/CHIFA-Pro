@@ -1,0 +1,87 @@
+@* The pharmacist's home: turnover, payments and the busiest médicaments. *@
+@inject Api Api
+
+<ReviewInvite />
+
+<RecentDays />
+
+<h2 class="section-title">Par période</h2>
+<PeriodChips Selected="_period" SelectedChanged="ChangePeriodAsync" />
+
+<Remote @ref="_dashboard" Fetch="() => Api.DashboardAsync(_period)" Context="data">
+    <section class="card hero">
+        <span class="label">Total facturé CHIFA · @_period.Label</span>
+        <span class="amount">@Fmt.Money(data.MontantTotalFact)</span>
+        <span class="muted">@Fmt.Number(data.NombreFactures) factures · @Fmt.Number(data.NombreAssuresUniques) assurés · @Fmt.Number(data.NombreBoites) boîtes</span>
+    </section>
+
+    <section class="kpis">
+        <div class="card kpi"><span class="label">Part caisse</span><span class="value">@Fmt.Money(data.MontantTotalCaisse)</span></div>
+        <div class="card kpi"><span class="label">Part assuré</span><span class="value">@Fmt.Money(data.MontantTotalAssure)</span></div>
+        <div class="card kpi"><span class="label">Majorations</span><span class="value">@Fmt.Money(data.MontantTotalMajoration)</span></div>
+        <div class="card kpi"><span class="label">Panier moyen</span><span class="value">@Fmt.Money(data.PanierMoyen)</span></div>
+    </section>
+
+    @if (data.RepartitionParCaisse.Count > 0)
+    {
+        var max = data.RepartitionParCaisse.Max(c => c.MontantTotal);
+        <section class="card">
+            <h2>Par caisse</h2>
+            @foreach (var c in data.RepartitionParCaisse)
+            {
+                <div class="bar-row">
+                    <div class="bar-head"><span>@c.Centre</span><span>@Fmt.Money(c.MontantTotal)</span></div>
+                    <div class="bar"><span style="width:@Width(c.MontantTotal, max)"></span></div>
+                    <span class="muted small">@Fmt.Number(c.NombreFactures) factures · caisse @Fmt.Money(c.MontantCaisse)</span>
+                </div>
+            }
+        </section>
+    }
+
+    @if (data.ActiviteHoraire.Count > 0)
+    {
+        var max = (decimal)data.ActiviteHoraire.Max(h => h.NombreFactures);
+        <section class="card">
+            <h2>Factures par heure</h2>
+            <div class="hours">
+                @foreach (var h in data.ActiviteHoraire.OrderBy(h => h.Heure))
+                {
+                    <div class="hour" title="@h.Heure h : @h.NombreFactures factures">
+                        <span class="hour-bar" style="height:@Width(h.NombreFactures, max)"></span>
+                        <span class="hour-label">@h.Heure</span>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    @if (data.TopMedicaments.Count > 0)
+    {
+        <section class="card">
+            <h2>Médicaments les plus délivrés</h2>
+            <ol class="top">
+                @foreach (var m in data.TopMedicaments)
+                {
+                    <li>
+                        <div><strong>@m.Designation</strong><span class="muted small">@m.Dci</span></div>
+                        <div class="right"><strong>@Fmt.Number(m.QuantiteTotale)</strong><span class="muted small">@Fmt.Money(m.MontantTotal)</span></div>
+                    </li>
+                }
+            </ol>
+        </section>
+    }
+</Remote>
+
+@code {
+    private Period _period = PeriodChips.Named("Ce mois");
+    private Remote<Dashboard> _dashboard = default!;
+
+    private async Task ChangePeriodAsync(Period period)
+    {
+        _period = period;
+        await _dashboard.ReloadAsync();
+    }
+
+    private static string Width(decimal value, decimal max) =>
+        max <= 0 ? "0%" : $"{Math.Max(2, (int)(value / max * 100))}%";
+}

@@ -44,7 +44,7 @@ builder.Services
         o.Events = new JwtBearerEvents { OnTokenValidated = AuthEndpoints.RejectRevokedDeviceAsync };
     })
     .AddScheme<AuthenticationSchemeOptions, AgentKeyAuthenticationHandler>(AgentKeyAuthenticationHandler.SchemeName, null);
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(o => o.AddOwnerPolicy());
 
 builder.Services.AddSignalR(o =>
 {
